@@ -230,6 +230,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 	//===================================//
 	cout << endl;
 	printf("\nProcessing : %s    -->   %s \n", fileName.c_str(), outputFileName.c_str()); 
+    cout <<" We will run on " <<nentries <<" events" << endl;
 	for (Long64_t jentry(0); jentry < nentries; jentry++){
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
@@ -273,8 +274,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 		if (weight > 10000. || weight < 0.) weight = 1.;
 		//weight = weight * lumiScale * xsec / puScale; 
 		weight = weight*lumiScale*xsec; // remove puScale to be consistent with other Jets analysis 
-
-		if (fileName.find("MIX_UNFO") != string::npos && nup_ > 5){
+		if (fileName.find("MIX") != string::npos && nup_ > 5){
 			if (fileName.find("DMu") != string::npos ) weight *= mixingWeightsDY_DMu[nup_ - 6]; 
 			else if (fileName.find("DE") != string::npos ) weight *= mixingWeightsDY_DE[nup_ - 6]; 
 			else if (fileName.find("SMu") != string::npos ) weight *= mixingWeightsWJ_SMu[nup_ - 6]; 
@@ -403,7 +403,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 				}//End of loop over all the electrons
 			}
 			nElectrons = electrons.size();
-
 			int diLepCharge(0);
 			nLeptons = leptons.size();
 			if (nLeptons == 2) diLepCharge = abs(leptons[0].charge) + abs(leptons[1].charge);
@@ -477,6 +476,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 				//}	
 				Z = lep1 + lep2;
 				sumLepCharge = int (lepton1.charge + lepton2.charge);
+                
 				if ( sumLepCharge == 0 ) {
                                                 if ( fabs(lepton1.charge) == 11 )sumLepCharge = 5 ;
                                                 if ( fabs(lepton1.charge) == 13 )sumLepCharge = 6 ;
