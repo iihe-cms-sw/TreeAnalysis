@@ -8,25 +8,23 @@
 void runMergeTop(string lepSelection = "DE", int systematics =0  , int jetPtCutMin = 30 , int doQCD = 0 );
 
 void MergeTop(){
-	runMergeTop("DMu",0,20,0);
-	runMergeTop("DMu",1,20,0);
-	runMergeTop("DMu",-1,20,0);
-	runMergeTop("DMu",3,20,0);
-	runMergeTop("DMu",-3,20,0);	        
-	runMergeTop("DMu",0,30,0);
-        runMergeTop("DMu",1,30,0);
-        runMergeTop("DMu",-1,30,0);
-        runMergeTop("DMu",3,30,0);
-        runMergeTop("DMu",-3,30,0);
-
-
+    runMergeTop("DMu",0,20,0);
+    runMergeTop("DMu",1,20,0);
+    runMergeTop("DMu",-1,20,0);
+    runMergeTop("DMu",3,20,0);
+    runMergeTop("DMu",-3,20,0);	        
+    runMergeTop("DMu",0,30,0);
+    runMergeTop("DMu",1,30,0);
+    runMergeTop("DMu",-1,30,0);
+    runMergeTop("DMu",3,30,0);
+    runMergeTop("DMu",-3,30,0);
 }
-//void runMergeTop(string lepSelection = "DE", int systematics = 0, int jetPtCutMin = 30, int doQCD = 0 )
-void runMergeTop(string lepSelection , int systematics , int jetPtCutMin , int doQCD )
+
+void runMergeTop(string lepSelection, int systematics, int jetPtCutMin, int doQCD)
 {
     TH1::SetDefaultSumw2();
     TH2::SetDefaultSumw2();
-	
+
     cout << __FILE__ << endl;
     ostringstream strJetPtCutMin; strJetPtCutMin << jetPtCutMin;
     ostringstream doQCDStr;     doQCDStr << doQCD ;
@@ -47,9 +45,9 @@ void runMergeTop(string lepSelection , int systematics , int jetPtCutMin , int d
     string str6 = "HistoFiles/"+ lepSelection +  "_8TeV_Tbar_tW_channel_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
     string strf = "HistoFiles/"+ lepSelection +  "_8TeV_Top_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
 
-   /// DY
-   int nDYfiles = 3 ;
-   string sstrDY[10];
+    /// DY
+    int nDYfiles = 3 ;
+    string sstrDY[10];
     sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
     sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
     sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
@@ -67,7 +65,7 @@ void runMergeTop(string lepSelection , int systematics , int jetPtCutMin , int d
     for (int i(0); i < nHist; i++){
         string hName = f1->GetListOfKeys()->At(i)->GetName();
 
-//        cout << hName << endl;
+        //        cout << hName << endl;
         if (hName.find("response") != string::npos){
             RooUnfoldResponse *r1 = (RooUnfoldResponse*) f1->Get(hName.c_str());
             RooUnfoldResponse *r2 = (RooUnfoldResponse*) f2->Get(hName.c_str());
@@ -112,39 +110,39 @@ void runMergeTop(string lepSelection , int systematics , int jetPtCutMin , int d
     f6->Close();
     ff->Close();
 
- //// merge DY files
+    //// merge DY files
     if (lepSelection == "SMuE"){
-	    /// DY
-	    /*   int nDYfiles = 3 ;
-		 string sstrDY[10];
-		 sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-		 sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-		 sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_1_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
-	     */
-	    TFile *fDY[10];
-	    for ( int i = 0 ; i < nDYfiles ; i++){
-		    if ( i == nDYfiles - 1 )  fDY[i] =  new TFile(sstrDY[i].c_str(), "recreate");
-		    else fDY[i] =  new TFile(sstrDY[i].c_str(), "read");
-		    cout << sstrDY[i] << endl;
+        /// DY
+        /*   int nDYfiles = 3 ;
+             string sstrDY[10];
+             sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+             sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+             sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_1_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
+             */
+        TFile *fDY[10];
+        for ( int i = 0 ; i < nDYfiles ; i++){
+            if ( i == nDYfiles - 1 )  fDY[i] =  new TFile(sstrDY[i].c_str(), "recreate");
+            else fDY[i] =  new TFile(sstrDY[i].c_str(), "read");
+            cout << sstrDY[i] << endl;
 
-	    }
+        }
 
-	    nHist = fDY[0]->GetListOfKeys()->GetEntries();
-	    for (int i(0); i < nHist; i++){
-		    string hName = fDY[0]->GetListOfKeys()->At(i)->GetName();
-		    cout << i <<"  " << hName << nHist << endl;
-		    TH1D* hSum; TH1D* hDY[10];
-		    for ( int j = 0 ; j < nDYfiles -1 ; j++){
-			    hDY[j] = (TH1D*) fDY[j]->Get(hName.c_str());
-			    if ( j == 0 ) hSum = (TH1D*) hDY[j]->Clone();
-			    else hSum->Add(hDY[j]);
-		    }
-		    fDY[nDYfiles -1]->cd();
-		    hSum->Write();
-	    }
-	    for ( int i = 0 ; i < nDYfiles ; i++){
-		    fDY[i] ->Close();
-	    }
+        nHist = fDY[0]->GetListOfKeys()->GetEntries();
+        for (int i(0); i < nHist; i++){
+            string hName = fDY[0]->GetListOfKeys()->At(i)->GetName();
+            cout << i <<"  " << hName << nHist << endl;
+            TH1D* hSum; TH1D* hDY[10];
+            for ( int j = 0 ; j < nDYfiles -1 ; j++){
+                hDY[j] = (TH1D*) fDY[j]->Get(hName.c_str());
+                if ( j == 0 ) hSum = (TH1D*) hDY[j]->Clone();
+                else hSum->Add(hDY[j]);
+            }
+            fDY[nDYfiles -1]->cd();
+            hSum->Write();
+        }
+        for ( int i = 0 ; i < nDYfiles ; i++){
+            fDY[i] ->Close();
+        }
 
     } /// end if DY
 
