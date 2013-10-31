@@ -1,4 +1,3 @@
-I m not stupid
 #ifndef __fileNames__
 #define __fileNames__
 
