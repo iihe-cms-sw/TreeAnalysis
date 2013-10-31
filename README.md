@@ -24,3 +24,17 @@ $ make
 Bravo ! You have compiled the RooUnfold classes and you are ready to use it.
 
 
+You can also create some directories that will be needed later:
+
+$ mkdir HistoFiles PNGFiles
+
+These first directory will contain the .root files created by runDYJets and co.
+and containing the histograms used during the whole process up to cross section
+measurements.
+The second will contain the .png and .pdf plots for all kind of comparison at
+several different levels.
+
+These directories are however not considered by git (as can be seen in the .gitignore file).
+
+
+
