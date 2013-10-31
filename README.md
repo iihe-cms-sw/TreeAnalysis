@@ -36,5 +36,15 @@ several different levels.
 
 These directories are however not considered by git (as can be seen in the .gitignore file).
 
+Next you need to have the data to run on. For this, if your running on m-machine, 
+a simple symbolic link will be enough. You can also opy the full directory.
+
+Go to the racine directory TreeAnalysis2012
+$ ln -s /user/tseva/analysis/TreeAnalysis2012/Data_Z_5311 Data_Z_5311
+
+$ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataTTbarEMu DataTTbarEMu
+
+$ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataW DataW
+
 
 

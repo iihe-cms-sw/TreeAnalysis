@@ -20,8 +20,8 @@
 using namespace std;
 
 void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30, int doQCD = 0,  bool doInvMassCut = 0, string DYSample = "MadGraph", 
-		int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
-		bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
+        int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
+        bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
 {
     string energy = getEnergy();
 
