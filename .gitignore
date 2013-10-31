@@ -1,2 +1,7 @@
+# git will not consider the following files:
 *.so
 *.d
+
+# git will not consider the following directory:
+DYJets/HistoFiles
+DYJets/PNGFiles
