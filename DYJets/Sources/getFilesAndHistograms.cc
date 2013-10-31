@@ -167,8 +167,6 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
         responses[i] = (RooUnfoldResponse*) Files[i]->Get(variable.c_str());
     } 
 }
-
-
 void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth)
 {
     string variable = "ZNGoodJets_Zexc";
@@ -248,7 +246,4 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
     fprintf( outFile, "\\end{tabular}}");
     fclose(outFile);
 
-
-
 }
-

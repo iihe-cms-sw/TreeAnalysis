@@ -5,9 +5,8 @@
 #include <TH1.h>
 #include <TFile.h>
 #include <RooUnfoldResponse.h>
-#include <string>
 using namespace std;
-bool useUnfoldingFiles = false ;
+const bool useUnfoldingFiles(false);
 string getEnergy();
 TFile* getFile(string, string, string, string, int JetPtMin = 20, int JetPtMax = 0, bool doFlat = false, bool doVarWidth = false, int doQCD = 0 ,  bool doInvMassCut = false , string closureTest = "", string syst = "0", bool dodR = false);
 void getFiles(string, TFile *Files[], string, string, string, int JetPtMin = 20, int JetPtMax = 0, bool doFlat = false ,  bool doVarWidth = false , int doQCD = 0, bool doInvMassCut = false );

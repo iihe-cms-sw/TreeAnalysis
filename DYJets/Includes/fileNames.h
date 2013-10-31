@@ -2,7 +2,7 @@
 #define __fileNames__
 
 //-- directory of input root files --------------------
-string FILESDIRECTORY = "HistoFiles/";
+const string FILESDIRECTORY = "HistoFiles/";
 //---------- lets add basic information on samples inot common struct -------------------------------------------
 struct processInfoStruct{
     string filename ;
@@ -11,9 +11,9 @@ struct processInfoStruct{
     string legend;
 };
 
-const int NFilesWJets = 14 ; 
-const int NFilesFull = 27 ; 
-processInfoStruct ProcessInfo[] = {
+const int NFilesWJets(14); 
+const int NFilesFull(27); 
+const processInfoStruct ProcessInfo[] = {
     //--  Name  ------number of events           - xsec  - branch  -xsec error (%)  - coclor for plot -- name on legend
     {"Data_dR_5311",             1,                1.,        1,     1        , kBlack  ,   " Data"},
     {"WJetsALL_MIX_UNFOLDING_dR_5311", 76102995.,  36864.,    1,     0.03     , kPink     , " WJets"},
@@ -44,15 +44,14 @@ processInfoStruct ProcessInfo[] = {
     {"DataQCD_dR_5311",	                 1,    1  ,  1,     0.04              	 , kYellow     , " QCD"},
     {"WJetsALL_UNFOLDING_dR_5311",         76102995.,  36864.,    1,     0.03     , kPink       , " WJets"},
     {"WJetsALL_MIX_dR_5311",               76102995.,  36864.,    1,     0.03     , kPink       , " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
-    {"WJetsALL_dR_5311",                   76102995.,  36864.,    1,     0.03     , kPink       , " WJets"},
-
+    {"WJetsALL_dR_5311",                   76102995.,  36864.,    1,     0.03     , kPink       , " WJets"}
 };
-const int NFilesDYJets = 12 ;
-int FilesDYJets[NFilesDYJets] = { 0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11,  13 };
-const int NFilesTTbar =  9 ;
-int FilesTTbarWJets[NFilesTTbar] =   { 0, 4, 3, 2, 23, 20, 22, 11, 1 };
+const int NFilesDYJets(12);
+const int FilesDYJets[NFilesDYJets] = { 0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11,  13 };
+const int NFilesTTbar(9);
+const int FilesTTbarWJets[NFilesTTbar] =   { 0, 4, 3, 2, 23, 20, 22, 11, 1 };
 //-- file names ---------------------------------------
-string FILENAMESTTbar[NFilesTTbar] = {
+const string FILENAMESTTbar[NFilesTTbar] = {
     "Data_dR_5311",
     "ZZ_dR_5311",
     "WZ_dR_5311",
@@ -63,8 +62,8 @@ string FILENAMESTTbar[NFilesTTbar] = {
     "TTJets_dR_5311",
     "DYJets10toInf3_dR_5311",
 };
-const int NfilesVJets = 14 ;
-string FILENAMES[NfilesVJets] = {
+const int NfilesVJets(14);
+const string FILENAMES[NfilesVJets] = {
     "Data_dR_5311",
     "WJetsALL_MIX_dR_5311",
     "DYJets_FromTau_UNFOLDING_dR_5311_Inf3",
@@ -87,13 +86,13 @@ string FILENAMES[NfilesVJets] = {
 }; 
 //-----------------------------------------------------
 
-string DATAFILENAME = FILENAMES[0];
+const string DATAFILENAME = FILENAMES[0];
 
-string DYMADGRAPHFILENAME = FILENAMES[10];
-string DYPOWHEGFILENAME = FILENAMES[11];
-string DYSHERPAFILENAME = FILENAMES[12];
+const string DYMADGRAPHFILENAME = FILENAMES[10];
+const string DYPOWHEGFILENAME = FILENAMES[11];
+const string DYSHERPAFILENAME = FILENAMES[12];
 
-string BGFILENAMES[9] = {
+const string BGFILENAMES[9] = {
     FILENAMES[1],
     FILENAMES[2],
     FILENAMES[3],
@@ -104,7 +103,7 @@ string BGFILENAMES[9] = {
     FILENAMES[8],
     FILENAMES[9],
 };
-string BGFILENAMESGrouped[8] = {
+const string BGFILENAMESGrouped[8] = {
     FILENAMES[1],
     FILENAMES[2],
     FILENAMES[3],
@@ -115,14 +114,15 @@ string BGFILENAMESGrouped[8] = {
     FILENAMES[9],
 };
 
-string GenMCFILENAMES[5] = {
+const string GenMCFILENAMES[5] = {
     "DYJets_GEN_Z2_MPIoff",
     "DYJets_GEN_Z2Star",
     "DYJets_GEN_Z2Star_MPIoff",
     "DYJets_P8_ZmumJets_MPIon_GEN_Tune4C",
     "DYJets_PowhegZjjMiNLO_GEN"
 };
-string DYPOWHEGZjjFILENAME = GenMCFILENAMES[4];
-string DYSHERPAZjFILENAME    = "DYJets_UNFOLDING_Sherpa";
+const string DYPOWHEGZjjFILENAME = GenMCFILENAMES[4];
+const string DYSHERPAZjFILENAME("DYJets_UNFOLDING_Sherpa");
+
 #endif
 
