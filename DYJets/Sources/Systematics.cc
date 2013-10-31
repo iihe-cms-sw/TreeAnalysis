@@ -24,7 +24,7 @@ using namespace std;
 void Systematics()
 {
    //NVAROFINTEREST = 1;
-   for (int i(1); i < NVAROFINTEREST; i++){
+   for (int i(1); i < 2; i++){
       cout << VAROFINTEREST[i].name << endl;
       systematics(VAROFINTEREST[i].name, VAROFINTEREST[i].log, VAROFINTEREST[i].decrease);
    }
@@ -193,6 +193,8 @@ void plotSystematics(int JetPtMin, string Syst, TH1D *hcent, TH1D *hup, TH1D *hd
 
 
    string output = "./PNGFiles/SystematicsPlots_" + JetPtMinStr.str() + "/";
+   string command = "mkdir -p " + output;
+   system(command.c_str());
    if (leptonFlavor == "Muons") output += "DMu_";
    else output += "DE_";
    output += energy + "_" + canName;
