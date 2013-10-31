@@ -3,5 +3,14 @@
 *.d
 
 # git will not consider the following directory:
+
+# ignores input data files
+Data_Z_5311
+DataW
+DataTTbarEMu
+
+# ignores output root files
 DYJets/HistoFiles
+
+# ignores pngs and pdf output files
 DYJets/PNGFiles
