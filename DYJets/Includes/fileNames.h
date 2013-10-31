@@ -2,7 +2,7 @@
 #define __fileNames__
 
 //-- directory of input root files --------------------
-const string FILESDIRECTORY = "HistoFiles/";
+const string FILESDIRECTORY("HistoFiles/");
 //---------- lets add basic information on samples inot common struct -------------------------------------------
 struct processInfoStruct{
     string filename ;
