@@ -59,9 +59,9 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     TFile *file[nFiles];
     for (unsigned short i = 0; i < nFiles; i++){
         int fileSelect = FilesDYJets[i] ;
-        if ( !isDoubleLep ) fileSelect = FilesTTbarWJets[i] ;
+        if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
-        if ( (  doQCD > 0  || doInvMassCut) && fileNameTemp.find("QCD") != string::npos) continue;
+        if ((doQCD > 0 || doInvMassCut) && fileNameTemp.find("QCD") != string::npos) continue;
         file[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doInvMassCut);
         legendNames[i] = ProcessInfo[fileSelect].legend; 
         Colors[i] = ProcessInfo[fileSelect].color;    
@@ -219,6 +219,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         histSumMC[i]->SetTitle(""); 
         histSumMC[i]->GetYaxis()->SetLabelSize(0.05); 
         histSumMC[i]->GetYaxis()->SetLabelOffset(0.002); 
+        histSumMC[i]->GetYaxis()->SetLabelFont(42); 
         histSumMC[i]->GetYaxis()->SetTitle("# Events"); 
         histSumMC[i]->GetYaxis()->SetTitleFont(42); 
         histSumMC[i]->GetYaxis()->SetTitleSize(0.05); 
@@ -228,15 +229,14 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
 
         /// first pad plots
         hist[0][i]->DrawCopy("e same");
-
-
         legend[i]->Draw();
         cmsColl[i]->DrawLatex(0.2,0.87, "CMS Preliminary");
         if (energy == "7TeV") intLumi[i]->DrawLatex(0.16,0.82, "#int L dt = 5.05 fb^{-1},  #sqrt{s} = 7 TeV");
         if (energy == "8TeV") intLumi[i]->DrawLatex(0.16,0.82, "#int L dt = 19.6 fb^{-1},  #sqrt{s} = 8 TeV");
         if ( histoName[i].find("inc0") == string::npos){
-            jetCuts[i]->DrawLatex(0.16,0.72, "p_{T}^{jet} > 30 GeV,  |#eta^{jet}| < 2.4");
-            if (JetPtMin == 20) jetCuts[i]->DrawLatex(0.16,0.72, "p_{T}^{jet} > 20 GeV,  |#eta^{jet}| < 2.4");
+            ostringstream ptLegend;
+            ptLegend << "p_{T}^{jet} > " << JetPtMin << "GeV,  |#eta^{jet}| < 2.4";
+            jetCuts[i]->DrawLatex(0.16,0.72, ptLegend.str().c_str());
             jetAlgo[i]->DrawLatex(0.16,0.77, "anti-k_{t} jets,  R = 0.5");
             pad1[i]->Draw();
         }
@@ -257,8 +257,10 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         hist[0][i]->GetXaxis()->SetTickLength(0.03);
         hist[0][i]->GetXaxis()->SetTitleSize(0.11);
         hist[0][i]->GetXaxis()->SetTitleOffset(1.05);
+        hist[0][i]->GetXaxis()->SetTitleFont(42); 
         hist[0][i]->GetXaxis()->SetLabelSize(0.11);
         hist[0][i]->GetXaxis()->SetLabelOffset(0.018);
+        hist[0][i]->GetXaxis()->SetLabelFont(42); 
 
         hist[0][i]->GetYaxis()->SetRangeUser(0.51,1.49);
         hist[0][i]->GetYaxis()->SetNdivisions(5,5,0);
@@ -268,6 +270,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         hist[0][i]->GetYaxis()->SetTitleOffset(0.5);
         hist[0][i]->GetYaxis()->CenterTitle();
         hist[0][i]->GetYaxis()->SetLabelSize(0.1);
+        hist[0][i]->GetYaxis()->SetLabelFont(42); 
 
         hist[0][i]->Divide((TH1D*) histSumMC[i]->GetStack()->Last());
         for (unsigned short j(1); j <= nBins; j++){

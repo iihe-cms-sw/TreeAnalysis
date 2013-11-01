@@ -256,29 +256,29 @@ HistoSet::HistoSet(string leptonFlavor)
   ZMassAllPassLep                     = newTH1D("ZMassAllPassLep",                     "Z Invariant Mass for all passing leptons",          Mll,    240, 0, 480 );
 
 
-  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
-  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
-  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
-  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
-  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
-  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
-  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
+  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260 );
+  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260 );
+  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260 );
+  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260 );
+  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260 );
+  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260 );
+  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260 );
 
-  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
-  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
-  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
-  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
-  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
-  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
-  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
+  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260 );
+  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260 );
+  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260 );
+  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260 );
+  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260 );
+  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260 );
+  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260 );
 
-  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    111, 50, 260 );
-  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    111, 50, 260 );
-  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    111, 50, 260 );
-  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    111, 50, 260 );
-  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    111, 50, 260 );
-  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    111, 50, 260 );
-  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    111, 50, 260 );
+  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    105, 50, 260 );
+  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    105, 50, 260 );
+  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    105, 50, 260 );
+  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    105, 50, 260 );
+  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    105, 50, 260 );
+  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    105, 50, 260 );
+  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    105, 50, 260 );
 
   ZPt_Zinc0jet                        = newTH1D("ZPt_Zinc0jet",                        "Z p_{T} (N_{jets} #geq 0)",                   ZpT,    40, 0, 400);
   ZPt_Zinc1jet                        = newTH1D("ZPt_Zinc1jet",                        "Z p_{T} (N_{jets} #geq 1)",                   ZpT,    40, 0, 400);
