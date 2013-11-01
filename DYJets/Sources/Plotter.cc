@@ -50,11 +50,11 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     //int ColorsTTbar[] = {kBlack, kOrange,  kRed+1,  kViolet+5, kPink, kBlue, kCyan+1, kCyan+1, kCyan+1,kGreen};
 
     //-- get the files ------------------------------------
-    int nFiles = NFilesDYJets;
+    int nFiles = NFILESDYJETS;
     bool isDoubleLep(1);
     if ( leptonFlavor == "SMuE" || leptonFlavor == "SMu" || leptonFlavor == "Muon") {
-        isDoubleLep = 0 ;
-        nFiles = NFilesTTbar  ; 
+        isDoubleLep = 0;
+        nFiles = NFILESTTBAR; 
     }
     TFile *file[13];
     for (unsigned short i = 0; i < nFiles; i++){

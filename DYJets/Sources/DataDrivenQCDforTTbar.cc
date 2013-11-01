@@ -73,7 +73,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 	//-----------------------------------------------------
 	cout << " now open all the MC of interest " << endl;
 	// ----------------- get all MC histos ---
-	for ( int j = 1 ; j < NFilesWJets ; j++){
+	for ( int j = 1 ; j < NFILESWJETS ; j++){
 		fMC[j] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[j].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 1 ,doInvMassCut, "","0");
 	}
 
@@ -88,7 +88,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 		if (histoNameTemp.find("gen") != string::npos) continue;
 		TH1D* histTemp = (TH1D*) fData[0]->Get(histoNameTemp.c_str());
 		TH1D* hOut = (TH1D*)  histTemp->Clone();
-		for ( int j = 1 ; j < NFilesWJets ; j++){
+		for ( int j = 1 ; j < NFILESWJETS ; j++){
 			TH1D* histTempMC = (TH1D*) fMC[j]->Get(histoNameTemp.c_str());
 			hOut->Add(histTempMC,-1);
 		}

@@ -177,10 +177,10 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
     double DataEv[20][20] = {{0}};
 
     //-- fetch the data files and histograms --------------
-    int usedFiles = NFilesWJets; 
+    int usedFiles = NFILESWJETS; 
     bool doDY(0);
     if (leptonFlavor.find("Muons") != string::npos || leptonFlavor.find("Electrons") != string::npos){
-        usedFiles = NFilesDYJets; 
+        usedFiles = NFILESDYJETS; 
         doDY = true;
     }
     for (int i = 0; i < usedFiles; i++){

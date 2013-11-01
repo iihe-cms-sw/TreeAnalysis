@@ -5,13 +5,13 @@
 const string FILESDIRECTORY("HistoFiles/");
 //---------- lets add basic information on samples inot common struct -------------------------------------------
 struct processInfoStruct{
-    string filename ;
-    double NEvents,xsec, xsecFrac, xsecError;
+    string filename;
+    double NEvents, xsec, xsecFrac, xsecError;
     int color;
     string legend;
 };
 
-const int NFilesWJets(14); 
+const int NFILESWJETS(14); 
 const int NFilesFull(27); 
 const processInfoStruct ProcessInfo[] = {
     //--  Name  ------number of events           - xsec  - branch  -xsec error (%)  - coclor for plot -- name on legend
@@ -46,12 +46,12 @@ const processInfoStruct ProcessInfo[] = {
     {"WJetsALL_MIX_dR_5311",               76102995.,  36864.,    1,     0.03     , kPink       , " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
     {"WJetsALL_dR_5311",                   76102995.,  36864.,    1,     0.03     , kPink       , " WJets"}
 };
-const int NFilesDYJets(12);
-const int FilesDYJets[NFilesDYJets] = { 0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11,  13 };
-const int NFilesTTbar(9);
-const int FilesTTbarWJets[NFilesTTbar] =   { 0, 4, 3, 2, 23, 20, 22, 11, 1 };
+const int NFILESDYJETS(12);
+const int FilesDYJets[NFILESDYJETS] = { 0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11,  13 };
+const int NFILESTTBAR(9);
+const int FilesTTbarWJets[NFILESTTBAR] =   { 0, 4, 3, 2, 23, 20, 22, 11, 1 };
 //-- file names ---------------------------------------
-const string FILENAMESTTbar[NFilesTTbar] = {
+const string FILENAMESTTbar[NFILESTTBAR] = {
     "Data_dR_5311",
     "ZZ_dR_5311",
     "WZ_dR_5311",
@@ -62,8 +62,8 @@ const string FILENAMESTTbar[NFilesTTbar] = {
     "TTJets_dR_5311",
     "DYJets10toInf3_dR_5311",
 };
-const int NfilesVJets(14);
-const string FILENAMES[NfilesVJets] = {
+const int NFILESVJETS(14);
+const string FILENAMES[NFILESVJETS] = {
     "Data_dR_5311",
     "WJetsALL_MIX_dR_5311",
     "DYJets_FromTau_UNFOLDING_dR_5311_Inf3",

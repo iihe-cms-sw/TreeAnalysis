@@ -73,7 +73,7 @@ cout << " test" << endl;
   cout << " now open all the MC of interest " << endl;
   // ----------------- get all MC histos ---
   for ( int i=0 ; i < NQCD ; i++){
-	  for ( int j = 1 ; j < NFilesWJets ; j++){
+	  for ( int j = 1 ; j < NFILESWJETS ; j++){
 
 		  TFile *fTemp = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[j].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i ,"","0");
 		  TH1D *hTemp = getHisto(fTemp, variable);

@@ -198,7 +198,7 @@ class ZJetsAndDPS: public HistoSet {
     Int_t    GetEntry(Long64_t entry);
     Long64_t LoadTree(Long64_t entry);
     void     Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo);
-    void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 1 , bool doBJets = 0, int doPUStudy = -10,bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0);
+    void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doMassCut = 1, bool doBJets = 0, int doPUStudy = -10, bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0);
     Bool_t   Notify();
     void     Show(Long64_t entry = -1);
 
