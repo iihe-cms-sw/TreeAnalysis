@@ -3,29 +3,28 @@
 
     vector<string> sources;
     sources.push_back("getFilesAndHistograms");
-    sources.push_back("functions");
     sources.push_back("Plotter");
 
     //--- Load shared libraries ---
     unsigned int nSources = sources.size();
     for (unsigned int i(0); i < nSources; i++){
-        cout <<"Compiling " << srcdir + sources[i] << ".cc" << endl;
+        cout << "Compiling " << srcdir + sources[i] << ".cc" << endl;
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
     }
 
-    Plotter("Muons", 20, 0);
-    Plotter("Electrons", 20, 0);
-    Plotter("Muons", 30, 0);
-    Plotter("Electrons", 20, 0);
+    Plotter("Muons", 20);
+    //Plotter("Electrons", 20, 0);
+    //Plotter("Muons", 30, 0);
+    //Plotter("Electrons", 20, 0);
 
-//    Plotter("Muons",30,0,0);
-//    Plotter("SMuE",30,0);
+    //Plotter("Muons",30,0,0);
+    //Plotter("SMuE",30,0);
     //Plotter("Electrons");
     cout << " Plotter done" << endl;
     // you can immediately produce also the tables for jet multiplicity
-//    getStatistics("SMuE", 30);
-//    getStatistics("Muons", 30);
-//    getStatistics("Electrons", 30);
+    //getStatistics("SMuE", 30);
+    //getStatistics("Muons", 30);
+    //getStatistics("Electrons", 30);
 
 
     //--- clean the *_cc.d and *_cc.so files ---
