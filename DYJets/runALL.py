@@ -31,9 +31,9 @@ def dispacher(lepton = "DE", PT = 30):
         tmpLogFile = tmpFile + ".log"
 
         cmdSetJob = "sed "
-        cmdSetJob += " -e \"s|.*int doWhat.*|int doWhat = " + str(i) + ";|g\""
-        cmdSetJob += " -e \"s|.*string lep.*|string lep = \"" + str(lepton) + "\";|g\""
-        cmdSetJob += " -e \"s|.*int jetPtMin.*|int jetPtMin = " + str(PT) + ";|g\""
+        cmdSetJob += " -e \"s|int doWhat.*|int doWhat = " + str(i) + ";|g\""
+        cmdSetJob += " -e \"s|string lep.*|string lep = \\\"" + str(lepton) + "\\\";|g\""
+        cmdSetJob += " -e \"s|int jetPtMin.*|int jetPtMin = " + str(PT) + ";|g\""
         cmdSetJob += " runDYJets.cc > " + tmpCCFile
 
         print cmdSetJob
@@ -41,11 +41,11 @@ def dispacher(lepton = "DE", PT = 30):
 
         cmdExecJob = "nohup root -b -q " + tmpCCFile + "++ &> " + tmpLogFile + " &"
         print cmdExecJob
-        os.system(cmdExecJob)
+        #os.system(cmdExecJob)
 
         # Wait for the loop to start before going to next job
-        while loopHasNotStarted(tmpLogFile):
-            time.sleep(2)
+        #while loopHasNotStarted(tmpLogFile):
+        #    time.sleep(2)
 
 #--------------------------------------------------------------------------------
 
