@@ -56,7 +56,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         isDoubleLep = 0;
         nFiles = NFILESTTBAR; 
     }
-    TFile *file[13];
+    TFile *file[nFiles];
     for (unsigned short i = 0; i < nFiles; i++){
         int fileSelect = FilesDYJets[i] ;
         if ( !isDoubleLep ) fileSelect = FilesTTbarWJets[i] ;

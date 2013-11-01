@@ -1,7 +1,7 @@
 {
 
+    //--- list of the different source files needed ---
     string srcdir = "Sources/";
-
     vector<string> sources;
     sources.push_back("getFilesAndHistograms");
     sources.push_back("functions");
@@ -15,8 +15,11 @@
         cout <<"Compiling " << srcdir + sources[i] << ".cc" << endl;
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
     }
+    //----------------------------------------------------------//
 
+    //--- execute the function ---
     Systematics();
+    //----------------------------------------------------------//
 
     //--- clean the _cc.d and _cc.so files ---
     string cmd = "if ls *_cc.d &> .ls_tmp.list; then rm *_cc.d; fi";
@@ -28,4 +31,5 @@
     cmd = "if ls " + srcdir + "*_cc.so &> .ls_tmp.list; then rm " + srcdir + "*_cc.so; fi";
     system(cmd.c_str());
     system("rm .ls_tmp.list");
+    //----------------------------------------------------------//
 }
