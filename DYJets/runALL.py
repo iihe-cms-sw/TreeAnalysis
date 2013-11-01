@@ -30,18 +30,18 @@ def dispacher(lepton = "DE", PT = 30):
         tmpCCFile = tmpFile + ".cc"
         tmpLogFile = tmpFile + ".log"
 
-        cmdToSetJob = "sed "
-        cmdToSetJob += " -e \"s|.*int doWhat.*|int doWhat = " + str(i) + ";|g\""
-        cmdToSetJob += " -e \"s|.*string lepSelection.*|string lepSelection = " + str(lepton) + ";|g\""
-        cmdToSetJob += " -e \"s|.*int jetPtMin.*|int jetPtMin = " + str(PT) + ";|g\""
-        cmdToSetJob += " runDYJets.cc > " + tmpCCFile
+        cmdSetJob = "sed "
+        cmdSetJob += " -e \"s|.*int doWhat.*|int doWhat = " + str(i) + ";|g\""
+        cmdSetJob += " -e \"s|.*string lep.*|string lep = \"" + str(lepton) + "\";|g\""
+        cmdSetJob += " -e \"s|.*int jetPtMin.*|int jetPtMin = " + str(PT) + ";|g\""
+        cmdSetJob += " runDYJets.cc > " + tmpCCFile
 
-        print cmdToSetJob
-        os.system(cmdToSetJob)
+        print cmdSetJob
+        os.system(cmdSetJob)
 
-        cmdToExecJob = "nohup root -b -q " + tmpCCFile + "++ &> " + tmpLogFile + " &"
-        print cmdToExecJob
-        os.system(cmdToExecJob)
+        cmdExecJob = "nohup root -b -q " + tmpCCFile + "++ &> " + tmpLogFile + " &"
+        print cmdExecJob
+        os.system(cmdExecJob)
 
         # Wait for the loop to start before going to next job
         while loopHasNotStarted(tmpLogFile):
