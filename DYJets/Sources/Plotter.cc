@@ -20,7 +20,7 @@
 using namespace std;
 
 void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
-        int doQCD = 0, bool doInvMassCut = 0, 
+        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, 
         int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
         bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
 {
@@ -62,8 +62,14 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
         if ((doQCD > 0 || doInvMassCut) && fileNameTemp.find("QCD") != string::npos) continue;
-        file[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doInvMassCut);
-        legendNames[i] = ProcessInfo[fileSelect].legend; 
+        file[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
+
+        if ( i == 0 ){
+            if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
+            else if  (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
+            legendNames[0] += "Data";
+        }
+        else legendNames[i] = ProcessInfo[fileSelect].legend; 
         Colors[i] = ProcessInfo[fileSelect].color;    
     }
     //-----------------------------------------------------
@@ -79,10 +85,18 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     if (doRoch) outputFileName += "_rochester";
     if (doFlat) outputFileName += "_Flat";
     if (doVarWidth) outputFileName += "_VarWidth";
-    if (doQCD > 0 ){
-        if ( leptonFlavor == "SMuE") outputFileName +="_SS";
-        else  outputFileName += "_QCD" + doQCDStr.str();
-    }
+    if (doInvMassCut) outputFileName +=  "_InvMass";
+    if (doSSign )   outputFileName += "_SS";
+    if (doQCD>0) outputFileName += "_QCD" + doQCD;
+
+
+    //if (doBJets) nameStr << "_BJets";
+
+    /*    if (doQCD > 0 ){
+          if ( leptonFlavor == "SMuE") outputFileName +="_SS";
+          else  outputFileName += "_QCD" + doQCDStr.str();
+          }
+          */
     outputFileName += "_SFInvers";
     if (doInvMassCut) outputFileName += "_InvMass";
     // create the directory if it doesn't exist
@@ -116,9 +130,9 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     for (unsigned short i(0); i < nHist; i++) {
         histoNameTemp = file[0]->GetListOfKeys()->At(i)->GetName();
         if (histoNameTemp.find("gen") != string::npos) continue;
-        cout << i <<"  " << histoNameTemp << endl;
         histTemp = (TH1D*) file[0]->Get(histoNameTemp.c_str());
         if (histTemp->GetEntries() < 1) continue;
+        if (!histTemp->InheritsFrom(TH1D::Class())) continue;
         histoName[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetName();
         histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
         histSumMC[nHistNoGen] = new THStack(histoName[nHistNoGen].c_str(), histoTitle[nHistNoGen].c_str());
