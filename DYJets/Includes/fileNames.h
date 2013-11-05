@@ -46,6 +46,9 @@ const processInfoStruct ProcessInfo[] = {
     {"WJetsALL_MIX_dR_5311",                  76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
     {"WJetsALL_dR_5311",                      76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}
 };
+
+//--- first element must point to the data
+//--- last element must point to the MC Signal
 const int NFILESDYJETS(12);
 const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
 const int NFILESTTBAR(9);

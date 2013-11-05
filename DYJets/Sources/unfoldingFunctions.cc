@@ -543,7 +543,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -570,7 +570,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     hUnfoldedC->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedC->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedC->GetYaxis()->SetTitle("Ratio to Gen.");
+        hUnfoldedC->GetYaxis()->SetTitle("Gen / Unfolded");
         hUnfoldedC->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedC->GetYaxis()->SetTitleOffset(0.5);
     }
@@ -582,6 +582,20 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     hUnfoldedC->GetYaxis()->CenterTitle();
     hUnfoldedC->GetYaxis()->SetLabelSize(0.08);
 
+    for (int j(1); j <= nBins; j++){
+        double content(hUnfoldedC->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedC->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedD->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedD->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedU->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedU->SetBinContent(j, 1./content);
+        }
+    }
     hUnfoldedC->DrawCopy("E1");
     if (kterm > 1) hUnfoldedD->DrawCopy("E1same");
     if (kterm < nBins) hUnfoldedU->DrawCopy("E1same");
@@ -629,7 +643,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     madSheResp->UseOverflow();
 
     TH1D *hMeas = (TH1D*) hData->Clone();
-    //int nBins(hMeas->GetNbinsX());
+    int nBins(hMeas->GetNbinsX());
 
     for (int i(0); i < nBG; i++){
         if (i != 6) hMeas->Add(hBG[i], -1);
@@ -739,7 +753,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -776,6 +790,16 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     hUnfoldedPow->GetYaxis()->CenterTitle();
     hUnfoldedPow->GetYaxis()->SetLabelSize(0.08);
 
+    for (int j(1); j <= nBins; j++){
+        double content(hUnfoldedPow->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedPow->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedShe->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedShe->SetBinContent(j, 1./content);
+        }
+    }
     hUnfoldedPow->DrawCopy("E1");
     hUnfoldedShe->DrawCopy("E1same");
     pad2->Draw();
@@ -817,7 +841,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     if (closureTest) name += "_CT";
 
     TH1D *hMeas = (TH1D*) hData->Clone();
-    //int nBins(hMeas->GetNbinsX());
+    int nBins(hMeas->GetNbinsX());
 
     //string hName = leptonFlavor + " Unfolding Comparison for " + variable;
     for (int i(0); i < nBG; i++){
@@ -928,7 +952,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
 
     pad1->Draw();
@@ -956,7 +980,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedInvert->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedInvert->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedInvert->GetYaxis()->SetTitle("Ratio to Gen.");
+        hUnfoldedInvert->GetYaxis()->SetTitle("Gen / Unfolded");
         hUnfoldedInvert->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedInvert->GetYaxis()->SetTitleOffset(0.5);
     }
@@ -968,6 +992,24 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedInvert->GetYaxis()->CenterTitle();
     hUnfoldedInvert->GetYaxis()->SetLabelSize(0.08);
 
+    for (int j(1); j <= nBins; j++){
+        double content(hUnfoldedInvert->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedInvert->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedBBB->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedBBB->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedBayes->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedBayes->SetBinContent(j, 1./content);
+        }
+        content = (hUnfoldedSVD->GetBinContent(j));
+        if (content > 0){
+            hUnfoldedSVD->SetBinContent(j, 1./content);
+        }
+    }
     hUnfoldedInvert->DrawCopy("E1");
     hUnfoldedBBB->DrawCopy("E1same");
     hUnfoldedBayes->DrawCopy("E1same");
