@@ -256,29 +256,29 @@ HistoSet::HistoSet(string leptonFlavor)
   ZMassAllPassLep                     = newTH1D("ZMassAllPassLep",                     "Z Invariant Mass for all passing leptons",          Mll,    240, 0, 480 );
 
 
-  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260 );
-  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260 );
-  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260 );
-  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260 );
-  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260 );
-  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260 );
-  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260 );
+  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
+  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
+  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
+  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
+  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
+  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
+  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
 
-  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260 );
-  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260 );
-  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260 );
-  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260 );
-  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260 );
-  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260 );
-  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260 );
+  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
+  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
+  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
+  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
+  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
+  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
+  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
 
-  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    105, 50, 260 );
-  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    105, 50, 260 );
-  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    105, 50, 260 );
-  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    105, 50, 260 );
-  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    105, 50, 260 );
-  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    105, 50, 260 );
-  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    105, 50, 260 );
+  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    111, 50, 260 );
+  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    111, 50, 260 );
+  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    111, 50, 260 );
+  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    111, 50, 260 );
+  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    111, 50, 260 );
+  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    111, 50, 260 );
+  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    111, 50, 260 );
 
   ZPt_Zinc0jet                        = newTH1D("ZPt_Zinc0jet",                        "Z p_{T} (N_{jets} #geq 0)",                   ZpT,    40, 0, 400);
   ZPt_Zinc1jet                        = newTH1D("ZPt_Zinc1jet",                        "Z p_{T} (N_{jets} #geq 1)",                   ZpT,    40, 0, 400);
@@ -605,11 +605,11 @@ HistoSet::HistoSet(string leptonFlavor)
   FirstHighestJetPt_Zinc6jet          = newTH1D("FirstHighestJetPt_Zinc6jet",          "1st Highest jet p_{T} (N_{jets} #geq 6)",     "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet); 
 
   genFirstHighestJetPt_Zinc1jet       = newTH1D("genFirstHighestJetPt_Zinc1jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 1)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
-  genFirstHighestJetPt_Zinc2jet       = newTH1D("genFirstHighestJetPt_Zinc2jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 2)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet);  
-  genFirstHighestJetPt_Zinc3jet       = newTH1D("genFirstHighestJetPt_Zinc3jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 3)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet);  
-  genFirstHighestJetPt_Zinc4jet       = newTH1D("genFirstHighestJetPt_Zinc4jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc4jet, jetPt_Zinc4jet);  
-  genFirstHighestJetPt_Zinc5jet       = newTH1D("genFirstHighestJetPt_Zinc5jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet);  
-  genFirstHighestJetPt_Zinc6jet       = newTH1D("genFirstHighestJetPt_Zinc6jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet);  
+  genFirstHighestJetPt_Zinc2jet       = newTH1D("genFirstHighestJetPt_Zinc2jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 2)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
+  genFirstHighestJetPt_Zinc3jet       = newTH1D("genFirstHighestJetPt_Zinc3jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 3)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
+  genFirstHighestJetPt_Zinc4jet       = newTH1D("genFirstHighestJetPt_Zinc4jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
+  genFirstHighestJetPt_Zinc5jet       = newTH1D("genFirstHighestJetPt_Zinc5jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
+  genFirstHighestJetPt_Zinc6jet       = newTH1D("genFirstHighestJetPt_Zinc6jet",       "gen 1st Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);  
 
   SecondHighestJetPt_Zinc2jet         = newTH1D("SecondHighestJetPt_Zinc2jet",         "2nd Highest jet p_{T} (N_{jets} #geq 2)",     "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
   SecondHighestJetPt_Zinc3jet         = newTH1D("SecondHighestJetPt_Zinc3jet",         "2nd Highest jet p_{T} (N_{jets} #geq 3)",     "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
@@ -618,10 +618,10 @@ HistoSet::HistoSet(string leptonFlavor)
   SecondHighestJetPt_Zinc6jet         = newTH1D("SecondHighestJetPt_Zinc6jet",         "2nd Highest jet p_{T} (N_{jets} #geq 6)",     "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
 
   genSecondHighestJetPt_Zinc2jet      = newTH1D("genSecondHighestJetPt_Zinc2jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 2)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
-  genSecondHighestJetPt_Zinc3jet      = newTH1D("genSecondHighestJetPt_Zinc3jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 3)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
-  genSecondHighestJetPt_Zinc4jet      = newTH1D("genSecondHighestJetPt_Zinc4jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc4jet, jetPt_Zinc4jet); 
-  genSecondHighestJetPt_Zinc5jet      = newTH1D("genSecondHighestJetPt_Zinc5jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet); 
-  genSecondHighestJetPt_Zinc6jet      = newTH1D("genSecondHighestJetPt_Zinc6jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet); 
+  genSecondHighestJetPt_Zinc3jet      = newTH1D("genSecondHighestJetPt_Zinc3jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 3)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
+  genSecondHighestJetPt_Zinc4jet      = newTH1D("genSecondHighestJetPt_Zinc4jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
+  genSecondHighestJetPt_Zinc5jet      = newTH1D("genSecondHighestJetPt_Zinc5jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
+  genSecondHighestJetPt_Zinc6jet      = newTH1D("genSecondHighestJetPt_Zinc6jet",      "gen 2nd Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
 
   ThirdHighestJetPt_Zinc3jet          = newTH1D("ThirdHighestJetPt_Zinc3jet",          "3rd Highest jet p_{T} (N_{jets} #geq 3)",     "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet);
   ThirdHighestJetPt_Zinc4jet          = newTH1D("ThirdHighestJetPt_Zinc4jet",          "3rd Highest jet p_{T} (N_{jets} #geq 4)",     "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet);
@@ -629,9 +629,9 @@ HistoSet::HistoSet(string leptonFlavor)
   ThirdHighestJetPt_Zinc6jet          = newTH1D("ThirdHighestJetPt_Zinc6jet",          "3rd Highest jet p_{T} (N_{jets} #geq 6)",     "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet);
 
   genThirdHighestJetPt_Zinc3jet       = newTH1D("genThirdHighestJetPt_Zinc3jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 3)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
-  genThirdHighestJetPt_Zinc4jet       = newTH1D("genThirdHighestJetPt_Zinc4jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc4jet, jetPt_Zinc4jet); 
-  genThirdHighestJetPt_Zinc5jet       = newTH1D("genThirdHighestJetPt_Zinc5jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet); 
-  genThirdHighestJetPt_Zinc6jet       = newTH1D("genThirdHighestJetPt_Zinc6jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet); 
+  genThirdHighestJetPt_Zinc4jet       = newTH1D("genThirdHighestJetPt_Zinc4jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 4)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
+  genThirdHighestJetPt_Zinc5jet       = newTH1D("genThirdHighestJetPt_Zinc5jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 5)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
+  genThirdHighestJetPt_Zinc6jet       = newTH1D("genThirdHighestJetPt_Zinc6jet",       "gen 3rd Highest jet p_{T} (N_{jets} #geq 6)", "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
 
   AllJetPt_Zinc1jet                   = newTH1D("AllJetPt_Zinc1jet",                   "All jets (N_{jets} #geq 1)",                  "p_{T}(jets) [GeV]",     80, 0, 400);
   AllJetPt_Zinc2jet                   = newTH1D("AllJetPt_Zinc2jet",                   "All jets (N_{jets} #geq 2)",                  "p_{T}(jets) [GeV]",     80, 0, 400);
@@ -655,7 +655,7 @@ HistoSet::HistoSet(string leptonFlavor)
   genFifthJetPtEta_Zinc5jet           = newTH2D("genFifthJetPtEta_Zinc5jet",           "gen 5th jet p_{T} #eta (N_{jets} #geq 5)",    nJetPt_Zinc5jet, jetPt_Zinc5jet        ,       2  ,  0., 2.4);
   genSixthJetPtEta_Zinc6jet           = newTH2D("genSixthJetPtEta_Zinc6jet",           "gen 6th jet p_{T} #eta (N_{jets} #geq 6)",    nJetPt_Zinc5jet, jetPt_Zinc5jet        ,       2  ,  0., 2.4);
 
-  ZNGoodJets_Zexc = newTH1D("ZNGoodJets_Zexc","Jet Counter (excl.)", "N_{jets}", 11, -0.5, 10.5);
+  ZNGoodJets_Zexc = newTH1D("ZNGoodJets_Zexc","Jet Counter (excl.)", "N_{jets}", 8, -0.5, 7.5);
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(1, "= 0");
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(2, "= 1");
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(3, "= 2");
@@ -664,9 +664,6 @@ HistoSet::HistoSet(string leptonFlavor)
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(6, "= 5");
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(7, "= 6");
   ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(8, "= 7");
-  ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(9, "= 8");
-  ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(10,"= 9");
-  ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(11,"= 10");
 
   ZNGoodJetsNVtx_Zexc = newTH2D("ZNGoodJetsNVtx_Zexc","NVtx vs Jet Counter (excl.)", 11, -0.5, 10.5, 45, 0.5, 45.5);
   ZNGoodJetsNVtx_Zexc->GetXaxis()->SetBinLabel(1, "= 0");

@@ -209,7 +209,6 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
 	}
 
 cout << "Closed all files" << endl;
-
 ostringstream nameStr;  nameStr << "outputTable_" << leptonFlavor <<"_JetPtMin_" <<JetPtMin;
 if (doInvMassCut) nameStr << "_InvMass";
 if (doSSign )   nameStr << "_SS";
