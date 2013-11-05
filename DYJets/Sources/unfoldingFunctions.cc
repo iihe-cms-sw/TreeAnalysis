@@ -22,38 +22,44 @@ using namespace std;
 
 void normalizeTH2D(TH2D *h)
 {
-    int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    for (int i(0); i <= ybin + 1; i++){
-        double sum(0.);
-        for (int j(0); j <= xbin + 1; j++){
-            sum += h->GetBinContent(j,i);
-        }
-        for (int j(0); j <= xbin + 1; j++){
-            if (sum > 0) h->SetBinContent(j, i, h->GetBinContent(j, i) / sum );
-        }
+  int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
+  for (int i(0); i <= ybin + 1; i++){
+    double sum(0.);
+    for (int j(0); j <= xbin + 1; j++){
+      sum += h->GetBinContent(j,i);
     }
+    for (int j(0); j <= xbin + 1; j++){
+      if (sum > 0) h->SetBinContent(j, i, h->GetBinContent(j, i) / sum );
+    }
+  }
 }
 
 void plotHNormResp(TH2D *hNormResp_, string leptonFlavor, string variable, string energy, string outputDirectory, TFile *outputRootFile, bool closureTest, bool save)
 {
-    TH2D *hNormResp = (TH2D*) hNormResp_->Clone();
-    normalizeTH2D(hNormResp);
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu") leptonFlavor = "DMu_";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") leptonFlavor = "DE_";
     else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
     else if (leptonFlavor == "Electron" || leptonFlavor == "SMu") leptonFlavor = "SMu_";
 
+
+    TH2D *hNormResp = (TH2D*) hNormResp_->Clone();
+    normalizeTH2D(hNormResp);
+
     string canNameRespMatrix = leptonFlavor + energy + "_" + variable + "_ResponseMatrix" ;
+
     if (closureTest) canNameRespMatrix += "_CT";
     string YTitle = hNormResp->GetYaxis()->GetTitle();  YTitle = "reco " + YTitle;
     string XTitle = hNormResp->GetYaxis()->GetTitle();  XTitle = "gen " + XTitle;
     string respTitle = hNormResp->GetTitle();
     string niceTitle = respTitle.substr(0, respTitle.find("#right"));
     niceTitle = niceTitle.substr(niceTitle.find("Response")+9);
+
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     niceTitle = "Response Matrix for " + niceTitle;
+
     if (closureTest) niceTitle += " C.T.";
     if (niceTitle.find("Counter") != string::npos) hNormResp->GetYaxis()->SetLabelSize(0);
+
     hNormResp->SetTitle(niceTitle.c_str());
     hNormResp->GetYaxis()->SetTitle(YTitle.c_str());
     hNormResp->GetYaxis()->SetTitleSize(0.04);
@@ -543,7 +549,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -570,7 +576,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     hUnfoldedC->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedC->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedC->GetYaxis()->SetTitle("Gen / Unfolded");
+        hUnfoldedC->GetYaxis()->SetTitle("Ratio to Gen.");
         hUnfoldedC->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedC->GetYaxis()->SetTitleOffset(0.5);
     }
@@ -753,7 +759,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -952,7 +958,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
     }
 
     pad1->Draw();
@@ -980,7 +986,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedInvert->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedInvert->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedInvert->GetYaxis()->SetTitle("Gen / Unfolded");
+        hUnfoldedInvert->GetYaxis()->SetTitle("Ratio to Gen.");
         hUnfoldedInvert->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedInvert->GetYaxis()->SetTitleOffset(0.5);
     }

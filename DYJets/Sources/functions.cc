@@ -126,12 +126,12 @@ double SPhi(TLorentzVector l1, TLorentzVector l2, TLorentzVector j1, TLorentzVec
 }
 
 record::record(): 
-  ptLow(0), ptHi(0), etaLow(0), etaHi(0), effi(0) 
+  ptLow(0), ptHi(0), etaLow(0), etaHi(0), effi(0),effiErrorLow(0), effiErrorHigh(0)
 {
 }
 
-record::record(double pt1, double pt2, double eta1, double eta2, double eff):
-  ptLow(pt1), ptHi(pt2), etaLow(eta1), etaHi(eta2), effi(eff)
+record::record(double pt1, double pt2, double eta1, double eta2, double eff, double effLow, double effHigh):
+  ptLow(pt1), ptHi(pt2), etaLow(eta1), etaHi(eta2), effi(eff),effiErrorLow(effLow), effiErrorHigh(effHigh)
 {
 }
 
@@ -150,11 +150,11 @@ table::table(string filename)
   cout << filename << endl;
   if (file) cout << "OK" << endl;
   else cout << "Not OK" << endl;
-  double  pt1, pt2, eta1, eta2, effi;
-  while( file >> eta1 >> eta2 >> pt1 >> pt2 >> effi){
-    //cout << eta1 << "  " << eta2 << "  " << pt1 << "  " << pt2 << endl;
-    recd.push_back(record(pt1, pt2, eta1, eta2, effi));
-    //cout << "ef " << effi << endl;
+  double  pt1, pt2, eta1, eta2, effi, effiErrorLow, effiErrorHigh ;
+  while( file >> eta1 >> eta2 >> pt1 >> pt2 >> effi >> effiErrorLow >> effiErrorHigh){
+//    cout << eta1 << "  " << eta2 << "  " << pt1 << "  " << pt2 << endl;
+    recd.push_back(record(pt1, pt2, eta1, eta2, effi,effiErrorLow, effiErrorHigh));
+//    cout << "ef " << effi << endl;
   }
 }
 
@@ -165,6 +165,22 @@ double table::getEfficiency(double pt, double eta){
     if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
   }
   return hiPtBin;
+}
+double table::getEfficiencyLow(double pt, double eta){
+      double hiPtBin= 0;
+        for (unsigned int i=0; i != recd.size(); i++) {
+                if((recd[i]).belongTo(pt, eta)) return recd[i].effi-recd[i].effiErrorLow;
+                    if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+                      }
+          return hiPtBin;
+}
+double table::getEfficiencyHigh(double pt, double eta){
+          double hiPtBin= 0;
+                  for (unsigned int i=0; i != recd.size(); i++) {
+                                      if((recd[i]).belongTo(pt, eta)) return recd[i].effi+recd[i].effiErrorHigh;
+                                                          if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+                                                                                }
+                            return hiPtBin;
 }
 
 double SmearJetPt(double recoPt, double genPt, double eta){

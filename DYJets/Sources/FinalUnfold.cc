@@ -39,7 +39,6 @@ using namespace std;
 #include "fileNames.h"
 #include "variablesOfInterestVarWidth.h"
 string outputDirectory="PNGFiles/FinalUnfold/";
-useUnfoldingFiles = true ;  /// paramter that talls the code to load files with SF correction on data
 
 bool isMuon(0);
 string unfAlg = "Bayes";
@@ -63,6 +62,7 @@ void FinalUnfold()
 
 void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doFlat , bool doVarWidth )
 {
+  TH1::SetDefaultSumw2();
   JetPtMin = 30 ;
   if (JetPtMin == 30) outputDirectory="PNGFiles/FinalUnfold_30_test/";
   //if (JetPtMin == 30) outputDirectory="PNGFiles/FinalUnfold_30/";
@@ -72,7 +72,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   string leptonFlavor = "DMu";
   if (!isMuon) leptonFlavor = "DE";
 
-  int NumberOfToys = 400, oppNumberOfToys = 3;
+  int NumberOfToys = 4, oppNumberOfToys = 3;
   int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
   string oppUnfAlg = "SVD";
   if (unfAlg == "SVD" ) {
@@ -88,13 +88,13 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   if ( !isMuon ) EffError = electronIDIsoHLTError ;
 
 
-  cout << " WE NOW UNFOLD :  " << variable << endl;
+  cout << " WE NOW UNFOLD :  " << variable << " jet pt:" << JetPtMin <<"  " << JetPtMax <<endl;
 
   //-- fetch the data files and histograms --------------
-  TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
-  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+  TFile *fData[5];             // 0 = central, 1 = JES Up, 2 = JES Down , 3 - SF Up , 4 - SF down
+  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 1);
   cout << " got data " << endl;
-  TH1D *hData[3];  
+  TH1D *hData[5];  
   getHistos(hData, fData, variable);
   cout << " got data " << endl;
   //-----------------------------------------------------
@@ -104,7 +104,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile *fDYMadGraph[4]; 
   TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
   TFile *fDYPowheg = NULL, *fDYPowhegUp = NULL, *fDYPowhegDown = NULL;
-  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth , 0, 0, 0,  1);
   //fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowhegUp = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGUPFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
@@ -119,35 +119,87 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //hDYGenPowhegDown = getHisto(fDYPowhegDown, "gen" + variable);
   RooUnfoldResponse *resDY[4]; 
   getResps(resDY, fDYMadGraph, "response" + variable);
+  cout << " got DY files" << DYMADGRAPHFILENAME << endl;
   //-----------------------------------------------------
 
 
   //-- fetch the BG files and histograms ----------------
   cout << " Fetch background files " << endl;
-  TFile *fBG[8][5];            // 0 = central, 1 = PU Up,  2 = PU Down,  3 = XS Up,  4 = XS Down 
-  TH1D *hBG[8][5], *hSumBG[5],*hSumBGgroup[5][5];
-  int group = 0;
+  TFile *fBG[15][5];            // 0 = central, 1 = PU Up,  2 = PU Down,  3 = XS Up,  4 = XS Down 
+  TH1D *hBG[15][10], *hSumBG[5],*hSumBGgroup[15][10];
+  int group = -1 ;
   double sumEve = 0.;
-  for (int i(0); i < 8; i++){
-    cout << " Fetch background files " << endl;
-    getFiles(FILESDIRECTORY, fBG[i], leptonFlavor, energy, BGFILENAMESGrouped[i], JetPtMin, JetPtMax, doFlat, doVarWidth);
-    cout << i << endl;
-    getHistos(hBG[i], fBG[i], variable);
-    cout << i << endl;
-    if ( i > 2 ) group++ ;
+  int nFiles = NFILESDYJETS;
+  bool isDoubleLep(1);
+  if ( leptonFlavor == "SMuE" || leptonFlavor == "SMu" || leptonFlavor == "Muon") {
+       isDoubleLep = 0;
+       nFiles = NFILESTTBAR;
+   }
+  int countFiles = 0 ;
+  int countBGp[5]={-1,-1};
+  for (int i(0); i < nFiles; i++){
+      int fileSelect = FilesDYJets[i] ;
+      if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
+      string fileNameTemp =  ProcessInfo[fileSelect].filename ;
+      if ( fileNameTemp.find("Tau") != string::npos || fileNameTemp.find("Data") != string::npos) continue;
+      if ( isDoubleLep && fileNameTemp.find("DYJets") != string::npos) continue;
+      if ( !isDoubleLep && fileNameTemp.find("WJets") != string::npos && fileNameTemp.find("UNF") != string::npos) continue;
+      cout << " Fetch background files " << fileNameTemp << endl;
 
-    for (int j(0); j < 5; j++){
-      if (i == 0) hSumBG[j] = (TH1D*) hBG[i][j]->Clone();
-      else hSumBG[j]->Add(hBG[i][j]);
+      //getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, BGFILENAMESGrouped[i + 1], JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  1 );
+      getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  1 );
+      getHistos(hBG[countFiles], fBG[countFiles], variable);
+      cout << i << variable << endl;
+      if ( isDoubleLep ){
+          if ( fileNameTemp.find("ZZ") != string::npos){
+              if (countBGp[0] == -1 ) group++ ;
+          }
+          else if  ( fileNameTemp.find("WZ") != string::npos ){
+              if ( countBGp[1] == -1 ) group++ ;          
+          }
+          else  group++ ;
 
-      if (i == 0 || i >2 )  hSumBGgroup[j][group] = (TH1D*) hBG[i][j]->Clone();
-      else  hSumBGgroup[j][group]->Add(hBG[i][j]);
 
-
-      if ( j == 0 ) {
-        sumEve += hBG[i][j]->GetBinContent(1);
       }
-    }
+      else  group++ ;
+      cout << "group" << "   " << group << endl;
+      for (int j(0); j < 5; j++){
+          cout << "usbgroup " << j << "   " << countFiles << endl;
+          if (countFiles == 0) hSumBG[j] = (TH1D*) hBG[countFiles][j]->Clone();
+          else hSumBG[j]->Add(hBG[countFiles][j]);
+          cout << "usbgroup " << fileNameTemp <<"  " << group <<"   " <<  j << "   " << countFiles << "   " << countBGp[1] <<endl;
+
+          if ( fileNameTemp.find("ZZ") != string::npos ){
+              if ( countBGp[0] == -1 ) { 
+                  if ( j == 4 ) countBGp[0] = group ;  
+                  hSumBGgroup[j][group] = (TH1D*) hBG[countFiles][j]->Clone();
+              }
+              else {
+                  hSumBGgroup[j][ countBGp[0]]->Add(hBG[countFiles][j]);
+              }
+          }
+          else if  ( fileNameTemp.find("WZ") != string::npos ){
+              if ( countBGp[1] == -1 ) { 
+                  if ( j == 4 ) countBGp[1] = group ;   
+                  hSumBGgroup[j][group] = (TH1D*) hBG[countFiles][j]->Clone();
+              }
+              else {
+                  hSumBGgroup[j][ countBGp[1]]->Add(hBG[countFiles][j]);
+              }   
+          }
+          else {
+              cout << " tu :" << j<< "  " << group << endl;
+              hSumBGgroup[j][group] = (TH1D*) hBG[countFiles][j]->Clone();
+          //else  hSumBGgroup[j][group]->Add(hBG[countFiles][j]);
+            }
+
+          if ( j == 0 ) {
+              sumEve += hBG[countFiles][j]->GetBinContent(1);
+          }
+
+      cout << " end"<<i<<"   " << j << "   " << group << endl;
+      }
+      countFiles++;
   }
   //-----------------------------------------------------
 
@@ -177,17 +229,17 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   // add other interesting MC samples for MPI for example
 
   if ( energy == "7TeV"){
-    const	int NAddGEN = 5 ;
-    string names[NAddGEN] = {"MadZ2MPIoff","MadZ2Star","MadZ2StarMPIoff","P84C","PowZjjMiNLO"};
-    for ( int i(0) ; i < NAddGEN; i++){
-      cout << GenMCFILENAMES[i] << endl;
-      TFile* fDYGenTemp = NULL ;
-      fDYGenTemp = getFile(FILESDIRECTORY, leptonFlavor, energy, GenMCFILENAMES[i], JetPtMin, JetPtMin, doFlat, doVarWidth);
-      TH1D *hDYGenTempAdd = NULL;
-      hDYGenTempAdd = getHisto(fDYGenTemp, "gen" + variable);
-      string histoName = "gen" + names[i] ;
-      outputRootFile->cd();  hDYGenTempAdd->Write(histoName.c_str());	
-    }
+      const	int NAddGEN = 5 ;
+      string names[NAddGEN] = {"MadZ2MPIoff","MadZ2Star","MadZ2StarMPIoff","P84C","PowZjjMiNLO"};
+      for ( int i(0) ; i < NAddGEN; i++){
+          cout << GenMCFILENAMES[i] << endl;
+          TFile* fDYGenTemp = NULL ;
+          fDYGenTemp = getFile(FILESDIRECTORY, leptonFlavor, energy, GenMCFILENAMES[i], JetPtMin, JetPtMin, doFlat, doVarWidth);
+          TH1D *hDYGenTempAdd = NULL;
+          hDYGenTempAdd = getHisto(fDYGenTemp, "gen" + variable);
+          string histoName = "gen" + names[i] ;
+          outputRootFile->cd();  hDYGenTempAdd->Write(histoName.c_str());	
+      }
   }
 
 
@@ -196,9 +248,9 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   int SelDY[8]   = {0, 0, 0, 1, 2, 0, 0, 3}; 
   int SelBG[8]   = {0, 0, 0, 1, 2, 3, 4, 0}; 
   for ( int i(0); i < 8; i++){
-    TH1D* hUnfolded = Unfold(unfAlg, resDY[SelDY[i]], hData[SelData[i]], hSumBG[SelBG[i]],  UsedKterm, hNames[i]); 
-    outputRootFile->cd();  hUnfolded->Write();
-    cout << "Start unfolding offseted histograms on RECO "<<endl;
+      TH1D* hUnfolded = Unfold(unfAlg, resDY[SelDY[i]], hData[SelData[i]], hSumBG[SelBG[i]],  UsedKterm, hNames[i]); 
+      outputRootFile->cd();  hUnfolded->Write();
+      cout << "Start unfolding offseted histograms on RECO "<<endl;
   }
 
   // unfold with the opposite methode to compute systematic error
@@ -239,6 +291,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //TH1D *hDataJES = SetSystErrorsMax(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataJES = SetSystErrorsMean(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataEFF = SetSystErrorsMean(hData[0], EffError, "EFFerrors");     // lepton EFF errors
+  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError, "EFFerrors");     // lepton EFF errors
   TH1D *hDataJER = SetSystErrorsMean(hData[0], hDY[0], hDY[3], hDY[3], "JERerrors");     // JER errors
   TH1D *hDataPU = SetSystErrorsMean(hData[0], hDY[0], hDY[1], hDY[2], "JERerrors");      // PU errors
   TH2D *hResPUErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());	// PU effect on response 
@@ -258,61 +311,62 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
   TH1D* hSumBGgroupErrors[5][4];
   for (int i(0); i < 4; i++){
-    hSumBGgroupErrors[0][i]  = (TH1D*) hSumBGgroup[0][i]->Clone();
-    hSumBGgroupErrors[1][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[1][i], hSumBGgroup[2][i], "gBGPUerrors");
-    hSumBGgroupErrors[2][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[3][i], hSumBGgroup[4][i], "gBGXSECerrors");
+      hSumBGgroupErrors[0][i]  = (TH1D*) hSumBGgroup[0][i]->Clone();
+      hSumBGgroupErrors[1][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[1][i], hSumBGgroup[2][i], "gBGPUerrors");
+      hSumBGgroupErrors[2][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[3][i], hSumBGgroup[4][i], "gBGXSECerrors");
   }
 
 
-
-  string Cov[8] = {"MyToy", "MyToyJES", "MyToyPU", "MyToyXSEC", "MyToyJER", "MyToyEFF","MyToyJER2","MyToyPU2"};
-  int selRes[8]      = { 0, 0, 1, 0, 2 , 0, 0, 0 };
-  int selBGerrors[8] = { 0, 0, 1, 2, 0 , 0, 0, 0};
-  TH2D *hCovariance[8];
-  TH2D *hCorrelation[8];
-  TH1D *hOyMySyst[8];
-  int SetTypeOfVariation[8] = {1, 10, 2, 11, 4 , 110, 10, 10 }; // select what and how to varry
+  const int nUnfold =9 ; 
+  string Cov[nUnfold] = {"MyToy","MyToyMC", "MyToyJES", "MyToyPU", "MyToyXSEC", "MyToyJER", "MyToyEFF","MyToyJER2","MyToyPU2"};
+  int selRes[nUnfold]      = { 0, 0, 0, 1, 0, 2 , 0, 0, 0 };
+  int selBGerrors[nUnfold] = { 0, 0, 0, 1, 2, 0 , 0, 0, 0};
+  TH2D *hCovariance[nUnfold];
+  TH2D *hCorrelation[nUnfold];
+  TH1D *hOyMySyst[nUnfold];
+  int SetTypeOfVariation[nUnfold] = {1, 101, 10, 2, 11, 4 , 110, 10, 10 }; // select what and how to varry
   //int SetTypeOfVariation[6] = {1, 3, 2, 11, 4 , 3}; // select what and how to varry : ORIGINAL SELECTION
   //if (variable.find("ZNG")!= string::npos ) SetTypeOfVariation[1] = 103 ;
   // option (1)10: systeamtics is completly correlated on reco --> translated to cov matrix
   // option 3: assume errors in reco bins are uncorrelated
   //int myToyN[5] = {400, 400, 400, 400, 400};
-  for (int i(0); i < 8; i++){	
-    cout << endl;
-    cout << endl;
-    cout << "Doing my TOY " << Cov[i] << endl;
-    cout << endl;
-    string CovName = Cov[i] + "Cov";
-    string CorName = Cov[i] + "Cor";
-    string hNameTemp = "h" + Cov[i];
-    TH1D *hDataTem = (TH1D*) hData[0]->Clone(); 
-    if (i == 1) hDataTem = (TH1D*) hDataJES->Clone();
-    if (i == 5) hDataTem = (TH1D*) hDataEFF->Clone();
-    if (i == 6) hDataTem = (TH1D*) hDataJER->Clone();
-    if (i == 7) hDataTem = (TH1D*) hDataPU->Clone();
-    hCovariance[i] = new TH2D(CovName.c_str(), CovName.c_str(), xbin, 0.5, xbin+0.5, xbin, 0.5, xbin+0.5);
-    hCorrelation[i] = new TH2D(CorName.c_str(), CorName.c_str(), xbin, 0.5, xbin+0.5, xbin, 0.5, xbin+0.5);
-    RooUnfoldResponse *responseTemp = (RooUnfoldResponse*) responseNEW[selRes[i]]->Clone(); 
-    TH1D* vhBack[1] ;
-    vhBack[0] = (TH1D*) hSumBG[selBGerrors[i]]->Clone();
-    // this function has to be cleaned
-    TH1D *hToy2 ;
-    if ( i == 3 ) hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys , SetTypeOfVariation[i]);
-    else hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, vhBack, responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys, SetTypeOfVariation[i]);
-    //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
-    //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, (TH1D*) hSumBG[selBGerrors[i]]->Clone(), responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
-    hOyMySyst[i] = (TH1D*) hToy2->Clone(hNameTemp.c_str());
+  //for (int i(0); i < nUnfold; i++){	
+  for (int i(0); i < 3; i++){	
+      cout << endl;
+      cout << endl;
+      cout << "Doing my TOY " << Cov[i] << " with type  " << SetTypeOfVariation[i] << endl;
+      cout << endl;
+      string CovName = Cov[i] + "Cov";
+      string CorName = Cov[i] + "Cor";
+      string hNameTemp = "h" + Cov[i];
+      TH1D *hDataTem = (TH1D*) hData[0]->Clone(); 
+      if (i == 2) hDataTem = (TH1D*) hDataJES->Clone();
+      if (i == 6) hDataTem = (TH1D*) hDataEFF->Clone();
+      if (i == 7) hDataTem = (TH1D*) hDataJER->Clone();
+      if (i == 8) hDataTem = (TH1D*) hDataPU->Clone();
+      hCovariance[i] = new TH2D(CovName.c_str(), CovName.c_str(), xbin, 0.5, xbin+0.5, xbin, 0.5, xbin+0.5);
+      hCorrelation[i] = new TH2D(CorName.c_str(), CorName.c_str(), xbin, 0.5, xbin+0.5, xbin, 0.5, xbin+0.5);
+      RooUnfoldResponse *responseTemp = (RooUnfoldResponse*) responseNEW[selRes[i]]->Clone(); 
+      TH1D* vhBack[1] ;
+      vhBack[0] = (TH1D*) hSumBG[selBGerrors[i]]->Clone();
+      // this function has to be cleaned
+      TH1D *hToy2 ;
+      if ( i == 4 ) hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys , SetTypeOfVariation[i]);
+      else hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, vhBack, responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys, SetTypeOfVariation[i]);
+      //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
+      //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, (TH1D*) hSumBG[selBGerrors[i]]->Clone(), responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
+      hOyMySyst[i] = (TH1D*) hToy2->Clone(hNameTemp.c_str());
 
-    outputRootFile->cd();
-    hOyMySyst[i]->Write();
-    hCovariance[i]->Write();
-    hCorrelation[i]->Write();
-    //      TCanvas* aC = new TCanvas();
-    //      aC->cd();
-    //      responseTemp->DrawCopy();
-    //	hDataTem->DrawCopy();
-    //	hToy2->DrawCopy("same");     
-    //	hSumBG[selBGerrors[i]]->DrawCopy("same");     
+      outputRootFile->cd();
+      hOyMySyst[i]->Write();
+      hCovariance[i]->Write();
+      hCorrelation[i]->Write();
+      //      TCanvas* aC = new TCanvas();
+      //      aC->cd();
+      //      responseTemp->DrawCopy();
+      //	hDataTem->DrawCopy();
+      //	hToy2->DrawCopy("same");     
+      //	hSumBG[selBGerrors[i]]->DrawCopy("same");     
   }
 
   //-- Close all the files ------------------------------

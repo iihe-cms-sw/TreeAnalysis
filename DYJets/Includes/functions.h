@@ -38,9 +38,9 @@ double SPhi(TLorentzVector, TLorentzVector, TLorentzVector, TLorentzVector);
 
 class record{
   public:
-    double ptLow, ptHi, etaLow, etaHi, effi;
+    double ptLow, ptHi, etaLow, etaHi, effi, effiErrorLow, effiErrorHigh;
     record();
-    record(double, double, double, double, double);
+    record(double, double, double, double, double, double, double);
     bool belongTo(double, double);
 };
 
@@ -49,6 +49,9 @@ class table{
     table();
     table(string);
     double getEfficiency(double, double);  
+    double getEfficiencyLow(double, double);  
+    double getEfficiencyHigh(double, double);  
+
   private:
     vector<record> recd;
 };

@@ -1,6 +1,6 @@
 #ifndef _FinalUnfold_h_
 #define _FinalUnfold_h_
-
+#include "getFilesAndHistograms.h"
 #include <iostream>
 
 using namespace std;

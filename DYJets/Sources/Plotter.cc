@@ -57,21 +57,28 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         nFiles = NFILESTTBAR; 
     }
     TFile *file[nFiles];
+    int countFiles = 0 ;
     for (unsigned short i = 0; i < nFiles; i++){
-        int fileSelect = FilesDYJets[i];
-        if (!isDoubleLep) fileSelect = FilesTTbarWJets[i];
-        string fileNameTemp = ProcessInfo[fileSelect].filename; 
-        if ((doQCD > 0 || doInvMassCut) && fileNameTemp.find("QCD") != string::npos) continue;
-        file[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
+        int fileSelect = FilesDYJets[i] ;
+        if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
+        string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
+        cout << "Is double lepton:" << isDoubleLep << fileNameTemp << endl;
+        if ((doQCD > 0 || doInvMassCut || doSSign ) && fileNameTemp.find("QCD") != string::npos) continue;
+        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
 
-        if (i == 0){
+        if ( i == 0 ){
             if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
-            else if (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
+            else if  (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
+            else if  (leptonFlavor == "SMuE") legendNames[0] = " #mue ";
+            else if  (leptonFlavor == "SMu") legendNames[0] = " #mu ";
+            else if  (leptonFlavor == "SE") legendNames[0] = " e ";
             legendNames[0] += "Data";
         }
-        else legendNames[i] = ProcessInfo[fileSelect].legend; 
-        Colors[i] = ProcessInfo[fileSelect].color;    
+        else legendNames[countFiles] = ProcessInfo[fileSelect].legend; 
+        Colors[countFiles] = ProcessInfo[fileSelect].color;    
+        countFiles++;
     }
+    nFiles = countFiles ;
     //-----------------------------------------------------
 
     string outputFileName = "PNGFiles/Comparison_" + leptonFlavor + "_" + energy + "_Data_All_MC_";
@@ -133,6 +140,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         histTemp = (TH1D*) file[0]->Get(histoNameTemp.c_str());
         if (histTemp->GetEntries() < 1) continue;
         if (!histTemp->InheritsFrom(TH1D::Class())) continue;
+        
         histoName[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetName();
         histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
         histSumMC[nHistNoGen] = new THStack(histoName[nHistNoGen].c_str(), histoTitle[nHistNoGen].c_str());
@@ -184,7 +192,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         for (int j = 0; j < nHist; j++) {
             hist[i][j] = getHisto(file[i], histoName[j]);
             hist[i][j]->SetTitle(histoTitle[j].c_str());
-            if (i == 0) {
+            if ( i == 0) {
                 hist[i][j]->SetMarkerStyle(20);
                 hist[i][j]->SetMarkerColor(Colors[i]);
                 hist[i][j]->SetLineColor(Colors[i]);
