@@ -173,23 +173,27 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
 }
 
 
-void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut  ){
+void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut){
 	std::string  variable = "ZNGoodJets_Zexc";
 	string energy = getEnergy();
 
 	cout <<" let us get jet multiplicity statistics " <<endl;
 	// jet counter
 	int NBins = 0 ;
-	double DataEv[20][20] = {0}, MCsum[20][20] = {0};
+	double DataEv[20][20] = {{0}};
 	
 	//-- fetch the data files and histograms --------------
 	int usedFiles = NFILESWJETS ; 
 	bool doDY(0) ;
-	if ( leptonFlavor.find("Muons") != -1 ||  leptonFlavor.find("Electrons") != -1 ) {usedFiles = NFILESDYJETS ; doDY = true ;}
-	for ( int i = 0 ; i < usedFiles ; i++){
-		TFile *fData,*fSignal;           
-		int sel = i ;   if ( doDY ) sel = FilesDYJets[i];
-		fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, "","0");
+	if (leptonFlavor.find("Muons") != string::npos ||  leptonFlavor.find("Electrons") != string::npos){
+        usedFiles = NFILESDYJETS; 
+        doDY = true;
+    }
+	for (int i = 0; i < usedFiles; i++){
+		TFile *fData;           
+		int sel = i;   
+        if (doDY) sel = FilesDYJets[i];
+		fData = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign, doInvMassCut, "", "0");
 		TH1D *hTemp = getHisto(fData, variable);
 		//NBins = hTemp ->GetNbinsX();
 

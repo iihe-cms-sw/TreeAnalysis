@@ -4,6 +4,7 @@
 #include <TH2.h>
 #include <TCanvas.h>
 #include <iostream>
+#include <cstdlib>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
@@ -22,45 +23,61 @@
 #include "FastPlots.h"
 
 //-- Setting global variables --------------------------------------------------------------
-bool ISMUON(1);
 #include "fileNames.h"
 #include "variablesOfInterestVarWidth.h"
-//--- for system command ---
-#include <cstdlib>
 
-void FastPlots(string var)
+void FastPlots(string var, string leptonFlavor)
 {
     TH1::SetDefaultSumw2();
     TH2::SetDefaultSumw2();
     gStyle->SetOptStat(0);
     gStyle->SetPaintTextFormat("1.2f");
 
+    //--- load the proper VAROFINTERST structure: Z+jets or W+jets ---
+    variableStruct varStruct;
+    int nVarStruct;
+    if (leptonFlavor == "DMu" || leptonFlavor == "DE"){
+        varStruct = VAROFINTERESTZJETS;
+        nVarStruct = NVAROFINTERESTZJETS;
+    }
+    else if (leptonFlavor == "SMu" || leptonFlavor == "SE"){
+        varStruct = VAROFINTERESTWJETS;
+        nVarStruct = NVAROFINTERESTWJETS;
+    }
+    //---------------------------------------------
+
+    //--- check wether muon or electron is used ---
+    bool ISMUON;
+    if (leptonFlavor.find("Mu") != string:npos) ISMUON = 1;
+    else ISMUON = 0;
+    //---------------------------------------------
+
     if (var == ""){
-        //NVAROFINTEREST = 2;
-        for (int i(1); i < 2/*NVAROFINTEREST*/; i++){
-            cout << setw(3) << i << ") Processing variable: " << VAROFINTEREST[i].name << endl; 
-            if (!ISMUON) FastPlotsRun(VAROFINTEREST[i].name, VAROFINTEREST[i].log, VAROFINTEREST[i].decrease, VAROFINTEREST[i].ESVDkterm, VAROFINTEREST[i].EBayeskterm );
-            if (ISMUON)  FastPlotsRun(VAROFINTEREST[i].name, VAROFINTEREST[i].log, VAROFINTEREST[i].decrease, VAROFINTEREST[i].MuSVDkterm, VAROFINTEREST[i].MuBayeskterm );
+        nVarStruct = 1;
+        for (int i(0); i < nVarStruct; i++){
+            cout << setw(3) << i << ") Processing variable: " << varStruct[i].name << endl; 
+            if (!ISMUON) FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].ESVDkterm, varStruct[i].EBayeskterm);
+            if (ISMUON)  FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].MuSVDkterm, varStruct[i].MuBayeskterm);
         }
     }
     else{
-        makeLISTOFVAROFINTEREST();
-        if(LISTOFVAROFINTEREST->Contains(var.c_str())){
+        makeLISTOFvarStruct();
+        if(LISTOFvarStruct->Contains(var.c_str())){
             TObjString *name = new TObjString(var.c_str());
-            unsigned short j(LISTOFVAROFINTEREST->IndexOf(name));
-            cout << setw(3) << " " << ") Processing variable: " << VAROFINTEREST[j].name << endl; 
-            if (!ISMUON) FastPlotsRun(VAROFINTEREST[j].name, VAROFINTEREST[j].log, VAROFINTEREST[j].decrease, VAROFINTEREST[j].ESVDkterm, VAROFINTEREST[j].EBayeskterm );
-            if (ISMUON)  FastPlotsRun(VAROFINTEREST[j].name, VAROFINTEREST[j].log, VAROFINTEREST[j].decrease, VAROFINTEREST[j].MuSVDkterm, VAROFINTEREST[j].MuBayeskterm );
+            unsigned short j(LISTOFvarStruct->IndexOf(name));
+            cout << setw(3) << " " << ") Processing variable: " << varStruct[j].name << endl; 
+            if (!ISMUON) FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].ESVDkterm, varStruct[j].EBayeskterm);
+            if (ISMUON)  FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].MuSVDkterm, varStruct[j].MuBayeskterm);
         }
         else{
-            if (!ISMUON) FastPlotsRun(var.c_str(),1,1,5,5);
-            if (ISMUON)  FastPlotsRun(var.c_str(),1,1,5,5);
+            if (!ISMUON) FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
+            if (ISMUON)  FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
         }
     }
 }
 
 
-void FastPlotsRun(string variable, bool logZ, bool decrease, int SVDkterm, int Bayeskterm, bool closureTest, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth)
+void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease, int SVDkterm, int Bayeskterm, bool closureTest, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth)
 {
     //-- retreive the year from curren location and set the energy accordingly
     string energy = getEnergy();
@@ -72,10 +89,7 @@ void FastPlotsRun(string variable, bool logZ, bool decrease, int SVDkterm, int B
     system(command.c_str());
     outputDirectory +=  "/";
 
-    string leptonFlavor = "DE_";
-    if (ISMUON) leptonFlavor = "DMu_";
-
-    string outputRootFileName = outputDirectory + leptonFlavor + energy + "_" + variable + "_fastplots";
+    string outputRootFileName = outputDirectory + leptonFlavor + "_" + energy + "_" + variable + "_fastplots";
     if (closureTest) outputRootFileName += "_ClosureTest";
     if (doVarWidth) outputRootFileName += "_VarWidth";
     string outputTexFileName = outputRootFileName;
