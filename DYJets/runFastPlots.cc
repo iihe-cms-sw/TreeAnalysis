@@ -18,8 +18,11 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
     }
 
-    //FastPlots();
-    FastPlots("FirstJetPt_2_Zinc1jet", "DMu");
+    //FastPlots("DMu", "FirstJetPt_2_Zinc1jet");
+    //FastPlots("DMu", "SecondJetPt_2_Zinc2jet");
+    //FastPlots("DMu", "JetsHT_2_Zinc1jet");
+    //FastPlots("DMu", "JetsHT_2_Zinc2jet");
+    FastPlots("DMu");
     //FastPlots("FirstJetPt_1_Zinc1jet");
     //FastPlots("FirstJetPt_2_Zinc1jet");
     //FastPlots("FirstJetPt_3_Zinc1jet");

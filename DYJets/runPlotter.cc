@@ -12,7 +12,7 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
     }
 
-    Plotter("Muons", 20);
+    Plotter("Muons", 30);
     //Plotter("Electrons", 20, 0);
     //Plotter("Muons", 30, 0);
     //Plotter("Electrons", 20, 0);

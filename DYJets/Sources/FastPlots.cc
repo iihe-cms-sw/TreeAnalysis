@@ -27,7 +27,7 @@
 #include "fileNames.h"
 #include "variablesOfInterestVarWidth.h"
 
-void FastPlots(string var, string leptonFlavor)
+void FastPlots(string leptonFlavor, string var)
 {
     TH1::SetDefaultSumw2();
     TH2::SetDefaultSumw2();
@@ -70,8 +70,8 @@ void FastPlots(string var, string leptonFlavor)
     //---------------------------------------------
 
     if (var == ""){
-        nVarStruct = 1;
-        for (int i(0); i < nVarStruct; i++){
+        //nVarStruct = 1;
+        for (int i(1); i < nVarStruct; i++){
             cout << setw(3) << i << ") Processing variable: " << varStruct[i].name << endl; 
             if (!isMuon) FastPlotsRun(sel, nsel, leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].ESVDkterm, varStruct[i].EBayeskterm);
             if (isMuon)  FastPlotsRun(sel, nsel, leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].MuSVDkterm, varStruct[i].MuBayeskterm);

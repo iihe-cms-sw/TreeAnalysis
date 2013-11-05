@@ -184,7 +184,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         for (int j = 0; j < nHist; j++) {
             hist[i][j] = getHisto(file[i], histoName[j]);
             hist[i][j]->SetTitle(histoTitle[j].c_str());
-            if ( i == 0) {
+            if (i == 0) {
                 hist[i][j]->SetMarkerStyle(20);
                 hist[i][j]->SetMarkerColor(Colors[i]);
                 hist[i][j]->SetLineColor(Colors[i]);
