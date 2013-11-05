@@ -47,7 +47,7 @@ TFile *fOut = new TFile("DataDrivenQCD/out.root","recreate");
 
 //-------------------------------------------------------------------------------------------
 void DataDrivenQCD(){
-	for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
+	for (int i(0); i < 1; i++){
 		FuncDataDrivenQCD();
 	}
 	fOut ->Close();
@@ -61,8 +61,7 @@ cout << " test" << endl;
   TFile *fData[NQCD],*fSignal[NQCD];             // 0 = central, 1 = JES Up, 2 = JES Down 
   TH1D *hData[NQCD],*hSignal[NQCD],*hBack[NQCD];
   for ( int i=0 ; i < NQCD ; i++){
-	  //getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
-	  fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth, i ,"","0");
+	  fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i ,"","0");
 	  cout << " got data " << variable << endl;
 	  TH1D *hTemp = getHisto(fData[i], variable);
 	  hData[i] = (TH1D *) hTemp->Clone();

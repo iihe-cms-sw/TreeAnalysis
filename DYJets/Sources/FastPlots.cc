@@ -52,20 +52,21 @@ void FastPlots(string var, string leptonFlavor)
         makeLISTOFVAROFINTERESTWJETS();
         varList = LISTOFVAROFINTERESTWJETS;
     }
+    
     //---------------------------------------------
 
     //--- check wether muon or electron is used ---
-    bool ISMUON;
-    if (leptonFlavor.find("Mu") != string::npos) ISMUON = 1;
-    else ISMUON = 0;
+    bool isMuon;
+    if (leptonFlavor.find("Mu") != string::npos) isMuon = 1;
+    else isMuon = 0;
     //---------------------------------------------
 
     if (var == ""){
         nVarStruct = 1;
         for (int i(0); i < nVarStruct; i++){
             cout << setw(3) << i << ") Processing variable: " << varStruct[i].name << endl; 
-            if (!ISMUON) FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].ESVDkterm, varStruct[i].EBayeskterm);
-            if (ISMUON)  FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].MuSVDkterm, varStruct[i].MuBayeskterm);
+            if (!isMuon) FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].ESVDkterm, varStruct[i].EBayeskterm);
+            if (isMuon)  FastPlotsRun(leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].MuSVDkterm, varStruct[i].MuBayeskterm);
         }
     }
     else{
@@ -73,23 +74,27 @@ void FastPlots(string var, string leptonFlavor)
             TObjString *name = new TObjString(var.c_str());
             unsigned short j(varList->IndexOf(name));
             cout << setw(3) << " " << ") Processing variable: " << varStruct[j].name << endl; 
-            if (!ISMUON) FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].ESVDkterm, varStruct[j].EBayeskterm);
-            if (ISMUON)  FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].MuSVDkterm, varStruct[j].MuBayeskterm);
+            if (!isMuon) FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].ESVDkterm, varStruct[j].EBayeskterm);
+            if (isMuon)  FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].MuSVDkterm, varStruct[j].MuBayeskterm);
         }
         else{
-            if (!ISMUON) FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
-            if (ISMUON)  FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
+            if (!isMuon) FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
+            if (isMuon)  FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
         }
     }
 
-    delete varList;
-    delete [] varStruct;
 }
 
 
 void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease, int SVDkterm, int Bayeskterm, bool closureTest, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth)
 {
-    //-- retreive the year from curren location and set the energy accordingly
+    //--- make sure we have trailing "_" at the end of leptonFlavor
+    if (leptonFlavor == "Muons" || leptonFlavor == "DMu") leptonFlavor = "DMu_";
+    else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") leptonFlavor = "DE_";
+    else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
+    else if (leptonFlavor == "Electron" || leptonFlavor == "SMu") leptonFlavor = "SMu_";
+
+    //--- retreive the year from curren location and set the energy accordingly
     string energy = getEnergy();
 
     ostringstream jetPtMin; jetPtMin << JetPtMin;
@@ -99,7 +104,7 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     system(command.c_str());
     outputDirectory +=  "/";
 
-    string outputRootFileName = outputDirectory + leptonFlavor + "_" + energy + "_" + variable + "_fastplots";
+    string outputRootFileName = outputDirectory + leptonFlavor + energy + "_" + variable + "_fastplots";
     if (closureTest) outputRootFileName += "_ClosureTest";
     if (doVarWidth) outputRootFileName += "_VarWidth";
     string outputTexFileName = outputRootFileName;
@@ -110,18 +115,17 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     ofstream outputTexFile(outputTexFileName.c_str());
     writeHeaderPage(outputTexFile, leptonFlavor, variable);
 
-    //-- get data histogram (or DY Even for closure test) ----------------------------
-
-    TFile *DataFile;
-    if (!closureTest) DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
-    else DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Even");
+    //-- get data histogram (or MC Even for closure test) ----------------------------
+    TFile *DataFile = NULL;
+    if (!closureTest) DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+    else DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Even");
     TH1D *meas = getHisto(DataFile, variable);
     TH1D *measSubBG = (TH1D*) meas->Clone();
 
-    //-- get DY madgraph histograms (or DY Odd for closure test) ---------------------
-    TFile *DY;
-    if (!closureTest) DY = getFile(FILESDIRECTORY, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
-    else DY = getFile(FILESDIRECTORY, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Odd");
+    //-- get MC madgraph histograms (or MC Odd for closure test) ---------------------
+    TFile *DY = NULL;
+    if (!closureTest) DY = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+    else DY = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Odd");
 
 
     //-- get Powheg histograms -------------------------------------------------------
@@ -131,7 +135,6 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     //TFile *Sherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMax, doFlat);
 
     //-- get BG histograms -----------------------------------------------------------
-
     int nBG(9);
     TFile *BG[9];
     TH1D *hBG[9];
@@ -143,26 +146,18 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
 
     //-- build the repsonse matrix, MCtruth, MCreco, d and SV ------------------------
     string respName = "response" + variable;
-    cout << __LINE__ << "  " << respName << endl;
     RooUnfoldResponse *response = (RooUnfoldResponse*) DY->Get(respName.c_str());
-    cout << __LINE__ << endl;
     response->UseOverflow();
     string genName = "gen" + variable;
     TH1D *genMad = NULL;
     if (!closureTest) genMad = (TH1D*) DY->Get(genName.c_str());
-    //else genMad = (TH1D*) DataFile->Get(genName.c_str());
+    else genMad = (TH1D*) DataFile->Get(genName.c_str());
 
-    cout << __LINE__ << endl;
     TH2D *hResponse = (TH2D*) response->Hresponse();
-    cout << __LINE__ << endl;
     TH2D *hNormResp = (TH2D*) hResponse->Clone(); 
-    cout << __LINE__ << endl;
     normalizeTH2D(hNormResp);
-    cout << __LINE__ << endl;
     TH1D *MCtruth   = (TH1D*) response->Htruth();
-    cout << __LINE__ << endl;
     TH1D *MCreco    = (TH1D*) response->Hmeasured();
-    cout << __LINE__ << endl;
 
     TSVDUnfold *unfoldTSVD = new TSVDUnfold(measSubBG, MCtruth, MCreco, hResponse);
     TH1D *unfresult = (TH1D*) unfoldTSVD->Unfold(1);
@@ -183,9 +178,7 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
 
     //if (closureTest) nBG = 0;
     //-- draw normalized response matrix --------------------------------------------
-    cout << __LINE__ << endl;
     plotHNormResp(hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
-    cout << __LINE__ << endl;
     //-- draw singular values -------------------------------------------------------
     plotSVVector(hSV, hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
     //-- draw d-vector --------------------------------------------------------------
@@ -211,7 +204,6 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     //writeMethodPage(outputTexFile, leptonFlavor, variable, energy, JetPtMin, "SVD", closureTest, doVarWidth);
     //writeMethodPage(outputTexFile, leptonFlavor, variable, energy, JetPtMin, "Bayes", closureTest, doVarWidth);
 
-
     //-- close every files ----------------------------------------------------------
     outputRootFile->Close();
     closeFile(DataFile);
@@ -220,7 +212,6 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     //closeFile(Sherpa);
     //if (closureTest) nBG = 8;
     for (int i(0); i < nBG; i++) closeFile(BG[i]);
-
     outputTexFile.close();
 }
 

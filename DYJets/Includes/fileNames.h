@@ -50,6 +50,8 @@ const int NFILESDYJETS(12);
 const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
 const int NFILESTTBAR(9);
 const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 1};
+const int DATAFILENAME(0);
+const int DYMADGRAPHFILENAME(13);
 
 //-- file names ---------------------------------------
 const string FILENAMESTTbar[NFILESTTBAR] = {
@@ -87,9 +89,7 @@ const string FILENAMES[NFILESVJETS] = {
 }; 
 //-----------------------------------------------------
 
-const string DATAFILENAME = FILENAMES[0];
 
-const string DYMADGRAPHFILENAME = FILENAMES[10];
 const string DYPOWHEGFILENAME = FILENAMES[11];
 const string DYSHERPAFILENAME = FILENAMES[12];
 

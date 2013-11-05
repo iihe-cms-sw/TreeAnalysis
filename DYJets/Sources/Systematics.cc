@@ -56,9 +56,9 @@ void systematics(string variable, bool log, bool decrease, string leptonFlavor, 
     //-----------------------------------------------------
 
     //-- fetch the files and histograms --------------------
-    getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
+    getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
     getHistos(hData, fData, variable);
-    getFiles(FILESDIRECTORY, fDY, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+    getFiles(FILESDIRECTORY, fDY, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
     getHistos(hDY, fDY, variable);
     for (int i(0); i < 9; i++){
         getFiles(FILESDIRECTORY, fBG[i], leptonFlavor, energy, BGFILENAMES[i], JetPtMin, JetPtMax, doFlat, doVarWidth);

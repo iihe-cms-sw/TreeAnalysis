@@ -58,15 +58,15 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     }
     TFile *file[nFiles];
     for (unsigned short i = 0; i < nFiles; i++){
-        int fileSelect = FilesDYJets[i] ;
-        if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
-        string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
+        int fileSelect = FilesDYJets[i];
+        if (!isDoubleLep) fileSelect = FilesTTbarWJets[i];
+        string fileNameTemp = ProcessInfo[fileSelect].filename; 
         if ((doQCD > 0 || doInvMassCut) && fileNameTemp.find("QCD") != string::npos) continue;
         file[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
 
-        if ( i == 0 ){
+        if (i == 0){
             if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
-            else if  (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
+            else if (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
             legendNames[0] += "Data";
         }
         else legendNames[i] = ProcessInfo[fileSelect].legend; 

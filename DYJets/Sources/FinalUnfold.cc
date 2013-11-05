@@ -92,7 +92,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
   //-- fetch the data files and histograms --------------
   TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
-  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
+  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
   cout << " got data " << endl;
   TH1D *hData[3];  
   getHistos(hData, fData, variable);
@@ -104,7 +104,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile *fDYMadGraph[4]; 
   TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
   TFile *fDYPowheg = NULL, *fDYPowhegUp = NULL, *fDYPowhegDown = NULL;
-  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowhegUp = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGUPFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);

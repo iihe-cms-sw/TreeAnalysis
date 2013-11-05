@@ -19,7 +19,7 @@
     }
 
     //FastPlots();
-    FastPlots("FirstJetPt_Zinc1jet");
+    FastPlots("FirstJetPt_Zinc1jet", "DMu");
     //FastPlots("FirstJetPt_1_Zinc1jet");
     //FastPlots("FirstJetPt_2_Zinc1jet");
     //FastPlots("FirstJetPt_3_Zinc1jet");
