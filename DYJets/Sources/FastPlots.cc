@@ -17,6 +17,7 @@
 #include <TCanvas.h>
 #include <TPad.h>
 #include <TLegend.h>
+#include <TList.h>
 #include "getFilesAndHistograms.h"
 #include "unfoldingFunctions.h"
 #include "writeFastPlotsTex.h"
@@ -34,21 +35,28 @@ void FastPlots(string var, string leptonFlavor)
     gStyle->SetPaintTextFormat("1.2f");
 
     //--- load the proper VAROFINTERST structure: Z+jets or W+jets ---
-    variableStruct varStruct;
+    variableStruct *varStruct = NULL;
+    TList *varList = new TList();
     int nVarStruct;
     if (leptonFlavor == "DMu" || leptonFlavor == "DE"){
-        varStruct = VAROFINTERESTZJETS;
         nVarStruct = NVAROFINTERESTZJETS;
+        varStruct = new variableStruct[nVarStruct];
+        varStruct = VAROFINTERESTZJETS;
+        makeLISTOFVAROFINTERESTZJETS();
+        varList = LISTOFVAROFINTERESTZJETS;
     }
     else if (leptonFlavor == "SMu" || leptonFlavor == "SE"){
-        varStruct = VAROFINTERESTWJETS;
         nVarStruct = NVAROFINTERESTWJETS;
+        varStruct = new variableStruct[nVarStruct];
+        varStruct = VAROFINTERESTWJETS;
+        makeLISTOFVAROFINTERESTWJETS();
+        varList = LISTOFVAROFINTERESTWJETS;
     }
     //---------------------------------------------
 
     //--- check wether muon or electron is used ---
     bool ISMUON;
-    if (leptonFlavor.find("Mu") != string:npos) ISMUON = 1;
+    if (leptonFlavor.find("Mu") != string::npos) ISMUON = 1;
     else ISMUON = 0;
     //---------------------------------------------
 
@@ -61,10 +69,9 @@ void FastPlots(string var, string leptonFlavor)
         }
     }
     else{
-        makeLISTOFvarStruct();
-        if(LISTOFvarStruct->Contains(var.c_str())){
+        if(varList->Contains(var.c_str())){
             TObjString *name = new TObjString(var.c_str());
-            unsigned short j(LISTOFvarStruct->IndexOf(name));
+            unsigned short j(varList->IndexOf(name));
             cout << setw(3) << " " << ") Processing variable: " << varStruct[j].name << endl; 
             if (!ISMUON) FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].ESVDkterm, varStruct[j].EBayeskterm);
             if (ISMUON)  FastPlotsRun(leptonFlavor, varStruct[j].name, varStruct[j].log, varStruct[j].decrease, varStruct[j].MuSVDkterm, varStruct[j].MuBayeskterm);
@@ -74,6 +81,9 @@ void FastPlots(string var, string leptonFlavor)
             if (ISMUON)  FastPlotsRun(leptonFlavor, var.c_str(),1,1,5,5);
         }
     }
+
+    delete varList;
+    delete [] varStruct;
 }
 
 
@@ -138,7 +148,7 @@ void FastPlotsRun(string leptonFlavor, string variable, bool logZ, bool decrease
     cout << __LINE__ << endl;
     response->UseOverflow();
     string genName = "gen" + variable;
-    TH1D *genMad;
+    TH1D *genMad = NULL;
     if (!closureTest) genMad = (TH1D*) DY->Get(genName.c_str());
     //else genMad = (TH1D*) DataFile->Get(genName.c_str());
 
