@@ -549,7 +549,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -576,7 +576,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     hUnfoldedC->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedC->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedC->GetYaxis()->SetTitle("Ratio to Gen.");
+        hUnfoldedC->GetYaxis()->SetTitle("Gen / Unfolded");
         hUnfoldedC->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedC->GetYaxis()->SetTitleOffset(0.5);
     }
@@ -759,7 +759,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
     pad1->Draw();
     canUnfoldedDistribution->cd();
@@ -958,7 +958,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
         if (energy == "7TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 7 TeV");
         if (energy == "8TeV") sqrtXTeV->DrawLatex(0.54,0.905, "#sqrt{s} = 8 TeV");
         if (energy == "7TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 5.05 fb^{-1}");
-        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.8 fb^{-1}");
+        if (energy == "8TeV") intLumi->DrawLatex(0.98,0.91, "#int L dt = 19.6 fb^{-1}");
     }
 
     pad1->Draw();
@@ -986,7 +986,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedInvert->GetYaxis()->SetRangeUser(0.51, 1.49);
     hUnfoldedInvert->GetYaxis()->SetNdivisions(5,5,0);
     if (!closureTest) {
-        hUnfoldedInvert->GetYaxis()->SetTitle("Ratio to Gen.");
+        hUnfoldedInvert->GetYaxis()->SetTitle("Gen / Unfolded");
         hUnfoldedInvert->GetYaxis()->SetTitleSize(0.1);
         hUnfoldedInvert->GetYaxis()->SetTitleOffset(0.5);
     }
