@@ -31,7 +31,7 @@ string getEnergy()
 TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut,  string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
 {
    if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
-
+   else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
    else if (leptonFlavor == "Electron" || leptonFlavor == "SE_") leptonFlavor = "SE";
    else if (leptonFlavor == "MuonElectron" || leptonFlavor == "SMuE_") leptonFlavor = "SMuE";
 
@@ -179,7 +179,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
 }
 
 
-void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut  ){
+void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut){
     std::string  variable = "ZNGoodJets_Zexc";
     string energy = getEnergy();
 
@@ -208,7 +208,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
         //NBins = hTemp ->GetNbinsX();
 
 
-        for (int j = 1 ; j < NBins + 1 ; j++ ){
+        for (int j = 1; j < NBins + 1; j++){
             Double_t binContent = hTemp->GetBinContent(j);
             DataEv[i][j] = binContent;
             if ( i > 0 ) DataEv[usedFiles][j]+=int(binContent);
@@ -221,7 +221,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
 
     ostringstream nameStr;  nameStr << "outputTable_" << leptonFlavor <<"_JetPtMin_" <<JetPtMin;
     if (doInvMassCut) nameStr << "_InvMass";
-    if (doSSign )   nameStr << "_SS";
+    if (doSSign) nameStr << "_SS";
     //if (doBJets) nameStr << "_BJets";
     if (doQCD>0) nameStr << "_QCD"<<doQCD;
 
