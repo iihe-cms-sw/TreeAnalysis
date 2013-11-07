@@ -72,12 +72,12 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   string leptonFlavor = "DMu";
   if (!isMuon) leptonFlavor = "DE";
 
-  int NumberOfToys = 4, oppNumberOfToys = 3;
+  int NumberOfToys( 1000),  oppNumberOfToys(4);
   int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
   string oppUnfAlg = "SVD";
   if (unfAlg == "SVD" ) {
     UsedKterm = UsedKtermSVD; 
-    NumberOfToys = 3;
+    NumberOfToys = 3;  oppNumberOfToys = 400;
     oppUnfAlg = "Bayes";
     oppUsedKterm = UsedKtermBayes;
   }
@@ -125,8 +125,11 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
   //-- fetch the BG files and histograms ----------------
   cout << " Fetch background files " << endl;
-  TFile *fBG[15][5];            // 0 = central, 1 = PU Up,  2 = PU Down,  3 = XS Up,  4 = XS Down 
-  TH1D *hBG[15][10], *hSumBG[5],*hSumBGgroup[15][10];
+  const int NBkgGroups(6);
+  const int NBkgSyst(5);
+
+  TFile *fBG[15][NBkgSyst];            // 0 = central, 1 = PU Up,  2 = PU Down,  3 = XS Up,  4 = XS Down 
+  TH1D *hBG[15][10], *hSumBG[NBkgSyst],*hSumBGgroup[15][10];
   int group = -1 ;
   double sumEve = 0.;
   int nFiles = NFILESDYJETS;
@@ -163,7 +166,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
       }
       else  group++ ;
       cout << "group" << "   " << group << endl;
-      for (int j(0); j < 5; j++){
+      for (int j(0); j < NBkgSyst ; j++){
           cout << "usbgroup " << j << "   " << countFiles << endl;
           if (countFiles == 0) hSumBG[j] = (TH1D*) hBG[countFiles][j]->Clone();
           else hSumBG[j]->Add(hBG[countFiles][j]);
@@ -212,7 +215,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile* outputRootFile = new TFile(outputRootFileName.c_str(), "RECREATE");
 
   //-- save data reco
-  outputRootFile->cd();  hData[0]->Write("Data");
+  outputRootFile->cd();  hData[0]->Write("Data"); hData[1]->Write("DataJECup");hData[2]->Write("DataJECdown");
   //-- save madgraph gen also in the file
   outputRootFile->cd();  hDYGenMadGraph->Write("genMad");	
   //-- save sherpa and powheg gen also in the file
@@ -309,11 +312,12 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   hSumBGErrors[1] = SetSystErrorsMax(hSumBG[0], hSumBG[1], hSumBG[2],"BGPUerrors");    // PU errors
   hSumBGErrors[2] = SetSystErrorsMax(hSumBG[0], hSumBG[3], hSumBG[4],"BGXSECerrors");  //  XSEC errors
 
-  TH1D* hSumBGgroupErrors[5][4];
-  for (int i(0); i < 4; i++){
+  TH1D* hSumBGgroupErrors[5][NBkgGroups];
+  for (int i(0); i < NBkgGroups ; i++){
       hSumBGgroupErrors[0][i]  = (TH1D*) hSumBGgroup[0][i]->Clone();
       hSumBGgroupErrors[1][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[1][i], hSumBGgroup[2][i], "gBGPUerrors");
       hSumBGgroupErrors[2][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[3][i], hSumBGgroup[4][i], "gBGXSECerrors");
+  //    outputRootFile->cd(); hSumBGgroupErrors[2][i]->Write(); 
   }
 
 
@@ -324,14 +328,15 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TH2D *hCovariance[nUnfold];
   TH2D *hCorrelation[nUnfold];
   TH1D *hOyMySyst[nUnfold];
-  int SetTypeOfVariation[nUnfold] = {1, 101, 10, 2, 11, 4 , 110, 10, 10 }; // select what and how to varry
+  int SetTypeOfVariation[nUnfold] = {1, 101, 10, 2, 11, 4 , 10, 10, 10 }; // select what and how to varry
+  /// option 3 --- data bins are varries independently; option 10 -- global variation pf all bins
   //int SetTypeOfVariation[6] = {1, 3, 2, 11, 4 , 3}; // select what and how to varry : ORIGINAL SELECTION
   //if (variable.find("ZNG")!= string::npos ) SetTypeOfVariation[1] = 103 ;
   // option (1)10: systeamtics is completly correlated on reco --> translated to cov matrix
   // option 3: assume errors in reco bins are uncorrelated
   //int myToyN[5] = {400, 400, 400, 400, 400};
-  //for (int i(0); i < nUnfold; i++){	
-  for (int i(0); i < 3; i++){	
+  for (int i(0); i < nUnfold; i++){	
+//  for (int i(0); i < 3; i++){	
       cout << endl;
       cout << endl;
       cout << "Doing my TOY " << Cov[i] << " with type  " << SetTypeOfVariation[i] << endl;
