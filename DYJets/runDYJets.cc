@@ -26,7 +26,6 @@
     //----------------------------------------------------------//
 
 
-
     //--- list of the different source files needed ---
     string srcdir = "Sources/";
     vector<string> sources;
@@ -70,6 +69,7 @@
 
 
     if ( !doSyst ) {NSystData = 1; NSystMC = 1; }
+    if ( lepSelection.find("DE") == 0)  NSystData = 5 ;
 
     if ( doWhat == 0 || doWhat == 100 ){
         for (unsigned int i(0); i < NSystData; i++){
@@ -121,7 +121,7 @@
     }
     if ( doWhat == 2 || doWhat == 100 ){
         for (unsigned int i(3); i < 5; i++){ 
-            ZJetsAndDPS DMuDYTau(lep+"_8TeV_DYJets_FromTau_UNFOLDING_dR_5311_Inf3", lumi*3503.7*1000/3045950, 1., 1, 1, !doDataEff, tauSyst[i], tauDir[i], tauScale[i], jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
+            ZJetsAndDPS DMuDYTau(lep+"_8TeV_DYJets_FromTau_UNFOLDING_dR_5311_Inf3", lumi*3503.7*1000/3045950, 1., 1,  !doDataEff, tauSyst[i], tauDir[i], tauScale[i], jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
             DMuDYTau.Loop(1, 1, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
         }
     }
