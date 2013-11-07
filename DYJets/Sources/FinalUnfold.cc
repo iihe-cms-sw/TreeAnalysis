@@ -50,7 +50,7 @@ int JetPtMax(0);
 void FinalUnfold()
 {
   for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
-    for (int j(1); j < 2; j++){
+    for (int j(0); j < 2; j++){
       isMuon = j ;
       if (isMuon) FuncUnfold(VAROFINTEREST[i].name, VAROFINTEREST[i].MuBayeskterm, VAROFINTEREST[i].MuSVDkterm);
       else FuncUnfold(VAROFINTEREST[i].name, VAROFINTEREST[i].EBayeskterm, VAROFINTEREST[i].ESVDkterm);
@@ -72,7 +72,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   string leptonFlavor = "DMu";
   if (!isMuon) leptonFlavor = "DE";
 
-  int NumberOfToys( 1000),  oppNumberOfToys(4);
+  int NumberOfToys( 10),  oppNumberOfToys(4);
   int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
   string oppUnfAlg = "SVD";
   if (unfAlg == "SVD" ) {
@@ -105,16 +105,16 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
   TFile *fDYPowheg = NULL, *fDYPowhegUp = NULL, *fDYPowhegDown = NULL;
   getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth , 0, 0, 0,  1);
-  //fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-  //fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowhegUp = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGUPFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowhegDown = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGDOWNFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   TH1D *hDY[4]; 
   TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL,  *hDYGenPowheg = NULL, *hDYGenPowhegUp = NULL, *hDYGenPowhegDown = NULL;
   getHistos(hDY, fDYMadGraph, variable);
   hDYGenMadGraph = getHisto(fDYMadGraph[0], "gen" + variable);
-  //hDYGenSherpa = getHisto(fDYSherpa, "gen" + variable);
-  //hDYGenPowheg = getHisto(fDYPowheg, "gen" + variable);
+  hDYGenSherpa = getHisto(fDYSherpa, "gen" + variable);
+  hDYGenPowheg = getHisto(fDYPowheg, "gen" + variable);
   //hDYGenPowhegUp = getHisto(fDYPowhegUp, "gen" + variable);
   //hDYGenPowhegDown = getHisto(fDYPowhegDown, "gen" + variable);
   RooUnfoldResponse *resDY[4]; 
@@ -220,10 +220,10 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   outputRootFile->cd();  hDYGenMadGraph->Write("genMad");	
   //-- save sherpa and powheg gen also in the file
   outputRootFile->cd();  
-  //hDYGenSherpa->Write("genShe");
+  hDYGenSherpa->Write("genShe");
   //-- save powheg gen also in the file
   outputRootFile->cd();  
-  //hDYGenPowheg->Write("genPow");  
+  hDYGenPowheg->Write("genPow");  
   //hDYGenPowhegUp->Write("genPowUp");  
   //hDYGenPowhegDown->Write("genPowDown");
   cout << "Start unfolding offseted histograms on RECO "<<endl;
@@ -264,7 +264,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
   int xbin(hData[0]->GetNbinsX());	
   // now for central values compute Roounfold Cov matrix
-
+  cout << " compute covarican mattrix from roounfold " << endl;
   TH2D* covCentralRoo    = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCov",      1);
   TH2D* covCentralRooToy = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCovToy", NumberOfToys );
   outputRootFile->cd();  covCentralRoo->Write();  covCentralRooToy->Write();
@@ -285,7 +285,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
 
 
-  cout << "Start unfolding offseted histograms on RECO "<<endl;
+  cout << "Start setting error histograms on RECO "<<endl;
 
 
   // finished with central stuff, now do covariance 
@@ -294,12 +294,17 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //TH1D *hDataJES = SetSystErrorsMax(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataJES = SetSystErrorsMean(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataEFF = SetSystErrorsMean(hData[0], EffError, "EFFerrors");     // lepton EFF errors
-  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError, "EFFerrors");     // lepton EFF errors
+  cout << "Set errors on response object "<<endl;
+  hData[3]->Draw();
+  cout << "Set errors on response object "<<endl;
+//  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError, "EFFerrors");     // lepton EFF errors
+  cout << "Set errors on response object "<<endl;
   TH1D *hDataJER = SetSystErrorsMean(hData[0], hDY[0], hDY[3], hDY[3], "JERerrors");     // JER errors
   TH1D *hDataPU = SetSystErrorsMean(hData[0], hDY[0], hDY[1], hDY[2], "JERerrors");      // PU errors
   TH2D *hResPUErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());	// PU effect on response 
   TH2D *hResJERErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[3]->Hresponse());	// JER effect on response 
 
+  cout << "Set errors on response object "<<endl;
   // my stat variation of data, BG and response object 
   RooUnfoldResponse *responseNEW[3];
   responseNEW[0] = new RooUnfoldResponse((TH1D*) resDY[0]->Hmeasured(), (TH1D*) resDY[0]->Htruth(), resDY[0]->Hresponse());

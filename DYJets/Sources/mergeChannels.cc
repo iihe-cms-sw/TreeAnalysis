@@ -63,7 +63,7 @@ bool doVarWidth  =  true ;
 double mergedValuesAllOpt[30][10] = {0};
 double mergedErrorsAllOpt[30][10] = {0};
 int tempNBin = 0;
-int kCorrMax = 5; 
+int kCorrMax = 2; 
 int SelComb[] = {0,1,3,4,5} ; //selection Of Combination Options
 //-----------------------------------------------------------------------------------------------//
 
@@ -111,7 +111,9 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
   TH1D *dataReco[2], *dataCentral[2], *dataCentralOppAlgo[2], *genMad[2], *genShe[2], *genPow[2], *hErrors[2][4];
   TH2D *myToyStatCov[2], *myToyJESCov[2], *myToyPUCov[2], *myToyXSECCov[2], *myToyJERCov[2], *myToyEFFCov[2], *myToyLUMICov[2];
 
-  int option = 0;
+
+  /// if you want to set the covariance matrices from unfolded +/- 1 sigma histograms 
+  int option = 1;
   double luminosityErr = 0.026;
   double muonIDIsoHLTError = 0.02;
   double electronIDIsoHLTError = 0.01;
@@ -228,14 +230,14 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
   errorM += covMatrixXSEC;
   errorM += covMatrixJER;
   errorM += covMatrixLEP;
-
+  
   // if ( doXSec )  errorM += covMatrixLUMI ; // WE SHOULD ADD THIS AFTER COMBINATION ?
   // there is something shity when you use full covariance (options 3, 4 ) of luminosity --> correlation of ALL bins =1 
   // test this with  unmarking line below
   //errorM = covMatrixLUMI ;
 
 
-  //errorM = covMatrixJES;
+  errorM = covMatrixJES;
   //errorM = covMatrixXSEC;
   // now loop over bins to set the matrix content
   double norm = 1. ; // this I use to have a reasonable value for determinant ( not needed in general) -> important for inversion so that matrices don't deal with small/big numbers
@@ -446,12 +448,15 @@ cout << " number of bins in matrix:" << nbins << endl;
   TH1D* h_combine_stat =  (TH1D *) SetHistWithErrors(  (TH1D*)  h_combine->Clone() , combined_error_stat, "Stat");	
   //testMat(  (TH1D*) h_combine->Clone()  , combined_error_stat);
   cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
-
+  
   /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
+  h_combine->Draw(); dataCentral[0]->Draw();dataCentral[1]->Draw(); 
+  cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
   plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
 
   /// PLOT FINAL PLOTS: COMBINATION VS MC
   plotCombination(VARIABLE, (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), genMad, genShe, genPow);
+  cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
 
 
 
@@ -467,8 +472,8 @@ cout << " number of bins in matrix:" << nbins << endl;
   cout << " print lambda" << endl;
   lambda.Print();
 
-
-  if (VARIABLE.find("ZNGood") !=  std::string::npos) createZNGoodJets_Zinc( (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(),  allErrorsTH2, unfAlg, doVarWidth, doXSec, doNormalize) ;
+  cout << " create inclusive plot" <<endl;
+//  if (VARIABLE.find("ZNGood") !=  std::string::npos) createZNGoodJets_Zinc( (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(),  allErrorsTH2, unfAlg, doVarWidth, doXSec, doNormalize) ;
   //       combined_error_LUMI.Print();
   //allErrorsTH2[6]->Draw("TEXT");
   //covMatrixLEP.Print();
@@ -502,13 +507,17 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
   // get histograms from PDF file
   string genVariable = "gen" + VARIABLE;
+  TH1D *PDFSystMad = NULL ;
+  TH1D *PDFSystPow = NULL ;
+  TH1D *PDFSystShe = NULL ;
+  /*
   TH1D *PDFSystMad = (TH1D*) fPDFMad->Get(genVariable.c_str());
   TH1D *PDFSystPow = (TH1D*) fPDFPow->Get(genVariable.c_str());
   TH1D *PDFSystShe = (TH1D*) fPDFShe->Get(genVariable.c_str());
   PDFSystMad->SetTitle("");
   PDFSystPow->SetTitle("");
   PDFSystShe->SetTitle("");
-
+*/
 
   const int nBins(hCombinedStat->GetNbinsX());
   // renormalize first
@@ -772,6 +781,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
 
   ////  NEW TPAD
+  cout << " madgraph pad in the combination plot" << endl;
   can->cd();
   TPad *pad2 = new TPad("pad2","pad2", 0, 0.35, 1, 0.5);
   pad2->SetTopMargin(0);
@@ -800,10 +810,12 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
   grCentralSystMadRatio->SetTitle("");
   grCentralSystMadRatio->GetXaxis()->SetTickLength(0.06);
   grCentralSystMadRatio->Draw("AP");
+  /*
   PDFSystMad->SetFillColor(kGreen-3);
   PDFSystMad->SetLineColor(kGreen-3);
   PDFSystMad->SetFillStyle(3001);
   PDFSystMad->DrawCopy("E2 same");
+  */
 
   grCentralSystMadRatio->Draw("P same");
   grCentralStatMadRatio->Draw("P same");
@@ -818,12 +830,13 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
   legend2->SetFillStyle(0);
   legend2->SetBorderSize(0);
   legend2->AddEntry(PDFSystMad, " PDF Syst.", "f");
-  legend2->Draw();
+  //legend2->Draw();
 
   pad2->Draw();
   pad2->cd();
 
   can->cd();
+  cout << " sherpa pad in the combination plot" << endl;
   TPad *pad3 = new TPad("pad3","pad3", 0, 0.2, 1, 0.35);
   pad3->SetTopMargin(0);
   pad3->SetBottomMargin(0.0);
@@ -857,10 +870,11 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
   grCentralSystSheRatio->GetXaxis()->SetTickLength(0.06);
   grCentralSystSheRatio->Draw("AP");
   grCentralStatSheRatio->Draw("P same");
-  PDFSystShe->SetFillColor(kGreen-3);
+/*  PDFSystShe->SetFillColor(kGreen-3);
   PDFSystShe->SetLineColor(kGreen-3);
   PDFSystShe->SetFillStyle(3001);
   PDFSystShe->DrawCopy("E2 same");
+  */
   grCentralSystSheRatio->Draw("P same");
   grCentralStatSheRatio->Draw("P same");
   TLatex *latexLabel1 = new TLatex();
@@ -873,7 +887,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
   pad3->Draw();
   pad3->cd();
   can->cd();
-
+  cout << " powheg pad in the combination plot" << endl;
   // yet another pad
   TPad *pad4 = new TPad("pad4","pad4", 0, 0., 1, 0.2);
   pad4->SetTopMargin(0);
@@ -908,10 +922,12 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
   grCentralSystPowRatio->GetXaxis()->SetTickLength(0.06);
   grCentralSystPowRatio->Draw("AP");
   grCentralStatPowRatio->Draw("P same");
+  /*
   PDFSystPow->SetFillColor(kGreen-3);
   PDFSystPow->SetLineColor(kGreen-3);
   PDFSystPow->SetFillStyle(3001);
   PDFSystPow->DrawCopy("E2 same");
+  */
   grCentralSystPowRatio->Draw("P same");
   grCentralStatPowRatio->Draw("P same");
   TLatex *latexLabel2 = new TLatex();
@@ -1270,7 +1286,7 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
 ///////////////////////////////////////////////
 void returnCov(TH1D *dataCentral, TH1D* hUp, TH1D* hDown, TH2D *cov , TH1D *hErrors){
 
-  const int nBins(dataCentral->GetNbinsX());
+  const int nBins(dataCentral->GetNbinsX()  );
   TMatrixD outCov(nBins,nBins);
 
   double sigma[nBins];
@@ -1285,7 +1301,7 @@ void returnCov(TH1D *dataCentral, TH1D* hUp, TH1D* hDown, TH2D *cov , TH1D *hErr
 
   for (int bin(1); bin  <=   nBins; bin++){
 
-    for (int bin1(1); bin1  <=   nBins; bin1++){
+    for (int bin1(1); bin1  <=   nBins  ; bin1++){
       double corr  =  1;
       if ( VARIABLE.find("ZNGoodJets_Zexc") !=  std::string::npos && ((bin  ==  1 && bin1 !=  bin) || (bin1  ==  1 && bin1 !=  bin) ) ) corr  =  -1. ;
       corr  =  0.;

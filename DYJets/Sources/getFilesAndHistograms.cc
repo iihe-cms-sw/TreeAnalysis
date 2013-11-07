@@ -144,7 +144,10 @@ void getHistos(TH1D *histograms[], TFile *Files[], string variable, bool isDoubl
 {
     string fileName = Files[0]->GetName();
     int nFiles;
-    if (fileName.find("Data") != string::npos) nFiles = 3; 
+    if (fileName.find("Data") != string::npos) {
+                    nFiles = 3; 
+                    if ( fileName.find("DE") != string::npos )  nFiles = 5;
+    }
     else if ( ((isDoubleLep && fileName.find("DYJets") != string::npos) || ( !isDoubleLep && fileName.find("WJets") != string::npos)) &&fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
     else nFiles = 5;
 
@@ -179,7 +182,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
 }
 
 
-void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut){
+void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut  ){
     std::string  variable = "ZNGoodJets_Zexc";
     string energy = getEnergy();
 
@@ -208,7 +211,7 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
         //NBins = hTemp ->GetNbinsX();
 
 
-        for (int j = 1; j < NBins + 1; j++){
+        for (int j = 1 ; j < NBins + 1 ; j++ ){
             Double_t binContent = hTemp->GetBinContent(j);
             DataEv[i][j] = binContent;
             if ( i > 0 ) DataEv[usedFiles][j]+=int(binContent);
@@ -221,7 +224,7 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
 
     ostringstream nameStr;  nameStr << "outputTable_" << leptonFlavor <<"_JetPtMin_" <<JetPtMin;
     if (doInvMassCut) nameStr << "_InvMass";
-    if (doSSign) nameStr << "_SS";
+    if (doSSign )   nameStr << "_SS";
     //if (doBJets) nameStr << "_BJets";
     if (doQCD>0) nameStr << "_QCD"<<doQCD;
 

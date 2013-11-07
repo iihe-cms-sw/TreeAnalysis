@@ -93,8 +93,8 @@ const string FILENAMES[NFILESVJETS] = {
 //-----------------------------------------------------
 
 
-const string DYPOWHEGFILENAME = FILENAMES[11];
-const string DYSHERPAFILENAME = FILENAMES[12];
+const string DYPOWHEGFILENAME = FILENAMES[12];
+const string DYSHERPAFILENAME = FILENAMES[13];
 
 const string BGFILENAMES[9] = {
     FILENAMES[1],
