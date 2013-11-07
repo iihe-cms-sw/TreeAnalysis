@@ -186,15 +186,17 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
     cout <<" let us get jet multiplicity statistics " <<endl;
     // jet counter
     int NBins = 0 ;
-    double DataEv[20][20] = {0}, MCsum[20][20] = {0};
+    double DataEv[20][20] = {{0}};
 
     //-- fetch the data files and histograms --------------
     int usedFiles = NFILESTTBAR ; 
     bool doDY(0) ;
-    if ( leptonFlavor.find("Muons") != -1 ||  leptonFlavor.find("Electrons") != -1 ) {usedFiles = NFILESDYJETS ; doDY = true ;}
-    int countFiles = 0 ;
+    if (leptonFlavor.find("Muons") != string::npos ||  leptonFlavor.find("Electrons") != string::npos ) {
+        usedFiles = NFILESDYJETS;
+        doDY = true;
+    }
     for ( int i = 0 ; i < usedFiles ; i++){
-        TFile *fData,*fSignal;           
+        TFile *fData;
         int sel = i ; 
         if ( doDY ) sel = FilesDYJets[i];
         else sel = FilesTTbarWJets[i];
