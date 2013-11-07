@@ -1,4 +1,5 @@
 # git will not consider the following files:
+*.o
 *.so
 *.d
 *.log
