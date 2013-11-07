@@ -568,7 +568,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 lep2.SetPtEtaPhiM(METpt, 0. , METphi , 0. );
                 Z = lep1 + lep2;
 
-                leptonStruct tempMet = { METpt , 0., METphi, METpt, 0 , 0};
+                leptonStruct tempMet = {METpt, 0., METphi, METpt, 0, 0, 0};
                 lepton2 = tempMet;
 
                 MT = sqrt( 2 * METpt * lepton1.pt * ( 1 - cos(METphi - lepton1.phi))) ;
@@ -630,7 +630,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 if (!lepSelector) continue ;
                 double charge(genLepQ_->at(i)); 
                 if (abs(genLepId_->at(i)) == 12 || abs(genLepId_->at(i)) == 14 || abs(genLepId_->at(i)) == 16) charge = 0.; // filling of ntuples not best 
-                leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0.};
+                leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
                 //cout << " nasi gen neutrino " << genLepPt_->at(i) << "   " << charge << "status " << genLepSt_->at(i) << "   " << genLepId_->at(i) << endl ;
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
                 if ( ( genLepSt_->at(i) == 1 && lepSelector &&  abs(genLepId_->at(i)) == LeptonID) || ( doW && charge == 0 ) ){
@@ -848,7 +848,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 lep2.SetPtEtaPhiM(METpt, 0., METphi, 0.);
                 Z = lep1 + lep2;
 
-                leptonStruct tempMet = { METpt , 0., METphi, METpt, 0 , 0};
+                leptonStruct tempMet = {METpt, 0., METphi, METpt, 0, 0, 0};
                 lepton2 = tempMet;
 
                 MT = sqrt( 2 * METpt * lepton1.pt * (1 - cos(METphi - lepton1.phi)));
@@ -939,7 +939,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         //=======================================================================================================//
         //        Retrieving gen jets         //
         //====================================//
-        bool passesGenJetCut(1), passesGenEWKJetPt(0), passesGenEWKJetFwdEta(0);
+        bool passesGenJetCut(1), passesGenEWKJetPt(0); //passesGenEWKJetFwdEta(0)
         unsigned short nGoodGenJets(0), nGenJetsAdd(0), nTotGenJets(0);
         double genJetsHT(0);
         vector<jetStruct> genJets, genJetsAdditional;
@@ -963,7 +963,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
                 if (genJet.pt >= 10 && genJet.pt < 1000. && fabs(genJet.eta) <= 4.7 && genJetPassesdRCut){
                     passesGenEWKJetPt = (genJet.pt >= 50);
-                    passesGenEWKJetFwdEta = (fabs(genJet.eta) > 2.4);
+                    //passesGenEWKJetFwdEta = (fabs(genJet.eta) > 2.4);
                     genJets.push_back(genJet);                  
                     if (genJet.pt >=  15.) genJetsAdditional.push_back(genJet);
 
