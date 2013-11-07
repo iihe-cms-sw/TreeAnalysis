@@ -24,7 +24,8 @@
     bool doSyst = 1;
     int doWhat   = 100 ; // 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
     //----------------------------------------------------------//
-
+    // change of the above options according to selecteed lepton analysis
+    if ( lepSelection.find("DE") == 0)  NSystData = 5 ;
 
     //--- list of the different source files needed ---
     string srcdir = "Sources/";
@@ -51,9 +52,8 @@
     else if (lep.find("SE") == 0)   lumi = 19.091;
     //----------------------------------------------------------//
 
-
-    short dataSyst[3] = {0, 2,2};
-    short dataDir[3]  = {0,-1,1};
+    short dataSyst[5] = {0, 2,2,5,5};
+    short dataDir[5]  = {0,-1,1,-1,1};
 
     short ttSyst[5]  = {0, 1, 1, 3, 3};
     short ttDir[5]   = {0,-1, 1,-1, 1};
@@ -69,7 +69,6 @@
 
 
     if ( !doSyst ) {NSystData = 1; NSystMC = 1; }
-    if ( lepSelection.find("DE") == 0)  NSystData = 5 ;
 
     if ( doWhat == 0 || doWhat == 100 ){
         for (unsigned int i(0); i < NSystData; i++){
