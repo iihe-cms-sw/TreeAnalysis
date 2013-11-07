@@ -22,15 +22,16 @@ def loopHasNotStarted(logName):
 
 
 #--------------------------------------------------------------------------------
-def dispacher(lepton = "DE", PT = 30):
+def dispacher(lepton = "DE", PT = 30, doSyst = 0):
 
-    for i in range(1, 3):
+    for i in range(0, 5):
         # Create the .cc file based on runDYJets.cc
         tmpFile = "tmp_" + str(lepton) + "_" + str(PT) + "_" + str(i)
         tmpCCFile = tmpFile + ".cc"
         tmpLogFile = tmpFile + ".log"
 
         cmdSetJob = "sed "
+        cmdSetJob += " -e \"s|bool doSyst.*|bool doSyst = " + str(doSyst) + ";|g\""
         cmdSetJob += " -e \"s|int doWhat.*|int doWhat = " + str(i) + ";|g\""
         cmdSetJob += " -e \"s|string lep.*|string lep = \\\"" + str(lepton) + "\\\";|g\""
         cmdSetJob += " -e \"s|int jetPtMin.*|int jetPtMin = " + str(PT) + ";|g\""
@@ -43,6 +44,7 @@ def dispacher(lepton = "DE", PT = 30):
         print cmdExecJob
         os.system(cmdExecJob)
 
+        # Wait one second to be sure the log file has been created
         time.sleep(1)
         # Wait for the loop to start before going to next job
         while loopHasNotStarted(tmpLogFile):

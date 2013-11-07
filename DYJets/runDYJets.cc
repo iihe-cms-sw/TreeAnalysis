@@ -5,7 +5,7 @@
     //--------------------------//
 
     //--- user config: change the settings here ---
-    string lep = "DE"; 
+    string lep = "DE"; // Can be: DE, DMu, SE, SMu or SMuE
 
     bool doRoch    = 0;
     bool doFlat    = 0;
@@ -27,7 +27,7 @@
     //----------------------------------------------------------//
     
     //--- change of the above options according to selecteed lepton analysis
-    if (lep == "DE")  NSystData = 5 ;
+    if (lep == "DE") NSystData = 5;
 
     //--- list of the different source files needed ---
     string srcdir = "Sources/";
@@ -40,15 +40,15 @@
     //--- Load shaared libraries ---
     unsigned int nSources = sources.size();
     for (unsigned int i(0); i < nSources; i++){
-        cout <<"Compiling " << srcdir + sources[i] << ".cc" << endl;
-        gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
-        //gROOT->LoadMacro(string(srcdir + sources[i] + ".cc+").c_str());
+        cout << "Compiling " << srcdir + sources[i] << ".cc" << endl;
+        //gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc++").c_str());
+        gROOT->LoadMacro(string(srcdir + sources[i] + ".cc+").c_str());
     }
     //----------------------------------------------------------//
 
     //--- set the lumi according to the selected sample ---
     double  lumi = 0.0;
-    if      (lep == "MuE")  lumi = 19.578;
+    if      (lep == "DMu")  lumi = 19.578;
     else if (lep == "DE")   lumi = 19.599;
     else if (lep == "SMuE") lumi = 19.650;
     else if (lep == "SMu")  lumi = 19.238;
@@ -88,7 +88,7 @@
         for (unsigned int i(0); i < NSystMC; i++){ 
             ZJetsAndDPS DMuTT(lep+"_8TeV_TTJets_dR_5311",             lumi*245.           *1000/6923652., 1, 1, !doDataEff, ttSyst[i], ttDir[i], ttScale[i], jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
             DMuTT.Loop(1, 0, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
-            if ( lep == "DE" || lep == "DMu" || lep == "SMuE"){
+            if (lep == "DE" || lep == "DMu" || lep == "SMuE"){
                 ZJetsAndDPS DMuWJ(lep+"_8TeV_WJetsALL_UNFOLDING_dR_5311",           lumi*37509.         *1000/76102995.,1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
                 DMuWJ.Loop(1, 0, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
             }
@@ -136,7 +136,7 @@
 
     if (doWhat == 3 || doWhat == 100){
         int doGen = 0;
-        if (lep.find("DMu") == 0 || lep.find("DE") == 0) doGen = 1;
+        if (lep == "DMu" || lep == "DE") doGen = 1;
 
         ZJetsAndDPS DMuDY(lep+"_8TeV_DYJets_UNFOLDING_dR_5311_Inf3",  lumi*3503.7*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
         DMuDY.Loop(1, doGen, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
@@ -172,7 +172,7 @@
     /// this is unfolding part for W+jets 
     if (doWhat == 4 || doWhat == 100){
         int doGen = 0;
-        if ((lep.find("SE") == 0 || lep.find("SMu") == 0) && lep.find("SMuE") != string::npos) doGen = 1;
+        if (lep == "SE" || lep == "SMu") doGen = 1;
 
         ZJetsAndDPS DMuWJ(lep+"_8TeV_WJetsALL_UNFOLDING_dR_5311",  lumi*37509.         *1000/76102995., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
         DMuWJ.Loop(1, doGen, doQCD,  doSSign, doMassCut, doBJets, doPUStudy);
@@ -241,6 +241,7 @@
         //DESherpaTest.Loop(0, 1,  doQCD,  doSSign, doMassCut, doBJets, doPUStudy ); 
 
     }
+
     /*
     //--- clean the _cc.d and _cc.so files ---
     string cmd = "if ls *_cc.d &> .ls_tmp.list; then rm *_cc.d; fi";
@@ -252,11 +253,11 @@
     cmd = "if ls " + srcdir + "*_cc.so &> .ls_tmp.list; then rm " + srcdir + "*_cc.so; fi";
     system(cmd.c_str());
     system("rm .ls_tmp.list");
+    */
 
     string stop = __TIME__;
 
     cout << "Started at\t" << start << endl;
     cout << "Ended at\t" << stop << endl;
-    */
 }
 
