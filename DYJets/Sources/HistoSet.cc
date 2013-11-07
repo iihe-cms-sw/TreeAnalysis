@@ -249,36 +249,35 @@ HistoSet::HistoSet(string leptonFlavor)
 
   NumberPFcandidates                  = newTH1D("NumberPFcandidates",                  "NumberPFcandidates",           "Number of lepton PF candidates",    20, -0.5, 19.5);
 
+  AllPassLepID			              = newTH1D("AllPassLepID",                        "Lep pair ID for all passing lep",            "leptonPairID",    54, -26.5, 26.5);
+  AllPassWithMassCutLepID	          = newTH1D("AllPassWithMassCutLepID",             "Lep pair ID for lep + mass cut",             "leptonPairID",    54, -26.5, 26.5);
+  AllPassWithMassCutLepIDCharge	      = newTH1D("AllPassWithMassCutLepIDCharge",       "Lep pair ID, charge for lep + mass cut",     "leptonPairID",    54, -26.5, 26.5);
   ZMass_lowDeltaR                     = newTH1D("ZMass_lowDeltaR",                     "ZMass_lowDeltaR",                             Mll,    120, 50, 169);
-  AllPassLepID			      = newTH1D("AllPassLepID",                        "Lepton pair ID for all passing leptons",    "leptonPairID" ,    54, -26.5, 26.5);
-  AllPassWithMassCutLepID	      = newTH1D("AllPassWithMassCutLepID",                        "Lepton pair ID for leptons + mass cut",    "leptonPairID" ,    54, -26.5, 26.5);
-  AllPassWithMassCutLepIDCharge	      = newTH1D("AllPassWithMassCutLepIDCharge",                        "Lepton pair ID, charge for leptons + mass cut",    "leptonPairID" ,    54, -26.5, 26.5);
-  ZMassAllPassLep                     = newTH1D("ZMassAllPassLep",                     "Z Invariant Mass for all passing leptons",          Mll,    240, 0, 480 );
+  ZMassAllPassLep                     = newTH1D("ZMassAllPassLep",                     "Z Inv Mass for all passing leps",             Mll,    240, 0, 480);
 
+  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260);
+  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260);
+  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260);
+  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260);
+  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260);
+  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260);
+  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260);
 
-  ZMass_Zinc0jet                      = newTH1D("ZMass_Zinc0jet",                      "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
-  ZMass_Zinc1jet                      = newTH1D("ZMass_Zinc1jet",                      "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
-  ZMass_Zinc2jet                      = newTH1D("ZMass_Zinc2jet",                      "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
-  ZMass_Zinc3jet                      = newTH1D("ZMass_Zinc3jet",                      "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
-  ZMass_Zinc4jet                      = newTH1D("ZMass_Zinc4jet",                      "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
-  ZMass_Zinc5jet                      = newTH1D("ZMass_Zinc5jet",                      "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
-  ZMass_Zinc6jet                      = newTH1D("ZMass_Zinc6jet",                      "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
+  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    105, 50, 260);
+  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    105, 50, 260);
+  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    105, 50, 260);
+  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    105, 50, 260);
+  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    105, 50, 260);
+  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    105, 50, 260);
+  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    105, 50, 260);
 
-  genZMass_Zinc0jet                   = newTH1D("genZMass_Zinc0jet",                   "Z Invariant Mass (N_{jets} #geq 0)",          Mll,    111, 50, 260 );
-  genZMass_Zinc1jet                   = newTH1D("genZMass_Zinc1jet",                   "Z Invariant Mass (N_{jets} #geq 1)",          Mll,    111, 50, 260 );
-  genZMass_Zinc2jet                   = newTH1D("genZMass_Zinc2jet",                   "Z Invariant Mass (N_{jets} #geq 2)",          Mll,    111, 50, 260 );
-  genZMass_Zinc3jet                   = newTH1D("genZMass_Zinc3jet",                   "Z Invariant Mass (N_{jets} #geq 3)",          Mll,    111, 50, 260 );
-  genZMass_Zinc4jet                   = newTH1D("genZMass_Zinc4jet",                   "Z Invariant Mass (N_{jets} #geq 4)",          Mll,    111, 50, 260 );
-  genZMass_Zinc5jet                   = newTH1D("genZMass_Zinc5jet",                   "Z Invariant Mass (N_{jets} #geq 5)",          Mll,    111, 50, 260 );
-  genZMass_Zinc6jet                   = newTH1D("genZMass_Zinc6jet",                   "Z Invariant Mass (N_{jets} #geq 6)",          Mll,    111, 50, 260 );
-
-  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    111, 50, 260 );
-  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    111, 50, 260 );
-  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    111, 50, 260 );
-  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    111, 50, 260 );
-  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    111, 50, 260 );
-  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    111, 50, 260 );
-  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    111, 50, 260 );
+  ZMass_Zexc0jet                      = newTH1D("ZMass_Zexc0jet",                      "Z Invariant Mass (N_{jets} = 0)",             Mll,    105, 50, 260);
+  ZMass_Zexc1jet                      = newTH1D("ZMass_Zexc1jet",                      "Z Invariant Mass (N_{jets} = 1)",             Mll,    105, 50, 260);
+  ZMass_Zexc2jet                      = newTH1D("ZMass_Zexc2jet",                      "Z Invariant Mass (N_{jets} = 2)",             Mll,    105, 50, 260);
+  ZMass_Zexc3jet                      = newTH1D("ZMass_Zexc3jet",                      "Z Invariant Mass (N_{jets} = 3)",             Mll,    105, 50, 260);
+  ZMass_Zexc4jet                      = newTH1D("ZMass_Zexc4jet",                      "Z Invariant Mass (N_{jets} = 4)",             Mll,    105, 50, 260);
+  ZMass_Zexc5jet                      = newTH1D("ZMass_Zexc5jet",                      "Z Invariant Mass (N_{jets} = 5)",             Mll,    105, 50, 260);
+  ZMass_Zexc6jet                      = newTH1D("ZMass_Zexc6jet",                      "Z Invariant Mass (N_{jets} = 6)",             Mll,    105, 50, 260);
 
   ZPt_Zinc0jet                        = newTH1D("ZPt_Zinc0jet",                        "Z p_{T} (N_{jets} #geq 0)",                   ZpT,    40, 0, 400);
   ZPt_Zinc1jet                        = newTH1D("ZPt_Zinc1jet",                        "Z p_{T} (N_{jets} #geq 1)",                   ZpT,    40, 0, 400);
@@ -361,8 +360,8 @@ HistoSet::HistoSet(string leptonFlavor)
   lepEta_Zinc4jet                     = newTH1D("lepEta_Zinc4jet",                     "1st & 2nd lep #eta (N_{jets} #geq 4)",        leta,   24,-2.4, 2.4);
   lepEta_Zinc5jet                     = newTH1D("lepEta_Zinc5jet",                     "1st & 2nd lep #eta (N_{jets} #geq 5)",        leta,   24,-2.4, 2.4);
 
-  lepPhi_Zinc0jet                     = newTH1D("lepPhi_Zinc0jet",                     "1st & 2nd lep #phi (N_{jets} #geq 0)",           lphi,   24,-PI, PI);
-  lepPhi_Zinc1jet                     = newTH1D("lepPhi_Zinc1jet",                     "1st & 2nd lep #phi (N_{jets} #geq 1)",           lphi,   24,-PI, PI);
+  lepPhi_Zinc0jet                     = newTH1D("lepPhi_Zinc0jet",                     "1st & 2nd lep #phi (N_{jets} #geq 0)",        lphi,   24,-PI, PI);
+  lepPhi_Zinc1jet                     = newTH1D("lepPhi_Zinc1jet",                     "1st & 2nd lep #phi (N_{jets} #geq 1)",        lphi,   24,-PI, PI);
 
   genlepEta_Zinc0jet                  = newTH1D("genlepEta_Zinc0jet",                  "1st & 2nd lep #eta (N_{jets} #geq 0)",        leta,   24,-2.4, 2.4);  
   genlepEta_Zinc1jet                  = newTH1D("genlepEta_Zinc1jet",                  "1st & 2nd lep #eta (N_{jets} #geq 1)",        leta,   24,-2.4, 2.4);  
@@ -478,23 +477,23 @@ HistoSet::HistoSet(string leptonFlavor)
   dRLeptons_Zinc4jet                  = newTH1D("dRLeptons_Zinc4jet",                  "#Delta R btw lep (N_{jets} #geq 4)",          ldR,        50, 0, 5);
   dRLeptons_Zinc5jet                  = newTH1D("dRLeptons_Zinc5jet",                  "#Delta R btw lep (N_{jets} #geq 5)",          ldR,        50, 0, 5);
 
-  SpTLeptons_Zexc0jet                 = newTH1D("SpTLeptons_Zexc0jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 0)",            lSpt,          50, 0, 1);
-  SpTLeptons_Zexc1jet                 = newTH1D("SpTLeptons_Zexc1jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 1)",            lSpt,          50, 0, 1);
-  SpTLeptons_Zexc2jet                 = newTH1D("SpTLeptons_Zexc2jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 2)",            lSpt,          50, 0, 1);
-  SpTLeptons_Zexc3jet                 = newTH1D("SpTLeptons_Zexc3jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 3)",            lSpt,          50, 0, 1);
-  SpTLeptons_Zexc4jet                 = newTH1D("SpTLeptons_Zexc4jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 4)",            lSpt,          50, 0, 1);
-  SpTLeptons_Zexc5jet                 = newTH1D("SpTLeptons_Zexc5jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 5)",            lSpt,          50, 0, 1);
+  SpTLeptons_Zexc0jet                 = newTH1D("SpTLeptons_Zexc0jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 0)",        lSpt,       50, 0, 1);
+  SpTLeptons_Zexc1jet                 = newTH1D("SpTLeptons_Zexc1jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 1)",        lSpt,       50, 0, 1);
+  SpTLeptons_Zexc2jet                 = newTH1D("SpTLeptons_Zexc2jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 2)",        lSpt,       50, 0, 1);
+  SpTLeptons_Zexc3jet                 = newTH1D("SpTLeptons_Zexc3jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 3)",        lSpt,       50, 0, 1);
+  SpTLeptons_Zexc4jet                 = newTH1D("SpTLeptons_Zexc4jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 4)",        lSpt,       50, 0, 1);
+  SpTLeptons_Zexc5jet                 = newTH1D("SpTLeptons_Zexc5jet",                 "#Delta_{pT}^{rel} lep (N_{jets} = 5)",        lSpt,       50, 0, 1);
 
-  genSpTLeptons_Zexc2jet              = newTH1D("genSpTLeptons_Zexc2jet",              "gen #Delta_{pT}^{rel} lep (N_{jets} = 2)",        lSpt,          50,0.,1.);
+  genSpTLeptons_Zexc2jet              = newTH1D("genSpTLeptons_Zexc2jet",              "gen #Delta_{pT}^{rel} lep (N_{jets} = 2)",    lSpt,       50, 0, 1);
 
-  SpTLeptons_Zinc0jet                 = newTH1D("SpTLeptons_Zinc0jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 0)",         lSpt,          50, 0, 1);
-  SpTLeptons_Zinc1jet                 = newTH1D("SpTLeptons_Zinc1jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 1)",         lSpt,          50, 0, 1);
-  SpTLeptons_Zinc2jet                 = newTH1D("SpTLeptons_Zinc2jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 2)",         lSpt,          50, 0, 1);
-  SpTLeptons_Zinc3jet                 = newTH1D("SpTLeptons_Zinc3jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 3)",         lSpt,          50, 0, 1);
-  SpTLeptons_Zinc4jet                 = newTH1D("SpTLeptons_Zinc4jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 4)",         lSpt,          50, 0, 1);
-  SpTLeptons_Zinc5jet                 = newTH1D("SpTLeptons_Zinc5jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 5)",         lSpt,          50, 0, 1);
+  SpTLeptons_Zinc0jet                 = newTH1D("SpTLeptons_Zinc0jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 0)",     lSpt,       50, 0, 1);
+  SpTLeptons_Zinc1jet                 = newTH1D("SpTLeptons_Zinc1jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 1)",     lSpt,       50, 0, 1);
+  SpTLeptons_Zinc2jet                 = newTH1D("SpTLeptons_Zinc2jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 2)",     lSpt,       50, 0, 1);
+  SpTLeptons_Zinc3jet                 = newTH1D("SpTLeptons_Zinc3jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 3)",     lSpt,       50, 0, 1);
+  SpTLeptons_Zinc4jet                 = newTH1D("SpTLeptons_Zinc4jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 4)",     lSpt,       50, 0, 1);
+  SpTLeptons_Zinc5jet                 = newTH1D("SpTLeptons_Zinc5jet",                 "#Delta_{pT}^{rel} lep (N_{jets} #geq 5)",     lSpt,       50, 0, 1);
 
-  genSpTLeptons_Zinc2jet              = newTH1D("genSpTLeptons_Zinc2jet",              "gen #Delta_{pT}^{rel} lep (N_{jets} #geq 2)",     lSpt,          50, 0, 1);
+  genSpTLeptons_Zinc2jet              = newTH1D("genSpTLeptons_Zinc2jet",              "gen #Delta_{pT}^{rel} lep (N_{jets} #geq 2)", lSpt,       50, 0, 1);
 
   JetsHT_Zinc1jet                     = newTH1D("JetsHT_Zinc1jet",                     "Scalar sum jets p_{T} (N_{jets} #geq 1)",     HT,     nJetHT_Zinc1jet, jetHT_Zinc1jet);  
   JetsHT_1_Zinc1jet                   = newTH1D("JetsHT_1_Zinc1jet",                   "Scalar sum jets p_{T} (N_{jets} #geq 1)1",    HT,     nJetHT_1_Zinc1jet, jetHT_1_Zinc1jet);  
@@ -587,8 +586,8 @@ HistoSet::HistoSet(string leptonFlavor)
   genFourthJetPt_Zinc4jet             = newTH1D("genFourthJetPt_Zinc4jet",             "gen 4th jet p_{T} (N_{jets} #geq 4)",         "p_{T}(j_{4}) [GeV]",     nJetPt_Zinc4jet, jetPt_Zinc4jet);
   genFifthJetPt_Zinc5jet              = newTH1D("genFifthJetPt_Zinc5jet",              "gen 5th jet p_{T} (N_{jets} #geq 5)",         "p_{T}(j_{5}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet);
   genSixthJetPt_Zinc6jet              = newTH1D("genSixthJetPt_Zinc6jet",              "gen #geq 6th jets p_{T} (N_{jets} #geq 6)",   "p_{T}(j_{6}) [GeV]",     nJetPt_Zinc5jet, jetPt_Zinc5jet);
-  genRatioJetPt21_Zinc2jet              = newTH1D("genRatioJetPt21_Zinc2jet",           "gen ratio 2nd/1st jet p_{T} (N_{jets} #geq 2)",         "p_{T}(j_{2})/p_{T}(j_{1})",    10 , 0 , 1);
-  genRatioJetPt32_Zinc3jet              = newTH1D("genRatioJetPt32_Zinc3jet",           "gen ratio 3rd/2nd jet p_{T} (N_{jets} #geq 3)",         "p_{T}(j_{3})/p_{T}(j_{2})",    10 , 0 , 1);
+  genRatioJetPt21_Zinc2jet            = newTH1D("genRatioJetPt21_Zinc2jet",            "gen ratio 2nd/1st jet p_{T} (N_{jets} #geq 2)",         "p_{T}(j_{2})/p_{T}(j_{1})",    10 , 0 , 1);
+  genRatioJetPt32_Zinc3jet            = newTH1D("genRatioJetPt32_Zinc3jet",            "gen ratio 3rd/2nd jet p_{T} (N_{jets} #geq 3)",         "p_{T}(j_{3})/p_{T}(j_{2})",    10 , 0 , 1);
 
   FirstJetPt_Zexc1jet                 = newTH1D("FirstJetPt_Zexc1jet",                 "1st jet p_{T} (N_{jets} = 1)",                "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet); 
   SecondJetPt_Zexc2jet                = newTH1D("SecondJetPt_Zexc2jet",                "2nd jet p_{T} (N_{jets} = 2)",                "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
