@@ -3,6 +3,7 @@
 *.d
 *.log
 tmp*.cc
+*.swp
 
 # git will not consider the following directory:
 

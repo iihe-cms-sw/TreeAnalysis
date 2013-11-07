@@ -1,4 +1,3 @@
-#include "unfoldingFunctions.h"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -15,6 +14,7 @@
 #include <RooUnfoldBinByBin.h>
 #include <RooUnfoldInvert.h>
 
+#include "unfoldingFunctions.h"
 #include "writeFastPlotsTex.h"
 #include "getFilesAndHistograms.h"
 
@@ -22,16 +22,16 @@ using namespace std;
 
 void normalizeTH2D(TH2D *h)
 {
-  int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-  for (int i(0); i <= ybin + 1; i++){
-    double sum(0.);
-    for (int j(0); j <= xbin + 1; j++){
-      sum += h->GetBinContent(j,i);
+    int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
+    for (int i(0); i <= ybin + 1; i++){
+        double sum(0.);
+        for (int j(0); j <= xbin + 1; j++){
+            sum += h->GetBinContent(j,i);
+        }
+        for (int j(0); j <= xbin + 1; j++){
+            if (sum > 0) h->SetBinContent(j, i, h->GetBinContent(j, i) / sum );
+        }
     }
-    for (int j(0); j <= xbin + 1; j++){
-      if (sum > 0) h->SetBinContent(j, i, h->GetBinContent(j, i) / sum );
-    }
-  }
 }
 
 void plotHNormResp(TH2D *hNormResp_, string leptonFlavor, string variable, string energy, string outputDirectory, TFile *outputRootFile, bool closureTest, bool save)
