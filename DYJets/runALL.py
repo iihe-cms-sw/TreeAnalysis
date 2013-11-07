@@ -12,11 +12,11 @@ def loopHasNotStarted(logName):
     for line in catFile:
         if "Processing :" in line:
             os.system("rm tmp.log")
-            return false
+            return False
 
 
     os.system("rm tmp.log")
-    return true
+    return True
 
 #--------------------------------------------------------------------------------
 
@@ -41,11 +41,12 @@ def dispacher(lepton = "DE", PT = 30):
 
         cmdExecJob = "nohup root -b -q " + tmpCCFile + "++ &> " + tmpLogFile + " &"
         print cmdExecJob
-        #os.system(cmdExecJob)
+        os.system(cmdExecJob)
 
+        time.sleep(1)
         # Wait for the loop to start before going to next job
-        #while loopHasNotStarted(tmpLogFile):
-        #    time.sleep(2)
+        while loopHasNotStarted(tmpLogFile):
+            time.sleep(2)
 
 #--------------------------------------------------------------------------------
 
