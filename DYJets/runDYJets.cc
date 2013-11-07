@@ -27,7 +27,6 @@
     //----------------------------------------------------------//
 
 
-
     //--- list of the different source files needed ---
     string srcdir = "Sources/";
     vector<string> sources;
@@ -71,6 +70,7 @@
     float bgScale[5]  = {1, 1, 1, 0.15, 0.15};
 
 
+    if (lep.find("DE") == 0) NSystData = 5;
     if (!doSyst){
         NSystData = 1; 
         NSystMC   = 1; 

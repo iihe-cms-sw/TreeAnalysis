@@ -13,7 +13,7 @@ void createZNGoodJets_Zinc2( TH1D* hCombinedStat, TH2D *hError2D[] , string unfA
 
   //-- fetch the data files and histograms --------------
   TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
-  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
+  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
   cout << " got data " << endl;
   TH1D *hData[3];
   getHistos(hData, fData, variable1);
@@ -25,7 +25,7 @@ void createZNGoodJets_Zinc2( TH1D* hCombinedStat, TH2D *hError2D[] , string unfA
   TFile *fDYMadGraph[4];
   TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
   TFile *fDYPowheg = NULL ;
-  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, DYMADGRAPHFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
   fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   TH1D *hDY[4];
@@ -337,7 +337,7 @@ double getErrors(string variable, bool isMuonn, string unfAlgg, bool doVarWidthh
   gStyle->SetOptStat(0);
   string filesIN[4] = {"ZNGoodJets_Zexc","JetsHT","JetPt","JetEta"};
   string addNames[5] = {"First","Second","Third","Fourth","Fifth"};
-
+/*
   //-- get number of jets --
   unsigned pos = variable.find("jet");         // position of "jet" in str
   string str3;
@@ -357,7 +357,7 @@ double getErrors(string variable, bool isMuonn, string unfAlgg, bool doVarWidthh
     if (i == 0) variableT = filesIN[i];
     else if (i == 1) variableT = filesIN[i] + "_Zinc" + ss.str() + "jet";
     else variableT = addNames[num - 1] + filesIN[i] + "_Zinc" + ss.str() + "jet";
-    string fileName = "PNGFiles/FinalUnfold_30/" + leptonFlavor + "_" + energy + "_unfolded_" + variableT + "_histograms_" + unfAlgg ;
+    string fileName = "PNGFiles/FinalUnfold_30_test/" + leptonFlavor + "_" + energy + "_unfolded_" + variableT + "_histograms_" + unfAlgg ;
     if (doVarWidthh) fileName += "_VarWidth";
     fileName += ".root";
     cout << "opening : " << fileName <<endl;
@@ -374,7 +374,9 @@ double getErrors(string variable, bool isMuonn, string unfAlgg, bool doVarWidthh
 
   cout << " Envelope error " << (max-min)/2 << " min : " << min << " max " << max << endl;
   return ((max-min)/2)/(mean/4);
+*/
 
+  return 0.;
 }
 
 
@@ -506,8 +508,8 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
 
 
   // declare the big matrix
-  int nbins =  CovEle->GetNbinsX();
-  //nbins =  8 ;
+  //int nbins =  CovEle->GetNbinsX();
+  int nbins =  8 ;
   const int NELE = 2*nbins;
   TMatrixD errorMTemp(NELE,NELE);
 
