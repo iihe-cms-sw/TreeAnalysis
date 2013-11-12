@@ -71,10 +71,15 @@ void FastPlots(string leptonFlavor, string var)
 
     if (var == ""){
         //nVarStruct = 1;
-        for (int i(1); i < nVarStruct; i++){
+        for (int i(40); i < 50/*nVarStruct*/; i++){
             cout << setw(3) << i << ") Processing variable: " << varStruct[i].name << endl; 
             if (!isMuon) FastPlotsRun(sel, nsel, leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].ESVDkterm, varStruct[i].EBayeskterm);
             if (isMuon)  FastPlotsRun(sel, nsel, leptonFlavor, varStruct[i].name, varStruct[i].log, varStruct[i].decrease, varStruct[i].MuSVDkterm, varStruct[i].MuBayeskterm);
+            cout << "Type \"n\" for next" << endl;
+            int a = 0;
+            cin >> a;
+            cin.clear();
+            cin.ignore();
         }
     }
     else{
@@ -126,14 +131,14 @@ void FastPlotsRun(const int *sel, int nsel, string leptonFlavor, string variable
 
     //-- get data histogram (or MC Even for closure test) ----------------------------
     TFile *DataFile = NULL;
-    if (!closureTest) DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[0]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+    if (!closureTest) DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[0]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, "", "0", 0, 1);
     else DataFile = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[nsel-1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Even");
     TH1D *meas = getHisto(DataFile, variable);
     TH1D *measSubBG = (TH1D*) meas->Clone();
 
     //-- get MC madgraph histograms (or MC Odd for closure test) ---------------------
     TFile *DY = NULL;
-    if (!closureTest) DY = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[nsel-1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+    if (!closureTest) DY = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[nsel-1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, "", "0", 0, 1);
     else DY = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[nsel-1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, false, "_Odd");
 
 
@@ -148,9 +153,10 @@ void FastPlotsRun(const int *sel, int nsel, string leptonFlavor, string variable
     TFile **BG = new TFile*[nBG];
     TH1D **hBG = new TH1D*[nBG];
     for (int i(0); i < nBG; i++){
-        BG[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[i+1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+        BG[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[sel[i+1]].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, "", "0", 0, 1);
         hBG[i] = getHisto(BG[i], variable);
-        if (!closureTest && i != 2) measSubBG->Add(hBG[i], -1); //Avoid DY Tau Tau
+        if (!closureTest && i != 1) measSubBG->Add(hBG[i], -1); //Avoid DY Tau Tau
+        else if (i == 1) cout << "Avoid " << ProcessInfo[sel[i+1]].filename << endl;
     }
 
     //-- build the repsonse matrix, MCtruth, MCreco, d and SV ------------------------
@@ -187,23 +193,23 @@ void FastPlotsRun(const int *sel, int nsel, string leptonFlavor, string variable
 
     //if (closureTest) nBG = 0;
     //-- draw normalized response matrix --------------------------------------------
-    plotHNormResp(hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
+    //plotHNormResp(hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
     //-- draw singular values -------------------------------------------------------
-    plotSVVector(hSV, hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
+    //plotSVVector(hSV, hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
     //-- draw d-vector --------------------------------------------------------------
     plotDVector(hmodD, SVDkterm, hNormResp, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
     //-- draw SVD unfolded distribution in a TH2 ------------------------------------
-    plotSVDUnfoldedHistograms(response, meas, hBG, nBG, leptonFlavor, variable, energy, logZ, decrease, outputDirectory, outputRootFile, closureTest);
+    //plotSVDUnfoldedHistograms(response, meas, hBG, nBG, leptonFlavor, variable, energy, logZ, decrease, outputDirectory, outputRootFile, closureTest);
     //-- draw SVD selected kTerm and +/- 1 ------------------------------------------
-    plotSelectedMethod("SVD", response, genMad, SVDkterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
+    //plotSelectedMethod("SVD", response, genMad, SVDkterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
     //-- draw chi2 of change --------------------------------------------------------
     plotChi2OfChange(response, Bayeskterm, meas, hBG, nBG, leptonFlavor, variable, energy, outputDirectory, outputRootFile, closureTest);
     //-- draw Bayes unfolded distribution in a TH2 ----------------------------------
-    plotBayesUnfoldedHistograms(response, meas, hBG, nBG, leptonFlavor, variable, energy, logZ, decrease, outputDirectory, outputRootFile, closureTest);
+    //plotBayesUnfoldedHistograms(response, meas, hBG, nBG, leptonFlavor, variable, energy, logZ, decrease, outputDirectory, outputRootFile, closureTest);
     //-- draw Bayes selected kTerm and +/- 1 ----------------------------------------
-    plotSelectedMethod("Bayes", response, genMad, Bayeskterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
+    //plotSelectedMethod("Bayes", response, genMad, Bayeskterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
     //-- compare SVD, Bayes, Bin by Bin ---------------------------------------------
-    plotSVDvsBayesvsBBB(response, genMad, SVDkterm, Bayeskterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
+    //plotSVDvsBayesvsBBB(response, genMad, SVDkterm, Bayeskterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest);
     ////-- use Powheg for the response matrix with SVD ----------------------------------
     ////plotComparisonMadPowShe("SVD", hRespPow, hRespShe, response, SVDkterm, meas, hBG, nBG, leptonFlavor, variable, logZ, decrease, outputDirectory, outputRootFile, closureTest); 
     ////-- use Powheg for the response matrix with Bayes --------------------------------

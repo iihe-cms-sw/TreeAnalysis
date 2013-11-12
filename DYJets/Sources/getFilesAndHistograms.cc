@@ -9,107 +9,107 @@ using namespace std;
 
 string getEnergy()
 {
-   string energy = "";
-   ostringstream fileBeingProcessed; fileBeingProcessed << __FILE__;
-   if (fileBeingProcessed.str().find("Analysis2012") != string::npos) {
-      cout << "This is 2012 !" << endl;
-      energy = "8TeV";
-   }
-   else if (fileBeingProcessed.str().find("Analysis2011") != string::npos) {
-      cout << "This is 2011 !" << endl;
-      energy = "7TeV";
-   }
-   else 
-   {
-      cout << "WARNING ! Impossible to retrieve te energy form the current location !" << endl;
-   }
-   fileBeingProcessed.str("");
+    string energy = "";
+    ostringstream fileBeingProcessed; fileBeingProcessed << __FILE__;
+    if (fileBeingProcessed.str().find("Analysis2012") != string::npos) {
+        cout << "This is 2012 !" << endl;
+        energy = "8TeV";
+    }
+    else if (fileBeingProcessed.str().find("Analysis2011") != string::npos) {
+        cout << "This is 2011 !" << endl;
+        energy = "7TeV";
+    }
+    else 
+    {
+        cout << "WARNING ! Impossible to retrieve te energy form the current location !" << endl;
+    }
+    fileBeingProcessed.str("");
 
-   return energy;
+    return energy;
 }
 
 TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut,  string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
 {
-   if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
-   else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
-   else if (leptonFlavor == "Electron" || leptonFlavor == "SE_") leptonFlavor = "SE";
-   else if (leptonFlavor == "MuonElectron" || leptonFlavor == "SMuE_") leptonFlavor = "SMuE";
+    if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
+    else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
+    else if (leptonFlavor == "Electron" || leptonFlavor == "SE_") leptonFlavor = "SE";
+    else if (leptonFlavor == "MuonElectron" || leptonFlavor == "SMuE_") leptonFlavor = "SMuE";
 
-   ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
-   ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
-   ostringstream doQCDStr ; doQCDStr << doQCD ;
+    ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
+    ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
+    ostringstream doQCDStr ; doQCDStr << doQCD ;
 
-   string effiCorr = "1", trigCorr = "0";
-   if (Name.find("Data") == 0) effiCorr = "0";
-   if (Name.find("Data") == 0 || energy == "8TeV") trigCorr = "1";
-   if (Name.find("HepMC") !=  string::npos ||  Name.find("UNF")  !=  string::npos )  trigCorr = "1";
-   if (Name.find("HepMC") !=  string::npos || Name.find("Powh") !=  string::npos) {trigCorr = "0"; effiCorr = "0";}
-   if ( useUnfoldingFiles ){
-            effiCorr = "0";
-                 if (Name.find("Data") == 0) effiCorr = "1";
-                    }
-   string fileName = histoFilesDirectory + leptonFlavor + "_" + energy + "_" + Name;
-   fileName += "_EffiCorr_" + effiCorr + "_TrigCorr_" + trigCorr + "_Syst_" + syst + "_JetPtMin_" + JetPtMinStr.str();
-   if (JetPtMax != 0 && JetPtMax > JetPtMin) fileName += "_JetPtMax_" + JetPtMaxStr.str();
-   if (doFlat && Name.find("Data") == string::npos) fileName += "_Flat";
-   if ( closureTest.size()  ) fileName += closureTest;
-   if (doVarWidth )  fileName += "_VarWidth";
-   if ( dodR ) fileName += "_dR5";
-   if (doInvMassCut) fileName += "_InvMass";
-   if (doSSign )   fileName += "_SS";
-/*   if ( doQCD > 0){
-	if ( leptonFlavor == "SMuE") fileName +="_SS";
-	else  fileName += "_QCD" + doQCDStr.str();
-   }
-*/
+    string effiCorr = "1", trigCorr = "0";
+    if (Name.find("Data") == 0) effiCorr = "0";
+    if (Name.find("Data") == 0 || energy == "8TeV") trigCorr = "1";
+    if (Name.find("HepMC") !=  string::npos ||  Name.find("UNF")  !=  string::npos )  trigCorr = "1";
+    if (Name.find("HepMC") !=  string::npos || Name.find("Powh") !=  string::npos) {trigCorr = "0"; effiCorr = "0";}
+    if ( useUnfoldingFiles ){
+        effiCorr = "0";
+        if (Name.find("Data") == 0) effiCorr = "1";
+    }
+    string fileName = histoFilesDirectory + leptonFlavor + "_" + energy + "_" + Name;
+    fileName += "_EffiCorr_" + effiCorr + "_TrigCorr_" + trigCorr + "_Syst_" + syst + "_JetPtMin_" + JetPtMinStr.str();
+    if (JetPtMax != 0 && JetPtMax > JetPtMin) fileName += "_JetPtMax_" + JetPtMaxStr.str();
+    if (doFlat && Name.find("Data") == string::npos) fileName += "_Flat";
+    if ( closureTest.size()  ) fileName += closureTest;
+    if (doVarWidth )  fileName += "_VarWidth";
+    if ( dodR ) fileName += "_dR5";
+    if (doInvMassCut) fileName += "_InvMass";
+    if (doSSign )   fileName += "_SS";
+    /*   if ( doQCD > 0){
+         if ( leptonFlavor == "SMuE") fileName +="_SS";
+         else  fileName += "_QCD" + doQCDStr.str();
+         }
+         */
     if (doQCD>0) fileName += "_QCD" + doQCDStr.str();
-//   if (doInvMassCut)  fileName += "_InvMass";
-   fileName += ".root";
+    //   if (doInvMassCut)  fileName += "_InvMass";
+    fileName += ".root";
 
-   TFile *File; 
-   File = new TFile(fileName.c_str(), "READ");
-   cout << "Opening: " << fileName << "   --->   Opened ? " << File->IsOpen() << endl;
-   return File; 
+    TFile *File; 
+    File = new TFile(fileName.c_str(), "READ");
+    cout << "Opening: " << fileName << "   --->   Opened ? " << File->IsOpen() << endl;
+    return File; 
 }
 
 void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat,  bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, bool useUnfoldingFiles )
 {
-   bool isDoubleLep(0);
+    bool isDoubleLep(0);
 
-   if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
-   else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
-   if ( leptonFlavor == "DE" || leptonFlavor == "DMu" ) isDoubleLep = 1 ;
+    if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
+    else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
+    if ( leptonFlavor == "DE" || leptonFlavor == "DMu" ) isDoubleLep = 1 ;
 
-   vector<string> Syst;
-   if (Name.find("Data") != string::npos){ 
-      Syst.push_back("0");
-      Syst.push_back("2_Up");
-      Syst.push_back("2_Down");
-      if ( leptonFlavor == "DE" ) {
-          Syst.push_back("5_Up");
-          Syst.push_back("5_Down");
-      }
-   }
-   else if (Name.find("UNFOLDING") != string::npos && ((isDoubleLep && Name.find("DYJets") != string::npos )  || (!isDoubleLep && Name.find("WJets") != string::npos ))){
-       Syst.push_back("0");
-       Syst.push_back("1_Up");
-       Syst.push_back("1_Down");
-       Syst.push_back("4_Up");
-   }
-   else {
-       Syst.push_back("0");
-       Syst.push_back("1_Up");
-       Syst.push_back("1_Down");
-       Syst.push_back("3_Up");
-       Syst.push_back("3_Down");
-   };
+    vector<string> Syst;
+    if (Name.find("Data") != string::npos){ 
+        Syst.push_back("0");
+        Syst.push_back("2_Up");
+        Syst.push_back("2_Down");
+        if ( leptonFlavor == "DE" ) {
+            Syst.push_back("5_Up");
+            Syst.push_back("5_Down");
+        }
+    }
+    else if (Name.find("UNFOLDING") != string::npos && ((isDoubleLep && Name.find("DYJets") != string::npos )  || (!isDoubleLep && Name.find("WJets") != string::npos ))){
+        Syst.push_back("0");
+        Syst.push_back("1_Up");
+        Syst.push_back("1_Down");
+        Syst.push_back("4_Up");
+    }
+    else {
+        Syst.push_back("0");
+        Syst.push_back("1_Up");
+        Syst.push_back("1_Down");
+        Syst.push_back("3_Up");
+        Syst.push_back("3_Down");
+    };
 
-   int nSyst(Syst.size());
+    int nSyst(Syst.size());
 
-   for (int i(0); i < nSyst; i++) {
-       Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut, "", Syst[i], false, useUnfoldingFiles );
-       cout << endl;
-   }
+    for (int i(0); i < nSyst; i++) {
+        Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut, "", Syst[i], false, useUnfoldingFiles );
+        cout << endl;
+    }
 
 }
 
@@ -145,8 +145,8 @@ void getHistos(TH1D *histograms[], TFile *Files[], string variable, bool isDoubl
     string fileName = Files[0]->GetName();
     int nFiles;
     if (fileName.find("Data") != string::npos) {
-                    nFiles = 3; 
-                    if ( fileName.find("DE") != string::npos )  nFiles = 5;
+        nFiles = 3; 
+        if ( fileName.find("DE") != string::npos )  nFiles = 5;
     }
     else if ( ((isDoubleLep && fileName.find("DYJets") != string::npos) || ( !isDoubleLep && fileName.find("WJets") != string::npos)) &&fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
     else nFiles = 5;
