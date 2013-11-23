@@ -61,8 +61,11 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     for (unsigned short i = 0; i < nFiles; i++){
         int fileSelect = FilesDYJets[i] ;
         if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
+        if ( leptonFlavor == "SMuE"  ) fileSelect = FilesTTbar[i] ;
+
+        //if (!isDoubleLep) fileSelect = FilesTTbarWJets[i] ;
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
-        cout << "Is double lepton:" << isDoubleLep << fileNameTemp << endl;
+        cout << "Is double lepton:" << isDoubleLep << "   " << leptonFlavor <<"   " << fileNameTemp << endl;
         if ((doQCD > 0 || doInvMassCut || doSSign ) && fileNameTemp.find("QCD") != string::npos) continue;
         file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
 
@@ -140,7 +143,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         histTemp = (TH1D*) file[0]->Get(histoNameTemp.c_str());
         if (histTemp->GetEntries() < 1) continue;
         if (!histTemp->InheritsFrom(TH1D::Class())) continue;
-        
+
         histoName[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetName();
         histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
         histSumMC[nHistNoGen] = new THStack(histoName[nHistNoGen].c_str(), histoTitle[nHistNoGen].c_str());

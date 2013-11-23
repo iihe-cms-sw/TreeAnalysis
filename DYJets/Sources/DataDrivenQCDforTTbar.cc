@@ -62,7 +62,8 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 	TFile *fData[NQCD],*fSignal[NQCD],*fMC[15];             // 0 = central, 1 = JES Up, 2 = JES Down 
 	TH1D *hData[NQCD],*hSignal[NQCD],*hBack[NQCD];
 	for ( int i=0 ; i < NQCD ; i++){
-		fData[i] = getFile(FILESDIRECTORY, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 1, doInvMassCut, "", "0");
+        //getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
+		fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut, "","0");
 		cout << " got data " << variable << endl;
 		TH1D *hTemp = getHisto(fData[i], variable);
 		hData[i] = (TH1D *) hTemp->Clone();
@@ -72,10 +73,14 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 	//-----------------------------------------------------
 	cout << " now open all the MC of interest " << endl;
 	// ----------------- get all MC histos ---
-	for ( int j = 1 ; j < NFILESWJETS ; j++){
-		fMC[j] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[j].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 1 ,doInvMassCut, "","0");
+    int countNfiles = 0 ; 
+	for ( int j = 1 ; j < NFILESTTBAR ; j++){
+        int sel = FilesTTbar[j];
+        if (ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
+		fMC[countNfiles] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut, "","0");
+        countNfiles++;
 	}
-
+    
 	// QCD estiamtion procedure
 	cout << " to QCD estimation " << endl;
 	unsigned short nHist = fData[0]->GetListOfKeys()->GetEntries();
@@ -87,7 +92,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 		if (histoNameTemp.find("gen") != string::npos) continue;
 		TH1D* histTemp = (TH1D*) fData[0]->Get(histoNameTemp.c_str());
 		TH1D* hOut = (TH1D*)  histTemp->Clone();
-		for ( int j = 1 ; j < NFILESWJETS ; j++){
+		for ( int j = 1 ; j < countNfiles  ; j++){
 			TH1D* histTempMC = (TH1D*) fMC[j]->Get(histoNameTemp.c_str());
 			hOut->Add(histTempMC,-1);
 		}
