@@ -76,10 +76,8 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
 {
     bool isDoubleLep(0);
 
-    if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
-    else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
-    if ( leptonFlavor == "DE" || leptonFlavor == "DMu" ) isDoubleLep = 1 ;
-
+    if (leptonFlavor == "Muons" || leptonFlavor == "DMu") {leptonFlavor = "DMu";isDoubleLep = 1 ;}
+    else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") {leptonFlavor = "DE"; isDoubleLep = 1 ;}
     vector<string> Syst;
     if (Name.find("Data") != string::npos){ 
         Syst.push_back("0");
@@ -203,10 +201,12 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
         TFile *fData;
         int sel = i ; 
         if ( doDY ) sel = FilesDYJets[i];
+        else if  ( leptonFlavor.find("SMuE") != string::npos  ) sel = FilesTTbar[i] ;
         else sel = FilesTTbarWJets[i];
+
         if ((doQCD > 0 || doInvMassCut || doSSign ) && ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
         fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, "","0");
-        cout <<"opened :  " << i << "   " << sel <<"   " << FilesTTbarWJets[i] <<"  " << ProcessInfo[sel].filename <<endl;
+        cout <<"opened :  " << i << "   " << sel <<"   " << FilesTTbarWJets[i] <<"  " << ProcessInfo[sel].filename <<"   " << leptonFlavor.find("SMuE") << endl;
         TH1D *hTemp = getHisto(fData, variable);
         //NBins = hTemp ->GetNbinsX();
 
@@ -274,5 +274,18 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
 
 
 
+}
+TH1D* newTH1D(string name, string title, string xTitle, int nBins, double xLow, double xUp){
+    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xLow, xUp);
+    hist->GetXaxis()->SetTitle(xTitle.c_str());
+    hist->GetYaxis()->SetTitle("# Events");
+    hist->SetOption("HIST");
+    return hist;
+}
+TH2D* newTH2D(string name, string title, int nBinsX, double xLow, double xUp, int nBinsY, double yLow, double yUp){
+    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xLow, xUp, nBinsY, yLow, yUp);
+    hist->GetZaxis()->SetTitle("# Events");
+    hist->SetOption("HIST");
+    return hist;
 }
 

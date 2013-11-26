@@ -30,7 +30,7 @@ const processInfoStruct ProcessInfo[] = {
 
     {"TTJets_dR_5311",		                  6923652.,   234.,    1,         0.10,          kBlue,       " TTJets"},  
     {"DYJets10to50_dR_5311",	              11707222.,  860.5,   1,         0.04,          kAzure-4,    " DY"},
-    {"DYJets_MIX_UNFOLDING_dR_5311_Inf3",     30459503.,  3503.7,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
+    {"DYJets_MIX_UNFOLDING_dR_5311_Inf3",     30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
     {"ZZJets2L2Nu_dR_5311",		              954911.,    17.654,  0.04039,   0.04,          kSpring+5,   " ZZJets2L2Nu"},
     {"ZZJets4L_dR_5311",		              4807893.,   17.654,  0.010196,  0.04,          kOrange,     " ZZJets4L"},
     {"ZZJets2L2Q_dR_5311",		              1936727.,   17.654,  0.14118,   0.04,          kOrange-3,   " ZZJets2L2Q"},
@@ -53,6 +53,7 @@ const int NFILESDYJETS(12);
 const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
 const int NFILESTTBAR(9);
 const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 1};
+const int FilesTTbar[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};
 const int DATAFILENAME(0);
 const int DYMADGRAPHFILENAME(13);
 

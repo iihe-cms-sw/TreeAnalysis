@@ -31,4 +31,8 @@ void plotBayesUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D 
 void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad, int kterm, TH1D *hData, TH1D *hBG[], int nBG, string leptonFlavor, string variable, bool logZ, bool decrease, string outputDirectory, TFile *outputRootFile, bool closureTest = false, bool save = true);
 void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooUnfoldResponse *response, int kterm, TH1D *hData, TH1D *hBG[], int nBG, string leptonFlavor, string variable, bool logZ, bool decrease, string outputDirectory, TFile *outputRootFile, bool closureTest = false, bool save = true);
 void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm, int Bayeskterm, TH1D *hData, TH1D *hBG[], int nBG, string leptonFlavor, string variable, bool logZ, bool decrease, string outputDirectory, TFile *outputRootFile, bool closureTest = false, bool save = true);
+TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBins);
+TH1D* mergeGenHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig);
+TCanvas * createCanvas(TH1D* h2Dtemp11 , string name );
+TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBins);
 #endif
