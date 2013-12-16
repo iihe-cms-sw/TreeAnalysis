@@ -85,6 +85,13 @@ variableStruct VAROFINTEREST[] = {
    {"PHI_T_LowPt_Zinc2jet",              0,      0,           3,              5,             3,            5},
    {"SPhi_LowPt_Zexc2jet",               0,      0,          11,              9,             3,            4},
    {"SPhi_LowPt_Zinc2jet",               0,      0,           8,             10,             6,            6},
+   // additional correlations  =----- NEED TP CHECK THE UNFOLDING PARAMTERS !!!!
+   {"dEtaJets_Zinc2jet",                 0,      0,           8,             10,             6,            6},
+   {"dEtaJets_Zexc2jet",                 0,      0,           8,             10,             6,            6},
+   {"dEtaBosonJet_Zinc1",                 0,      0,           8,             10,             6,            6},
+   {"dEtaBosonJet_Zexc1",                 0,      0,           8,             10,             6,            6},
+   {"dEtaFirstJetZ_Zinc2jet",                 0,      0,           8,             10,             6,            6},
+   {"dEtaSecondJetZ_Zinc2jet"                 0,      0,           8,             10,             6,            6},
 
 }; 
 
