@@ -21,3 +21,5 @@ DYJets/HistoFiles
 
 # ignores pngs and pdf output files
 DYJets/PNGFiles
+
+DYJets/Presentation

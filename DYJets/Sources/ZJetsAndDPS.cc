@@ -630,7 +630,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 lep2.SetPtEtaPhiM(METpt, 0. , METphi , 0. );
                 Z = lep1 + lep2;
 
-                leptonStruct tempMet = { METpt , 0., METphi, METpt, 0 , 0};
+                leptonStruct tempMet = {METpt, 0., METphi, METpt, 0, 0, 0};
                 lepton2 = tempMet;
 
                 MT = sqrt( 2 * METpt * lepton1.pt * ( 1 - cos(METphi - lepton1.phi))) ;
@@ -729,8 +729,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 if (!lepSelector) continue ;
                 double charge(genLepQ_->at(i)); 
                 if (abs(genLepId_->at(i)) == 12 || abs(genLepId_->at(i)) == 14 || abs(genLepId_->at(i)) == 16) charge = 0.; // filling of ntuples not best 
-                leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0.};
-                leptonStruct genLepNoFSR = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0.};
+                leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
+                leptonStruct genLepNoFSR = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
                 //cout << " nasi gen neutrino " << genLepPt_->at(i) << "   " << charge << "status " << genLepSt_->at(i) << "   " << genLepId_->at(i) << endl ;
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
                 if ( ( genLepSt_->at(i) == 1 && lepSelector &&  abs(genLepId_->at(i)) == LeptonID) || ( doW && charge == 0 ) ){
@@ -943,6 +943,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                         jetsAdditional.push_back(jet);	
                     }
                 }
+<<<<<<< HEAD
                 }//End of loop over all the jets 
 
 
@@ -985,6 +986,42 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                                 if (DEBUG) cout << "Electron scale factor: " << weight << "  " << LeptID.getEfficiency(lepton1.pt, fabs(lepton1.eta)) <<"   " << LeptID.getEfficiency(lepton2.pt, fabs(lepton2.eta)) << endl;
                                 //weight = weight / Data_GSFtoPF.getEfficiency(lepton1.eta, lepton2.eta);
                                 //weight = weight * MC_GSFtoPF.getEfficiency(lepton1.eta, lepton2.eta);
+=======
+            }//End of loop over all the jets 
+
+
+            for ( int k = 0 ; k < 10 ; k++){
+                ZNGoodJetsBeta_Zexc->Fill(countNJetsVSBeta[k], k  , weight);
+            }
+
+            nGoodJets = jets.size();
+            nJetsAdd = jetsAdditional.size();
+            // add MET scale to selection of leptons:
+            if (doW && fabs(scale) > 0. && nMuons == 1 && nLeptons == 1 && nElectrons == 0){
+                passesLeptonCut = false ;
+                METphi = patMetPhi_->at(whichMet);
+                METpt = patMetPt_->at(whichMet) + METscale;
+                lep2.SetPtEtaPhiM(METpt, 0., METphi, 0.);
+                Z = lep1 + lep2;
+
+                leptonStruct tempMet = {METpt, 0., METphi, METpt, 0, 0, 0};
+                lepton2 = tempMet;
+
+                MT = sqrt( 2 * METpt * lepton1.pt * (1 - cos(METphi - lepton1.phi)));
+                if (METpt >= METCut && MT >= MTCut ){
+                    passesLeptonCut = true;
+                    genWeight = weight;
+                    //genWeight = genWeightBackup ; // THIS ISWRONG JUST TO TEST THE GEN INFO WITHOUT WEIGHTS
+                    nEventsWithTwoGoodLeptons++;
+                    // correct for identification and isolation efficiencies if required by useEfficiencyCorrection
+                    // apply only scale factors.
+                    if (fabs(scale) == 0. && useEfficiencyCorrection){
+                        if (leptonFlavor == "SingleMuon"){
+                            weight = weight / (LeptID.getEfficiency(lepton1.pt, fabs(lepton1.eta)) * LeptIso.getEfficiency(lepton1.pt, fabs(lepton1.eta)));
+                            //weight = weight / (MuTrig.getEfficiency(lepton1.eta, lepton2.eta));
+                            if (useTriggerCorrection){
+                                weight = weight / (LeptTrig.getEfficiency(fabs(lepton1.pt), fabs(lepton1.eta)));
+>>>>>>> c49439b3adc27e28007d4cb99b1af429cc1eefa9
                             }
                         }
                     }
@@ -1022,9 +1059,45 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
                 if (doBJets == -1 && countBJets > 0 )  passesLeptonCut = 0  ;
 
+<<<<<<< HEAD
             }  // END IF HAS RECO
             //=======================================================================================================//
 
+=======
+        if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
+        //=======================================================================================================//
+        //        Retrieving gen jets         //
+        //====================================//
+        bool passesGenJetCut(1), passesGenEWKJetPt(0);//, passesGenEWKJetFwdEta(0);
+        unsigned short nGoodGenJets(0), nGenJetsAdd(0), nTotGenJets(0);
+        double genJetsHT(0);
+        vector<jetStruct> genJets, genJetsAdditional;
+        TLorentzVector genLeadJ, genSecondJ, genJet1Plus2, genJet1Minus2;
+
+        if (hasGenInfo){
+            nTotGenJets = genJetEta_->size();
+            //-- retrieving generated jets
+            for (unsigned short i(0); i < nTotGenJets; i++){
+                jetStruct genJet = {genJetPt_->at(i), genJetEta_->at(i), genJetPhi_->at(i), genJetE_->at(i), i};
+                bool genJetPassesdRCut(1);
+                double dRmin = 9999.;
+                for (unsigned short j(0); j < nGenLeptons; j++){ 
+                    if (genJet.pt >=  jetPtCutMin){
+                        gendeltaRjetMu->Fill(deltaR(genJet.phi, genJet.eta, genLeptons[j].phi, genLeptons[j].eta), genWeight);
+                    }
+                    if ( deltaR(genJet.phi, genJet.eta, genLeptons[j].phi, genLeptons[j].eta) < dRmin ) dRmin = deltaR(genJet.phi, genJet.eta, genLeptons[j].phi, genLeptons[j].eta);
+                    // I need this line because for to me unknown reason I CAN NO REMOVE ELECTRONS FROM Z IN SHERPA !!!!
+                    if ((doDR || (leptonFlavor == "Electrons" && fileName.find("HepMC") != string::npos)) 
+                            && deltaR(genJet.phi, genJet.eta, genLeptons[j].phi, genLeptons[j].eta) < 0.5 ){
+                        genJetPassesdRCut = 0;
+                    }
+                }
+                if (genJet.pt >= 10 && genJet.pt < 1000. && fabs(genJet.eta) <= 4.7 && genJetPassesdRCut){
+                    passesGenEWKJetPt = (genJet.pt >= 50);
+                    //passesGenEWKJetFwdEta = (fabs(genJet.eta) > 2.4);
+                    genJets.push_back(genJet);                  
+                    if (genJet.pt >=  15.) genJetsAdditional.push_back(genJet);
+>>>>>>> c49439b3adc27e28007d4cb99b1af429cc1eefa9
 
             if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
             //=======================================================================================================//

@@ -163,9 +163,9 @@ table::table(string filename)
         for (int i=0;i<7;i++)
         {
             file>>data[i];
-            cout << data[i] <<"  " ;
+            //cout << data[i] <<"  " ;
         }
-        cout << endl;
+        //cout << endl;
         recd.push_back(record(data[2],data[3],data[0],data[1],data[4],data[5],data[6]));
 
     }

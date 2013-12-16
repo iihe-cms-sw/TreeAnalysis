@@ -22,8 +22,8 @@
     int NSystData  = 3;
     int NSystMC    = 5;
     int NSystTau   = 5;
-    bool doSyst    = 1;
-    int doWhat     = 100 ; // 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
+    bool doSyst    = 0;
+    int doWhat     = 0 ; // 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
     //----------------------------------------------------------//
     
     //--- change of the above options according to selecteed lepton analysis

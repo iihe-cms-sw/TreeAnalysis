@@ -278,9 +278,9 @@ void plotHNormResp(TH2D *hNormResp_, string leptonFlavor, string variable, strin
     hNormResp->SetContour(90);
     hNormResp->DrawCopy("COLZ");
     hNormResp->DrawCopy("TEXT SAME");
-    string outputFileNamePNGResp = outputDirectory + canNameRespMatrix + ".png";
+    string outputFileNameResp = outputDirectory + canNameRespMatrix + ".pdf";
     if (save){
-        canRespMatrix->Print(outputFileNamePNGResp.c_str());
+        canRespMatrix->Print(outputFileNameResp.c_str());
         outputRootFile->cd();
         canRespMatrix->Write();
     }
@@ -337,9 +337,9 @@ void plotDVector(TH1D *hmodD_, int kterm, TH2D *hNormResp, string leptonFlavor, 
     canD->SetTicks();
     hmodD->DrawCopy("TEXT60");
     arrow->Draw();
-    string outputFileNamePNG = outputDirectory + canNameD + ".png";
+    string outputFileName = outputDirectory + canNameD + ".pdf";
     if (save){
-        canD->Print(outputFileNamePNG.c_str());
+        canD->Print(outputFileName.c_str());
         outputRootFile->cd();
         canD->Write();
     }
@@ -386,9 +386,9 @@ void plotSVVector(TH1D *hSV_, TH2D *hNormResp, string leptonFlavor, string varia
     canSV->SetGrid();
     canSV->SetTicks();
     hSV->DrawCopy("TEXT60");
-    string outputFileNamePNG = outputDirectory + canNameSV + ".png";
+    string outputFileName = outputDirectory + canNameSV + ".pdf";
     if (save){
-        canSV->Print(outputFileNamePNG.c_str());
+        canSV->Print(outputFileName.c_str());
         outputRootFile->cd();
         canSV->Write();
     }
@@ -454,9 +454,9 @@ void plotSVDUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D *h
     unfoldedDistributions->GetXaxis()->SetTitleOffset(1.5);
     unfoldedDistributions->GetXaxis()->SetLabelSize(0.025);
     unfoldedDistributions->DrawCopy("lego2");
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".png";
+    string outputFileName = outputDirectory + name.c_str() + ".pdf";
     if (save){
-        canUnfoldedDistributions->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistributions->Print(outputFileName.c_str());
         outputRootFile->cd();
         canUnfoldedDistributions->Write();
     }
@@ -523,9 +523,9 @@ void plotChi2OfChange(RooUnfoldResponse *response, int kterm, TH1D *hData, TH1D 
     canChi2->SetTicks();
     Chi2OfChange->DrawCopy("TEXT60");
     arrow->Draw();
-    string outputFileNamePNG = outputDirectory + canNameChi2 + ".png";
+    string outputFileName = outputDirectory + canNameChi2 + ".pdf";
     if (save){
-        canChi2->Print(outputFileNamePNG.c_str());
+        canChi2->Print(outputFileName.c_str());
         outputRootFile->cd();
         canChi2->Write();
     }
@@ -592,9 +592,9 @@ void plotBayesUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D 
     unfoldedDistributions->GetXaxis()->SetTitleOffset(1.5);
     unfoldedDistributions->GetXaxis()->SetLabelSize(0.025);
     unfoldedDistributions->DrawCopy("lego2");
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".png";
+    string outputFileName = outputDirectory + name.c_str() + ".pdf";
     if (save){
-        canUnfoldedDistributions->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistributions->Print(outputFileName.c_str());
         outputRootFile->cd();
         canUnfoldedDistributions->Write();
     }
@@ -811,9 +811,9 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     if (kterm < nBins) hUnfoldedU->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".png";
+    string outputFileName = outputDirectory + name.c_str() + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileName.c_str());
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }
@@ -1014,9 +1014,9 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     hUnfoldedShe->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".png";
+    string outputFileName = outputDirectory + name.c_str() + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileName.c_str());
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }
@@ -1226,9 +1226,9 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedSVD->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".png";
+    string outputFileName = outputDirectory + name.c_str() + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileName.c_str());
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }
