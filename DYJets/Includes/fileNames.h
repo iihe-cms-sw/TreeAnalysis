@@ -98,6 +98,7 @@ const string FILENAMES[NFILESVJETS] = {
 
 const string DYPOWHEGFILENAME = FILENAMES[12];
 const string DYSHERPAFILENAME = FILENAMES[13];
+const string DYSHERPA2NLOFILENAME ="DY_Sherpa_2NLO4_HepMC_dR_Full_List";
 
 const string BGFILENAMES[9] = {
     FILENAMES[1],
