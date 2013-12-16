@@ -128,9 +128,9 @@ TH1D* getSumBG(string histoFilesDirectory,string leptonFlavor , string energy, s
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName)
+TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, bool useOverFlow =  true )
 {
-  response->UseOverflow();
+  if ( useOverFlow ) response->UseOverflow();
   RooUnfold* RObject;
   TH1D * hDataClone = (TH1D*) hData->Clone();
   hDataClone->Add(hSumBG, -1);
@@ -145,9 +145,9 @@ TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSum
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hSumBG, int Kterm, string hOutName)
+TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hSumBG, int Kterm, string hOutName,  bool    useOverFlow =  true)
 {
-  response->UseOverflow();
+   if ( useOverFlow ) response->UseOverflow();
   RooUnfold* RObject;
   TH2D * hDataClone = (TH2D*) hData->Clone();
   hDataClone->Add(hSumBG, -1);
@@ -164,12 +164,12 @@ TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, int NToys)
+TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, int NToys, bool    useOverFlow =  true )
 {
   cout << endl;
   cout << " I'm doing COV from ROOUNFOLD " << hOutName <<  "  number is :  "<< NToys << endl;
 
-  response->UseOverflow();
+   if ( useOverFlow ) response->UseOverflow();
   RooUnfold* RObject;
   TH1D * hDataClone = (TH1D *) hData->Clone();
   hDataClone->Add(hSumBG, -1);
@@ -258,9 +258,16 @@ TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hUp, TH1D* hDown, string name){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, string name){
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, string name, int option = 0 ){
     TH1D * hDataClone = (TH1D *) hData->Clone(name.c_str());
-    for(int j = 0 ; j != hData->GetNbinsX()+1  ; j++){
+    int startBin = 0 ;
+    int NBins = hData->GetNbinsX()+1  ;
+    if ( option = 1 ){
+        startBin = 1 ;
+        NBins = hData->GetNbinsX() ;
+    }
+    for(int j = startBin ; j <= NBins  ; j++){
+        cout << j <<"   " << hUp->GetBinContent(j)<<"  "<< hCentral->GetBinContent(j) << endl;
         if ( hCentral->GetBinContent(j) <= 0 ) continue;
         double ErrUp = hUp->GetBinContent(j)-hCentral->GetBinContent(j);
         double ErrDown = hCentral->GetBinContent(j) - hDown->GetBinContent(j);
@@ -307,9 +314,11 @@ TH2D* SetResponseErrors(TH2D* hCen, TH2D* hUp, TH2D* hDown){
             double ErrDown = fabs(hCen->GetBinContent(i,j) - hDown->GetBinContent(i,j));
             double ErrMax = ErrUp;
             if ( ErrDown > ErrUp ) ErrMax = ErrDown ;
+            cout << " response error " << i <<"  " << j <<"  " << hCen->GetBinContent(i,j) <<"  " << hDown->GetBinContent(i,j) << "   " << hUp->GetBinContent(i,j) << " error :" << ErrMax << endl;
             hCenClone->SetBinError(i,j,ErrMax);
         }
     }
+    cout << " size of the response object :" << hCen->GetNbinsX() <<"   " << hCen->GetNbinsY() << endl;
     return hCenClone;
 }
 
@@ -321,10 +330,10 @@ TH2D* SetResponseErrors(TH2D* hCen, TH2D* hUp, TH2D* hDown){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // this is stil messy, stil thinking what is the best thing to do. until then ...
 //TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack, RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos , int selection  ){
-TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos , int selection  ){
+TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos , int selection , bool    useOverFlow =  true, int NBkgGroups = 6   ){
 
 
-    response->UseOverflow();
+    if ( useOverFlow ) response->UseOverflow();
     double lumiSyst = 0.026;
     ostringstream fileBeingProcessed; fileBeingProcessed << __FILE__;
     if (fileBeingProcessed.str().find("Analysis2011") != string::npos) lumiSyst = 0.022;
@@ -341,7 +350,7 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
 
 
     TH1D* hBack = (TH1D *) hBack0[0];
-    const int NBkgGroups(6);
+    //const int NBkgGroups(6);
     cout<<" entering PSEUDO experiments with option : "  << selection <<"     " << hTitle <<" is multiplicity :" << isZN << endl;
     //Random for pseudos
     //TDatime t;
@@ -365,11 +374,12 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
     // dependendt gauss for different bins
     if (selection == 12 ){ fluctPData = true; fluctBkg = true; }
     // gauss errors on JES
-    if (selection == 3)  fluctPData = true;  // bins are independent
-    if (selection == 10) fluctPData = true;  // bins are NOT independent
+    if (selection == 3 )  fluctPData = true;  // bins are independent
+    if (selection == 10) fluctPData = true;  // bins are NOT independent  
+    if (selection == 20) fluctPData = true;  // bins are NOT independent  , this is needed for combined unfolding where we produce two different gaussian for muon and electrons
+    if (selection == 20 || selection == 21) isZN = false ; // dont anticorrelate 0 jet  bin in case of error of the efficiecny scale factors 
     // gauss errors on JES XSEC
     if (selection == 5)  fluctBkg = true; 
-    if (selection == 11) fluctBkg = true;
     if (selection == 11) fluctBkg = true;
 
 
@@ -395,7 +405,7 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
         h_meas = (TH1D*) hdata->Clone("Data");
         h_response_temp = (TH2D*) hresponse->Clone("Data");
         weRunOnNPS = i ;
-        cout << "which Pseudo: "  << i << "\r";
+        cout << "which Pseudo: "  << i << endl;
 
         if(nPseudos > 1) {
             double dataIntegral =  h_meas->Integral() ;
@@ -429,11 +439,11 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
                     //                    cout << countNJets << "   " << dataIntegral <<"   " << countNJets/dataIntegral << endl;
                     h_meas->SetBinContent(1, dataIntegral - countNJets);
                     h_meas->SetBinError(1, hdata->GetBinError(1) );
-
+                    cout << " had set the corr " << endl;
                 }
             }
             // fluctuate data with fixed bin correlation: like JES --> all bins increase or decrease ( watch out Z+0 jets bin) ?????
-            if (selection == 10 && fluctPData == true) {
+            if (( selection == 10 || selection == 20 || selection == 21 )&& fluctPData == true) {
                 // not sure if I want to have always the same gaussian
                 double fluct1sig=random->Gaus(0,1);
                 double fluct1dir=fluct1sig/fabs(fluct1sig);
@@ -441,9 +451,17 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
                 //double fluct1dir(1.);
 
                 for (int j(0); j <= h_meas->GetNbinsX() + 1; j++) {
+
+                    // line below is need to propagate lepton efficiency uncertainty in the combined unfolding
+                    if (  selection == 20 && int(h_meas->GetNbinsX() / 2 ) == j ) { 
+                        fluct1sig=random->Gaus(0,1); fluct1dir=fluct1sig/fabs(fluct1sig);
+                        cout << " new sigma " << fluct1sig << endl;
+                    }
+
+
                     double fluct(0);
                     //double fluct1sig( random->Gaus(0, 1) );
-                    if (j == 2 && isZN ) fluct1dir *= -1; /// JES:  n-jet bins always follow the same trend while 0 jet is opposite double fluct(0);
+                    if (j == 2 && isZN  ) fluct1dir *= -1; /// JES:  n-jet bins always follow the same trend while 0 jet is opposite double fluct(0);
                     double BinCount( hdata->GetBinContent(j) );
                     double BinError( hdata->GetBinError(j) );
                     //if (BinCount > 0 && !usePoisson )  fluct= BinCount  + hDirectionDataJES->GetBinContent(j)* fluct1dir * fabs(fluct1sig) * BinError ;
@@ -549,15 +567,16 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
                         // LAZY TO SET THIS RIGHT
                         //fluctB = BinCount + hDirectionBkgPU->GetBinContent(j) *fluct1sig * BinError;
                         fluctBtemp = BinCount + fluct1sig * BinError;
-                        cout << i <<"   " <<k<<"   "<< j<<"  " << BinCount <<"  " << BinError <<"   " << fluctBtemp <<  endl;
                         //if (fluctBtemp > 0) fluctB[j] += fluctLUMIsig * fluctBtemp;  // NOT SURE I WANT TO ADD LUMI ERROR TO THIS SINCE IT'S GOING TO BE ADDED TO THE FINAL RESULT. DOUBLE COUNTING ?
-                        if (fluctBtemp > 0) fluctB[j] = fluctBtemp ;
-                        else fluctB[j] = 0. ;
+                        //cout << i <<"   " <<k<<"   "<< j<<"  " << BinCount <<"  " << BinError <<"   " << fluctBtemp <<  endl;
+                        if (fluctBtemp > 0) fluctB[j] += fluctBtemp ;
+                        //else fluctB[j] = 0. ;
                     }
                 }
                 for (int j(1); j <= h_bkg->GetNbinsX() + 1 ; j++) {
                     h_bkg->SetBinError(j, sqrt(fluctB[j])); // this is ify
                     h_bkg->SetBinContent(j, fluctB[j]);
+                        cout << j<<"  " <<"  " << fluctB[j] <<  endl;
                 }
             }
 
@@ -575,14 +594,16 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
         RObject->SetVerbose(0);
         TH1D* h_unfold = (TH1D*) RObject->Hreco();
 
+        
+            cout << "unfold result test: "<< endl;
         for (int j(0); j < NBins; j++){
+            cout << "unfold result test: "<< j << endl;
             double a( h_unfold->GetBinContent(j + 1) );
             if (i == 0) mean[j] = a;
             else mean[j] += a;
             allPseudo[j][i] = a;	
-
+            cout << " ma daj ..."<< j  <<"  "<< h_meas ->GetBinContent(j + 1)<<"   " << h_bkgsub->GetBinContent(j + 1)<<"   " << h_unfold->GetBinContent(j + 1) << "   "<< endl;
         }
-
     }// end loop over pseudos
 
     // fill output histogram

@@ -6,7 +6,7 @@
 using namespace std;
 
 void DataDrivenQCDforTTbar();
-void FuncDataDrivenQCD(string variable="ZNGoodJets_Zexc" , string leptonFlavor = "SMuE", bool doFlat = false, bool doVarWidth = true);
+void FuncDataDrivenQCD(string variable="ZNGoodJets_Zexc" , string leptonFlavor = "SMuE", bool doFlat = false, bool doVarWidth = true, int MET = 30);
 
 #endif
 

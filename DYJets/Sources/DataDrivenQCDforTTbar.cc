@@ -52,7 +52,8 @@ void DataDrivenQCDforTTbar(){
 	fOut ->Close();
 }
 
-void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool doVarWidth){
+
+void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool doVarWidth, int MET ){
 	string outputRootFileName ="SMuE_8TeV_DataQCD_dR_5311_EffiCorr_0_TrigCorr_1_Syst_0_JetPtMin_30_VarWidth.root";
 	fOut = new TFile(outputRootFileName.c_str(), "RECREATE");
 	cout << " test" << endl;
@@ -63,7 +64,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 	TH1D *hData[NQCD],*hSignal[NQCD],*hBack[NQCD];
 	for ( int i=0 ; i < NQCD ; i++){
         //getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
-		fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut, "","0");
+		fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut,MET, "","0");
 		cout << " got data " << variable << endl;
 		TH1D *hTemp = getHisto(fData[i], variable);
 		hData[i] = (TH1D *) hTemp->Clone();
@@ -77,7 +78,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, bool doFlat , bool 
 	for ( int j = 1 ; j < NFILESTTBAR ; j++){
         int sel = FilesTTbar[j];
         if (ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
-		fMC[countNfiles] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut, "","0");
+		fMC[countNfiles] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 1 ,doInvMassCut,MET, "","0");
         countNfiles++;
 	}
     
