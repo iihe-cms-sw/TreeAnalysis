@@ -36,7 +36,7 @@ void MCComparison(int sel = 1){
     gStyle->SetOptStat(0);
     TFile* files[10];
     TH1D* Histos[10];
-    cout << "MCComparison" << endl;
+    cout << "MCComparison  "<< sel << endl;
     int nFiles = 3 ;
     string sLegend[] = {"MG+Py6","PowMiNLO+Py6","Sherpa1NLO"}; 
     string fileName = "PNGFiles/MCComparison_MG_PowMiNLO_Sherpa1NLO";
@@ -47,7 +47,7 @@ void MCComparison(int sel = 1){
         files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
         outputRootFile = new TFile("PNGFiles/MCComparison_MG_PowMiNLO_Sherpa1NLO.root", "RECREATE");
     }
-    if ( sel == 1 ){
+    else if ( sel == 1 ){
         sLegend[0] = "Sherpa1NLO"; sLegend[1] = "Sherpa1NLO ScaleDown";sLegend[2] = "Sherpa1NLO ScaleUp"; 
         fileName = "PNGFiles/MCComparison_Sherpa1NLO_withScales";	
         string fileOut = fileName +".root" ;
@@ -59,12 +59,21 @@ void MCComparison(int sel = 1){
         //outputRootFile = new TFile(fileName.c_str()+".root", "RECREATE");
         outputRootFile = new TFile(fileOut.c_str(), "RECREATE");
     }
+    else if ( sel == 2 ){
+        sLegend[0] = "MG"; sLegend[1] = "Sherpa1NLO";sLegend[2] = "Sherpa2NLO"; 
+        fileName = "PNGFiles/MCComparison_MG_Sherpa1NLO_Sherpa2NLO";
+        files[0] = getFile(FILESDIRECTORY, "DE", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, 0, doVarWidth);
+        files[1] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPA2NLOFILENAME,   JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_MG_Sherpa1NLO_Sherpa2NLO.root", "RECREATE");
+    }
 
     // get number of histograms
     int nHist = files[0]->GetListOfKeys()->GetEntries();
     for (int i = 0; i < nHist; i++) {
         string histoNameTemp = files[0]->GetListOfKeys()->At(i)->GetName();
         if (histoNameTemp.find("gen") == string::npos) continue ;
+//        if (histoNameTemp.find("genZNG") == string::npos) continue ;
         //i = nHist ;
         cout <<  histoNameTemp << endl;
         for (int j = 0; j < nFiles; j++) {

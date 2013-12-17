@@ -49,11 +49,12 @@ int JetPtMax(0);
 
 void FinalUnfold()
 {
+//  variableStruct VAROFINTEREST[] = VAROFINTERESTZJETS ; 
   for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
     for (int j(0); j < 2; j++){
       isMuon = j ;
-      if (isMuon) FuncUnfold(VAROFINTEREST[i].name, VAROFINTEREST[i].MuBayeskterm, VAROFINTEREST[i].MuSVDkterm);
-      else FuncUnfold(VAROFINTEREST[i].name, VAROFINTEREST[i].EBayeskterm, VAROFINTEREST[i].ESVDkterm);
+      if (isMuon) FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
+      else FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].EBayeskterm, VAROFINTERESTZJETS[i].ESVDkterm);
     }
   }
 
@@ -218,12 +219,13 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   outputRootFile->cd();  hData[0]->Write("Data"); hData[1]->Write("DataJECup");hData[2]->Write("DataJECdown");
   //-- save madgraph gen also in the file
   outputRootFile->cd();  hDYGenMadGraph->Write("genMad");	
+  cout << " saved data reco and madgraph files" << endl;
   //-- save sherpa and powheg gen also in the file
   outputRootFile->cd();  
-  hDYGenSherpa->Write("genShe");
+  //hDYGenSherpa->Write("genShe");
   //-- save powheg gen also in the file
   outputRootFile->cd();  
-  hDYGenPowheg->Write("genPow");  
+  //hDYGenPowheg->Write("genPow");  
   //hDYGenPowhegUp->Write("genPowUp");  
   //hDYGenPowhegDown->Write("genPowDown");
   cout << "Start unfolding offseted histograms on RECO "<<endl;

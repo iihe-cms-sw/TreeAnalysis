@@ -12,7 +12,7 @@ struct processInfoStruct{
 };
 
 const int NFILESWJETS(14); 
-const int NFilesFull(27); 
+const int NFilesFull(28); 
 const processInfoStruct ProcessInfo[] = {
     //--  Name  ---------------------------- #events ---- xsec - branch - xsec error (%) -- color for plot -- name on legend
     {"Data_dR_5311",                          1,          1.,      1,         1,             kBlack,      " Data"},
@@ -44,15 +44,17 @@ const processInfoStruct ProcessInfo[] = {
     {"DataQCD_dR_5311",	                      1.,         1,       1,         0.04,          kYellow,     " QCD"},
     {"WJetsALL_UNFOLDING_dR_5311",            76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"WJetsALL_MIX_dR_5311",                  76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
-    {"WJetsALL_dR_5311",                      76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}
+    {"WJetsALL_dR_5311",                      76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
+    {"DYJets_UNFOLDING_dR_5311_Inf3",         30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
 };
 
 //--- first element must point to the data
 //--- last element must point to the MC Signal
 const int NFILESDYJETS(12);
-const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
+//const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
+const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 27};
 const int NFILESTTBAR(9);
-const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 1};
+const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};
 const int FilesTTbar[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};
 const int DATAFILENAME(0);
 const int DYMADGRAPHFILENAME(13);
@@ -96,6 +98,7 @@ const string FILENAMES[NFILESVJETS] = {
 
 const string DYPOWHEGFILENAME = FILENAMES[12];
 const string DYSHERPAFILENAME = FILENAMES[13];
+const string DYSHERPA2NLOFILENAME ="DY_Sherpa_2NLO4_HepMC_dR_Full_List";
 
 const string BGFILENAMES[9] = {
     FILENAMES[1],

@@ -5,8 +5,9 @@
 
 using namespace std;
 
-void DataDrivenQCD();
-void FuncDataDrivenQCD(string variable="ZNGoodJets_Zexc" , string leptonFlavor = "SMu", bool doFlat = false, bool doVarWidth = true);
-
+void DataDrivenQCD( string leptonFlavor = "SMu", int METcut = 0);
+vector<string> getVectorOfHistoNames();
+void FuncDataDrivenQCD(string variable="ZNGoodJets_Zexc" , string leptonFlavor = "SMu", int METcut = 0, bool doFlat = false, bool doVarWidth = true );
+void FuncOpenAllFiles(string leptonFlavor = "SE",  int METcut = 0, bool doFlat = false, bool doVarWidth = true );
 #endif
 

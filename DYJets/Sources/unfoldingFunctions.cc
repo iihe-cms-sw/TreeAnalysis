@@ -25,23 +25,71 @@ TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig){
     cout << "combinedHisto  :"<< NBinsOrig <<"  " << NBins << endl;
     TH1D* hOut;
     double binWidth = (hMuon->GetXaxis()->GetXmax()-hMuon->GetXaxis()->GetXmin()) / hMuon->GetXaxis()->GetNbins() ;
-    double binMax = hMuon->GetXaxis()->GetXmin() + binWidth*2 * NBins ;
-    hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins );
-    int countBins = 1 ;
-    for ( int j = 0;  j <  NBins/2    ; j++){
-        hOut->SetBinContent(countBins, hMuon->GetBinContent(j + 1));
-        hOut->SetBinError(countBins, hMuon->GetBinError(j + 1));
-        countBins++;
+    double binMax = hMuon->GetXaxis()->GetXmin() + binWidth * NBins ;
+    cout << " merging histograms :" << hMuon->GetXaxis()->GetXbins()->fN << " Nbins = " << binWidth << "  " << binMax <<"  " << hMuon->GetXaxis()->GetXmax() <<  endl;
+    /// for fixed bin width
+    if ( !hMuon->GetXaxis()->GetXbins()->fN  ) {
+        hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins );
+        int countBins = 1 ;
+        for ( int j = 0;  j <  NBins/2    ; j++){
+            hOut->SetBinContent(countBins, hMuon->GetBinContent(j + 1));
+            hOut->SetBinError(countBins, hMuon->GetBinError(j + 1));
+            countBins++;
+        }
+        for ( int j = 0;  j <  NBins/2    ; j++){  
+            hOut->SetBinContent(countBins, hEle->GetBinContent(j + 1));
+            hOut->SetBinError(countBins, hEle->GetBinError(j + 1));
+            countBins++;
+        }        
+        for ( int j = 0;  j <  NBins    ; j++){
+            cout << " combine:  " << j <<"    " << hOut->GetBinContent(j + 1)<< endl;
+
+        }
     }
-    for ( int j = 0;  j <  NBins/2    ; j++){  
-        hOut->SetBinContent(countBins, hEle->GetBinContent(j + 1));
-        hOut->SetBinError(countBins, hEle->GetBinError(j + 1));
-        countBins++;
-    }        
-    for ( int j = 0;  j <  NBins    ; j++){
-        cout << " combine:  " << j <<"    " << hOut->GetBinContent(j + 1)<< endl;
+    else{
+        cout << " GON INT HE PART WITH NON FIXED BIN WIDTH " << endl;
+        // let's create array needed for bin definition 
+        //Double_t*  test;
+        double*  test;
+        test = (double *) hMuon->GetXaxis()->GetXbins()->GetArray() ;
+        double bins[NBins + 1 ];
+        int count = 0 ; 
+        for ( int j = 0 ; j < 2 ; j++){
+            for ( int i = 0 ; i < NBinsOrig + 1   ; i++){
+                bins[count] = test[i];
+                if ( j == 1 && i == 0 ) continue;  
+                if ( j == 1 ) bins[count] = bins[count-1]+test[i] - test[i-1];
+                if ( i == NBinsOrig  ) bins[count] = bins[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
+
+                cout << " TEST:" <<NBins <<"   " << count<<"   "<< i << "  " << test[i] <<"    " << bins[count]<<"  " << test[i-1]-test[i-2]<< "    " <<  test[i-1]<<"   " << test[i-2] << endl;
+                count++;
+            }
+        }
+        for ( int i = 0 ; i < NBins + 1  ; i++){
+            cout << " bins:" << i<<"   " << bins[i]<< endl;
+        }
+        hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins, bins );
+        // now fill histo
+        int countBins = 1 ;
+        for ( int j = 0 ; j < NBinsOrig  ; j++){
+            hOut->SetBinContent(countBins, hMuon->GetBinContent(j + 1));
+            hOut->SetBinError(countBins, hMuon->GetBinError(j + 1));
+            countBins++;
+
+        }
+        for ( int j = 0;  j <  NBinsOrig    ; j++){
+            hOut->SetBinContent(countBins, hEle->GetBinContent(j + 1));
+            hOut->SetBinError(countBins, hEle->GetBinError(j + 1));
+            countBins++;
+        }
 
     }
+/*    for ( int j = 0 ; j < NBins  ; j++){
+        cout << " both leptons reco : " << j <<"   " <<  hOut->GetBinContent(j +  1)<< endl;
+
+    }
+    */
+    hOut->Draw();
     return hOut;
 
 }
@@ -51,8 +99,26 @@ TH1D* mergeGenHisto(TH1D* hMuon, TH1D* hEle, int NBins){
     TH1D* hOut;
     double binWidth = (hMuon->GetXaxis()->GetXmax()-hMuon->GetXaxis()->GetXmin()) / hMuon->GetXaxis()->GetNbins() ;
     double binMax = hMuon->GetXaxis()->GetXmin() + binWidth*2 * NBins ;
-    hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins );
+    if ( !hMuon->GetXaxis()->GetXbins()->fN  ) { hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins );
+    }
+    else {
+        double*  test;
+        test = (double *) hMuon->GetXaxis()->GetXbins()->GetArray() ;
+        double bins[NBins + 1 ];
+        int count = 0 ;
+            for ( int i = 0 ; i < NBins + 1   ; i++){
+                bins[count] = test[i];
+                if ( i == NBins  ) bins[count] = bins[count-1]+test[NBins-1] - test[NBins-2];
 
+                count++;
+        }
+        for ( int i = 0 ; i < NBins + 1  ; i++){
+            cout << " bins:" << i<<"   " << bins[i]<< endl;
+        }
+        hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins,  bins );
+
+
+    }
     for ( int j = 0;  j <  NBins    ; j++){
         double Mu = hMuon->GetBinContent(j + 1) ;
         double MuE = hMuon->GetBinError(j + 1) ;
@@ -63,7 +129,7 @@ TH1D* mergeGenHisto(TH1D* hMuon, TH1D* hEle, int NBins){
         double mean = (E* ( MuE * MuE ) + Mu *(EE* EE) ) /(  MuE * MuE + EE* EE);
         hOut->SetBinContent( j + 1, mean );
         hOut->SetBinError(j+1, sqrt(sig2));
-        cout << " merge gen histos: " << j<<"   " << mean << endl;
+        cout << " merge gen histos: " << j<<"   " << mean << " mu : " << Mu <<"  Ele:  " << E << endl;
     }
     return hOut;
 }
@@ -71,25 +137,56 @@ TH1D* mergeGenHisto(TH1D* hMuon, TH1D* hEle, int NBins){
 TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBinsOrig){
 
     int NBins = 2 * NBinsOrig ;
-    hMuon->Scale(2.27008258178896);
-    hEle->Scale(2.27251754624995);
+//    hMuon->Scale(2.27008258178896);
+//    hEle->Scale(2.27251754624995);
 
     cout << "creating response matrix   :"<< NBinsOrig <<"  " << NBins << endl;
     TH2D* hOut;
+    TH2D* hOutTest;
     double binWidth = (hMuon->GetXaxis()->GetXmax()-hMuon->GetXaxis()->GetXmin()) / hMuon->GetXaxis()->GetNbins() ;
     double binMax = hMuon->GetXaxis()->GetXmin() + binWidth*2 * NBins ;
     if ( !hMuon->GetXaxis()->GetXbins()->fN  ) {
         hOut = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins, NBinsOrig, (double) hMuon->GetXaxis()->GetXmin(), (double ) hMuon->GetXaxis()->GetXmin() +  binWidth * NBinsOrig  );
+        hOutTest = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),  NBinsOrig, (double) hMuon->GetXaxis()->GetXmin(), (double ) hMuon->GetXaxis()->GetXmin() +  binWidth * NBinsOrig, NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth *       NBins  );
     }
     else {
         cout << " we need a vector of bins to initilaize histogram :"<< endl;
+        double*  test;
+        test = (double *) hMuon->GetXaxis()->GetXbins()->GetArray() ;
+        double binsY[NBinsOrig+1];
+        double binsX[NBins + 1];
+        int count = 0 ;
+        for ( int j = 0 ; j < 2 ; j++){
+            for ( int i = 0 ; i < NBinsOrig + 1  ; i++){
+                binsX[count] = test[i];
+                if ( j == 1 && i == 0 ) continue;
+                if ( test[i] == 0  ) binsX[count] = binsX[count-1]+test[i-1] - test[i-2];
+                if ( j == 1 ) binsX[count] = binsX[count-1]+test[i] - test[i-1];
+                if ( i == NBinsOrig  ) binsX[count] = binsX[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
 
+                //            cout << " TEST:" <<count<<"   "<< i << "  " << test[i] <<"    " << bins[count]<<"  " << test[i]-test[i-1]<< endl;
+                count++;
+            }
+        }
+        for ( int i = 0 ; i < NBinsOrig + 1  ; i++){
+            binsY[i] = binsX[i] ;
+        }
+
+        hOut = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),  NBins, binsX, NBinsOrig, binsY  );
+        hOutTest = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),  NBinsOrig, binsY, NBins, binsX  );
+        // now fill histo
+        //
     }
+    cout << " Filling combined response : " << hOut->GetXaxis()->GetNbins()<<"   " << hOut->GetYaxis()->GetNbins()<<"   " << NBins + 1 << endl;
+    cout << " Filling combined response : " << hOutTest->GetXaxis()->GetNbins()<<"   " << hOutTest->GetYaxis()->GetNbins()<<"   " << NBins + 1 << endl;
     int countBins = 1 ;
     for ( int i = 0;  i <  NBinsOrig    ; i++){
         for ( int j = 0;  j <  NBinsOrig    ; j++){
             hOut->SetBinContent(countBins, j+1, hMuon->GetBinContent(i + 1 , j + 1));
             hOut->SetBinError(countBins , j+1 , hMuon->GetBinError(i + 1 , j + 1));
+            //hOut->SetBinContent(j+1 , countBins,  hMuon->GetBinContent(i + 1 , j + 1));
+            //hOut->SetBinError( j+1 , countBins ,  hMuon->GetBinError(i + 1 , j + 1));
+          
         }
         countBins++;
     }
@@ -97,14 +194,25 @@ TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBinsOrig){
         for ( int j = 0;  j <  NBinsOrig    ; j++){
             hOut->SetBinContent(countBins, j+1, hEle->GetBinContent(i + 1 ,j + 1));
             hOut->SetBinError(countBins, j+1 , hEle->GetBinError(i + 1 ,j + 1));
+            //hOut->SetBinContent(j+1, countBins, hEle->GetBinContent(i + 1 ,j + 1));
+            //hOut->SetBinError(j+1,  countBins,  hEle->GetBinError(i + 1 ,j + 1));
         }
         countBins++;
     }
 
+    cout << " Elements of response:" << endl;
+    for ( int i = 0;  i <  2*NBinsOrig    ; i++){
+                cout << i <<"  " ;
+                for ( int j = 0;  j <  NBinsOrig    ; j++){
+                        cout <<   hOut->GetBinContent(i+1,j+1)<<"   ";
+                }
 
+            cout << endl;
+    }
 
-
+    //hOut->Draw();
     return hOut;
+    //return hOutTest;
 }
 
 
@@ -363,7 +471,7 @@ void plotChi2OfChange(RooUnfoldResponse *response, int kterm, TH1D *hData, TH1D 
 
     TH2D *hResponse = (TH2D*) response->Hresponse();
     TH1D *hMeas = (TH1D*) hData->Clone();
-    int nBins(hMeas->GetNbinsX());
+    int nBins(hMeas->GetNbinsX() * 10 );
 
     for (int i(0); i < nBG; i++){
         if (i != 6) hMeas->Add(hBG[i], -1);

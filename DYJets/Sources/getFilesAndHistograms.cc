@@ -4,7 +4,7 @@
 #include <TFile.h>
 #include "fileNames.h"
 #include "getFilesAndHistograms.h"
-
+#include <string.h>
 using namespace std;
 
 string getEnergy()
@@ -28,17 +28,17 @@ string getEnergy()
     return energy;
 }
 
-TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut,  string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
+TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut, int MET,  string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
 {
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
     else if (leptonFlavor == "Electron" || leptonFlavor == "SE_") leptonFlavor = "SE";
+    else if (leptonFlavor == "Muon" || leptonFlavor == "SMu_") leptonFlavor = "SMu";
     else if (leptonFlavor == "MuonElectron" || leptonFlavor == "SMuE_") leptonFlavor = "SMuE";
-
     ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
     ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
     ostringstream doQCDStr ; doQCDStr << doQCD ;
-
+    ostringstream METStr  ; METStr << MET ;
     string effiCorr = "1", trigCorr = "0";
     if (Name.find("Data") == 0) effiCorr = "0";
     if (Name.find("Data") == 0 || energy == "8TeV") trigCorr = "1";
@@ -57,6 +57,7 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
     if ( dodR ) fileName += "_dR5";
     if (doInvMassCut) fileName += "_InvMass";
     if (doSSign )   fileName += "_SS";
+    
     /*   if ( doQCD > 0){
          if ( leptonFlavor == "SMuE") fileName +="_SS";
          else  fileName += "_QCD" + doQCDStr.str();
@@ -64,6 +65,7 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
          */
     if (doQCD>0) fileName += "_QCD" + doQCDStr.str();
     //   if (doInvMassCut)  fileName += "_InvMass";
+    if ( MET > 0 )  fileName += "_MET"+METStr.str();
     fileName += ".root";
 
     TFile *File; 
@@ -72,12 +74,13 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
     return File; 
 }
 
-void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat,  bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, bool useUnfoldingFiles )
+void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat,  bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, int MET, bool useUnfoldingFiles )
 {
     bool isDoubleLep(0);
 
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu") {leptonFlavor = "DMu";isDoubleLep = 1 ;}
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") {leptonFlavor = "DE"; isDoubleLep = 1 ;}
+
     vector<string> Syst;
     if (Name.find("Data") != string::npos){ 
         Syst.push_back("0");
@@ -105,7 +108,7 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
     int nSyst(Syst.size());
 
     for (int i(0); i < nSyst; i++) {
-        Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut, "", Syst[i], false, useUnfoldingFiles );
+        Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut,MET,  "", Syst[i], false, useUnfoldingFiles );
         cout << endl;
     }
 
@@ -180,7 +183,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
 }
 
 
-void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut  ){
+void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut, int MET  ){
     std::string  variable = "ZNGoodJets_Zexc";
     string energy = getEnergy();
 
@@ -205,7 +208,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
         else sel = FilesTTbarWJets[i];
 
         if ((doQCD > 0 || doInvMassCut || doSSign ) && ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
-        fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, "","0");
+        fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, MET, "","0");
         cout <<"opened :  " << i << "   " << sel <<"   " << FilesTTbarWJets[i] <<"  " << ProcessInfo[sel].filename <<"   " << leptonFlavor.find("SMuE") << endl;
         TH1D *hTemp = getHisto(fData, variable);
         //NBins = hTemp ->GetNbinsX();
@@ -227,7 +230,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
     if (doSSign )   nameStr << "_SS";
     //if (doBJets) nameStr << "_BJets";
     if (doQCD>0) nameStr << "_QCD"<<doQCD;
-
+    if ( MET > 0 ) nameStr << "_MET"<< MET;
     nameStr<<".tex";
 
     FILE *outFile = fopen(nameStr.str().c_str(),"w");
@@ -288,4 +291,17 @@ TH2D* newTH2D(string name, string title, int nBinsX, double xLow, double xUp, in
     hist->SetOption("HIST");
     return hist;
 }
+TH1D* newTH1D(string name, string title, string xTitle, int nBins, double *xBins){
+    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
+    hist->GetXaxis()->SetTitle(xTitle.c_str());
+    hist->GetYaxis()->SetTitle("# Events");
+    return hist;
+}
+TH2D* newTH2D(string name, string title, int nBinsX, double *xBins, int nBinsY, double *yBins){
+    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xBins, nBinsY, yBins);
+    hist->GetZaxis()->SetTitle("# Events");
+    return hist;
+}
+
+
 
