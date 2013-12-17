@@ -20,13 +20,13 @@
 using namespace std;
 
 void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
-        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, 
+        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, int MET = 0 , 
         int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
         bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
 {
     string energy = getEnergy();
 
-    cout << endl << "Running the Plotter with the following files as input: " << endl;
+    cout << endl << "Running the Plotter with the following files as input: " <<doQCD << "   " << MET << endl;
     TH1::SetDefaultSumw2();
     gStyle->SetOptStat(0);
 
@@ -35,7 +35,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     ostringstream ZEtaMinStr;   ZEtaMinStr << abs(ZEtaMin); 
     ostringstream ZEtaMaxStr;   ZEtaMaxStr << abs(ZEtaMax); 
     ostringstream doQCDStr;     doQCDStr << doQCD ;
-
+    ostringstream METStr;   METStr << MET ; 
     string year = "2012"; 
     if (energy == "7TeV") year = "2011";
     int Colors[] = {kBlack, kSpring+5, kOrange, kOrange-3, kRed+1, kPink-6, kViolet+5, kPink, kAzure+4, kBlue, kCyan+1, kCyan+1, kCyan+1}; 
@@ -45,14 +45,19 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         " DYtautau", " TTJets", " DYJets MD", " DYJets Po", " DYJets Sh"
     };
     if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
-    legendNames[0] += "Data";
+    else if  (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
+    else if  (leptonFlavor == "SMuE") legendNames[0] = " #mue ";
+    else if  (leptonFlavor == "SMu" || leptonFlavor == "Muon" ) legendNames[0] = " #mu#nu ";
+    else if  (leptonFlavor == "SE" || leptonFlavor == "Electron") legendNames[0] = " e#nu ";
+
+    //    legendNames[0] += "Data";
 
     //int ColorsTTbar[] = {kBlack, kOrange,  kRed+1,  kViolet+5, kPink, kBlue, kCyan+1, kCyan+1, kCyan+1,kGreen};
 
     //-- get the files ------------------------------------
     int nFiles = NFILESDYJETS;
     bool isDoubleLep(1);
-    if ( leptonFlavor == "SMuE" || leptonFlavor == "SMu" || leptonFlavor == "Muon") {
+    if ( leptonFlavor == "SMuE" || leptonFlavor == "SMu" || leptonFlavor == "Muon" || leptonFlavor == "Electron") {
         isDoubleLep = 0;
         nFiles = NFILESTTBAR; 
     }
@@ -67,14 +72,14 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
         cout << "Is double lepton:" << isDoubleLep << "   " << leptonFlavor <<"   " << fileNameTemp << endl;
         if ((doQCD > 0 || doInvMassCut || doSSign ) && fileNameTemp.find("QCD") != string::npos) continue;
-        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut);
+        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut, MET);
 
         if ( i == 0 ){
             if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
             else if  (leptonFlavor == "Muons") legendNames[0] = " #mu#mu ";
             else if  (leptonFlavor == "SMuE") legendNames[0] = " #mue ";
-            else if  (leptonFlavor == "SMu") legendNames[0] = " #mu ";
-            else if  (leptonFlavor == "SE") legendNames[0] = " e ";
+            else if  (leptonFlavor == "SMu" || leptonFlavor == "Muon" ) legendNames[0] = " #mu#nu ";
+            else if  (leptonFlavor == "SE" || leptonFlavor == "Electron") legendNames[0] = " e#nu ";
             legendNames[0] += "Data";
         }
         else legendNames[countFiles] = ProcessInfo[fileSelect].legend; 
@@ -97,8 +102,8 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     if (doVarWidth) outputFileName += "_VarWidth";
     if (doInvMassCut) outputFileName +=  "_InvMass";
     if (doSSign )   outputFileName += "_SS";
-    if (doQCD>0) outputFileName += "_QCD" + doQCD;
-
+    if (doQCD>0) outputFileName += "_QCD" + doQCDStr.str();
+    if ( MET > 0 ) outputFileName += "_MET"+METStr.str();
 
     //if (doBJets) nameStr << "_BJets";
 
@@ -121,8 +126,10 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     outputFile->cd();
 
     unsigned short nHist = file[0]->GetListOfKeys()->GetEntries();
-    vector<string> histoName(nHist);
-    vector<string> histoTitle(nHist);
+    //vector<string> histoName(nHist);
+    //vector<string> histoTitle(nHist);
+    vector<string> histoName;
+    vector<string> histoTitle;
     string histoNameTemp;
     TCanvas *canvas[nHist];
     TPad *pad1[nHist];
@@ -144,8 +151,10 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         if (histTemp->GetEntries() < 1) continue;
         if (!histTemp->InheritsFrom(TH1D::Class())) continue;
 
-        histoName[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetName();
-        histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
+        //        histoName[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetName();
+        //        histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
+        histoName.push_back(file[0]->GetListOfKeys()->At(i)->GetName());
+        histoTitle.push_back(file[0]->GetListOfKeys()->At(i)->GetTitle());
         histSumMC[nHistNoGen] = new THStack(histoName[nHistNoGen].c_str(), histoTitle[nHistNoGen].c_str());
         double xLowLeg(0.74), xHighLeg(0.78);
         legend[nHistNoGen] = new TLegend(xLowLeg, 0.54, xHighLeg, 0.91);
@@ -189,10 +198,12 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         nHistNoGen++;
     } 
     nHist=nHistNoGen; 
-    cout <<"Number of histograms:" << nHist << endl;
+    cout <<"Number of histograms:" << nHist << " and we plot :" << nHistNoGen << endl;
     //nHist=4;
     for (int i = 0; i < nFiles; i++) {
-        for (int j = 0; j < nHist; j++) {
+            cout << i <<"  "<<legendNames[i]  << "   "<<  endl;
+        for (int j = 0; j < nHistNoGen ; j++) {
+           // cout << i <<"  "<<legendNames[i]  << "   "<< j << "   " <<  histoName[j] << endl;
             hist[i][j] = getHisto(file[i], histoName[j]);
             hist[i][j]->SetTitle(histoTitle[j].c_str());
             if ( i == 0) {
@@ -208,10 +219,11 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
             }
         }
     }
+    cout << " added all histograms " << endl;
 
-
-    for (unsigned short i(0); i < nHist; i++) {
+    for (unsigned short i(0); i < nHistNoGen; i++) {
         if (!file[0]->Get(histoName[i].c_str())->InheritsFrom(TH1D::Class())) continue;
+        //cout << histoName[i] << endl;
         unsigned short nBins(hist[0][i]->GetNbinsX());
         legend[i]->AddEntry(hist[0][i], legendNames[0].c_str(), "ep");
         canvas[i] = new TCanvas(histoName[i].c_str(), histoName[i].c_str(), 700, 900);

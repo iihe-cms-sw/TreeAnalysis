@@ -51,7 +51,7 @@ int JetPtMax(0);
 //
 void FinalUnfoldAndCombination()
 {
-    for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
+    for (int i(2); i < 3/*NVAROFINTEREST*/; i++){
         for (int j(0); j < 1; j++){
             isMuon = j ;
     /*        TList * VAROFINTEREST = LISTOFVAROFINTERESTZJETS ;
@@ -279,7 +279,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
             else  group[k]++ ;
             cout << "group" << "   " << group[k] << fileNameTemp <<endl;
 
-            getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  1 );
+            getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 0, 1 );
             getHistos(hBGTmp[k][countFiles], fBG[countFiles], variable);
 
             for (int j(0); j < NBkgSyst ; j++){
