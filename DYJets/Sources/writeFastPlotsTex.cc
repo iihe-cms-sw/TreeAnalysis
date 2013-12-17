@@ -41,6 +41,9 @@ void writeComparisonPage(ofstream& texFile, string leptonFlavor, string variable
     ostringstream JetPtMinStr;  JetPtMinStr << jetPtMin;
     string JetPtMin = JetPtMinStr.str();
 
+    string fullPath = __FILE__;
+    fullPath = fullPath.substr(0, fullPath.find("/./Sources/"));
+
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu") leptonFlavor = "DMu_";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") leptonFlavor = "DE_";
     else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
@@ -67,23 +70,23 @@ void writeComparisonPage(ofstream& texFile, string leptonFlavor, string variable
     texFile <<"}\n\n";
     texFile << "   \\begin{columns}\n";
     texFile << "   \\column{0.25\\textwidth}\n";
-    texFile << "   \\includegraphics[scale=" << scaleSmall << "]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
-    texFile <<     leptonFlavor << energy << "_" << variable << "_ResponseMatrix.png} \\\\ \n";
-    texFile << "   \\includegraphics[scale=" << scaleSmall << "]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
-    texFile <<     leptonFlavor << energy << "_" << variable << "_SV.png} \\\\ \n";
+    texFile << "   \\includegraphics[scale=" << scaleSmall << "]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile <<     leptonFlavor << energy << "_" << variable << "_ResponseMatrix.pdf} \\\\ \n";
+    texFile << "   \\includegraphics[scale=" << scaleSmall << "]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile <<     leptonFlavor << energy << "_" << variable << "_SV.pdf} \\\\ \n";
     texFile << "   \\column{0.75\\textwidth}\n";
     texFile << "      \\begin{center}\n";
-    texFile << "         \\includegraphics[scale=" << scaleBig << "]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
-    texFile <<           leptonFlavor << energy << "_" << variable << "_Unfolding_Comparison" << CT << ".png}\n";
+    texFile << "         \\includegraphics[scale=" << scaleBig << "]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile <<           leptonFlavor << energy << "_" << variable << "_Unfolding_Comparison" << CT << ".pdf}\n";
     if (!closureTest){
-        texFile << "         \\includegraphics[scale=" << scaleBig << "]{../Analysis" << year << "/PNGFiles/Comparison_";
+        texFile << "         \\includegraphics[scale=" << scaleBig << "]{" << fullPath << "/PNGFiles/Comparison_";
         if (leptonFlavor == "DE_")  texFile << "Electrons_";
         if (leptonFlavor == "DMu_") texFile << "Muons_";
-        texFile <<           energy + "_Data_All_MC_MadGraph_JetPtMin_" << JetPtMin;
+        texFile <<           energy + "_Data_All_MC_JetPtMin_" << JetPtMin;
         if (doFlat) texFile << "_Flat";
-        texFile <<  varwidth << "/" << variable;
+        texFile <<  varwidth << "_SFInvers/" << variable;
         if (!log) texFile << "_Lin";
-        texFile <<           ".png}\n"; 
+        texFile <<           ".pdf}\n"; 
     }
     texFile << "      \\end{center}\n";
     texFile << "   \\end{columns}\n"; 
@@ -96,6 +99,9 @@ void writeMethodPage(ofstream& texFile, string leptonFlavor, string variable, st
 {
     ostringstream JetPtMinStr;  JetPtMinStr << jetPtMin;
     string JetPtMin = JetPtMinStr.str();
+
+    string fullPath = __FILE__;
+    fullPath = fullPath.substr(0, fullPath.find("/./Sources/"));
 
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu") leptonFlavor = "DMu_";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") leptonFlavor = "DE_";
@@ -119,16 +125,16 @@ void writeMethodPage(ofstream& texFile, string leptonFlavor, string variable, st
     texFile << "}\n\n";
     texFile << "   \\begin{columns}\n";
     texFile << "   \\column{0.3\\textwidth}\n";
-    texFile << "   \\includegraphics[scale=0.24]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile << "   \\includegraphics[scale=0.24]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
     texFile <<     leptonFlavor << energy << "_" << variable;
-    if (method == "SVD")   texFile << "_D.png} \\\\ \n";
-    if (method == "Bayes") texFile << "_Chi2.png} \\\\ \n";
-    texFile << "   \\includegraphics[scale=0.24]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
-    texFile <<     leptonFlavor << energy << "_" << variable << "_Unfolded_Distributions_" << method << CT << ".png} \\\\ \n";
+    if (method == "SVD")   texFile << "_D.pdf} \\\\ \n";
+    if (method == "Bayes") texFile << "_Chi2.pdf} \\\\ \n";
+    texFile << "   \\includegraphics[scale=0.24]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile <<     leptonFlavor << energy << "_" << variable << "_Unfolded_Distributions_" << method << CT << ".pdf} \\\\ \n";
     texFile << "   \\column{0.7\\textwidth}\n";
     texFile << "      \\begin{center}\n";
-    texFile << "         \\includegraphics[scale=0.4]{../Analysis" << year << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
-    texFile <<           leptonFlavor << energy << "_" << variable << "_Unfolded_Distribution_" << method << CT << ".png}\n";
+    texFile << "         \\includegraphics[scale=0.4]{" << fullPath << "/PNGFiles/FastPlots_" << JetPtMin << varwidth << "/";
+    texFile <<           leptonFlavor << energy << "_" << variable << "_Unfolded_Distribution_" << method << CT << ".pdf}\n";
     texFile << "      \\end{center}\n";
     texFile << "   \\end{columns}\n"; 
     texFile << "\n\\end{frame}\n";
@@ -141,6 +147,9 @@ void writeSystematicsTexFile(string leptonFlavor, string energy, int jetPtMin, s
 {
     ostringstream JetPtMinStr;  JetPtMinStr << jetPtMin;
     string JetPtMin = JetPtMinStr.str();
+
+    string fullPath = __FILE__;
+    fullPath = fullPath.substr(0, fullPath.find("/./Sources/"));
 
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu") leptonFlavor = "DMu_";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") leptonFlavor = "DE_";
@@ -165,12 +174,12 @@ void writeSystematicsTexFile(string leptonFlavor, string energy, int jetPtMin, s
     texFile << "\\end{columns}\n";
     texFile << "\\vspace*{0.5cm}\n\n";
 
-    texFile << "\\includegraphics[scale=0.25]{../Analysis" << year << "/PNGFiles/SystematicsPlots/";
-    texFile << leptonFlavor << energy << "_" << variable << "_JEC.png}\n";
-    texFile << "\\includegraphics[scale=0.25]{../Analysis" << year << "/PNGFiles/SystematicsPlots/";
-    texFile << leptonFlavor << energy << "_" << variable << "_PU.png}\n";
-    texFile << "\\includegraphics[scale=0.25]{../Analysis" << year << "/PNGFiles/SystematicsPlots/";
-    texFile << leptonFlavor << energy << "_" << variable << "_XS.png}\n";
+    texFile << "\\includegraphics[scale=0.25]{" << fullPath << "/PNGFiles/SystematicsPlots/";
+    texFile << leptonFlavor << energy << "_" << variable << "_JEC.pdf}\n";
+    texFile << "\\includegraphics[scale=0.25]{" << fullPath << "/PNGFiles/SystematicsPlots/";
+    texFile << leptonFlavor << energy << "_" << variable << "_PU.pdf}\n";
+    texFile << "\\includegraphics[scale=0.25]{" << fullPath << "/PNGFiles/SystematicsPlots/";
+    texFile << leptonFlavor << energy << "_" << variable << "_XS.pdf}\n";
     texFile << "\n\\end{frame}\n";
     texFile << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
     texFile << "\n";
