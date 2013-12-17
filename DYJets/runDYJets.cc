@@ -23,7 +23,7 @@
     int NSystMC    = 5;
     int NSystTau   = 5;
     bool doSyst    = 0;
-    int doWhat     = 0 ; // 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
+    int doWhat     = 3; // 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
     //----------------------------------------------------------//
     
     //--- change of the above options according to selecteed lepton analysis
@@ -38,6 +38,7 @@
     sources.push_back("ZJetsAndDPS");
 
     //--- Load shaared libraries ---
+    gROOT->ProcessLine(".L /user/aleonard/LHAPDF/lib/libLHAPDF.so");
     unsigned int nSources = sources.size();
     for (unsigned int i(0); i < nSources; i++){
         cout << "Compiling " << srcdir + sources[i] << ".cc" << endl;
@@ -139,9 +140,9 @@
         if (lep == "DMu" || lep == "DE") doGen = 1;
 
         ZJetsAndDPS DMuDY(lep+"_8TeV_DYJets_UNFOLDING_dR_5311_Inf3",  lumi*3503.7*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin, ZEtaMax);
-        DMuDY.Loop(1, doGen, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
-        ZJetsAndDPS DMuDYMix(lep+"_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3503.7*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin, ZEtaMax, 0);
-        DMuDYMix.Loop(1, doGen, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
+        DMuDY.Loop(0, doGen, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
+        //ZJetsAndDPS DMuDYMix(lep+"_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3503.7*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin, ZEtaMax, 0);
+        //DMuDYMix.Loop(1, doGen, doQCD, doSSign, doMassCut, doBJets, doPUStudy);
 
         if (doSyst){
             //PU

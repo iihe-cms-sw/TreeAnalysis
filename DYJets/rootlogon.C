@@ -6,11 +6,14 @@
   gErrorIgnoreLevel = kError;
   string srcdir = currentWorkingDir + "Sources/";
   string incdir = currentWorkingDir + "Includes/";
+  string lhapdfdir = "/user/aleonard/lhapdf-5.9.1/include/LHAPDF";
   string roounfolddir = currentWorkingDir + "RooUnfold-1.1.1/";
 
   cout << "--------------------------------------------------------------------------------\n" << endl; 
   cout << "Adding " << incdir << " to includes directories..." << endl;
   gSystem->AddIncludePath(string("-I" + incdir).c_str());
+  cout << "Adding " << lhapdfdir << " to includes directories..." << endl;
+  gSystem->AddIncludePath(string("-I" + lhapdfdir).c_str());
   cout << "Adding " << roounfolddir << "src" << " to includes directories..." << endl;
   gSystem->AddIncludePath(string("-I" + roounfolddir + "src").c_str());
   cout << "Loading RooUnfold libraries..." << endl;

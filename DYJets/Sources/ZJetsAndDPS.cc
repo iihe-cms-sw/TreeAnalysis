@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
-//#include "LHAPDF/LHAPDF.h"
+#include "LHAPDF.h"
 #include "functions.h"
 #include "getFilesAndHistograms.h"
 #include "standalone_LumiReWeighting.h"
@@ -32,6 +32,10 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         bool doBJets, int doPUStudy, bool doFlat,
         bool useRoch, bool doVarWidth,  bool hasPartonInfo)
 {
+
+
+    LHAPDF::initPDFSet(1, "CT10nlo.LHgrid");
+    const int numberPDFS(LHAPDF::numberPDF() + 1);
 
     //--- Check weither it 7 or 8 TeV ---
     string energy = getEnergy();
@@ -640,11 +644,15 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         //       Retrieving gen leptons         //
         //====================================//
         bool passesGenLeptonCut(0);
-        unsigned short nTotGenLeptons(0), nGenLeptons(0), nTotGenPhotons(0);
-        vector<leptonStruct> genLeptons;
+        unsigned short nTotGenLeptons(0), nGenLeptons(0), nGenLeptonsSt3(0), nTotGenPhotons(0);
+        vector<leptonStruct> genLeptons, genLeptonsClone;
+        vector<leptonStruct> genLeptonsSt1;
+        vector<leptonStruct> genLeptonsSt3;
         vector<int> usedGenPho;
         TLorentzVector genLep1, genLep2, genZ;
+        TLorentzVector genLep1St3, genLep2St3, genZSt3;
         leptonStruct genLepton1, genLepton2;
+        leptonStruct genLepton1St3, genLepton2St3;
         int countTauS3 = 0;
 
         // to use the TOP PAG TTBAR reweighting recommendation
@@ -675,12 +683,14 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
                 if (!lepSelector) continue ;
                 double charge(genLepQ_->at(i)); 
-                if (abs(genLepId_->at(i)) == 12 || abs(genLepId_->at(i)) == 14 || abs(genLepId_->at(i)) == 16) charge = 0.; // filling of ntuples not best 
+                if (abs(genLepId_->at(i)) == 12 || abs(genLepId_->at(i)) == 14 || abs(genLepId_->at(i)) == 16) charge = 0.; 
+                // filling of ntuples not best 
                 leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
+                leptonStruct genLep0 = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
                 leptonStruct genLepNoFSR = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0};
-                //cout << " nasi gen neutrino " << genLepPt_->at(i) << "   " << charge << "status " << genLepSt_->at(i) << "   " << genLepId_->at(i) << endl ;
+
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
-                if ( ( genLepSt_->at(i) == 1 && lepSelector &&  abs(genLepId_->at(i)) == LeptonID) || ( doW && charge == 0 ) ){
+                if ((genLepSt_->at(i) == 1 && lepSelector && abs(genLepId_->at(i)) == LeptonID) || (doW && charge == 0)){
                     TLorentzVector tmpGenLep;
                     tmpGenLep.SetPtEtaPhiM(genLep.pt, genLep.eta, genLep.phi, leptonMass);
                     for (unsigned short j(0); j < nTotGenPhotons; j++){
@@ -695,31 +705,25 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                             usedGenPho.push_back(j);
                         }
                     }   
-                    genLep.pt = tmpGenLep.Pt(); 
-                    genLep.eta = tmpGenLep.Eta(); 
-                    genLep.phi = tmpGenLep.Phi();
-                    genLep.energy = tmpGenLep.E();
-                    //cout << " new:" << genLep.pt <<"   " << genLep.energy << endl;
-                    //if ( EvtInfo_EventNum == 1295678 || EvtInfo_EventNum == 1295840 ){
-                    //                        cout << EvtInfo_EventNum << "  gen LEP + FSR: "<<genLep.pt <<"   " << genLep.eta <<" No FSR " <<  genLepNoFSR.pt <<"   " <<genLepNoFSR.eta <<  endl;
-                    //}
-                    //                    genLep = genLepNoFSR ;
-                    if (doZ && 
-                            genLep.pt >= 20 && fabs(genLep.eta) <= 2.4 && fabs(genLep.charge) > 0){
+                    genLep.pt = tmpGenLep.Pt(); genLep.eta = tmpGenLep.Eta(); genLep.phi = tmpGenLep.Phi(); genLep.energy = tmpGenLep.E();
+                    if (doZ && genLep.pt >= 20 && fabs(genLep.eta) <= 2.4 && fabs(genLep.charge) > 0){
                         genLeptons.push_back(genLep);
+                        genLeptonsClone.push_back(genLep);
+                        genLeptonsSt1.push_back(genLep0);
                     }
-                    if (doW && ( 
-                                (fabs(genLep.charge) > 0 && genLep.pt >= 30 && fabs(genLep.eta) <= 2.1) 
+                    if (doW && ((fabs(genLep.charge) > 0 && genLep.pt >= 30 && fabs(genLep.eta) <= 2.1) 
                                 || (fabs(genLep.charge) == 0 && genLep.pt >= 30))){
                         genLeptons.push_back(genLep);
                     }
                 }
+                else if ((genLepSt_->at(i) == 3 && lepSelector && abs(genLepId_->at(i)) == LeptonID) || (doW && charge == 0)){
+                    if (doZ && genLep.pt >= 20 && fabs(genLep.eta) <= 2.4 && fabs(genLep.charge) > 0){
+                        genLeptonsSt3.push_back(genLep);
+                    }
+                }
             }
             nGenLeptons = genLeptons.size();
-            //            if ( (doZ &&nGenLeptons > 2 ) || ( doW && nGenLeptons > 1) ) cout << " WE HAVE TO MANY GEN LEPTONS:" << nGenLeptons << endl;
-            //if (fileName.find("Tau") != string::npos && countTauS3 == 0){
-            //	passesLeptonCut = 0;
-            //}
+            nGenLeptonsSt3 = genLeptonsSt3.size();
 
             if (countTauS3 == 0 && fileName.find("UNFOLDING") != string::npos){
                 partonsN->Fill(nup_-5);
