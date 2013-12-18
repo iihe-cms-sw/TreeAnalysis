@@ -97,7 +97,7 @@ variableStruct VAROFINTERESTZJETS[] = {
    {"dEtaBosonJet_Zinc1",          0,      0,           8,             10,             6,            6},
    {"dEtaBosonJet_Zexc1",          0,      0,           8,             10,             6,            6},
    {"dEtaFirstJetZ_Zinc2jet",      0,      0,           8,             10,             6,            6},
-   {"dEtaSecondJetZ_Zinc2jet"      0,      0,           8,             10,             6,            6}
+   {"dEtaSecondJetZ_Zinc2jet",      0,      0,           8,             10,             6,            6}
 
 }; 
 
