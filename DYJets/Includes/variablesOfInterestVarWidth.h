@@ -13,7 +13,7 @@ struct variableStruct{
 
 //--- Z Jets ------------------------------------
 
-const int NVAROFINTERESTZJETS(54);
+const int NVAROFINTERESTZJETS(62);
 variableStruct VAROFINTERESTZJETS[] = {
    //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm
    {"ZNGoodJets_Zexc",             1,      1,           6,              4,             3,            3},
@@ -97,7 +97,7 @@ variableStruct VAROFINTERESTZJETS[] = {
    {"dEtaBosonJet_Zinc1",          0,      0,           8,             10,             6,            6},
    {"dEtaBosonJet_Zexc1",          0,      0,           8,             10,             6,            6},
    {"dEtaFirstJetZ_Zinc2jet",      0,      0,           8,             10,             6,            6},
-   {"dEtaSecondJetZ_Zinc2jet"      0,      0,           8,             10,             6,            6},
+   {"dEtaSecondJetZ_Zinc2jet"      0,      0,           8,             10,             6,            6}
 
 }; 
 
