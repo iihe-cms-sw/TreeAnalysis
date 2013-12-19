@@ -6,7 +6,7 @@
   gErrorIgnoreLevel = kError;
   string srcdir = currentWorkingDir + "Sources/";
   string incdir = currentWorkingDir + "Includes/";
-  string lhapdfdir = "/user/aleonard/lhapdf-5.9.1/include/LHAPDF";
+  string lhapdfdir = "/user/aleonard/lhapdf-5.9.1/include/";
   string roounfolddir = currentWorkingDir + "RooUnfold-1.1.1/";
 
   cout << "--------------------------------------------------------------------------------\n" << endl; 

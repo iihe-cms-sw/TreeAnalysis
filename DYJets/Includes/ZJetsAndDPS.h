@@ -192,7 +192,8 @@ class ZJetsAndDPS: public HistoSet {
 
     ZJetsAndDPS(string fileName_, float lumiScale_ = 1., float puScale_ = 1., bool useTriggerCorrection_ = 0, bool useEfficiencyCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., int jetPtCutMin_ = 20, int jetPtCutMax_ = 0, int ZEtaCutMin_ = -999999, int ZEtaCutMax_ = 999999, int METcut_ = -30, bool nEvents_10000 = 0, int jetEtaCutMin_ = -24, int jetEtaCutMax_ = 24) ; 
     ~ZJetsAndDPS();
-    string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool );
+    string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool , string pdfSet = "", int aa = -1);
+    //string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool );
     //string   CreateOutputFileName(bool, bool, int, bool, bool, int, bool, bool, int );
     //string   CreateOutputFileName(bool useRoch, bool doFlat, int doPUStudy, bool doVarWidth, bool doBJets, int doQCD, bool doSSign, bool doInvMassCut, int doMETcut);
     Int_t    Cut(Long64_t entry);
@@ -200,7 +201,8 @@ class ZJetsAndDPS: public HistoSet {
     Long64_t LoadTree(Long64_t entry);
     void     Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo);
 //    void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 1 , int doMETcut = 30, bool doBJets = 0, int doPUStudy = -10,bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0);
-    void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 1 ,   int doBJets = 0, int doPUStudy = -10,bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0);
+    //void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 1 ,   int doBJets = 0, int doPUStudy = -10,bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0);
+    void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 1 ,   int doBJets = 0, int doPUStudy = -10,bool doFlat = 0, bool useRoch = 0, bool doVarWidth = 1, bool hasPartonInfo = 0, string pdfSet = "", int pdfMember = 0);
     Bool_t   Notify();
     void     Show(Long64_t entry = -1);
 

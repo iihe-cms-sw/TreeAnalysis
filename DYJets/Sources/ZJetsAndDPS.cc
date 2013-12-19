@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
-//#include "LHAPDF/LHAPDF.h"
+#include "LHAPDF/LHAPDF.h"
 #include "functions.h"
 #include "getFilesAndHistograms.h"
 #include "standalone_LumiReWeighting.h"
@@ -30,8 +30,16 @@ ClassImp(ZJetsAndDPS);
 void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSign, bool doInvMassCut, 
         //int doMETcut, bool doBJets, int doPUStudy, bool doFlat,
         int doBJets, int doPUStudy, bool doFlat,
-        bool useRoch, bool doVarWidth,  bool hasPartonInfo)
+        bool useRoch, bool doVarWidth,  bool hasPartonInfo, string pdfSet, int pdfMember)
 {
+
+    if (pdfSet != "") {
+        LHAPDF::initPDFSet(1,pdfSet.c_str());
+        LHAPDF::initPDFSet(2,"CT10.LHgrid");
+        const int numberPDFS(LHAPDF::numberPDF() +1);
+        if (pdfMember > numberPDFS) std::cout << "Warning pdfMember to high" << std::endl;
+    }
+
 
     //--- Check weither it 7 or 8 TeV ---
     string energy = getEnergy();
@@ -78,7 +86,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //         Output file name          //
     //===================================//
     //string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut , 20, 22 );
-    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut  );
+    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, 
+            pdfSet, pdfMember);
 
     TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
     //TFile *outputFile = new TFile("TEST.root", "RECREATE");
@@ -254,6 +263,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     double weightSum(0.), weightSumNoTopRew(0.);
 
 
+
+
     for (Long64_t jentry(0); jentry < nentries; jentry++){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -318,8 +329,37 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             //if (sumSherpaW > 0) weight /= sumSherpaW;
         } 
 
+        //==========================================================================================================//
+        // Compute the weight for PDF syst   //
+        //===================================//
+        //-- get the pdgId of the two colliding partons 
+        double wPdf(1.);
+        if (pdfSet != "") {
+            int id1 = pdfInfo_->at(2);
+            int id2 = pdfInfo_->at(3);
+            if (id1==21) id1=0;
+            if (id2==21) id2=0;
+
+            LHAPDF::usePDFMember(1, pdfMember);
+            double pdf1 = LHAPDF::xfx(1, pdfInfo_->at(2), pdfInfo_->at(4), id1);
+            double pdf2 = LHAPDF::xfx(1, pdfInfo_->at(3), pdfInfo_->at(4), id2);
+            double pdf01 = LHAPDF::xfx(2, pdfInfo_->at(2), pdfInfo_->at(4), id1);
+            double pdf02 = LHAPDF::xfx(2, pdfInfo_->at(3), pdfInfo_->at(4), id2);
+
+            if (pdfInfo_->at(2)*pdfInfo_->at(3)>0){
+                wPdf = pdf1 * pdf2;
+                if (pdf01*pdf02 <= 0 || pdf1*pdf2 <= 0) {
+                    wPdf = 1.;
+                }
+                else {
+                    wPdf /= (pdf01 * pdf02);
+                }
+            }
+        }
+        //==========================================================================================================//
+
         // There is no pile-up  so no need to reweight for that
-        genWeight = weight;
+        genWeight = weight * wPdf;
         double genWeightBackup(genWeight);
         TotalGenWeight+=genWeightBackup;
         //=======================================================================================================//
@@ -3102,7 +3142,7 @@ ZJetsAndDPS::~ZJetsAndDPS(){
 
 
 
-string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStudy, bool doVarWidth, int doBJets, int doQCD, bool doSSign, bool doInvMassCut  ){
+string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStudy, bool doVarWidth, int doBJets, int doQCD, bool doSSign, bool doInvMassCut , string pdfSet, int pdfMember){
     ostringstream result;
     result << outputDirectory << fileName;
     result << "_EffiCorr_" << useEfficiencyCorrection;
@@ -3128,6 +3168,7 @@ string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStud
     if (doBJets < 0 ) result << "_BVeto";
     if (doQCD>0) result << "_QCD"<<doQCD;
     if (doMETcut > 0 ) result << "_MET"<<doMETcut;
+    if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
 
     //--- Add your test names here ---
     //result << "_NoPUCut";
