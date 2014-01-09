@@ -47,17 +47,18 @@ string unfAlg = "Bayes";
 string energy = getEnergy();
 int JetPtMin(30);
 int JetPtMax(0);
-TFile *fOut = new TFile("DataDrivenQCD/out.root","recreate");
+TFile *fOut;
+//TFile *fOut = new TFile("DataDrivenQCD/out.root","recreate");
 // TFile* outputRootFile = new TFile(outputRootFileName.c_str(), "RECREATE");
 
 //-------------------------------------------------------------------------------------------
-void DataDrivenQCD(  string leptonFlavor, int METcut  ){
-    FuncOpenAllFiles();
+void DataDrivenQCD(  string leptonFlavor, int METcut , int doBJets ){
+    FuncOpenAllFiles(leptonFlavor, METcut, false, true, doBJets);
     vector<string> histoNameRun = getVectorOfHistoNames();
   //  for (int i(200); i < 323/*NVAROFINTEREST*/; i++){
     for (int i(0); i < histoNameRun.size()/*NVAROFINTEREST*/; i++){
 //        cout << i<<"   "<<histoNameRun[i] << endl;
-        FuncDataDrivenQCD(histoNameRun[i],  leptonFlavor, METcut);
+        FuncDataDrivenQCD(histoNameRun[i],  leptonFlavor, METcut, doBJets);
     }
 //    fData[0]->ls();    
     fOut ->Close();
@@ -66,17 +67,23 @@ void DataDrivenQCD(  string leptonFlavor, int METcut  ){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void FuncOpenAllFiles(string leptonFlavor,int METcut, bool doFlat , bool doVarWidth){
+void FuncOpenAllFiles(string leptonFlavor,int METcut, bool doFlat , bool doVarWidth, int doBJets){
     for ( int i=0 ; i < NQCD ; i++){
         //getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, DATAFILENAME, JetPtMin, JetPtMax, doFlat, doVarWidth);
-                fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i , 0, 0, METcut, "","0");
+                fData[i] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i , 0, 0, METcut,doBJets, "","0");
+        if ( i == 0 ) {
+              string nameQCDout = fData[i]->GetName();
+              nameQCDout.insert(nameQCDout.find("Data") + 4,"QCD");
+            fOut = new TFile(nameQCDout.c_str(),"recreate");
+        }
     }
+    /// get MC sampples
     for ( int i=0 ; i < NQCD ; i++){
         for ( int j = 1 ; j < NFILESWJETS ; j++){
             int sel = j ;
             if ( j == 1 ) sel = 24 ;
             cout << endl;
-            fMC[i][j] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i , 0, 0, METcut,"","0");
+            fMC[i][j] = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, i , 0, 0, METcut, doBJets, "","0");
             TH1D *hTemp = getHisto(fMC[i][j], "ZNGoodJets_Zexc");
              cout << " going to fetch " << ProcessInfo[sel].filename << "   " << hTemp ->Integral()<<endl;
         }
@@ -86,7 +93,7 @@ cout << " opened all data and MC files "<< endl;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FuncDataDrivenQCD(string variable, string leptonFlavor, int METcut, bool doFlat , bool doVarWidth){
+void FuncDataDrivenQCD(string variable, string leptonFlavor, int METcut, bool doFlat , bool doVarWidth, int doBjets){
     cout << " test" << endl;
     //-- fetch the data files and histograms --------------
     /* const int NQCD = 4 ;
@@ -137,6 +144,8 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, int METcut, bool do
     //  hSigInData->Add(hBack[0], -1 );
     double NormFactor = (hData[0]->Integral() - hBack[0]->Integral() ) / hSignal[0]->Integral() ;
     cout << " normalization of signal " << NormFactor <<hData[0]->Integral() <<"   " << hSignal[0]->Integral() <<"  " <<  hBack[0]->Integral() << endl;
+    for ( int j = 0  ; j < 12 ; j++){
+    if ( j > 0 )  NormFactor = (hData[0]->Integral() - hBack[0]->Integral() - hQCD[0] ->Integral() ) / hSignal[0]->Integral() ;
     // step 1: 
     for ( int i = 0  ; i < NQCD ; i++){
         scaledMC[i] = (TH1D*) hSignal[i]->Clone();
@@ -163,7 +172,7 @@ void FuncDataDrivenQCD(string variable, string leptonFlavor, int METcut, bool do
     // step 3 : isolation fake-rate from step 2 is aplied to QCD[0]
     hQCD[0] = (TH1D*) hQCD[2]->Clone();
     hQCD[0] ->Scale(NormFactorISO) ;
-
+    }
     // ---- save to file
     cout << " now save results to file of " << variable << endl; 
     fOut ->cd();

@@ -47,7 +47,7 @@ TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig){
         }
     }
     else{
-        cout << " GON INT HE PART WITH NON FIXED BIN WIDTH " << endl;
+        cout << " GO IN THE PART WITH NON FIXED BIN WIDTH " << endl;
         // let's create array needed for bin definition 
         //Double_t*  test;
         double*  test;
@@ -59,7 +59,7 @@ TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig){
                 bins[count] = test[i];
                 if ( j == 1 && i == 0 ) continue;  
                 if ( j == 1 ) bins[count] = bins[count-1]+test[i] - test[i-1];
-                if ( i == NBinsOrig  ) bins[count] = bins[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
+                if ( i == NBinsOrig && NBinsOrig != hMuon->GetXaxis()->GetNbins()  ) bins[count] = bins[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
 
                 cout << " TEST:" <<NBins <<"   " << count<<"   "<< i << "  " << test[i] <<"    " << bins[count]<<"  " << test[i-1]-test[i-2]<< "    " <<  test[i-1]<<"   " << test[i-2] << endl;
                 count++;
@@ -75,7 +75,7 @@ TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig){
             hOut->SetBinContent(countBins, hMuon->GetBinContent(j + 1));
             hOut->SetBinError(countBins, hMuon->GetBinError(j + 1));
             countBins++;
-
+            cout << "reco muon: "<< j+1 <<"   " << hMuon->GetBinContent(j + 1) << endl; 
         }
         for ( int j = 0;  j <  NBinsOrig    ; j++){
             hOut->SetBinContent(countBins, hEle->GetBinContent(j + 1));
@@ -84,11 +84,11 @@ TH1D* combinedHisto(TH1D* hMuon, TH1D* hEle, int NBinsOrig){
         }
 
     }
-/*    for ( int j = 0 ; j < NBins  ; j++){
-        cout << " both leptons reco : " << j <<"   " <<  hOut->GetBinContent(j +  1)<< endl;
+    for ( int j = 0 ; j < NBins  ; j++){
+        cout << " both leptons reco : " << j+1 <<"   " <<  hOut->GetBinContent(j +  1)<< endl;
 
     }
-    */
+    
     hOut->Draw();
     return hOut;
 
@@ -108,12 +108,12 @@ TH1D* mergeGenHisto(TH1D* hMuon, TH1D* hEle, int NBins){
         int count = 0 ;
             for ( int i = 0 ; i < NBins + 1   ; i++){
                 bins[count] = test[i];
-                if ( i == NBins  ) bins[count] = bins[count-1]+test[NBins-1] - test[NBins-2];
+                if ( i == NBins && NBins != hMuon->GetXaxis()->GetNbins()   ) bins[count] = bins[count-1]+test[NBins-1] - test[NBins-2];
 
                 count++;
         }
         for ( int i = 0 ; i < NBins + 1  ; i++){
-            cout << " bins:" << i<<"   " << bins[i]<< endl;
+            cout << " merged 1D bins:" << i<<"   " << bins[i]<< endl;
         }
         hOut = newTH1D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    (string) hMuon->GetYaxis()->GetTitle(),   NBins,  bins );
 
@@ -162,7 +162,7 @@ TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBinsOrig){
                 if ( j == 1 && i == 0 ) continue;
                 if ( test[i] == 0  ) binsX[count] = binsX[count-1]+test[i-1] - test[i-2];
                 if ( j == 1 ) binsX[count] = binsX[count-1]+test[i] - test[i-1];
-                if ( i == NBinsOrig  ) binsX[count] = binsX[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
+                if ( i == NBinsOrig && hMuon->GetXaxis()->GetNbins()  ) binsX[count] = binsX[count-1]+test[NBinsOrig-1] - test[NBinsOrig-2];
 
                 //            cout << " TEST:" <<count<<"   "<< i << "  " << test[i] <<"    " << bins[count]<<"  " << test[i]-test[i-1]<< endl;
                 count++;
@@ -471,7 +471,7 @@ void plotChi2OfChange(RooUnfoldResponse *response, int kterm, TH1D *hData, TH1D 
 
     TH2D *hResponse = (TH2D*) response->Hresponse();
     TH1D *hMeas = (TH1D*) hData->Clone();
-    int nBins(hMeas->GetNbinsX() * 10 );
+    int nBins(hMeas->GetNbinsX()  );
 
     for (int i(0); i < nBG; i++){
         if (i != 6) hMeas->Add(hBG[i], -1);

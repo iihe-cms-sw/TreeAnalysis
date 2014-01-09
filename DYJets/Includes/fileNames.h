@@ -42,7 +42,7 @@ const processInfoStruct ProcessInfo[] = {
     {"DYJets_FromTau_UNFOLDING_dR_5311_Inf3", 30459503.,  3531.8,  1,         0.033,         kAzure+4,    " DYtautau"},
     {"DYJets10toInf3_dR_5311",	              1.,         1,       1,         0.04,          kAzure+10,   " DY"},
     {"DataQCD_dR_5311",	                      1.,         1,       1,         0.04,          kYellow,     " QCD"},
-    {"WJetsALL_UNFOLDING_dR_5311",            76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
+    {"WJetsALL_MIX_UNFOLDING_dR_5311",            76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"WJetsALL_MIX_dR_5311",                  76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
     {"WJetsALL_dR_5311",                      76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"DYJets_UNFOLDING_dR_5311_Inf3",         30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
@@ -89,7 +89,7 @@ const string FILENAMES[NFILESVJETS] = {
     "DYJets_MIX_UNFOLDING_dR_5311_Inf3",
     // "DY01234Jets_UNFOLDING_dR_5311_Inf3",
     //"DYJets_PowhegNLO1Jet_GEN",
-    "DYJets_PowhegZ2jMiNLO_dR_GEN_Cern",
+    "DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ",
     //"DYJets_UNFOLDING_Sherpa",
     "DY_Sherpa_1NLO4_HepMC_dR_Full_List"
 }; 
@@ -98,7 +98,7 @@ const string FILENAMES[NFILESVJETS] = {
 
 const string DYPOWHEGFILENAME = FILENAMES[12];
 const string DYSHERPAFILENAME = FILENAMES[13];
-const string DYSHERPA2NLOFILENAME ="DY_Sherpa_2NLO4_HepMC_dR_Full_List";
+const string DYSHERPA2NLOFILENAME ="DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL";
 
 const string BGFILENAMES[9] = {
     FILENAMES[1],
@@ -130,7 +130,7 @@ const string GenMCFILENAMES[5] = {
     "DYJets_PowhegZjjMiNLO_GEN"
 };
 const string DYPOWHEGZjjFILENAME = GenMCFILENAMES[4];
-const string DYSHERPAZjFILENAME("DYJets_UNFOLDING_Sherpa");
+const string DYSHERPAZjFILENAME("DYJets_Sherpa_UNFOLDING_dR_5311_Inf");
 
 #endif
 

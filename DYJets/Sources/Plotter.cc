@@ -20,13 +20,13 @@
 using namespace std;
 
 void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
-        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, int MET = 0 , 
+        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, int MET = 0 , int doBJets = 0 , 
         int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
         bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
 {
     string energy = getEnergy();
 
-    cout << endl << "Running the Plotter with the following files as input: " <<doQCD << "   " << MET << endl;
+    cout << endl << "Running the Plotter with the following files as input: " <<doQCD << "   " << MET << "   " << doBJets << endl;
     TH1::SetDefaultSumw2();
     gStyle->SetOptStat(0);
 
@@ -72,7 +72,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
         cout << "Is double lepton:" << isDoubleLep << "   " << leptonFlavor <<"   " << fileNameTemp << endl;
         if ((doQCD > 0 || doInvMassCut || doSSign ) && fileNameTemp.find("QCD") != string::npos) continue;
-        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut, MET);
+        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut, MET, doBJets);
 
         if ( i == 0 ){
             if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
@@ -102,6 +102,9 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     if (doVarWidth) outputFileName += "_VarWidth";
     if (doInvMassCut) outputFileName +=  "_InvMass";
     if (doSSign )   outputFileName += "_SS";
+    if (doBJets > 0 ) outputFileName += "_BJets";
+    if (doBJets < 0 ) outputFileName += "_BVeto";
+
     if (doQCD>0) outputFileName += "_QCD" + doQCDStr.str();
     if ( MET > 0 ) outputFileName += "_MET"+METStr.str();
 
@@ -201,9 +204,9 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     cout <<"Number of histograms:" << nHist << " and we plot :" << nHistNoGen << endl;
     //nHist=4;
     for (int i = 0; i < nFiles; i++) {
-            cout << i <<"  "<<legendNames[i]  << "   "<<  endl;
+        cout << i <<"  "<<legendNames[i]  << "   "<<  endl;
         for (int j = 0; j < nHistNoGen ; j++) {
-           // cout << i <<"  "<<legendNames[i]  << "   "<< j << "   " <<  histoName[j] << endl;
+            // cout << i <<"  "<<legendNames[i]  << "   "<< j << "   " <<  histoName[j] << endl;
             hist[i][j] = getHisto(file[i], histoName[j]);
             hist[i][j]->SetTitle(histoTitle[j].c_str());
             if ( i == 0) {

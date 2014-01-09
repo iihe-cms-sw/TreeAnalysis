@@ -24,7 +24,7 @@
 string energy = getEnergy();
 
 
-TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decrease, string variable, string sLegend[])
+TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decrease, string variable, string sLegend[], float YMin, float YMax)
 {
   cout << " I entered the plottingFunctions.cc    " << NHistos <<"   " << sLegend[0] << endl;
   gStyle->SetOptStat(0);
@@ -169,7 +169,8 @@ TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decreas
    hRatio[1]->SetMarkerStyle(20);
    hRatio[1]->SetMarkerSize(0.8);
 //   hRatio[1]->GetXaxis()->SetLimits(lowerLimit, hRatio[1]->GetXaxis()->GetXmax());
-   hRatio[1]->GetYaxis()->SetRangeUser(0.5,1.19);
+//   hRatio[1]->GetYaxis()->SetRangeUser(0.5,1.19);
+   hRatio[1]->GetYaxis()->SetRangeUser(YMin, YMax);
    hRatio[1]->GetYaxis()->SetTitle("Ratio");
    hRatio[1]->GetYaxis()->SetTitleSize(0.1);
    hRatio[1]->GetYaxis()->SetTitleOffset(0.6);
@@ -180,7 +181,8 @@ TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decreas
    hRatio[1]->GetXaxis()->SetTickLength(0.06);
    // end gangind syst tto stat
    //grCentralSystMadRatio->Draw("AP");
-   hRatio[1]->GetYaxis()->SetRangeUser(0.5,1.19);
+   //hRatio[1]->GetYaxis()->SetRangeUser(0.5,1.19);
+   hRatio[1]->GetYaxis()->SetRangeUser(YMin, YMax);
    hRatio[1]->Draw("P");
    //PDFSystMad->SetFillColor(kGreen-3);
    //PDFSystMad->SetLineColor(kGreen-3);
@@ -231,7 +233,8 @@ TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decreas
    hRatio[2]->GetXaxis()->SetTitleOffset(1.05);
    hRatio[2]->GetXaxis()->SetLabelSize(0.12);
    hRatio[2]->GetXaxis()->SetLabelOffset(0.01);
-   hRatio[2]->GetYaxis()->SetRangeUser(0.5,1.19);
+//   hRatio[2]->GetYaxis()->SetRangeUser(0.5,1.19);
+   hRatio[2]->GetYaxis()->SetRangeUser(YMin, YMax);
    hRatio[2]->GetYaxis()->SetTitle("Ratio");
    hRatio[2]->GetYaxis()->SetTitleSize(0.1);
    hRatio[2]->GetYaxis()->SetTitleOffset(0.6);

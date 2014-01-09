@@ -28,7 +28,7 @@ string getEnergy()
     return energy;
 }
 
-TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut, int MET,  string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
+TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD,  bool doSSign,  bool doInvMassCut, int MET,  int doBJets , string closureTest, string syst, bool dodR ,bool useUnfoldingFiles )
 {
     if (leptonFlavor == "Muons" || leptonFlavor == "DMu_") leptonFlavor = "DMu";
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE_") leptonFlavor = "DE";
@@ -57,7 +57,9 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
     if ( dodR ) fileName += "_dR5";
     if (doInvMassCut) fileName += "_InvMass";
     if (doSSign )   fileName += "_SS";
-    
+    if (doBJets > 0 ) fileName += "_BJets";
+    if (doBJets < 0 ) fileName += "_BVeto";
+
     /*   if ( doQCD > 0){
          if ( leptonFlavor == "SMuE") fileName +="_SS";
          else  fileName += "_QCD" + doQCDStr.str();
@@ -74,7 +76,7 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
     return File; 
 }
 
-void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat,  bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, int MET, bool useUnfoldingFiles )
+void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat,  bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, int MET, int doBJets, bool useUnfoldingFiles )
 {
     bool isDoubleLep(0);
 
@@ -108,7 +110,7 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
     int nSyst(Syst.size());
 
     for (int i(0); i < nSyst; i++) {
-        Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut,MET,  "", Syst[i], false, useUnfoldingFiles );
+        Files[i] = getFile(histoFilesDirectory, leptonFlavor, energy, Name, JetPtMin, JetPtMax, doFlat, doVarWidth , doQCD, doSSign, doInvMassCut,MET,doBJets,   "", Syst[i], false, useUnfoldingFiles );
         cout << endl;
     }
 
@@ -135,6 +137,17 @@ void closeFiles(TFile *Files[])
     }
 }
 
+void closeFiles(TFile *Files[], int nFiles)
+{
+    string fileName = Files[0]->GetName();
+
+    for (int i(0); i < nFiles; i++){
+        closeFile(Files[i]);
+        cout << "Closing file: " << Files[i]->GetName() << "   --->   Closed ? " << (!(Files[i]->IsOpen())) << endl;
+    }
+}
+
+
 TH1D* getHisto(TFile *File, string variable)
 {
     TH1D *histo = (TH1D*) File->Get(variable.c_str());
@@ -153,7 +166,8 @@ void getHistos(TH1D *histograms[], TFile *Files[], string variable, bool isDoubl
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){
-        histograms[i] = (TH1D*) Files[i]->Get(variable.c_str());
+        TH1D* histTemp = (TH1D*) Files[i]->Get(variable.c_str());
+        histograms[i] = (TH1D*) histTemp->Clone();
     } 
 }
 
@@ -165,6 +179,7 @@ void getResp(RooUnfoldResponse *response, TFile *File, string variable)
 
 RooUnfoldResponse* getResp(TFile *File, string variable)
 {
+    cout << "fetching: "<< variable <<" from " << File->GetName() << "   --->   Opened ? " << File->IsOpen() << endl;
     RooUnfoldResponse *response = (RooUnfoldResponse*) File->Get(variable.c_str());
     return response;
 }
@@ -183,7 +198,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
 }
 
 
-void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut, int MET  ){
+void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFlat  , bool doVarWidth, int doQCD , bool doSSign ,  bool doInvMassCut, int MET, int doBJets  ){
     std::string  variable = "ZNGoodJets_Zexc";
     string energy = getEnergy();
 
@@ -208,7 +223,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
         else sel = FilesTTbarWJets[i];
 
         if ((doQCD > 0 || doInvMassCut || doSSign ) && ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
-        fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, MET, "","0");
+        fData = getFile(FILESDIRECTORY,  leptonFlavor, energy, ProcessInfo[sel].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD , doSSign,  doInvMassCut, MET, doBJets,  "","0");
         cout <<"opened :  " << i << "   " << sel <<"   " << FilesTTbarWJets[i] <<"  " << ProcessInfo[sel].filename <<"   " << leptonFlavor.find("SMuE") << endl;
         TH1D *hTemp = getHisto(fData, variable);
         //NBins = hTemp ->GetNbinsX();
@@ -231,6 +246,7 @@ void getStatistics( string leptonFlavor,int JetPtMin , int JetPtMax,  bool doFla
     //if (doBJets) nameStr << "_BJets";
     if (doQCD>0) nameStr << "_QCD"<<doQCD;
     if ( MET > 0 ) nameStr << "_MET"<< MET;
+    if ( doBJets < 0 ) nameStr <<"_BVeto";
     nameStr<<".tex";
 
     FILE *outFile = fopen(nameStr.str().c_str(),"w");

@@ -262,7 +262,7 @@ TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, str
     TH1D * hDataClone = (TH1D *) hData->Clone(name.c_str());
     int startBin = 0 ;
     int NBins = hData->GetNbinsX()+1  ;
-    if ( option = 1 ){
+    if ( option == 1 ){
         startBin = 1 ;
         NBins = hData->GetNbinsX() ;
     }

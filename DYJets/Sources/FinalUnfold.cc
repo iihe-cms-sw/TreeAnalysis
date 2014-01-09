@@ -50,6 +50,7 @@ int JetPtMax(0);
 void FinalUnfold()
 {
 //  variableStruct VAROFINTEREST[] = VAROFINTERESTZJETS ; 
+//  for (int i(0); i < NVAROFINTERESTZJETS/*NVAROFINTEREST*/; i++){
   for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
     for (int j(0); j < 2; j++){
       isMuon = j ;
@@ -93,7 +94,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 
   //-- fetch the data files and histograms --------------
   TFile *fData[5];             // 0 = central, 1 = JES Up, 2 = JES Down , 3 - SF Up , 4 - SF down
-  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 0, 1);
+  getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 0, 0, 1);
   cout << " got data " << endl;
   TH1D *hData[5];  
   getHistos(hData, fData, variable);
@@ -105,7 +106,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile *fDYMadGraph[4]; 
   TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
   TFile *fDYPowheg = NULL, *fDYPowhegUp = NULL, *fDYPowhegDown = NULL;
-  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth , 0, 0, 0, 0,  1);
+  getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth , 0, 0, 0, 0,  0, 1);
   
   fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
@@ -129,6 +130,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   cout << " Fetch background files " << endl;
   const int NBkgGroups(6);
   const int NBkgSyst(5);
+  int nFilesBkg(0);
 
   TFile *fBG[15][NBkgSyst];            // 0 = central, 1 = PU Up,  2 = PU Down,  3 = XS Up,  4 = XS Down 
   TH1D *hBG[15][10], *hSumBG[NBkgSyst],*hSumBGgroup[15][10];
@@ -150,9 +152,9 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
       if ( isDoubleLep && fileNameTemp.find("DYJets") != string::npos) continue;
       if ( !isDoubleLep && fileNameTemp.find("WJets") != string::npos && fileNameTemp.find("UNF") != string::npos) continue;
       cout << " Fetch background files " << fileNameTemp << endl;
-
+     nFilesBkg++;
       //getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, BGFILENAMESGrouped[i + 1], JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  1 );
-      getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  0, 1 );
+      getFiles(FILESDIRECTORY, fBG[countFiles], leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0,  0, 0, 1 );
       getHistos(hBG[countFiles], fBG[countFiles], variable);
       cout << i << variable << endl;
       if ( isDoubleLep ){
@@ -257,6 +259,11 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
       TH1D* hUnfolded = Unfold(unfAlg, resDY[SelDY[i]], hData[SelData[i]], hSumBG[SelBG[i]],  UsedKterm, hNames[i]); 
       outputRootFile->cd();  hUnfolded->Write();
       cout << "Start unfolding offseted histograms on RECO "<<endl;
+      if ( i == 3 ) { 
+          hData[SelData[i]]->Write("testData");
+          resDY[SelDY[i]]->Write("testDY");
+          hSumBG[SelBG[i]]->Write("testBG");
+      }
   }
 
   // unfold with the opposite methode to compute systematic error
@@ -391,7 +398,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //closeFile(fDYPowheg);
   //closeFile(fDYPowhegUp);
   //closeFile(fDYPowhegDown);
-  for (int i(0); i < 7; i++) closeFiles(fBG[i]);
+  for (int i(0); i < nFilesBkg; i++) closeFiles(fBG[i]);
   //-----------------------------------------------------
 
 }
