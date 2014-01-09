@@ -34,7 +34,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 {
 
     if (pdfSet != "") {
-        LHAPDF::initPDFSet(1,pdfSet.c_str());
+        LHAPDF::initPDFSet(1,pdfSet.c_str(), pdfMember);
         LHAPDF::initPDFSet(2,"CT10.LHgrid");
         const int numberPDFS(LHAPDF::numberPDF() +1);
         if (pdfMember > numberPDFS) std::cout << "Warning pdfMember to high" << std::endl;
@@ -89,8 +89,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, 
             pdfSet, pdfMember);
 
-    TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
-    //TFile *outputFile = new TFile("TEST.root", "RECREATE");
+    //TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
+    TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
 
     // weight variable
@@ -265,6 +265,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 
 
+    nentries = 1;
     for (Long64_t jentry(0); jentry < nentries; jentry++){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -340,7 +341,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (id1==21) id1=0;
             if (id2==21) id2=0;
 
-            LHAPDF::usePDFMember(1, pdfMember);
+            //LHAPDF::usePDFMember(1, pdfMember);
+            LHAPDF::usePDFMember(2, 0);
             double pdf1 = LHAPDF::xfx(1, pdfInfo_->at(2), pdfInfo_->at(4), id1);
             double pdf2 = LHAPDF::xfx(1, pdfInfo_->at(3), pdfInfo_->at(4), id2);
             double pdf01 = LHAPDF::xfx(2, pdfInfo_->at(2), pdfInfo_->at(4), id1);
@@ -356,6 +358,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
             }
         }
+        cout << "Weight pdf: " << wPdf << endl;
         //==========================================================================================================//
 
         // There is no pile-up  so no need to reweight for that

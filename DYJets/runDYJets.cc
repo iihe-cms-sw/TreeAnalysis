@@ -38,7 +38,7 @@
 
 
 
-    string lepSelection = "DMu"; // default lumi is set for double muon dataset
+    string lepSelection = "DE"; // default lumi is set for double muon dataset
     if ( lepSelection.find("DE") == 0)   muLumi = 19.602 ;
     else if ( lepSelection.find("SMuE") == 0) muLumi = 19.673 ;
     else if ( lepSelection.find("SMu") == 0)  muLumi = 19.244 ;
@@ -62,16 +62,11 @@
     bool doDataEff(1);
     int NSystData(3),NSystMC(5);
     bool doSysRunning(1);
-    int doWhat   = -3 ; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen
+    int doWhat   = 90 ; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen, 90 - PDF Syst.
     if ( lepSelection.find("DE") == 0)  NSystData = 5 ;
 
     if ( !doSysRunning ) {NSystData = 1; NSystMC = 1; }
 
-    if (doWhat == -3) {
-        ZJetsAndDPS DMuDYMixPDF(lepSelection+"_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", muLumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin,    ZEtaMax, -30, 1);
-        DMuDYMixPDF.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "CT10nlo.LHgrid", 0);
-        //DMuDYMixPDF.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0);
-    }
 
     if ( doWhat == 222 ){
         ZJetsAndDPS DMuDY("DMu_8TeV_DYJets_UNFOLDING_dR_5311_Inf3",  muLumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1,          jetPtMin, jetPtMax, ZEtaMin,    ZEtaMax);
@@ -257,6 +252,14 @@
         //ZJetsAndDPS DESherpaTest("Sherpa\/DE_8TeV_Sherpa_HepMC_num*",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
         //DESherpaTest.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy ); 
 
+    }
+
+    if (doWhat == 90) {
+        for (int pdfMember(1); pdfMember <= 5; pdfMember++) {
+            ZJetsAndDPS DMuDYMixPDF(lepSelection+"_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", muLumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZEtaMin,    ZEtaMax, -30);
+            DMuDYMixPDF.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "NNPDF23_nlo_as_0118.LHgrid", pdfMember);
+            //DMuDYMixPDF.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0);
+        }
     }
 
 }
