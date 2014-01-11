@@ -9,6 +9,10 @@ git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2012
 For 2011 data analysis do:
 git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2011
 
+if you want to run on:
+  1) WJets: move DYJets directory to WJets
+  2) TTbar to emu : move DYJets directory to TTbarEMu
+
 Be aware that a rootlogon.C is provided. This is needed to load ROoUnfold
 automatically.
 
