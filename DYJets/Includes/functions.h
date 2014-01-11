@@ -14,6 +14,7 @@ struct leptonStruct{
 struct jetStruct{
    double pt, eta, phi, energy;
    int patIndex;
+   bool isBJet;
 };
 
 bool LepDescendingOrder(leptonStruct, leptonStruct);
