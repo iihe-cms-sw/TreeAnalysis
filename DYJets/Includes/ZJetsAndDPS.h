@@ -190,7 +190,7 @@ class ZJetsAndDPS: public HistoSet {
 
 
 
-    ZJetsAndDPS(string fileName_, float lumiScale_ = 1., float puScale_ = 1., bool useTriggerCorrection_ = 0, bool useEfficiencyCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., int jetPtCutMin_ = 20, int jetPtCutMax_ = 0, int ZEtaCutMin_ = -999999, int ZEtaCutMax_ = 999999, int METcut_ = -30, bool nEvents_10000_ = 0, int jetEtaCutMin_ = -24, int jetEtaCutMax_ = 24) ; 
+    ZJetsAndDPS(string fileName_, float lumiScale_ = 1., float puScale_ = 1., bool useTriggerCorrection_ = 0, bool useEfficiencyCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., int jetPtCutMin_ = 20, int jetPtCutMax_ = 0, int ZPtCutMin_ = 35 , int ZEtaCutMin_ = -999999, int ZEtaCutMax_ = 999999, int METcut_ = -30, bool nEvents_10000_ = 0, int jetEtaCutMin_ = -24, int jetEtaCutMax_ = 24) ; 
     ~ZJetsAndDPS();
     string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool , string pdfSet = "", int aa = -1);
     //string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool );
@@ -220,6 +220,7 @@ class ZJetsAndDPS: public HistoSet {
     int jetPtCutMin;
     int jetPtCutMax;
     int jetEtaCutMin, jetEtaCutMax ;
+    int ZPtCutMin;
     int ZEtaCutMin;
     int ZEtaCutMax;
     int METcut;

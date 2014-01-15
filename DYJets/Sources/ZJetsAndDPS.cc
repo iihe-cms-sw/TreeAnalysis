@@ -29,17 +29,16 @@ ClassImp(ZJetsAndDPS);
 
 void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSign, bool doInvMassCut, 
         //int doMETcut, bool doBJets, int doPUStudy, bool doFlat,
-        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, 
-        string pdfSet, int pdfMember)
+        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, string pdfSet, int pdfMember)
 {
-
-    if (pdfSet != "") {
-        LHAPDF::initPDFSet(1,pdfSet.c_str(), pdfMember);
-        LHAPDF::initPDFSet(2,"CT10.LHgrid");
-        const int numberPDFS(LHAPDF::numberPDF() +1);
-        if (pdfMember > numberPDFS) std::cout << "Warning pdfMember to high" << std::endl;
-    }
-
+    
+       if (pdfSet != "") {
+       LHAPDF::initPDFSet(1,pdfSet.c_str(), pdfMember);
+       LHAPDF::initPDFSet(2,"CT10.LHgrid");
+       const int numberPDFS(LHAPDF::numberPDF() +1);
+       if (pdfMember > numberPDFS) std::cout << "Warning pdfMember to high" << std::endl;
+       }
+       
 
     //--- Check weither it 7 or 8 TeV ---
     string energy = getEnergy();
@@ -166,7 +165,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         if (leptonFlavor == "TTMuE"     )  LeptTrig = TrigMuE ; 
     }
     //==========================================================================================================//
-    cout << "Phase space cuts -- jet pt:" << jetPtCutMin <<"  " << jetPtCutMax<<"  -- jet eta : " << jetEtaCutMin<< "  " << jetEtaCutMax<< "  " << "  -- Z eta: " << ZEtaCutMin<<"   " << ZEtaCutMax<< "  -- MET cut: " << METcut << "    "   << endl;
+    cout << "Phase space cuts -- jet pt:" << jetPtCutMin <<"  " << jetPtCutMax<<"  -- jet eta : " << jetEtaCutMin<< "  " << jetEtaCutMax<< "  " << "  -- Z pt: " << ZPtCutMin<<"   " << "  -- Z eta: " << ZEtaCutMin<<"   " << ZEtaCutMax<< "  -- MET cut: " << METcut << "    "   << endl;
     cout << " other selections:  " <<endl;
     cout << " doQCD: " << doQCD <<"  do SS: " << doSSign <<" inv. mass cut: " << doInvMassCut <<"  use MET cut: " << METcut<<"  use B jets: " << doBJets <<" do PU study: " << doPUStudy << endl;
 
@@ -355,7 +354,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
             }
         }
-        cout << "Weight pdf: " << wPdf << endl;
+//        cout << "Weight pdf: " << wPdf << endl;
 
 
         //==========================================================================================================//
@@ -590,7 +589,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
                 // apply charge, mass and eta cut
                 if (( ( (!doSSign && lepton1.charge * lepton2.charge < 0 )  || (doSSign && lepton1.charge * lepton2.charge > 0 ) )
-                            && (doZ || (doTT && diLepCharge == 24))) && ( (!doInvMassCut && Z.M() > 71 && Z.M() < 111 ) ||  (doInvMassCut && ((Z.M() <= 81 && Z.M() >= 61)|| ( Z.M() <= 121 && Z.M() >= 101  ))))  && Z.Eta()*100 > ZEtaCutMin && Z.Eta()*100 < ZEtaCutMax) passesLeptonCut = 1;
+                            && (doZ || (doTT && diLepCharge == 24))) && ( (!doInvMassCut && Z.M() > 71 && Z.M() < 111 ) ||  (doInvMassCut && ((Z.M() <= 81 && Z.M() >= 61)|| ( Z.M() <= 121 && Z.M() >= 101  ))))  && Z.Eta()*100 > ZEtaCutMin && Z.Eta()*100 < ZEtaCutMax && Z.Pt()>= ZPtCutMin ) passesLeptonCut = 1;
                 // to make sure that passing reco leads to same "number" of events
                 genWeight = weight;
                 if ( passesLeptonCut )  nEventsWithTwoGoodLeptons++;   
@@ -862,7 +861,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 // apply charge, mass and eta cut
                 if (doZ && genLepton1.charge*genLepton2.charge < 0 
                         && genZ.M() > 71 && genZ.M() < 111 
-                        && genZ.Eta()*100 > ZEtaCutMin && genZ.Eta()*100 < ZEtaCutMax){
+                        && genZ.Eta()*100 > ZEtaCutMin && genZ.Eta()*100 < ZEtaCutMax && genZ.Pt()>= ZPtCutMin ){
                     passesGenLeptonCut = 1;
                 }
                 if (doW && genLepton1.charge*genLepton2.charge == 0 && genMT >= MTCut){
@@ -3101,10 +3100,10 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     }
 
     ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
-            int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetPtCutMax_, int ZEtaCutMin_, int ZEtaCutMax_ , int METcut_ , bool nEvents_10000_, int jetEtaCutMin_,  int jetEtaCutMax_) : 
+            int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetPtCutMax_, int ZPtCutMin_, int ZEtaCutMin_, int ZEtaCutMax_ , int METcut_ , bool nEvents_10000_, int jetEtaCutMin_,  int jetEtaCutMax_) : 
         HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFiles/"),
         fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
-        systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetPtCutMax(jetPtCutMax_), jetEtaCutMin(jetEtaCutMin_), jetEtaCutMax(jetEtaCutMax_), ZEtaCutMin(ZEtaCutMin_), ZEtaCutMax(ZEtaCutMax_),METcut(METcut_)
+        systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetPtCutMax(jetPtCutMax_), jetEtaCutMin(jetEtaCutMin_), jetEtaCutMax(jetEtaCutMax_),  ZPtCutMin(ZPtCutMin_),ZEtaCutMin(ZEtaCutMin_), ZEtaCutMax(ZEtaCutMax_),METcut(METcut_)
     {
 
         // if parameter tree is not specified (or zero), connect the file
@@ -3162,6 +3161,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         else if (direction == -1) result << "_Down";
         result << "_JetPtMin_" << jetPtCutMin;
         if (jetPtCutMax > jetPtCutMin) result << "_JetPtMax_" << jetPtCutMax;
+        if (ZPtCutMin > 0 )  result << "_ZPtMin" << abs(ZPtCutMin);
         if (ZEtaCutMin > -999999 && ZEtaCutMin <  0) result << "_ZEtaMin_m" << abs(ZEtaCutMin);
         if (ZEtaCutMin > -999999 && ZEtaCutMin >= 0) result << "_ZEtaMin_"  << abs(ZEtaCutMin);
         if (ZEtaCutMax <  999999 && ZEtaCutMax >= 0) result << "_ZEtaMax_"  << abs(ZEtaCutMax);
