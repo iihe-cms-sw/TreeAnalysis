@@ -69,23 +69,23 @@ mkdir WJets/DataW
 cp -r DYJets/* WJets/
 cd WJets
 
-# Get example file
+--- Get example file
 cmsStage /store/group/phys_smp/WPlusJets/NtuplesTomislav/SMu_8TeV_T_s_channel_dR_5311.root DataW/SMu_8TeV_T_s_channel_dR_5311.root
 
-# Output directories
+--- Output directories
 mkdir HistoFiles PNGFiles
 
-# Compile RooUnfold
+---- Compile RooUnfold
 cd RooUnfold-1.1.1
 make
 cd -
 
-# Quick hacks for making LHAPDF work
+--- Quick hacks for making LHAPDF work
 sed -i 's#/user/aleonard/LHAPDF/lib/libLHAPDF.so#/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/lib/libLHAPDF.so#g' runDYJets.cc
 sed -i 's#/user/aleonard/lhapdf-5.9.1/include/#/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/include/#g' rootlogon.C
 sed -i 's#NNPDF23_nlo_as_0118#NNPDF20_as_0118_100#g' ComputePDFUncertainties.cc
 sed -i 's#NNPDF23_nlo_as_0118#NNPDF20_as_0118_100#g' runDYJets.cc
 
-# Run the root file maker
+--- Run the root file maker
 root -b runDYJets.cc
 
