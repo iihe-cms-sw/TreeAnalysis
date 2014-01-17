@@ -25,7 +25,7 @@
 
     int doRoch   = 0;
     int doFlat   = 0;
-    bool doBJets = 0;
+    int doBJets = 0; // 0 - no infor on B-jets will be used ; 1, 2 .. require at least 1, 2, .. ;  -1, -2, .... veto the event if you have 1, 2 ... number off b-jets
     int doMETcut = 20 ;
     int doQCD    = 0;
     int doPUStudy = -10 ; // default int the ZJets
