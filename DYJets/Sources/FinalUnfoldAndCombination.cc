@@ -439,7 +439,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, bool doFlat , bool doVarWi
         //TFile *outputRootFile = new TFile("sranje.root", "RECREATE");
         outputRootFile->cd();
 
-        resDY[0]->Write("response object");
+        resDY[0]->Write("combinedResponse");
         hData[0]->Write();
         hCorrected->Write("corrected");
         //hDYGenMadGraph->Write();
