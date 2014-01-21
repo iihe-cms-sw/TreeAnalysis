@@ -329,15 +329,36 @@ TH2D* setCovariance(TH2D *h , TH1D* hCent , double error)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa, TH1D* UnfErrors)
+{
+    TH1D *unfWithMad = (TH1D*) dataCentral->Clone();
+    TH1D *unfWithSherpa = (TH1D*) dataUnfWithSherpa->Clone();
+    UnfErrors = (TH1D*) dataCentral->Clone(); 
+
+    int nBins = unfWithMad->GetNbinsX();
+    for (int i(0); i <= nBins; i++) {
+        double diff = fabs(unfWithMad->GetBinContent(i) - unfWithSherpa->GetBinContent(i));
+        unfErrors->SetBinContent(i, diff);
+        unfErrors->SetBinErrors(i, 0);
+    }
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 double getErrors(string variable, bool isMuonn, string unfAlgg, bool doVarWidthh)
 {
   string energy = getEnergy();
   string leptonFlavor = "DMu";
   if (!isMuonn) leptonFlavor = "DE";
   gStyle->SetOptStat(0);
-  string filesIN[4] = {"ZNGoodJets_Zexc","JetsHT","JetPt","JetEta"};
-  string addNames[5] = {"First","Second","Third","Fourth","Fifth"};
-/*
+  //string filesIN[4] = {"ZNGoodJets_Zexc","JetsHT","JetPt","JetEta"};
+  //string addNames[5] = {"First","Second","Third","Fourth","Fifth"};
+
+    
+
+
   //-- get number of jets --
   unsigned pos = variable.find("jet");         // position of "jet" in str
   string str3;
@@ -374,10 +395,10 @@ double getErrors(string variable, bool isMuonn, string unfAlgg, bool doVarWidthh
 
   cout << " Envelope error " << (max-min)/2 << " min : " << min << " max " << max << endl;
   return ((max-min)/2)/(mean/4);
-*/
 
   return 0.;
 }
+*/
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

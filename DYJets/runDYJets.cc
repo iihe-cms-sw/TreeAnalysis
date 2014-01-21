@@ -31,14 +31,14 @@
     int doPUStudy = -10 ; // default int the ZJets
     bool doSSign  =  0;   // contribution of QCD to emu in TTbar 
     bool doInvMassCut = 0 ; 
-    int jetPtMin = 30;
+    int jetPtMin = 20;
     int jetPtMax = 0;
     int ZEtaMin  = -999999;  // default value -999999       !!!!!!!  factor 100 to keep things integer ....    eta 2.4  = eta Cut 240 
     int  ZEtaMax  = 999999;  // default value  999999
 
 
 
-    string lepSelection = "DE"; // default lumi is set for double muon dataset
+    string lepSelection = "DMu"; // default lumi is set for double muon dataset
     if ( lepSelection.find("DE") == 0)   muLumi = 19.602 ;
     else if ( lepSelection.find("SMuE") == 0) muLumi = 19.673 ;
     else if ( lepSelection.find("SMu") == 0)  muLumi = 19.244 ;
@@ -62,7 +62,7 @@
     bool doDataEff(1);
     int NSystData(3),NSystMC(5);
     bool doSysRunning(1);
-    int doWhat   = 90 ; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen, 90 - PDF Syst.
+    int doWhat   = 51 ; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen, 90 - PDF Syst.
     if ( lepSelection.find("DE") == 0)  NSystData = 5 ;
 
     if ( !doSysRunning ) {NSystData = 1; NSystMC = 1; }
@@ -219,17 +219,17 @@
     if ( doWhat == 51  ){
 
         // this is setup for sherpa NLO 
-        ZJetsAndDPS DESherpaTest2NLO("DE_8TeV_DY_Sherpa_2NLO4_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
-        //	DESherpaTest2NLO.Loop(0, 1, 0, 0, 0);
+        ZJetsAndDPS DESherpaTest2NLO(lepSelection + "_8TeV_DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
+        DESherpaTest2NLO.Loop(0, 1, 0, 0, 0);
 
 
-        ZJetsAndDPS DESherpaTest1NLO("DE_8TeV_DY_Sherpa_1NLO4_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
-        DESherpaTest1NLO.Loop(0, 1, 0, 0, 0); 
+        //ZJetsAndDPS DESherpaTest1NLO("DE_8TeV_DY_Sherpa_1NLO4_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
+        //DESherpaTest1NLO.Loop(0, 1, 0, 0, 0); 
 
-        ZJetsAndDPS DESherpaTest1NLOScaleDown("DE_8TeV_DY_Sherpa_1NLO4_scaleDown_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
+        //ZJetsAndDPS DESherpaTest1NLOScaleDown("DE_8TeV_DY_Sherpa_1NLO4_scaleDown_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
         //	DESherpaTest1NLOScaleDown.Loop(0, 1, 0, 0); 
 
-        ZJetsAndDPS DESherpaTest1NLOScaleUp("DE_8TeV_DY_Sherpa_1NLO4_scaleUp_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
+        //ZJetsAndDPS DESherpaTest1NLOScaleUp("DE_8TeV_DY_Sherpa_1NLO4_scaleUp_HepMC_dR_Full_List",  eleLumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax );
         //      DESherpaTest1NLOScaleUp.Loop(0, 1, 0, 0); 
 
 
@@ -239,8 +239,8 @@
         //DESherpALL.Loop(0, 1,  doQCD,  doSSign, doInvMassCut, doBJets, doPUStudy ); 
 
 
-        ZJetsAndDPS DMuPowMiNLO("DMu_8TeV_DYJets_PowhegZ2jMiNLO_dR_GEN_Cern",                             muLumi * 1.            * 1000 / 1964662.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax   ); 
-        DMuPowMiNLO.Loop(0, 1, 0, 0, 0);
+        ZJetsAndDPS DMuPowMiNLO("DMu_8TeV_DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ",                             muLumi * 1.            * 1000 / 9462127.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax   ); 
+        //DMuPowMiNLO.Loop(0, 1, 0, 0, 0);
         //	ZJetsAndDPS DEPow("DE_8TeV_DYJets_PowhegNLO1Jet_dR_GEN",                             muLumi * 334.            * 1000 / 2948078.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax   ); 
         //	DEPow.Loop(0, 1, 0, 0);
         //	ZJetsAndDPS DEPowSU("DE_8TeV_DYJets_PowhegNLO1Jet_dR_ScaleUp_GEN",                             muLumi * 318.4            * 1000 / 5446372.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZEtaMin,    ZEtaMax   ); 

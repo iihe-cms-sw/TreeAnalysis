@@ -166,8 +166,10 @@ void getHistos(TH1D *histograms[], TFile *Files[], string variable, bool isDoubl
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){
-        TH1D* histTemp = (TH1D*) Files[i]->Get(variable.c_str());
-        histograms[i] = (TH1D*) histTemp->Clone();
+        //TH1D* histTemp = (TH1D*) Files[i]->Get(variable.c_str());
+        //histograms[i] = (TH1D*) histTemp->Clone();
+
+        histograms[i] = (TH1D*) Files[i]->Get(variable.c_str());
     } 
 }
 

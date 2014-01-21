@@ -25,7 +25,7 @@ TH2D* CovToCorr2(TH2D *h , string title)
   //   string title = h->GetTitle();
   TH2D* hCorrelation = new TH2D(title.c_str(),title.c_str(), xbin - 2 , 0.5, xbin - 1.5, xbin - 2, 0.5, xbin-1.5);
 
-  TH2D* hCorr = (TH2D *) h ->Clone();
+  //TH2D* hCorr = (TH2D *) h ->Clone();
   for (int i(2); i <= ybin - 1; i++){
     for (int j(2); j <= xbin - 1; j++){
       double temp = 0.;
@@ -297,7 +297,7 @@ TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, dou
             if (  ErrDown > ErrUp ) ErrMax = ErrDown ;
         }
         else ErrMax = ( fabs(ErrUp) + fabs(ErrDown) )/2.;
-        double ErrTot = sqrt(pow(ErrMax,2)+pow(Error * hCentral->GetBinContent(j),2));
+        //double ErrTot = sqrt(pow(ErrMax,2)+pow(Error * hCentral->GetBinContent(j),2));
         ErrMax *= ( hData->GetBinContent(j) / hCentral->GetBinContent(j) ) ;
         hDataClone->SetBinError(j,ErrMax);
     }
@@ -555,8 +555,9 @@ TH1D * ToyMCErrorsStat( string unfAlg , TH1D *hdata, TH1D* hBack0[], RooUnfoldRe
             //gauss fluctuate the backgrounds due to LUMINOSITY or XSec
             // change in XSEC for back influences all the events in the same direction (either positive or negative) but with different offset ???
             if ( ( selection == 12 || selection == 11)  && fluctBkg == true) {
-                double fluctB[50] = {[0 ... 49] = 0};
-                double fluctLUMIsig( 1 + lumiSyst * random->Gaus(0, 1) );   // fluctuate LUMINOSITY -- check uncertainty
+                double fluctB[50] = {0};
+                //double fluctB[50] = {[0 ... 49] = 0};
+                //double fluctLUMIsig( 1 + lumiSyst * random->Gaus(0, 1) );   // fluctuate LUMINOSITY -- check uncertainty
                 for (int k(0); k < NBkgGroups ; k++) { // we have 6 bkg groups: ZZ,WZ,top,TTbar,WJets(orDYJets) and WW
                     double fluct1sig( random->Gaus(0, 1) );   // fluctuate background cross section for each source
                     hBack = (TH1D*) hBack0[k]->Clone();

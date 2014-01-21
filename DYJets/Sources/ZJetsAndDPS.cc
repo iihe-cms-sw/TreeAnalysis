@@ -89,8 +89,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, 
             pdfSet, pdfMember);
 
-    //TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
-    TFile *outputFile = new TFile("TEST.root", "RECREATE");
+    TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
+    //TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
 
     // weight variable
@@ -265,7 +265,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 
 
-    nentries = 1;
+    //nentries = 1;
     for (Long64_t jentry(0); jentry < nentries; jentry++){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -358,7 +358,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 }
             }
         }
-        cout << "Weight pdf: " << wPdf << endl;
+        //cout << "Weight pdf: " << wPdf << endl;
         //==========================================================================================================//
 
         // There is no pile-up  so no need to reweight for that

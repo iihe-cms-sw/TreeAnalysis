@@ -91,7 +91,8 @@ const string FILENAMES[NFILESVJETS] = {
     //"DYJets_PowhegNLO1Jet_GEN",
     "DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ",
     //"DYJets_UNFOLDING_Sherpa",
-    "DY_Sherpa_1NLO4_HepMC_dR_Full_List"
+    //"DY_Sherpa_1NLO4_HepMC_dR_Full_List",
+    "DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL"
 }; 
 //-----------------------------------------------------
 

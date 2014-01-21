@@ -50,9 +50,9 @@ int JetPtMax(0);
 void FinalUnfold()
 {
 //  variableStruct VAROFINTEREST[] = VAROFINTERESTZJETS ; 
-//  for (int i(0); i < NVAROFINTERESTZJETS/*NVAROFINTEREST*/; i++){
-  for (int i(0); i < 1/*NVAROFINTEREST*/; i++){
-    for (int j(0); j < 2; j++){
+  for (int i(2); i < 3/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
+//  for (int i(40); i < 61/*NVAROFINTEREST*/; i++)
+    for (int j(1); j < 2; j++){
       isMuon = j ;
       if (isMuon) FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
       else FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].EBayeskterm, VAROFINTERESTZJETS[i].ESVDkterm);
@@ -74,7 +74,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   string leptonFlavor = "DMu";
   if (!isMuon) leptonFlavor = "DE";
 
-  int NumberOfToys( 10),  oppNumberOfToys(4);
+  int NumberOfToys(4),  oppNumberOfToys(4);
   int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
   string oppUnfAlg = "SVD";
   if (unfAlg == "SVD" ) {
@@ -98,6 +98,10 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   cout << " got data " << endl;
   TH1D *hData[5];  
   getHistos(hData, fData, variable);
+  TCanvas *testCan = new TCanvas();
+  hData[0]->DrawCopy();
+  hData[2]->SetLineColor(kRed);
+  hData[2]->DrawCopy("esame");
   cout << " got data " << endl;
   //-----------------------------------------------------
 
@@ -109,7 +113,9 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth , 0, 0, 0, 0,  0, 1);
   
   fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  cout << "FILENAME: " << DYPOWHEGFILENAME << endl;
   fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+  cout << "ICI" << endl;
   //fDYPowhegUp = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGUPFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   //fDYPowhegDown = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGDOWNFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
   TH1D *hDY[4]; 
@@ -123,6 +129,12 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   RooUnfoldResponse *resDY[4]; 
   getResps(resDY, fDYMadGraph, "response" + variable);
   cout << " got DY files" << DYMADGRAPHFILENAME << endl;
+
+  //--- Get Sherpa Resp Matrix
+  stringstream sheUnfFile;
+  sheUnfFile<< "HistoFiles/" << leptonFlavor << "_" << energy << "_DYJets_Sherpa_UNFOLDING_dR_5311_Inf_mcEveWeight_EffiCorr_0_TrigCorr_1_Syst_0_JetPtMin_" << JetPtMin << "_VarWidth.root";
+  TFile *sheUnf = new TFile(sheUnfFile.str().c_str());
+  RooUnfoldResponse *resDYSherpa = (RooUnfoldResponse*) sheUnf->Get(string("response" + variable).c_str()); 
   //-----------------------------------------------------
 
 
@@ -219,16 +231,20 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   TFile* outputRootFile = new TFile(outputRootFileName.c_str(), "RECREATE");
 
   //-- save data reco
-  outputRootFile->cd();  hData[0]->Write("Data"); hData[1]->Write("DataJECup");hData[2]->Write("DataJECdown");
+  outputRootFile->cd();  hData[0]->Write("Data"); hData[1]->Write("DataJECup"); hData[2]->Write("DataJECdown");
   //-- save madgraph gen also in the file
   outputRootFile->cd();  hDYGenMadGraph->Write("genMad");	
   cout << " saved data reco and madgraph files" << endl;
   //-- save sherpa and powheg gen also in the file
   outputRootFile->cd();  
-  //hDYGenSherpa->Write("genShe");
+  cout << "ICI" << __LINE__ << endl;
+  hDYGenSherpa->Write("genShe");
   //-- save powheg gen also in the file
   outputRootFile->cd();  
-  //hDYGenPowheg->Write("genPow");  
+  cout << "ICI" << __LINE__ << endl;
+  cout << "lepton flavor: " << leptonFlavor << endl;
+  hDYGenPowheg->Write("genPow");  
+  cout << "ICI" << __LINE__ << endl;
   //hDYGenPowhegUp->Write("genPowUp");  
   //hDYGenPowhegDown->Write("genPowDown");
   cout << "Start unfolding offseted histograms on RECO "<<endl;
@@ -256,6 +272,11 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   int SelDY[8]   = {0, 0, 0, 1, 2, 0, 0, 3}; 
   int SelBG[8]   = {0, 0, 0, 1, 2, 3, 4, 0}; 
   for ( int i(0); i < 8; i++){
+      //Unfold with SHerpa for the Central only
+      if (i == 0) {
+          TH1D* hUnfoldedWithSherpa = Unfold(unfAlg, resDYSherpa, hData[SelData[i]], hSumBG[SelBG[i]],  UsedKterm, hNames[i]); 
+          outputRootFile->cd();  hUnfoldedWithSherpa->Write("unfWithSherpa");
+      }
       TH1D* hUnfolded = Unfold(unfAlg, resDY[SelDY[i]], hData[SelData[i]], hSumBG[SelBG[i]],  UsedKterm, hNames[i]); 
       outputRootFile->cd();  hUnfolded->Write();
       cout << "Start unfolding offseted histograms on RECO "<<endl;
@@ -304,17 +325,17 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //TH1D *hDataJES = SetSystErrorsMax(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataJES = SetSystErrorsMean(hData[0], hData[1], hData[2], "JESerrors");     // JES errors
   TH1D *hDataEFF = SetSystErrorsMean(hData[0], EffError, "EFFerrors");     // lepton EFF errors
-  cout << "Set errors on response object "<<endl;
-  hData[3]->Draw();
-  cout << "Set errors on response object "<<endl;
-//  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError, "EFFerrors");     // lepton EFF errors
-  cout << "Set errors on response object "<<endl;
+  cout << "Set errors on response object "<< __LINE__ << endl;
+  //hData[3]->Draw();
+  cout << "Set errors on response object "<< __LINE__ << endl;
+  //  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError, "EFFerrors");     // lepton EFF errors
+  cout << "Set errors on response object "<< __LINE__ << endl;
   TH1D *hDataJER = SetSystErrorsMean(hData[0], hDY[0], hDY[3], hDY[3], "JERerrors");     // JER errors
   TH1D *hDataPU = SetSystErrorsMean(hData[0], hDY[0], hDY[1], hDY[2], "JERerrors");      // PU errors
   TH2D *hResPUErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());	// PU effect on response 
   TH2D *hResJERErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[3]->Hresponse());	// JER effect on response 
 
-  cout << "Set errors on response object "<<endl;
+  cout << "Set errors on response object "<< __LINE__ << endl;
   // my stat variation of data, BG and response object 
   RooUnfoldResponse *responseNEW[3];
   responseNEW[0] = new RooUnfoldResponse((TH1D*) resDY[0]->Hmeasured(), (TH1D*) resDY[0]->Htruth(), resDY[0]->Hresponse());
@@ -332,7 +353,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
       hSumBGgroupErrors[0][i]  = (TH1D*) hSumBGgroup[0][i]->Clone();
       hSumBGgroupErrors[1][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[1][i], hSumBGgroup[2][i], "gBGPUerrors");
       hSumBGgroupErrors[2][i]  = SetSystErrorsMax(hSumBGgroup[0][i],hSumBGgroup[3][i], hSumBGgroup[4][i], "gBGXSECerrors");
-  //    outputRootFile->cd(); hSumBGgroupErrors[2][i]->Write(); 
+      //    outputRootFile->cd(); hSumBGgroupErrors[2][i]->Write(); 
   }
 
 
@@ -351,7 +372,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   // option 3: assume errors in reco bins are uncorrelated
   //int myToyN[5] = {400, 400, 400, 400, 400};
   for (int i(0); i < nUnfold; i++){	
-//  for (int i(0); i < 3; i++){	
+      //  for (int i(0); i < 3; i++){	
       cout << endl;
       cout << endl;
       cout << "Doing my TOY " << Cov[i] << " with type  " << SetTypeOfVariation[i] << endl;
@@ -394,14 +415,15 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   //closeFile(outputRootFile);
   closeFiles(fData);
   closeFiles(fDYMadGraph);
-  //closeFile(fDYSherpa);
-  //closeFile(fDYPowheg);
+  closeFile(fDYSherpa);
+  closeFile(fDYPowheg);
+  sheUnf->Close();
   //closeFile(fDYPowhegUp);
   //closeFile(fDYPowhegDown);
   for (int i(0); i < nFilesBkg; i++) closeFiles(fBG[i]);
   //-----------------------------------------------------
 
-}
+  }
 
 
 

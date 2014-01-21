@@ -8,18 +8,16 @@
 void runMergeTop(string lepSelection = "DE", int systematics =0  , int jetPtCutMin = 30 , int doQCD = 0 );
 
 void MergeTop(){
-    runMergeTop("DMu",0,20,0);
     runMergeTop("DE",0,20,0);
-    //runMergeTop("DMu",1,20,0);
-    //runMergeTop("DMu",-1,20,0);
-    //runMergeTop("DMu",3,20,0);
-    //runMergeTop("DMu",-3,20,0);	        
-    runMergeTop("DMu",0,30,0);
+    runMergeTop("DE",1,20,0);
+    runMergeTop("DE",-1,20,0);
+    runMergeTop("DE",3,20,0);
+    runMergeTop("DE",-3,20,0);	        
     runMergeTop("DE",0,30,0);
-    //runMergeTop("DMu",1,30,0);
-    //runMergeTop("DMu",-1,30,0);
-    //runMergeTop("DMu",3,30,0);
-    //runMergeTop("DMu",-3,30,0);
+    runMergeTop("DE",1,30,0);
+    runMergeTop("DE",-1,30,0);
+    runMergeTop("DE",3,30,0);
+    runMergeTop("DE",-3,30,0);
 }
 
 void runMergeTop(string lepSelection, int systematics, int jetPtCutMin, int doQCD)
@@ -50,9 +48,9 @@ void runMergeTop(string lepSelection, int systematics, int jetPtCutMin, int doQC
     /// DY
     int nDYfiles = 3 ;
     string sstrDY[10];
-    sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-    sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-    sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+    sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+    sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+    sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
 
     cout << strf<< endl;
     TFile *f1 = new TFile(str1.c_str());
@@ -118,9 +116,9 @@ void runMergeTop(string lepSelection, int systematics, int jetPtCutMin, int doQC
         /// DY
         //   int nDYfiles = 3 ;
         //     string sstrDY[10];
-        //     sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-        //     sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-        //     sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_1_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
+        //     sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+        //     sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+        //     sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_0_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
         TFile *fDY[10];
         for ( int i = 0 ; i < nDYfiles ; i++){
             if ( i == nDYfiles - 1 )  fDY[i] =  new TFile(sstrDY[i].c_str(), "recreate");
