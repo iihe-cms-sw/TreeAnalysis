@@ -49,9 +49,7 @@ int JetPtMax(0);
 
 void FinalUnfold()
 {
-//  variableStruct VAROFINTEREST[] = VAROFINTERESTZJETS ; 
   for (int i(2); i < 3/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
-//  for (int i(40); i < 61/*NVAROFINTEREST*/; i++)
     for (int j(1); j < 2; j++){
       isMuon = j ;
       if (isMuon) FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
@@ -66,8 +64,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
 {
   TH1::SetDefaultSumw2();
   JetPtMin = 30 ;
-  if (JetPtMin == 30) outputDirectory="PNGFiles/FinalUnfold_30_test/";
-  //if (JetPtMin == 30) outputDirectory="PNGFiles/FinalUnfold_30/";
+  if (JetPtMin == 30) outputDirectory="PNGFiles/FinalUnfold_30/";
   if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 20)  JetPtMin = 15 ;
   if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 30)  JetPtMin = 20 ;
 

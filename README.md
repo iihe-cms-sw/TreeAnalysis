@@ -23,7 +23,8 @@ you can download at CERN. That is why it is provided here.
 To build it, nothing hard:
 
 $ cd DYJets/RooUnfold-1.1.1
-$ make
+$ make clean
+$ make 
 
 Bravo ! You have compiled the RooUnfold classes and you are ready to use it.
 

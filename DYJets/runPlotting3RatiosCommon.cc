@@ -33,7 +33,7 @@ string leptonFlavor = "DMu";
 string unfAlg = "Bayes";
 bool doVarWidth = true ;
 /// define names od output png files and tex
-string outputDirectory = "PNGFiles/FinalUnfold_30_test/";
+string outputDirectory = "PNGFiles/FinalUnfold_30/";
 
 
 void runPlotting3RatiosCommon()
