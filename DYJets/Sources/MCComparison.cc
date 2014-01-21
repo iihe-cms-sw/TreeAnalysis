@@ -31,21 +31,22 @@ TFile* outputRootFile;
 
 
 // main function
-void MCComparison(int sel = 1){
+void MCComparison(int sel = 4){
 
     gStyle->SetOptStat(0);
     TFile* files[10];
     TH1D* Histos[10];
     cout << "MCComparison  "<< sel << endl;
     int nFiles = 3 ;
-    string sLegend[] = {"MG+Py6","PowMiNLO+Py6","Sherpa1NLO"}; 
-    string fileName = "PNGFiles/MCComparison_MG_PowMiNLO_Sherpa1NLO";
+    string sLegend[] = {"MG+Py6","PowMiNLO+Py6","Sherpa2NLO"}; 
+    string fileName = "PNGFiles/MCComparison_MG_PowZjjMiNLO_Sherpa2NLO";
 
     if ( sel == 0 ){
         files[0] = getFile(FILESDIRECTORY, "DE", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, 0, doVarWidth);
         files[1] = getFile(FILESDIRECTORY, "DMu", energy, DYPOWHEGFILENAME,   JetPtMin, JetPtMax, 0, doVarWidth);
-        files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
-        outputRootFile = new TFile("PNGFiles/MCComparison_MG_PowMiNLO_Sherpa1NLO.root", "RECREATE");
+        //files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPA2NLOFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_MG_PowZjjMiNLO_Sherpa2NLO.root", "RECREATE");
     }
     else if ( sel == 1 ){
         sLegend[0] = "Sherpa1NLO"; sLegend[1] = "Sherpa1NLO ScaleDown";sLegend[2] = "Sherpa1NLO ScaleUp"; 
@@ -67,13 +68,45 @@ void MCComparison(int sel = 1){
         files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPA2NLOFILENAME,   JetPtMin, JetPtMax, 0, doVarWidth);
         outputRootFile = new TFile("PNGFiles/MCComparison_MG_Sherpa1NLO_Sherpa2NLO.root", "RECREATE");
     }
+    else if ( sel == 3 ){
+        sLegend[0] = "MG"; sLegend[1] = "SherpaUnf";sLegend[2] = "Sherpa2NLO";
+        fileName = "PNGFiles/MCComparison_MG_SherpaUnf_Sherpa2NLO";
+        files[0] = getFile(FILESDIRECTORY, "DE", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, 0, doVarWidth);
+        files[1] = getFile(FILESDIRECTORY, "DE", energy, "DYJets_Sherpa_UNFOLDING_dR_5311_Inf"  , JetPtMin, JetPtMax, 0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPA2NLOFILENAME,   JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_MG_SherpaUnf_Sherpa2NLO.root", "RECREATE");
+    }
+    else if ( sel == 4 ){
+        sLegend[0] = "Sherpa"; sLegend[1] = "Sherpa2";sLegend[2] = "Sherpa2NLO";
+        fileName = "PNGFiles/MCComparison_Sherpa2NLO";
+        files[0] = getFile(FILESDIRECTORY, "DE", energy, "DY_Sherpa_2NLO4_HepMC_dR_Full_List", JetPtMin, JetPtMax, 0, doVarWidth);
+        files[1] = getFile(FILESDIRECTORY, "DE", energy, "DY_Sherpa_2NLO4_HepMC_dR_Full_List2"  , JetPtMin, JetPtMax,  0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DE", energy, "DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL",   JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_Sherpa2NLO.root", "RECREATE");
+    }
+    else if ( sel == 5 ){
+        sLegend[0] = "MG+Py6"; sLegend[1] = "Pow1NLO";sLegend[2] = "PowMiNLO+Py6";
+        fileName = "PNGFiles/MCComparison_Powhegs";
+        files[0] = getFile(FILESDIRECTORY, "DE", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, 0,   doVarWidth);
+        files[1] = getFile(FILESDIRECTORY, "DMu", energy, DYPOWHEGFILENAME,   JetPtMin, JetPtMax, 0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME  , JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_MG_Powhegs.root", "RECREATE");
+    }
+    else if ( sel == 6 ){
+        sLegend[0] = "MG+Py6"; sLegend[1] = "scaleUp";sLegend[2] = "scaleDown";
+        fileName = "PNGFiles/MCComparison_Madgraphs";
+        files[0] = getFile(FILESDIRECTORY, "DMu", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMax, 0,   doVarWidth);
+        files[1] = getFile(FILESDIRECTORY, "DMuDE", energy, "DYJets_UNFOLDING_dR_5311_Inf3_scaleUp",   JetPtMin, JetPtMax, 0, doVarWidth);
+        files[2] = getFile(FILESDIRECTORY, "DMuDE", energy, "DYJets_UNFOLDING_dR_5311_Inf3_scaleDown"  , JetPtMin, JetPtMax, 0, doVarWidth);
+        outputRootFile = new TFile("PNGFiles/MCComparison_MG_Madgraphs.root", "RECREATE");
+    }
 
     // get number of histograms
     int nHist = files[0]->GetListOfKeys()->GetEntries();
     for (int i = 0; i < nHist; i++) {
         string histoNameTemp = files[0]->GetListOfKeys()->At(i)->GetName();
         if (histoNameTemp.find("gen") == string::npos) continue ;
-//        if (histoNameTemp.find("genZNG") == string::npos) continue ;
+        //        if (histoNameTemp.find("genZNG") == string::npos) continue ;
         //i = nHist ;
         cout <<  histoNameTemp << endl;
         for (int j = 0; j < nFiles; j++) {
@@ -85,7 +118,7 @@ void MCComparison(int sel = 1){
         }
         // now call plotter
         cout << " used legend:"<< sLegend[0] << endl;
-        TCanvas *a = (TCanvas *) plottingFunctions(nFiles,Histos, 1, 1, histoNameTemp,sLegend);
+        TCanvas *a = (TCanvas *) plottingFunctions(nFiles,Histos, 1, 1, histoNameTemp,sLegend, 0.6, 1.8);
         //plottingFunctions(4,Histos, true, true  );
         //plottingFunctions(4,Histos  );
         //plottingFunctions(4 );
@@ -93,6 +126,7 @@ void MCComparison(int sel = 1){
         a->Write();
         string PNGout = fileName+"/"+histoNameTemp+".pdf";
         a->Print(PNGout.c_str());
+        cout << " Will be saved in :" << PNGout << endl;
 
     }
 

@@ -14,6 +14,7 @@
 #include <TLegend.h>
 #include <TLatex.h>
 #include <string>
+#include <TArrow.h>
 //--  Setting global variables --------------------------------------------------------------
 #include "fileNames.h"
 #include "getFilesAndHistograms.h"
@@ -270,3 +271,103 @@ TCanvas*  plottingFunctions(int NHistos, TH1D* histos[], bool logZ, bool decreas
   return can;
 
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TCanvas*  noRatioPlots(int NHistos, TH1D* histos[], string variable, int option, bool logZ, bool decrease ) {
+
+cout << " in the plot"<< endl;
+gStyle->SetOptStat(0);
+
+for ( int i = 0 ; i < NHistos ; i++){
+histos[i]->SetTitle("");
+
+}
+
+TCanvas *can = new TCanvas(variable.c_str(), variable.c_str());
+//can->Divide(1,2);
+//can->cd(1); histos[0]->DrawClone();
+//can->cd(2); histos[0]->DrawClone();
+
+cout <<  histos[0]->GetBinContent(1)<<"   " <<  histos[2]->GetBinContent(11)<<"  " << histos[2]->GetNbinsX()<<endl ;
+can->cd();
+TPad *pad1 = new TPad("pad1","pad1", 0, 0.5, 0.5, 1);
+if (logZ) pad1->SetLogy();
+
+pad1->cd(); histos[0]->DrawClone(); 
+can->cd(); pad1->Draw();
+can->cd();
+TPad *pad2 = new TPad("pad2","pad2", 0.5, 0.5, 1, 1);
+if (logZ) pad2->SetLogy();
+pad2->cd(); histos[1]->DrawClone(); 
+can->cd(); pad2->Draw();
+
+TPad *pad3 = new TPad("pad3","pad3", 0.0, 0.05, 1, 0.5);
+if (logZ) pad3->SetLogy();
+pad3->cd(); 
+histos[2]->GetXaxis()->SetLabelSize(0.05);
+histos[2]->GetYaxis()->SetLabelSize(0.05);
+
+//histos[2]->GetXaxis()->SetTitle(histos[1]->GetXaxis()->GetTitle());
+histos[2]->GetXaxis()->SetTitle("");
+histos[2]->GetYaxis()->SetTitleSize(0.061);
+histos[2]->GetXaxis()->SetTitleSize(0.061);
+histos[2]->GetYaxis()->SetTitleOffset(.45);
+histos[2]->GetXaxis()->SetTitleOffset(.45);
+histos[2]->DrawClone(); 
+can->cd(); pad3->Draw();
+
+can->cd();
+TArrow *arrow_alpha = new TArrow(590, 190, 575, 985, 0.02, ">");
+arrow_alpha->Draw();
+TArrow ar2(0.2,0.1,0.2,0.7,0.05,"|>");
+ar2.Draw();
+return can;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TCanvas*  noRatioPlots(int NHistos, TH2D* histos[], string variable, int option, bool logZ, bool decrease ) {
+
+cout << " in the plot"<< endl;
+gStyle->SetOptStat(0);
+
+for ( int i = 0 ; i < NHistos ; i++){
+histos[i]->SetTitle("");
+
+}
+
+TCanvas *can = new TCanvas(variable.c_str(), variable.c_str());
+
+can->cd();
+TPad *pad1 = new TPad("pad1","pad1", 0, 0.5, 0.5, 1);
+if (logZ) pad1->SetLogy();
+
+pad1->cd(); histos[0]->DrawClone("colz");
+can->cd(); pad1->Draw();
+can->cd();
+TPad *pad2 = new TPad("pad2","pad2", 0.5, 0.5, 1, 1);
+if (logZ) pad2->SetLogy();
+pad2->cd(); histos[1]->DrawClone("colz");
+can->cd(); pad2->Draw();
+
+TPad *pad3 = new TPad("pad3","pad3", 0.0, 0.05, 1, 0.5);
+if (logZ) pad3->SetLogy();
+pad3->cd();
+histos[2]->GetXaxis()->SetLabelSize(0.05);
+histos[2]->GetYaxis()->SetLabelSize(0.05);
+
+//histos[2]->GetXaxis()->SetTitle(histos[1]->GetXaxis()->GetTitle());
+histos[2]->GetXaxis()->SetTitle("");
+histos[2]->GetYaxis()->SetTitleSize(0.061);
+histos[2]->GetXaxis()->SetTitleSize(0.061);
+histos[2]->GetYaxis()->SetTitleOffset(.45);
+histos[2]->GetXaxis()->SetTitleOffset(.45);
+histos[2]->DrawClone("colz");
+can->cd(); pad3->Draw();
+
+can->cd();
+TArrow *arrow_alpha = new TArrow(590, 190, 575, 985, 0.02, ">");
+arrow_alpha->Draw();
+TArrow ar2(0.2,0.1,0.2,0.7,0.05,"|>");
+ar2.Draw();
+return can;
+}
+

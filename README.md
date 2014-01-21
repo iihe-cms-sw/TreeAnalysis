@@ -9,6 +9,10 @@ git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2012
 For 2011 data analysis do:
 git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2011
 
+if you want to run on:
+  1) WJets: move DYJets directory to WJets
+  2) TTbar to emu : move DYJets directory to TTbarEMu
+
 Be aware that a rootlogon.C is provided. This is needed to load ROoUnfold
 automatically.
 
@@ -46,5 +50,42 @@ $ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataTTbarEMu DataTTbar
 
 $ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataW DataW
 
+#############################
+################  quick fix for lxplus from Darin
+#############################
 
+# Set up CMSSW ( for root ) 
+cmsrel CMSSW_5_3_0
+cd CMSSW_5_3_0/src
+cmsenv
+
+# Get Git Repository
+git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2012
+
+# Setup W+Jets directory
+cd TreeAnalysis2012
+mkdir WJets
+mkdir WJets/DataW
+cp -r DYJets/* WJets/
+cd WJets
+
+--- Get example file
+cmsStage /store/group/phys_smp/WPlusJets/NtuplesTomislav/SMu_8TeV_T_s_channel_dR_5311.root DataW/SMu_8TeV_T_s_channel_dR_5311.root
+
+--- Output directories
+mkdir HistoFiles PNGFiles
+
+---- Compile RooUnfold
+cd RooUnfold-1.1.1
+make
+cd -
+
+--- Quick hacks for making LHAPDF work
+sed -i 's#/user/aleonard/LHAPDF/lib/libLHAPDF.so#/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/lib/libLHAPDF.so#g' runDYJets.cc
+sed -i 's#/user/aleonard/lhapdf-5.9.1/include/#/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/include/#g' rootlogon.C
+sed -i 's#NNPDF23_nlo_as_0118#NNPDF20_as_0118_100#g' ComputePDFUncertainties.cc
+sed -i 's#NNPDF23_nlo_as_0118#NNPDF20_as_0118_100#g' runDYJets.cc
+
+--- Run the root file maker
+root -b runDYJets.cc
 
