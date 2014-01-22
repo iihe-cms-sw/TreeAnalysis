@@ -7,7 +7,7 @@
     sources.push_back("plottingFunctions");
     sources.push_back("writeFastPlotsTex");
     sources.push_back("unfoldingFunctions");
-    sources.push_back("mergeChannels");
+    sources.push_back("MymergeChannels");
 
     //--- Load shared libraries ---
     unsigned int nSources = sources.size();
@@ -16,6 +16,6 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
     }
 
-    mergeChannels();
+    MymergeChannels();
 
 }

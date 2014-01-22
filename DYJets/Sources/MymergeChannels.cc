@@ -15,6 +15,7 @@
 #include <TPad.h>
 #include <TGraph.h>
 #include <TStyle.h>
+#include <TMath.h>
 #include <fstream>
 #include <sstream>
 #include <iomanip> 
@@ -70,7 +71,7 @@ int SelComb[] = {0,1,3,4,5} ; //selection Of Combination Opi
 
 
 //--- Main function -----------------------------------------------------------------------------//
-void mergeChannels()
+void MymergeChannels()
 {
 
     setTDRStyle();
@@ -79,7 +80,7 @@ void mergeChannels()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(2); i < 3/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(0); i < 1/*NVAROFINTERESTZJETS*/; i++){
         for (int k(0); k < kCorrMax; k++){
             //optionCorr = k ;
             optionCorr = SelComb[k];
@@ -447,7 +448,7 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
 
     /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
-    plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
+    //plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
 
     /// PLOT FINAL PLOTS: COMBINATION VS MC
     plotCombination(VARIABLE, (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), genMad, genShe, genPow);
@@ -552,7 +553,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
         xCoorPowRatio[bin-1]    = hCombinedStat->GetBinCenter(bin);
         yCoor[bin-1]    = centralValue;
 
-        xErr[bin-1]     = 0.;
+        xErr[bin-1]     = 0.5*hCombinedStat->GetBinWidth(bin);
         yStatMadRatio[bin-1]    = totalStatistics/(genMad->GetBinContent(bin));
         yStatSheRatio[bin-1]    = totalStatistics/(genShe->GetBinContent(bin));
         yStatPowRatio[bin-1]    = totalStatistics/(genPow->GetBinContent(bin));
@@ -628,27 +629,105 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
 
     TGraphAsymmErrors *grCentralStat         = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, yStat, yStat);
+    TGraphAsymmErrors *grCentralSyst         = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, ySystDown, ySystUp);
     TGraphAsymmErrors *grCentralStatMadRatio = new TGraphAsymmErrors(nBins, xCoorMadRatio, yCoorMadRatio, xErr, xErr, yStatMadRatio, yStatMadRatio);
     TGraphAsymmErrors *grCentralStatSheRatio = new TGraphAsymmErrors(nBins, xCoorSheRatio, yCoorSheRatio, xErr, xErr, yStatSheRatio, yStatSheRatio);
     TGraphAsymmErrors *grCentralStatPowRatio = new TGraphAsymmErrors(nBins, xCoorPowRatio, yCoorPowRatio, xErr, xErr, yStatPowRatio, yStatPowRatio);
     TGraphAsymmErrors *grCentralSystMadRatio = new TGraphAsymmErrors(nBins, xCoorMadRatio, yCoorMadRatio, xErr, xErr, ySystDownMadRatio, ySystUpMadRatio);
     TGraphAsymmErrors *grCentralSystSheRatio = new TGraphAsymmErrors(nBins, xCoorSheRatio, yCoorSheRatio, xErr, xErr, ySystDownSheRatio, ySystUpSheRatio);
     TGraphAsymmErrors *grCentralSystPowRatio = new TGraphAsymmErrors(nBins, xCoorPowRatio, yCoorPowRatio, xErr, xErr, ySystDownPowRatio, ySystUpPowRatio);
-    grCentralStat->SetMarkerStyle(20);
-    grCentralStat->SetMarkerSize(0.8);
-    grCentralStat->SetMarkerColor(kBlack);
-    grCentralStat->SetLineColor(kBlack);
-    //grCentralStat->SetLineWidth(2);
     
-    TGraphAsymmErrors *grCentralSyst = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, ySystDown, ySystUp);
+    //--- Main Canvas ---
+    TCanvas *plots = new TCanvas ("plots", "EB", 200, 100, 600, 800);
+    plots->cd();
+    //-------------------
+
+    //--- First TPad ---
+    TPad *plot1 = new TPad("plot1","plot1",0.01,0.55,0.99,0.99);
+    plot1->Draw();
+    plot1->cd();
+    plot1->SetTopMargin(0.1);
+    plot1->SetBottomMargin(0.1);
+    plot1->SetRightMargin(0.1);
+    plot1->SetFillStyle(0);
+    if (LOGZ) plot1->SetLogy();
+    //------------------
+
+    //--- Customize data with Syst errors ---
+
     grCentralSyst->SetLineColor(kBlack);
+    grCentralSyst->SetLineWidth(0.);
     grCentralSyst->SetMarkerStyle(20);
-    grCentralSyst->SetMarkerSize(0.8);
-    grCentralSyst->SetMarkerColor(kBlack);
-    grCentralSyst->SetFillColor(kRed);
+    grCentralSyst->SetFillColor(12);
     grCentralSyst->SetFillStyle(3004);
+    grCentralSyst->SetMarkerColor(kBlack);
+
+    grCentralSyst->GetXaxis()->SetTitleOffset(1.1);
+    grCentralSyst->GetXaxis()->SetTitleSize(0.05);
+    grCentralSyst->GetXaxis()->SetLabelSize(0.0);
+    grCentralSyst->GetXaxis()->SetLabelFont(42);
+    grCentralSyst->GetXaxis()->SetTitleFont(42);
+
+    grCentralSyst->GetYaxis()->SetTitleOffset(1.);
+    grCentralSyst->GetYaxis()->SetTitleSize(0.07);
+    grCentralSyst->GetYaxis()->SetLabelSize(0.06);
+    grCentralSyst->GetYaxis()->SetLabelFont(42);
+    grCentralSyst->GetYaxis()->SetTitleFont(42);
+
+    grCentralSyst->SetTitle();
+    grCentralSyst->GetXaxis()->SetTitle();
+
+    grCentralSyst->Draw("a2");
+
+    //-----------------------------------------
+
+    //--- Customize gen Powheg ---
+    genShe->SetFillColor(kBlue-10);
+    genShe->SetFillStyle(1001);
+    genShe->SetLineColor(kBlue);
+    genShe->SetMarkerColor(kBlue);
+    genShe->SetMarkerStyle(24);
+    genShe->DrawCopy("ESAME");
+    //-----------------------------------------
+    
+    //--- Customize gen MadGraph ---
+    genMad->SetFillColor(kOrange-2);
+    genMad->SetFillStyle(1001);
+    genMad->SetLineColor(kOrange+10);
+    genMad->SetMarkerColor(kOrange+10);
+    genMad->SetMarkerStyle(25);
+    genMad->DrawCopy("ESAME");
+    //-----------------------------------------
+
+    //--- Customize gen Powheg ---
+    genPow->SetFillColor(kGreen-8);
+    genPow->SetFillStyle(1001);
+    genPow->SetLineColor(kGreen+3);
+    genPow->SetMarkerColor(kGreen+3);
+    genPow->SetMarkerStyle(26);
+    genPow->DrawCopy("ESAME");
+    //-----------------------------------------
+
+    double minimumToPlot = grCentralSyst->GetHistogram()->GetMinimum();
+    minimumToPlot = TMath::Min(minimumToPlot, genMad->GetBinContent(genMad->GetMinimumBin()));
+    minimumToPlot = TMath::Min(minimumToPlot, genPow->GetBinContent(genPow->GetMinimumBin()));
+    minimumToPlot = TMath::Min(minimumToPlot, genShe->GetBinContent(genShe->GetMinimumBin()));
+    cout << "Minimum " << minimumToPlot << endl;
+
+    double maximumToPlot = grCentralSyst->GetHistogram()->GetMaximum();
+    maximumToPlot = TMath::Max(maximumToPlot, genMad->GetBinContent(genMad->GetMaximumBin()));
+    maximumToPlot = TMath::Max(maximumToPlot, genPow->GetBinContent(genPow->GetMaximumBin()));
+    maximumToPlot = TMath::Max(maximumToPlot, genShe->GetBinContent(genShe->GetMaximumBin()));
+    cout << "Maximum " << maximumToPlot << endl;
+
+    grCentralSyst->GetYaxis()->SetRangeUser(0.2*minimumToPlot, 5*maximumToPlot);
+    grCentralSyst->GetXaxis()->SetRangeUser(0.2*minimumToPlot, 5*maximumToPlot);
+    grCentralSyst->Draw("p");
+
+
 
     cout << " create canvas " << endl;
+    /*
 
     TCanvas *can = new TCanvas(VARIABLE.c_str(), VARIABLE.c_str(), 600, 900);
     can->cd();
@@ -795,12 +874,12 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grCentralSystMadRatio->SetTitle("");
     grCentralSystMadRatio->GetXaxis()->SetTickLength(0.06);
     grCentralSystMadRatio->Draw("AP");
-    /*
-       PDFSystMad->SetFillColor(kGreen-3);
-       PDFSystMad->SetLineColor(kGreen-3);
-       PDFSystMad->SetFillStyle(3001);
-       PDFSystMad->DrawCopy("E2 same");
-       */
+    
+       //PDFSystMad->SetFillColor(kGreen-3);
+       //PDFSystMad->SetLineColor(kGreen-3);
+       //PDFSystMad->SetFillStyle(3001);
+       //PDFSystMad->DrawCopy("E2 same");
+       
 
     grCentralSystMadRatio->Draw("P same");
     grCentralStatMadRatio->Draw("P same");
@@ -855,11 +934,11 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grCentralSystSheRatio->GetXaxis()->SetTickLength(0.06);
     grCentralSystSheRatio->Draw("AP");
     grCentralStatSheRatio->Draw("P same");
-    /*  PDFSystShe->SetFillColor(kGreen-3);
-        PDFSystShe->SetLineColor(kGreen-3);
-        PDFSystShe->SetFillStyle(3001);
-        PDFSystShe->DrawCopy("E2 same");
-        */
+      //PDFSystShe->SetFillColor(kGreen-3);
+        //PDFSystShe->SetLineColor(kGreen-3);
+        //PDFSystShe->SetFillStyle(3001);
+        //PDFSystShe->DrawCopy("E2 same");
+        
     grCentralSystSheRatio->Draw("P same");
     grCentralStatSheRatio->Draw("P same");
     TLatex *latexLabel1 = new TLatex();
@@ -907,12 +986,12 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grCentralSystPowRatio->GetXaxis()->SetTickLength(0.06);
     grCentralSystPowRatio->Draw("AP");
     grCentralStatPowRatio->Draw("P same");
-    /*
-       PDFSystPow->SetFillColor(kGreen-3);
-       PDFSystPow->SetLineColor(kGreen-3);
-       PDFSystPow->SetFillStyle(3001);
-       PDFSystPow->DrawCopy("E2 same");
-       */
+    
+       //PDFSystPow->SetFillColor(kGreen-3);
+       //PDFSystPow->SetLineColor(kGreen-3);
+       //PDFSystPow->SetFillStyle(3001);
+       //PDFSystPow->DrawCopy("E2 same");
+       
     grCentralSystPowRatio->Draw("P same");
     grCentralStatPowRatio->Draw("P same");
     TLatex *latexLabel2 = new TLatex();
@@ -941,6 +1020,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     outputFileNamePNG +=  ".png";
 
     can->Print(outputFileNamePNG.c_str());
+    */
 
 
     fPDFMad->Close();

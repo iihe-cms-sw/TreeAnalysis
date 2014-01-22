@@ -49,8 +49,8 @@ int JetPtMax(0);
 
 void FinalUnfold()
 {
-  for (int i(2); i < 3/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
-    for (int j(1); j < 2; j++){
+  for (int i(0); i < 2/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
+    for (int j(0); j < 2; j++){
       isMuon = j ;
       if (isMuon) FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
       else FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].EBayeskterm, VAROFINTERESTZJETS[i].ESVDkterm);
