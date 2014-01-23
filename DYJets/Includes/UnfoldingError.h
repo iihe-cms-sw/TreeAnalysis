@@ -473,8 +473,8 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
 
 
     // declare the big matrix
-    //int nbins =  CovEle->GetNbinsX();
-    int nbins =  8 ;
+    int nbins =  CovEle->GetNbinsX();
+    //int nbins =  8 ;
     const int NELE = 2*nbins;
     TMatrixD errorMTemp(NELE,NELE);
 

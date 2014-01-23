@@ -75,16 +75,14 @@ int SelComb[] = {0,1,3,4,5} ; //selection Of Combination Opi
 //--- Main function -----------------------------------------------------------------------------//
 void MymergeChannels()
 {
-
     setTDRStyle();
     gStyle->SetOptStat(0);
     gStyle->SetErrorX(0.5);
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(4); i < 5/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(0); i < 6/*NVAROFINTERESTZJETS*/; i++){
         for (int k(0); k < kCorrMax; k++){
-            //optionCorr = k ;
             optionCorr = SelComb[k];
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
         }
@@ -185,7 +183,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     transposeU.Transpose(U);
     if (DEBUG) dumpElements(transposeU);
 
-
     TVectorD measurement(NELE);
     // jet energy scale for electron channel
     TVectorD jesSys_ele(nbins);
@@ -199,8 +196,8 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     //        TH2D* hCorrMu = (TH2D*)  CovToCorr(CovMuon);
 
     // set correlation between channels
-    double correlationSameBin  =  0.;
-    double correlationDiffBin  =  0.;
+    double correlationSameBin = 0.;
+    double correlationDiffBin = 0.;
     if ( optionCorr  ==  1 ) correlationSameBin  =  0.;
     if ( optionCorr  ==  2 ) correlationSameBin  =  1.;
     if ( optionCorr  ==  3 ) correlationSameBin  =  1.;
@@ -390,7 +387,7 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     TMatrixD combined_error_LEP(nbins,nbins);
 
     cout << " TH2 for allErrors " << __LINE__  << endl;
-    cout << lambda.GetNrows() << "   " <<  lambda.GetNrows() <<"   " << covMatrixStat.GetNrows() << "   " <<  covMatrixStat.GetNcols() << transposeLambda.GetNrows() << "   " <<  transposeLambda.GetNcols() << endl;
+    cout << lambda.GetNrows() << "   " <<  lambda.GetNcols() <<"   " << covMatrixStat.GetNrows() << "   " <<  covMatrixStat.GetNcols() << transposeLambda.GetNrows() << "   " <<  transposeLambda.GetNcols() << endl;
     cout << "Creating combined_error_stat" << endl;
     combined_error_stat  =  lambda * (covMatrixStat * transposeLambda);
     cout << "Creating combined_error_stat done" << endl;
@@ -406,15 +403,15 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
 
 
     TH2D* allErrorsTH2[9];
-    allErrorsTH2[0] = new TH2D( combined_error  ) ;
-    allErrorsTH2[1] = new TH2D( combined_error_stat ) ;
-    allErrorsTH2[2] = new TH2D( combined_error_JES  ) ;
-    allErrorsTH2[3] = new TH2D( combined_error_PU   ) ;
-    allErrorsTH2[4] = new TH2D( combined_error_XSEC ) ;
-    allErrorsTH2[5] = new TH2D( combined_error_JER  ) ;
-    allErrorsTH2[6] = new TH2D( combined_error_LUMI ) ;
-    allErrorsTH2[7] = new TH2D( combined_error_UNF  ) ;
-    allErrorsTH2[8] = new TH2D( combined_error_LEP  ) ;
+    allErrorsTH2[0] = new TH2D(combined_error);
+    allErrorsTH2[1] = new TH2D(combined_error_stat);
+    allErrorsTH2[2] = new TH2D(combined_error_JES);
+    allErrorsTH2[3] = new TH2D(combined_error_PU);
+    allErrorsTH2[4] = new TH2D(combined_error_XSEC);
+    allErrorsTH2[5] = new TH2D(combined_error_JER);
+    allErrorsTH2[6] = new TH2D(combined_error_LUMI);
+    allErrorsTH2[7] = new TH2D(combined_error_UNF);
+    allErrorsTH2[8] = new TH2D(combined_error_LEP);
 
 
     // for debugging and filling LUMI error histogram
@@ -448,8 +445,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
 
     // create combination histogram with statistical errors
     TH1D* h_combine_stat =  (TH1D *) SetHistWithErrors(  (TH1D*)  h_combine->Clone() , combined_error_stat, "Stat");
-    //testMat(  (TH1D*) h_combine->Clone()  , combined_error_stat);
-    cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
 
     /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
     //plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
@@ -520,7 +515,6 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
             genShe->SetBinContent(i, genShe->GetBinContent(i)*1./(Luminosity*binW));
             genPow->SetBinContent(i, genPow->GetBinContent(i)*1./(Luminosity*binW));
 
-            cout << "OUOUOU " << hCombinedStat->GetBinError(i) << endl;
             hCombinedStat->SetBinError(i, hCombinedStat->GetBinError(i)*1./(Luminosity*binW));
             hCombinedTot->SetBinError(i, hCombinedTot->GetBinError(i)*1./(Luminosity*binW));
             genMad->SetBinError(i, genMad->GetBinError(i)*1./(Luminosity*binW));
@@ -548,7 +542,6 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
         double totalSystematicsUp(0.), totalSystematicsDown(0.);
         double centralValue(hCombinedStat->GetBinContent(bin));
         double totalStatistics(hCombinedStat->GetBinError(bin));
-        cout << "ICICICI " << totalStatistics  << endl;
         yStat[bin -1] = hCombinedStat->GetBinError(bin);
         ySystDown[bin -1] = hCombinedTot->GetBinError(bin);
         ySystUp[bin -1] = hCombinedTot->GetBinError(bin);
@@ -731,7 +724,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grCentralSystRatio->GetXaxis()->SetTitle();
 
     grCentralStatRatio->SetLineColor(kBlack);
-    grCentralStatRatio->SetLineWidth(2);
+    //grCentralStatRatio->SetLineWidth(2);
     grCentralStatRatio->SetMarkerSize(0);
     //-----------------------------------------
 
@@ -863,9 +856,9 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grSheToCentral->SetMarkerColor(kBlue);
     grSheToCentral->SetMarkerStyle(24);
     grSheToCentral->Draw("a2");
-    grSheToCentral->Draw("p");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
+    grSheToCentral->Draw("p");
 
     //--- TLegend ---
     TLegend *shelegend = new TLegend(0.16, 0.05, 0.4, 0.2);
@@ -904,9 +897,9 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grPowToCentral->SetMarkerColor(kGreen+3);
     grPowToCentral->SetMarkerStyle(26);
     grPowToCentral->Draw("a2");
-    grPowToCentral->Draw("p");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
+    grPowToCentral->Draw("p");
 
     //--- TLegend ---
     TLegend *powlegend = new TLegend(0.16, 0.05, 0.4, 0.2);
@@ -949,9 +942,9 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     grMadToCentral->SetMarkerColor(kOrange+10);
     grMadToCentral->SetMarkerStyle(25);
     grMadToCentral->Draw("a2");
-    grMadToCentral->Draw("p");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
+    grMadToCentral->Draw("p");
 
     //--- TLegend ---
     TLegend *madlegend = new TLegend(0.16, 0.34, 0.4, 0.44);
