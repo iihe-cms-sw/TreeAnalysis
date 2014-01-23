@@ -7,7 +7,7 @@ int markerColor[3] = {lineColor[0], lineColor[1], lineColor[2]};
 int markerStyle[3] = {24, 26, 25};
 int fillStyle = 1001;
 
-TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
+TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
 {
 
     //--- Determine how many comparison we have ---
@@ -18,6 +18,8 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
 
 
     //--- Declare all additional TGraphs ---
+    TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
+    TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
     TGraphAsymmErrors *grCentralStatRatio = createRatioGraph(grCentralStat);
     TGraphAsymmErrors *grCentralSystRatio = createRatioGraph(grCentralSyst);
     TGraphAsymmErrors *grGen1ToCentral = createGenToCentral(gen1, grCentralStat);
@@ -412,6 +414,26 @@ void customizeGenGraph(TGraphAsymmErrors *gen, int genNum, string yTitle, int nu
 }
 
 
+TGraphAsymmErrors* createGrFromHist(const TH1D *h)
+{
+    int nPoints = h->GetNbinsX();
+    double *xCoor = new double[nPoints];
+    double *yCoor = new double[nPoints];
+    double *xErr  = new double[nPoints];
+    double *yErr = new double[nPoints];
+
+    for (int i(0); i < nPoints; i++) {
+        xCoor[i] = h->GetBinCenter(i+1);
+        xErr[i]  = 0.5*h->GetBinWidth(i+1);
+        yCoor[i] = h->GetBinContent(i+1);
+        yErr[i] = h->GetBinError(i+1);
+    }
+
+    TGraphAsymmErrors *gr = new TGraphAsymmErrors(nPoints, xCoor, yCoor, xErr, xErr, yErr, yErr);
+
+    delete [] xCoor; delete [] yCoor; delete [] xErr; delete [] yErr; 
+    return gr;
+}
 
 //======================================================================
 // This function creates a TGraphAsymmErrors from a TGraphAsymmErrors.
