@@ -49,7 +49,7 @@ int JetPtMax(0);
 
 void FinalUnfold()
 {
-  for (int i(0); i < 2/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
+  for (int i(0); i < 6/*NVAROFINTERESTZJETS NVAROFINTEREST*/; i++){
     for (int j(0); j < 2; j++){
       isMuon = j ;
       if (isMuon) FuncUnfold(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
@@ -71,7 +71,7 @@ void FuncUnfold(string variable,  int UsedKtermBayes, int UsedKtermSVD, bool doF
   string leptonFlavor = "DMu";
   if (!isMuon) leptonFlavor = "DE";
 
-  int NumberOfToys(4),  oppNumberOfToys(4);
+  int NumberOfToys(400),  oppNumberOfToys(4);
   int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
   string oppUnfAlg = "SVD";
   if (unfAlg == "SVD" ) {
