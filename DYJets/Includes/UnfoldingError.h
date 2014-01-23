@@ -14,10 +14,8 @@ void createZNGoodJets_Zinc2( TH1D* hCombinedStat, TH2D *hError2D[] , string unfA
     //-- fetch the data files and histograms --------------
     TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
     getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
-    cout << " got data " << endl;
     TH1D *hData[3];
     getHistos(hData, fData, variable1);
-    cout << " got data " << endl;
     //-----------------------------------------------------
 
 
@@ -56,7 +54,6 @@ void createZNGoodJets_Zinc2( TH1D* hCombinedStat, TH2D *hError2D[] , string unfA
         hOut->SetBinContent(bin, sum );
         for (int syst(0); syst < nSyst; syst++) hError2D[syst]->SetBinContent(bin , bin , sumErr[syst]) ;
         //		for (int syst(0); syst < nSyst; syst++) sumErr[syst] = hError2D[syst]->SetBinContent(bin , bin , 1. ) ;
-        cout << variable1 << "   " << hCombinedStat->GetBinContent(bin) << "    " << sum << endl;
     }
 
 
@@ -127,7 +124,6 @@ void changeToLatexFormat(string& title)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hError2D[] , bool doXSec , bool doNormalize , double Luminosity  ){
-    cout << " my merged table is written : " << fileNameTable << endl;
     string temp, tempTab;
     if (doXSec ) {
         string xtitle = data->GetXaxis()->GetTitle();
@@ -138,7 +134,6 @@ void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hEr
             unit = xtitle.substr(begin);
             unit = unit.substr(0, unit.find("]"));
         }
-        cout << shortVar << "   unit: " << unit << endl;
         temp = "d#sigma/d" + shortVar;
         tempTab = "$\\frac{d\\sigma}{d" + shortVar + "}$";
         if (doNormalize) temp = "1/#sigma " + temp;
@@ -232,14 +227,11 @@ void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hEr
         }
 
 
-        cout << "PRINTING IN TEX" << endl;
         for (int syst(0); syst < nSyst; syst++){
-            cout << sqrt (hError2D[syst]->GetBinContent(bin,bin)) << "   " ;
             if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << sqrt (hError2D[syst]->GetBinContent(bin,bin)) / Norm  << "  ";
             else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << sqrt (hError2D[syst]->GetBinContent(bin,bin)) / Norm << "  ";
 
         }
-        cout << endl;
 
         if (doPrint)  myFile << " \\\\" << endl;
 
@@ -339,7 +331,6 @@ TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
         double diff = fabs(dataCentral->GetBinContent(i) - dataUnfWithSherpa->GetBinContent(i));
         if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
         else diff = 0.;
-        std::cout << "CHECK: " << i << "  " << diff << std::endl;
         UnfErrors->SetBinContent(i, diff);
         UnfErrors->SetBinError(i, 0);
     }
@@ -348,7 +339,7 @@ TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TMatrixD setCovMatrixOfCombination(double luminosityErr, TH1D* hEle, TH1D* hMu,  int optionCorrTemp , double norm = 1.){
+TMatrixD setCovMatrixOfCombination(double luminosityErr, TH1D* hEle, TH1D* hMu, int optionCorrTemp){
     double correlationSameBin  =  0.;
     double correlationDiffBin  =  0.;
     if ( optionCorrTemp  ==  1 ) correlationSameBin  =  0.;
@@ -399,7 +390,7 @@ TMatrixD setCovMatrixOfCombination(double luminosityErr, TH1D* hEle, TH1D* hMu, 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronIDIsoHLTError,  TH1D* hEle, TH1D* hMu,  int optionCorrTemp , double norm = 1.){
+TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronIDIsoHLTError, TH1D* hEle, TH1D* hMu, int optionCorrTemp){
     double correlationSameBin  =  0.;
     double correlationDiffBin  =  0.;
     /*
@@ -541,8 +532,6 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
 
         }
     }
-    cout << " Print error matrix  " << endl;
-    errorMTemp.Print();
     return errorMTemp;
 
 }
