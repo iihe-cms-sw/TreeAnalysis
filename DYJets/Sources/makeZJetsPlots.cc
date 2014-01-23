@@ -2,12 +2,20 @@
 
 
 int fillColor[3] = {kBlue-10, kGreen-8, kOrange-2};
+int pdfFillColor[3] = {kBlue-6, kGreen-2, kOrange-5};
 int lineColor[3] = {kBlue, kGreen+3, kOrange+10};;
 int markerColor[3] = {lineColor[0], lineColor[1], lineColor[2]};
 int markerStyle[3] = {24, 26, 25};
 int fillStyle = 1001;
 
-TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
+TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *hPDF, TH1D *gen1, TH1D *gen2, TH1D *gen3)
+{
+    TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
+    TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
+    makeZJetsPlots(grCentralStat, grCentralSyst, hPDF, gen1, gen2, gen3);
+
+}
+TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grCentralSyst, TH1D *hPDF, TH1D *gen1, TH1D *gen2, TH1D *gen3)
 {
 
     //--- Determine how many comparison we have ---
@@ -18,21 +26,28 @@ TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *
 
 
     //--- Declare all additional TGraphs ---
-    TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
-    TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
     TGraphAsymmErrors *grCentralStatRatio = createRatioGraph(grCentralStat);
     TGraphAsymmErrors *grCentralSystRatio = createRatioGraph(grCentralSyst);
     TGraphAsymmErrors *grGen1ToCentral = createGenToCentral(gen1, grCentralStat);
+    TGraphAsymmErrors *grGen1PDFSyst = createPDFSystGraph(hPDF, grGen1ToCentral); 
     TGraphAsymmErrors *grGen2ToCentral = NULL;
-    if (gen2) grGen2ToCentral = createGenToCentral(gen2, grCentralStat);
+    TGraphAsymmErrors *grGen2PDFSyst = NULL;
+    if (gen2) {
+        grGen2ToCentral = createGenToCentral(gen2, grCentralStat);
+        grGen2PDFSyst = createPDFSystGraph(hPDF, grGen2ToCentral); 
+    }
     TGraphAsymmErrors *grGen3ToCentral = NULL;
-    if (gen3) grGen3ToCentral = createGenToCentral(gen3, grCentralStat);
+    TGraphAsymmErrors *grGen3PDFSyst = NULL;
+    if (gen3) {
+        grGen3ToCentral = createGenToCentral(gen3, grCentralStat);
+        grGen3PDFSyst = createPDFSystGraph(hPDF, grGen3ToCentral); 
+    }
     //---------------------------------------------
 
     //--- Main Canvas ---
     TCanvas *plots = new TCanvas("plots", "plots", 600, 800);
     //-------------------
-    
+
     //--- First Pad ---
     plots->cd();
     TPad *plot1 = new TPad("plot1", "plot1", 0., 0., 0., 0.);
@@ -104,9 +119,13 @@ TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *
     //--- TLegend ---
     TLegend *legend2 = new TLegend(0.16, 0.05, 0.42, 0.20);
     customizeLegend(legend2, 1, numbOfGenerator);
-    customizeGenGraph(grGen1ToCentral, 1, "Sherpa2/Data", numbOfGenerator, legend2);
+    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, "Sherpa2/Data", numbOfGenerator, legend2);
     configXaxis(grGen1ToCentral, gen1);
+    grGen1PDFSyst->SetFillStyle(fillStyle);
+    grGen1PDFSyst->SetFillColor(pdfFillColor[0]);
     grGen1ToCentral->Draw("a2");
+    grGen1PDFSyst->Draw("2");
+    grGen1ToCentral->Draw("2");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
     grGen1ToCentral->Draw("p");
@@ -123,9 +142,13 @@ TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *
         //--- TLegend ---
         TLegend *legend3 = new TLegend(0.16, 0.05, 0.42, 0.20);
         customizeLegend(legend3, 2, numbOfGenerator);
-        customizeGenGraph(grGen2ToCentral, 2, "Powheg/Data", numbOfGenerator, legend3);
+        customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, "Powheg/Data", numbOfGenerator, legend3);
         configXaxis(grGen2ToCentral, gen2);
+        grGen2PDFSyst->SetFillStyle(fillStyle);
+        grGen2PDFSyst->SetFillColor(pdfFillColor[1]);
         grGen2ToCentral->Draw("a2");
+        grGen2PDFSyst->Draw("2");
+        grGen2ToCentral->Draw("2");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen2ToCentral->Draw("p");
@@ -143,9 +166,13 @@ TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *gen1, TH1D *gen2, TH1D *
         //--- TLegend ---
         TLegend *legend4 = new TLegend(0.16, 0.05, 0.42, 0.20);
         customizeLegend(legend4, 3, numbOfGenerator);
-        customizeGenGraph(grGen3ToCentral, 3, "MadGraph/Data", numbOfGenerator, legend4);
+        customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, "MadGraph/Data", numbOfGenerator, legend4);
         configXaxis(grGen3ToCentral, gen3);
+        grGen3PDFSyst->SetFillStyle(fillStyle);
+        grGen3PDFSyst->SetFillColor(pdfFillColor[2]);
         grGen3ToCentral->Draw("a2");
+        grGen3PDFSyst->Draw("2");
+        grGen3ToCentral->Draw("2");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen3ToCentral->Draw("p");
@@ -370,7 +397,7 @@ void customizeGenHist(TH1D *gen, int genNumb, TLegend *legend, string legText)
     le->SetMarkerStyle(markerStyle[genNumb-1]);
 }
 
-void customizeGenGraph(TGraphAsymmErrors *gen, int genNum, string yTitle, int numbOfGenerator, TLegend *legend)
+void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, string yTitle, int numbOfGenerator, TLegend *legend)
 {
     gen->GetYaxis()->SetRangeUser(0.2, 1.8);
     gen->GetYaxis()->SetNdivisions(507);
@@ -405,10 +432,12 @@ void customizeGenGraph(TGraphAsymmErrors *gen, int genNum, string yTitle, int nu
     }
 
     if (legend) {
-
         TLegendEntry *leEntry = legend->AddEntry(gen, "Stat. unc. (gen)", "f");
         leEntry->SetFillColor(fillColor[genNum-1]);
         leEntry->SetFillStyle(fillStyle);
+        TLegendEntry *leEntry2 = legend->AddEntry(gPDF, "Tot. unc. (gen)", "f");
+        leEntry2->SetFillColor(pdfFillColor[genNum-1]);
+        leEntry2->SetFillStyle(fillStyle);
     }
 
 }
@@ -514,4 +543,26 @@ TGraphAsymmErrors *createGenToCentral(const TH1D *gen, const TGraphAsymmErrors *
     TGraphAsymmErrors *grGenToCentral = new TGraphAsymmErrors(nPoints, xCoor, yCoor, xErr, xErr, yErr, yErr);
     delete [] xCoor; delete [] yCoor; delete [] xErr; delete [] yErr; 
     return grGenToCentral;
+}
+
+TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDF, const TGraphAsymmErrors *grGenToCentral)
+{
+    int nPoints = grGenToCentral->GetN();
+    double *xCoor = new double[nPoints];
+    double *yCoor = new double[nPoints];
+    double *xErr  = new double[nPoints];
+    double *yErr  = new double[nPoints];
+
+    for (int i(0); i < nPoints; i++) {
+        grGenToCentral->GetPoint(i, xCoor[i], yCoor[i]);
+        xErr[i] = grGenToCentral->GetErrorXlow(i);
+        yErr[i] = pow(grGenToCentral->GetErrorYlow(i), 2);
+        yErr[i] += pow(hPDF->GetBinError(i+1)*yCoor[i], 2); 
+        yErr[i] = sqrt(yErr[i]);
+    }
+
+    TGraphAsymmErrors *grPDFSyst = new TGraphAsymmErrors(nPoints, xCoor, yCoor, xErr, xErr, yErr, yErr);
+    delete [] xCoor; delete [] yCoor; delete [] xErr; delete [] yErr; 
+    return grPDFSyst;
+
 }

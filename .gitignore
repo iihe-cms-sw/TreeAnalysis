@@ -6,6 +6,7 @@ DYJets/RooUnfold-1.1.1/tmp
 *.log
 tmp*.cc
 *.swp
+*.DS_Store
 
 # git will ignore the nohup output files
 .nfs*

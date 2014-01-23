@@ -8,6 +8,7 @@ void myReplace(string& str, const string& oldStr, const string& newStr)
    }
 }
 
+/*
 void changeToLatexFormat(string& title)
 {
    cout << "Start formating:  " << title << endl;
@@ -40,7 +41,7 @@ void changeToLatexFormat(string& title)
    cout << " New Title:      " << title << endl;
 
 }
-
+*/
 void writeCrossSectionTable(string leptonFlavor, string variable, string title, string xTitle, double binWidth, TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grCentralSyst)
 {
    TGraphAsymmErrors *grCentStat = (TGraphAsymmErrors*) grCentralStat->Clone();

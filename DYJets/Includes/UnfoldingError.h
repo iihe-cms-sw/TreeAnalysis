@@ -330,19 +330,21 @@ TH2D* setCovariance(TH2D *h , TH1D* hCent , double error)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa, TH1D* UnfErrors)
+TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
 {
-    TH1D *unfWithMad = (TH1D*) dataCentral->Clone();
-    TH1D *unfWithSherpa = (TH1D*) dataUnfWithSherpa->Clone();
-    UnfErrors = (TH1D*) dataCentral->Clone(); 
-
-    int nBins = unfWithMad->GetNbinsX();
+    TH1D *UnfErrors = (TH1D*) dataCentral->Clone();
+    UnfErrors->SetDirectory(0);
+    int nBins = dataCentral->GetNbinsX();
     for (int i(0); i <= nBins; i++) {
-        double diff = fabs(unfWithMad->GetBinContent(i) - unfWithSherpa->GetBinContent(i));
+        double diff = fabs(dataCentral->GetBinContent(i) - dataUnfWithSherpa->GetBinContent(i));
+        if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
+        else diff = 0.;
+        std::cout << "CHECK: " << i << "  " << diff << std::endl;
         UnfErrors->SetBinContent(i, diff);
         UnfErrors->SetBinError(i, 0);
     }
 
+    return UnfErrors;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -575,8 +577,8 @@ TMatrixD getCovMatrixOfCombinationUNF(TH1D* unfErrorDistrEle, TH1D* unfErrorDist
         //measurement(nbins+ibin)  =  value_m / norm ;
         value_e[ibin] = hEle->GetBinContent(ibin+1) / norm;
         value_m[ibin] = hMu->GetBinContent(ibin+1) / norm;
-        err_e[ibin]   =  unfErrorDistrEle->GetBinContent(ibin+1) / (hEle->GetBinContent(ibin+1) * norm);
-        err_m[ibin]   =  unfErrorDistrMu->GetBinContent(ibin+1) / (hMu->GetBinContent(ibin+1) * norm);
+        err_e[ibin]   =  unfErrorDistrEle->GetBinContent(ibin+1) / norm;
+        err_m[ibin]   =  unfErrorDistrMu->GetBinContent(ibin+1) / norm;
         err_e_algo[ibin] = fabs(value_e[ibin] - hEleOpp->GetBinContent(ibin+1)) / norm;
         err_m_algo[ibin] = fabs(value_m[ibin] - hMuOpp->GetBinContent(ibin+1)) / norm;
 

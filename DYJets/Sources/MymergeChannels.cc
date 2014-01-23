@@ -83,7 +83,7 @@ void MymergeChannels()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(0); i < 1/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(2); i < 3/*NVAROFINTERESTZJETS*/; i++){
         for (int k(0); k < kCorrMax; k++){
             optionCorr = SelComb[k];
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
@@ -124,7 +124,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
         dataReco[i]           = (TH1D*) f[i]->Get("Data");
         dataCentral[i]        = (TH1D*) f[i]->Get("Central");
         dataUnfWithSherpa[i]  = (TH1D*) f[i]->Get("unfWithSherpa");
-        unfErrorDistr[i]      = (TH1D*) f[i]->Get("unfWithSherpa");
         dataCentralOppAlgo[i] = (TH1D*) f[i]->Get("oppCentral");
         genMad[i]             = (TH1D*) f[i]->Get("genMad");
         genShe[i]             = (TH1D*) f[i]->Get("genShe");
@@ -138,7 +137,7 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
         myToyEFFCov[i]        = (TH2D*) f[i]->Get("MyToyEFFCov");
 
         //--- call errors from unfolding with Sherpa and MadGraph ----
-        getErrors(dataCentral[i], dataUnfWithSherpa[i], unfErrorDistr[i]);
+        unfErrorDistr[i] = getErrors(dataCentral[i], dataUnfWithSherpa[i]);
 
         // set covariance for luminosity uncertainty --> take correlation from JES and rescale
         //myToyLUMICov[i] = (TH2D*) setCovariance(myToyJESCov[i] , dataCentral[i]	, luminosityErr );
@@ -473,38 +472,30 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
 
 
 //////////////////////////////////
-void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[]){
+void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[])
+{
 
+    //--- fetch the generated histograms for electrons ([0]) and muons ([1]) 
+    // and add theim together ---
     TH1D* genMad = (TH1D*) genMadTemp[0]->Clone();
     TH1D* genShe = (TH1D*) genSheTemp[0]->Clone();
     TH1D* genPow = (TH1D*) genPowTemp[0]->Clone();
-    genMad->Add((TH1D*) genMadTemp[1]->Clone());
+    genMad->Add(genMadTemp[1]);
     genMad->Scale(0.5);
-    genShe->Add((TH1D*) genSheTemp[1]->Clone());
+    genShe->Add(genSheTemp[1]);
     genShe->Scale(0.5);
-    genPow->Add((TH1D*) genPowTemp[1]->Clone());
+    genPow->Add(genPowTemp[1]);
     genPow->Scale(0.5);
+    //-----------------------------
 
-
-    /// load PDF systematic files
-    //	TFile *fPDFMad = new TFile("DMu_8TeV_PDFSystematics_MadGraph_JetPtMin_30_VarWidth.root");
-    TFile *fPDFMad = new TFile("HistoFiles/PDFSystematics_MadGraph.root");
-    TFile *fPDFPow = new TFile("HistoFiles/PDFSystematics_Powheg.root");
-    TFile *fPDFShe = new TFile("HistoFiles/PDFSystematics_Sherpa.root");
+    //--- load PDF systematic file ---
+    string genVariable = "gen" + VARIABLE;
+    string PDFfileName = "PDFSystFiles/PDFSyst_" + genVariable + ".root";
+    TFile *fPDF = new TFile(PDFfileName.c_str());
 
     // get histograms from PDF file
-    string genVariable = "gen" + VARIABLE;
-    TH1D *PDFSystMad = NULL ;
-    TH1D *PDFSystPow = NULL ;
-    TH1D *PDFSystShe = NULL ;
-    /*
-       TH1D *PDFSystMad = (TH1D*) fPDFMad->Get(genVariable.c_str());
-       TH1D *PDFSystPow = (TH1D*) fPDFPow->Get(genVariable.c_str());
-       TH1D *PDFSystShe = (TH1D*) fPDFShe->Get(genVariable.c_str());
-       PDFSystMad->SetTitle("");
-       PDFSystPow->SetTitle("");
-       PDFSystShe->SetTitle("");
-       */
+    TH1D *hPDF = (TH1D*) fPDF->Get(genVariable.c_str());
+    hPDF->SetTitle("");
 
     const int nBins(hCombinedStat->GetNbinsX());
     // renormalize first
@@ -528,8 +519,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
         }
     }
 
-    TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, genShe, genPow, genMad);
-    cout << " create canvas " << endl;
+    TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDF, genShe, genPow, genMad);
 
     string outputFileNamePNG  =  OUTPUTDIRECTORY;
     if (doXSec) outputFileNamePNG +=  "Combination_XSec_";
@@ -543,9 +533,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
     plots->Print(outputFileNamePNG.c_str());
 
-    fPDFMad->Close();
-    fPDFPow->Close();
-    fPDFShe->Close();
+    fPDF->Close();
 
 }
 
