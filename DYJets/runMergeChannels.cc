@@ -7,6 +7,7 @@
     sources.push_back("plottingFunctions");
     sources.push_back("writeFastPlotsTex");
     sources.push_back("unfoldingFunctions");
+    sources.push_back("makeZJetsPlots");
     sources.push_back("MymergeChannels");
 
     //--- Load shared libraries ---
