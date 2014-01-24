@@ -6,6 +6,6 @@
 using namespace std;
 
 void FinalUnfold();
-void FuncUnfold(string variable = "ZNGoodJets_Zexc", int UsedKtermBayes = 5, int UsedKtermSVD = 5, bool doFlat = false , bool doVarWidth = true);
+void FuncUnfold(bool isMuon, string variable = "ZNGoodJets_Zexc", int UsedKtermBayes = 5, int UsedKtermSVD = 5, bool doFlat = false , bool doVarWidth = true);
 
 #endif

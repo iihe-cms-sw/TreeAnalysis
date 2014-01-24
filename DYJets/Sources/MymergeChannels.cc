@@ -230,7 +230,6 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     for(int ibin = 0; ibin < 2 * nbins; ibin++){
         for(int jbin = 0; jbin < 2 * nbins; jbin++){
             errorM(ibin,jbin) = errorM(ibin,jbin) /(norm * norm );
-            //errorM(ibin,ibin) = 1.; 
         }
     }
 
@@ -240,9 +239,6 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     double* det = NULL;
     errorInverse.Invert(det);
     if (DEBUG) dumpElements(errorInverse);
-
-    //   TMatrixD Unit  =  errorInverse*errorM;
-    // dumpElements(Unit);
 
     TMatrixD matrixRight(nbins,NELE);  
     matrixRight = transposeU*errorInverse;
@@ -340,12 +336,12 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     fileNameTable += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) fileNameTable += "_VarWidth";
     fileNameTable += ".tex";
-    createTexTable(VARIABLE, fileNameTable, (TH1D*) h_combine->Clone(), allErrorsTH2, doXSec, doNormalize, Luminosity);
+    createTexTable(VARIABLE, fileNameTable, h_combine, allErrorsTH2, doXSec, doNormalize, Luminosity);
     // end table creation
 
 
     // create combination histogram with statistical errors
-    TH1D* h_combine_stat = SetHistWithErrors((TH1D*) h_combine->Clone(), combined_error_stat, "Stat");
+    TH1D* h_combine_stat = SetHistWithErrors(h_combine, combined_error_stat, "Stat");
 
     /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
     //plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
@@ -365,8 +361,11 @@ void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     //--- fetch the generated histograms for electrons ([0]) and muons ([1]) 
     // and add theim together ---
     TH1D* genMad = (TH1D*) genMadTemp[0]->Clone();
+    genMad->SetDirectory(0);
     TH1D* genShe = (TH1D*) genSheTemp[0]->Clone();
+    genShe->SetDirectory(0);
     TH1D* genPow = (TH1D*) genPowTemp[0]->Clone();
+    genPow->SetDirectory(0);
     genMad->Add(genMadTemp[1]);
     genMad->Scale(0.5);
     genShe->Add(genSheTemp[1]);

@@ -12,7 +12,10 @@ TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *hPDF, TH1D *gen1, TH1D *
 {
     TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
     TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
-    makeZJetsPlots(grCentralStat, grCentralSyst, hPDF, gen1, gen2, gen3);
+
+    TCanvas *plots = makeZJetsPlots(grCentralStat, grCentralSyst, hPDF, gen1, gen2, gen3);
+
+    return plots;
 
 }
 TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grCentralSyst, TH1D *hPDF, TH1D *gen1, TH1D *gen2, TH1D *gen3)

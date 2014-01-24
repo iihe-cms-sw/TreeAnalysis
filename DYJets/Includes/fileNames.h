@@ -11,8 +11,6 @@ struct processInfoStruct{
     string legend;
 };
 
-const int NFILESWJETS(14); 
-const int NFilesFull(28); 
 const processInfoStruct ProcessInfo[] = {
     //--  Name  ---------------------------- #events ---- xsec - branch - xsec error (%) -- color for plot -- name on legend
     {"Data_dR_5311",                          1,          1.,      1,         1,             kBlack,      " Data"},
@@ -42,7 +40,7 @@ const processInfoStruct ProcessInfo[] = {
     {"DYJets_FromTau_UNFOLDING_dR_5311_Inf3", 30459503.,  3531.8,  1,         0.033,         kAzure+4,    " DYtautau"},
     {"DYJets10toInf3_dR_5311",	              1.,         1,       1,         0.04,          kAzure+10,   " DY"},
     {"DataQCD_dR_5311",	                      1.,         1,       1,         0.04,          kYellow,     " QCD"},
-    {"WJetsALL_MIX_UNFOLDING_dR_5311",            76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
+    {"WJetsALL_MIX_UNFOLDING_dR_5311",        76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"WJetsALL_MIX_dR_5311",                  76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
     {"WJetsALL_dR_5311",                      76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"DYJets_UNFOLDING_dR_5311_Inf3",         30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
@@ -50,8 +48,9 @@ const processInfoStruct ProcessInfo[] = {
 
 //--- first element must point to the data
 //--- last element must point to the MC Signal
+const int NFilesFull(28); 
+const int NFILESWJETS(14); 
 const int NFILESDYJETS(12);
-//const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 13};
 const int FilesDYJets[NFILESDYJETS] = {0, 1, 21, 15, 20, 14, 16, 19, 18, 17, 11, 27};
 const int NFILESTTBAR(9);
 const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};

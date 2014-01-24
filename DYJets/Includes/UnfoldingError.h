@@ -96,10 +96,10 @@ void changeToLatexFormat(string& title)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hError2D[], bool doXSec, bool doNormalize, double Luminosity)
+void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2D *hError2D[], bool doXSec, bool doNormalize, double Luminosity)
 {
     string temp, tempTab;
-    if (doXSec ) {
+    if (doXSec) {
         string xtitle = data->GetXaxis()->GetTitle();
         string shortVar = xtitle.substr(0, xtitle.find(" "));
         string unit = "";
@@ -215,73 +215,50 @@ void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hEr
 
 }
 
-/*
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ErrorMatrixToVec(int row, double vec[][10], TMatrixD &MatInp)
+TH1D* SetHistWithErrors(const TH1D* hInput, const TMatrixD &MatInp, const string name)
 {
-const int nrows  =  MatInp.GetNrows();
-for(int i = 0; i < nrows  ; i++){
-vec[row][i] = MatInp(i,i);
-cout << vec[row][i] <<  endl;
-}
+    TH1D* hOut = (TH1D*) hInput->Clone(name.c_str());
+    hOut->SetDirectory(0);
 
-
-}
-double*  ErrorMatrixNew(int row,  TMatrixD &MatInp)
-{
-const int nrows  =  MatInp.GetNrows();
-double aa[nrows];
-for(int i = 0; i < nrows  ; i++){
-aa[i] = MatInp(i,i);
-cout << aa[i] <<  endl;
-}
-
-return aa;
-}
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* SetHistWithErrors( TH1D* hInput, TMatrixD &MatInp, string name ){
-    TH1D* hOut = (TH1D *)  hInput ->Clone(name.c_str());
-    for (int i(1); i <= hInput->GetNbinsX(); i++){
-        hOut ->SetBinContent( i, hInput->GetBinContent(i));
-        hOut ->SetBinError( i, sqrt(MatInp(i-1,i-1)));
-
-        //	cout << i << "   "  << hInput->GetBinContent(i)  << "     "   <<  sqrt(MatInp(i - 1 , i-1 )) << "     "  <<  hInput->GetBinError(i)   << endl;
+    for (int i(1); i <= hInput->GetNbinsX(); i++) {
+        hOut->SetBinError(i, sqrt(MatInp(i-1, i-1)));
+        std::cout << i << " " << sqrt(MatInp(i-1, i-1)) << "/" << hOut->GetBinContent(i) << " = " << sqrt(MatInp(i-1, i-1)) / hOut->GetBinContent(i) << std::endl;
     }
 
     return hOut;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH2D* CovToCorr(TH2D *h)
+TH2D* CovToCorr(const TH2D *h)
 {
-    TH2D* hCorr = (TH2D *) h ->Clone();
+    TH2D* hCorr = (TH2D*) h->Clone();
+    hCorr->SetDirectory(0);
     int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    for (int i(1); i <= ybin; i++){
-        for (int j(1); j <= xbin; j++){
+
+    for (int i(1); i <= ybin; i++) {
+        for (int j(1); j <= xbin; j++) {
             double temp = 0.;
-            temp = h->GetBinContent(j,i) / sqrt( h->GetBinContent(i,i ) * h->GetBinContent(j,j) );
-            hCorr->SetBinContent(j, i, temp );
+            temp = h->GetBinContent(j, i) / sqrt(h->GetBinContent(i, i) * h->GetBinContent(j, j));
+            hCorr->SetBinContent(j, i, temp);
         }
     }
     return hCorr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH2D* setCovariance(TH2D *h , TH1D* hCent , double error)
+TH2D* setCovariance(const TH2D *h, const TH1D* hCent, const double error)
 {
-    TH2D* hCorr = (TH2D *) h ->Clone();
+    TH2D* hCorr = (TH2D *) h->Clone();
+    hCorr->SetDirectory(0);
     int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    for (int i(1); i <= ybin; i++){
-        for (int j(1); j <= xbin; j++){
+    for (int i(1); i <= ybin; i++) {
+        for (int j(1); j <= xbin; j++) {
             double temp = 0.;
-            temp = h->GetBinContent(j,i) / sqrt( h->GetBinContent(i,i ) * h->GetBinContent(j,j) );
-            hCorr->SetBinContent(j, i, temp * hCent->GetBinContent(i) * error * hCent->GetBinContent(j) * error );
-            //cout << hCorr->GetBinContent(j,i) << "    " ;
+            temp = h->GetBinContent(j, i) / sqrt(h->GetBinContent(i, i) * h->GetBinContent(j, j));
+            hCorr->SetBinContent(j, i, temp * hCent->GetBinContent(i) * error * hCent->GetBinContent(j) * error);
         }
-        //cout << endl;
     }
     return hCorr;
 }
@@ -357,7 +334,8 @@ TMatrixD setCovMatrixOfCombination(double luminosityErr, TH1D* hEle, TH1D* hMu, 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronIDIsoHLTError, TH1D* hEle, TH1D* hMu, int optionCorrTemp){
+TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronIDIsoHLTError, const TH1D* hEle, const TH1D* hMu, int optionCorrTemp)
+{
     double correlationSameBin  =  0.;
     double correlationDiffBin  =  0.;
     /*
@@ -416,10 +394,11 @@ TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronI
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrTemp , double norm = 1.){
+TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int optionCorrTemp, double norm = 1.)
+{
     // get correlation matrix this is needed for option 3 of combination
-    TH2D* hCorrEle = (TH2D*) CovToCorr(CovEle);
-    TH2D* hCorrMu = (TH2D*)  CovToCorr(CovMuon);
+    TH2D* hCorrEle = CovToCorr(CovEle);
+    TH2D* hCorrMu = CovToCorr(CovMuon);
 
     double correlationSameBin  =  0.;
     double correlationDiffBin  =  0.;
@@ -456,8 +435,8 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
             if(optionCorrTemp > 0 ){
 
                 // electron channel
-                errorMTemp(ibin,jbin) = CovEle-> GetBinContent(ibin+1,jbin+1);
-                if ( optionCorrTemp == 5 )  errorMTemp(ibin,jbin) = sqrt(  CovEle-> GetBinContent(ibin+1,ibin + 1 ) *  CovEle-> GetBinContent(jbin+1 ,   jbin+1));
+                errorMTemp(ibin,jbin) = CovEle->GetBinContent(ibin+1,jbin+1);
+                if ( optionCorrTemp == 5 )  errorMTemp(ibin,jbin) = sqrt(CovEle->GetBinContent(ibin+1, ibin + 1) * CovEle->GetBinContent(jbin+1, jbin+1));
                 // muon channel
                 errorMTemp(nbins+ibin,nbins+jbin) = CovMuon->GetBinContent(ibin+1,jbin+1);
                 if ( optionCorrTemp == 5 )  errorMTemp(nbins+ibin,nbins+jbin)  = sqrt (  CovMuon-> GetBinContent(ibin+1,ibin + 1 ) *  CovMuon-> GetBinContent(jbin+1 ,   jbin+1)) ;
@@ -477,7 +456,7 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
                         } 	
                         //	correlationDiffBin = 0;
                     }
-                    errorMTemp(ibin,nbins+jbin) =  correlationDiffBin*sqrt(CovEle->GetBinContent(ibin+1,ibin+1)*CovMuon->GetBinContent(jbin+1,jbin+1));
+                    errorMTemp(ibin,nbins+jbin) =  correlationDiffBin*sqrt(CovEle->GetBinContent(ibin+1, ibin+1)*CovMuon->GetBinContent(jbin+1, jbin+1));
 
 
                     // muon-electron channel
@@ -502,8 +481,10 @@ TMatrixD getCovMatrixOfCombination(TH2D* CovEle,  TH2D* CovMuon, int optionCorrT
     return errorMTemp;
 
 }
+
 //////////////////////////////////////////////////////////////////////////////////////
-TMatrixD getCovMatrixOfCombinationUNF(TH1D* unfErrorDistrEle, TH1D* unfErrorDistrMu, TH1D* hEle, TH1D* hMu, TH1D* hEleOpp, TH1D* hMuOpp, int optionCorrTemp, double norm = 1.){
+TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* unfErrorDistrMu, const TH1D* hEle, const TH1D* hMu, const TH1D* hEleOpp, const TH1D* hMuOpp, int optionCorrTemp, double norm = 1.)
+{
 
     double correlationSameBin = 0.;
     double correlationDiffBin = 0.;

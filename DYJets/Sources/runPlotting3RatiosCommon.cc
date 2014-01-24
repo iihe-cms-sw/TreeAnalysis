@@ -46,7 +46,7 @@ void runPlotting3RatiosCommon()
     gStyle->SetPadGridY(0);
 
     for (int i(2); i < 3/*NVAROFINTERESTZJETS*/; i++){
-        for (int j(0); j < 1; j++){
+        for (int j(1); j < 2; j++){
             isMuon = j;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
         }
@@ -287,6 +287,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         double binW = data->GetBinWidth(bin);
         double totalSystematicsUp(0.), totalSystematicsDown(0.);
         double totalStatistics(dataCentral->GetBinError(bin)); 
+        std::cout << bin << " " << totalStatistics << std::endl;
         double centralValue(dataCentral->GetBinContent(bin));
         double centralValueOppAlgo(dataCentralOppAlgo->GetBinContent(bin));
 
@@ -394,11 +395,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     cout << " finished error computation " << endl;
 
 
-
-
     //////////////////////////////////////////////  NOW START PLOTTING PART  
-
-
     TGraphAsymmErrors *grCentralStat = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, yStat, yStat);
     TGraphAsymmErrors *grCentralSyst = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, ySystDown, ySystUp);
 
@@ -407,7 +404,6 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     plots->Print(outputFileNamePNG.c_str());
 
     myFile.close();
-    cout << " print plot to file " << endl;
     f->Close();
     if (fPDFSyst->IsOpen()) fPDFSyst->Close(); 
 }

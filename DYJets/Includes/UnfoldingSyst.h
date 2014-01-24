@@ -286,7 +286,8 @@ TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, str
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, double Error, string name){
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, double Error, string name)
+{
     TH1D * hDataClone = (TH1D *) hData->Clone(name.c_str());
     for(int j = 0 ; j != hData->GetNbinsX()+1  ; j++){
         if ( hCentral->GetBinContent(j) <= 0 ) continue;
@@ -299,7 +300,7 @@ TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, dou
         else ErrMax = ( fabs(ErrUp) + fabs(ErrDown) )/2.;
         //double ErrTot = sqrt(pow(ErrMax,2)+pow(Error * hCentral->GetBinContent(j),2));
         ErrMax *= ( hData->GetBinContent(j) / hCentral->GetBinContent(j) ) ;
-        hDataClone->SetBinError(j,ErrMax);
+        hDataClone->SetBinError(j, ErrMax);
     }
 
     return hDataClone;
