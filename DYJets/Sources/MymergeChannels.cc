@@ -35,15 +35,14 @@
 #include "makeZJetsPlots.h"
 #include "setTDRStyle.h"
 
-#define DEBUG              1
+#define DEBUG              0
 using namespace std;
 
 
 //-- prototypes ---------------------------------------------------------------------------------//
 void mergeChannelsRun(string var = "ZNGoodJets_Zexc", bool logZ = 0, bool decrease = 0);
 void plotLepRatioComb(string variable, TH1D* h_combine, TH1D* hMuon, TH1D* hEle);
-void plotCombination(string variable, TH1D* hCombinedStat,  TH1D* hCombinedTot,  TH1D* genMadTemp[] , TH1D* genSheTemp[], TH1D* genPowTemp[]);
-void createZNGoodJets_Zinc( TH1D* hCombinedStat, TH1D* hCombinedSyst , TH2D *hError2D[] , string unfAlg , bool doVarWidth , bool doXSec , bool doNormalize );
+void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[]);
 void dumpElements(TMatrixD& a);
 void dumpElements(TVectorD& a);
 //-----------------------------------------------------------------------------------------------//
@@ -62,7 +61,7 @@ bool LOGZ = 0, DECREASE = 0;
 int doXSec  =  1;
 int doNormalize  =  0;
 double Luminosity(19789.);
-string energy  =  getEnergy();
+string ENERGY =  getEnergy();
 string unfAlg  =  "Bayes";
 bool doVarWidth  =  true ;
 double mergedValuesAllOpt[30][10] = {{0}};
@@ -100,8 +99,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "PNGFiles/FinalUnfold_30/DE_"  + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "PNGFiles/FinalUnfold_30/DMu_" + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -144,16 +143,19 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     h_combine->SetDirectory(0);
 
     // declare the big matrix
-    int nbins =  dataCentral[0]->GetNbinsX();
+    int nbins = dataCentral[0]->GetNbinsX();
     tempNBin = nbins;
     //nbins =  8 ;
-    const int NELE = 2*nbins;
-    TMatrixD errorM(NELE,NELE);
+    const int NELE = 2 * nbins;
+    TMatrixD errorM(NELE, NELE);
 
-    TMatrixD U(NELE,nbins);
-    for(int irow = 0; irow < NELE; irow++)
-        for(int icol = 0; icol < nbins; icol++)
-            U(irow,icol)  =  ( (irow  ==   icol) || (irow  ==   icol+nbins) )? 1:0;
+    TMatrixD U(NELE, nbins);
+    for(int irow = 0; irow < NELE; irow++) {
+        for(int icol = 0; icol < nbins; icol++) {
+            U(irow,icol) = ((irow == icol) || (irow == icol + nbins));
+        }
+    }
+
     // debug
     if (DEBUG) dumpElements(U);
 
@@ -334,7 +336,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     // lets create som tables
     ostringstream optionCorrStr; optionCorrStr << optionCorr ;
-    string fileNameTable = "PNGFiles/NiceUnfold/TableSystematics_" + energy + "_" + VARIABLE + "_" + unfAlg;
+    string fileNameTable = "PNGFiles/NiceUnfold/TableSystematics_" + ENERGY + "_" + VARIABLE + "_" + unfAlg;
     fileNameTable += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) fileNameTable += "_VarWidth";
     fileNameTable += ".tex";
@@ -343,7 +345,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
 
     // create combination histogram with statistical errors
-    TH1D* h_combine_stat = (TH1D*) SetHistWithErrors((TH1D*) h_combine->Clone(), combined_error_stat, "Stat");
+    TH1D* h_combine_stat = SetHistWithErrors((TH1D*) h_combine->Clone(), combined_error_stat, "Stat");
 
     /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
     //plotLepRatioComb(VARIABLE, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
@@ -435,11 +437,9 @@ void plotLepRatioComb(string variable, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
         }
         */
     const int nBins =  hCombined->GetNbinsX();	
-    double xCoor[nBins], yCoor[nBins], xErr[nBins], yStat[nBins], ySystDown[nBins], ySystUp[nBins];
-    double xCoorMuonRatio[nBins], yCoorMuonRatio[nBins], yStatMuonRatio[nBins], ySystDownMuonRatio[nBins], ySystUpMuonRatio[nBins];
-    double xCoorEleRatio[nBins], yCoorEleRatio[nBins], yStatEleRatio[nBins], ySystDownEleRatio[nBins], ySystUpEleRatio[nBins];
-    double yCoorMC[nBins];
-    TH1D* data  =  (TH1D *) hMuon->Clone();
+    double xCoor[nBins], yCoor[nBins], xErr[nBins], yStat[nBins];
+    double yCoorMuonRatio[nBins], yStatMuonRatio[nBins], ySystDownMuonRatio[nBins], ySystUpMuonRatio[nBins];
+    double yCoorEleRatio[nBins], yStatEleRatio[nBins], ySystDownEleRatio[nBins], ySystUpEleRatio[nBins];
 
     for(int bin = 1; bin  <=   nBins; bin++){
         hCombErr->SetBinContent(bin , 1 );
@@ -465,7 +465,6 @@ void plotLepRatioComb(string variable, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
         double totalSystematicsUp(0.), totalSystematicsDown(0.);
         double totalStatistics(hCombined->GetBinError(bin));
         double centralValue(hCombined->GetBinContent(bin));
-        double mcValue(hMuon->GetBinContent(bin));
 
 
         xCoor[bin-1]     =  hCombined->GetBinCenter(bin);
@@ -728,120 +727,6 @@ void plotLepRatioComb(string variable, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
 
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void createZNGoodJets_Zinc( TH1D* hCombinedStat, TH1D* hCombinedSyst, TH2D *hError2D[], string unfAlg, bool doVarWidth, bool doXSec, bool doNormalize)
-{
-    string energy = getEnergy();
-    string variable = "ZNGoodJets_Zinc";
-    int JetPtMin = 30 ;
-    int JetPtMax = 0 ;
-    string leptonFlavor = "DE";
-    //if (!isMuon) leptonFlavor = "DE";
-    bool doFlat = 0 ;
-
-    //-- fetch the data files and histograms --------------
-    TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
-    getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 0, 0, 1);
-    cout << " got data " << endl;
-    TH1D *hData[3];
-    getHistos(hData, fData, variable);
-    cout << " got data " << endl;
-    //-----------------------------------------------------
-
-
-    //-- fetch the DY files and histograms ----------------
-    TFile *fDYMadGraphMu[4];
-    TFile *fDYMadGraphEl[4];
-    TFile *fDYSherpa[2];
-    TFile *fDYPowheg[2];
-    getFiles(FILESDIRECTORY, fDYMadGraphMu, "DMu", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth, 0, 0, 0, 0, 0, 1);
-    getFiles(FILESDIRECTORY, fDYMadGraphEl, "DE", energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth, 0, 0, 0, 0, 0, 1);
-    fDYSherpa[1] = getFile(FILESDIRECTORY, "DMu", energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    fDYPowheg[1] = getFile(FILESDIRECTORY, "DMu", energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    fDYSherpa[0] = getFile(FILESDIRECTORY, "DE", energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    fDYPowheg[0] = getFile(FILESDIRECTORY, "DE", energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    //TH1D *hDY[4];
-    //TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL,  *hDYGenPowheg = NULL;
-    TH1D *hDYGenMadGraph[2], *hDYGenSherpa[2],  *hDYGenPowheg[2];
-    //getHistos(hDY, fDYMadGraphMu, variable);
-    hDYGenMadGraph[1] = getHisto(fDYMadGraphMu[0], "gen" + variable);
-    hDYGenMadGraph[0] = getHisto(fDYMadGraphEl[0], "gen" + variable);
-    hDYGenSherpa[0] = getHisto(fDYSherpa[0], "gen" + variable);
-    hDYGenPowheg[0] = getHisto(fDYPowheg[0], "gen" + variable);
-    hDYGenSherpa[1] = getHisto(fDYSherpa[1], "gen" + variable);
-    hDYGenPowheg[1] = getHisto(fDYPowheg[1], "gen" + variable);
-    //-----------------------------------------------------
-
-    TCanvas *c = new TCanvas();
-    c->cd();
-    hDYGenSherpa[0]->Scale(1./19800.);
-    hDYGenSherpa[0]->DrawCopy("text");
-    hDYGenSherpa[0]->Scale(19800.);
-
-    TH1D *hOutStat = (TH1D*) hData[0]->Clone();
-    TH1D *hOutSyst = (TH1D*) hData[0]->Clone();
-
-
-    // now sum merged histogram
-    // then cum errors histograms
-    const int nBins(hCombinedStat->GetNbinsX());
-    const int nSyst = 8 ;
-    for (int bin(1); bin <= nBins; bin++){
-        double sum = hCombinedStat->GetBinContent(bin);
-        double sumStatErr = hCombinedStat->GetBinError(bin) * hCombinedStat->GetBinError(bin); 
-        double sumSyst = hCombinedSyst->GetBinContent(bin);
-        double sumSystErr = hCombinedSyst->GetBinError(bin) * hCombinedSyst->GetBinError(bin); 
-        double sumErr[nSyst]  = {0} ;
-
-        for (int syst(0); syst < nSyst; syst++) sumErr[syst] = hError2D[syst]->GetBinContent(bin, bin);
-
-
-        for (int j(bin + 1); j <= nBins; j++){
-            sum += hCombinedStat->GetBinContent(j);
-            sumStatErr += hCombinedStat->GetBinError(j) * hCombinedStat->GetBinError(j);
-            sumSystErr += hCombinedSyst->GetBinError(j) * hCombinedSyst->GetBinError(j);
-            cout << sumSystErr << "   " <<  hCombinedSyst->GetBinContent(j) << endl; 
-            for (int syst(0); syst < nSyst; syst++) sumErr[syst] += hError2D[syst]->GetBinContent(j, j);
-        }
-        hOutStat->SetBinContent(bin, sum);
-        cout << "AUAUAUAU " <<  sqrt(sumStatErr) << endl;
-        hOutStat->SetBinError(bin, sqrt(sumStatErr));
-        hOutSyst->SetBinContent(bin, sum);
-        hOutSyst->SetBinError(bin, sqrt(sumSystErr));
-
-        for (int syst(0); syst < nSyst; syst++) hError2D[syst]->SetBinContent(bin, bin, sumErr[syst]);
-        cout << variable << "   " << hCombinedSyst->GetBinContent(bin) << "    " << sqrt(sumStatErr) << "   " << sqrt(sumSystErr)  << "    "<<hCombinedSyst->GetBinError(bin) << endl;
-    }
-
-
-
-    //--- And finally produce tables and plots ---
-    ostringstream optionCorrStr; optionCorrStr << optionCorr ;
-    string fileNameTable = "PNGFiles/NiceUnfold/TableSystematics_" + energy + "_" + variable + "_" + unfAlg  ;
-    fileNameTable += "_CorrelationOption_" + optionCorrStr.str() ;
-    if (doVarWidth) fileNameTable += "_VarWidth";
-    fileNameTable +=  ".tex";
-    cout << fileNameTable << endl;
-
-    createTexTable(variable, fileNameTable, (TH1D*) hOutStat->Clone(), hError2D, doXSec, doNormalize, Luminosity);
-
-    //--- PLOT FINAL PLOTS: COMBINATION VS MC ---
-    plotCombination(variable, (TH1D*) hOutStat->Clone(), (TH1D*) hOutSyst->Clone(), hDYGenMadGraph, hDYGenSherpa, hDYGenPowheg);
-
-
-    //--- Close all files ---
-    for (int i(0); i < 3; i++) fData[i]->Close();
-    for (int i(0); i < 4; i++) fDYMadGraphMu[i]->Close();
-    for (int i(0); i < 4; i++) fDYMadGraphEl[i]->Close();
-
-    fDYSherpa[0]->Close(); 
-    fDYPowheg[0]->Close();
-    fDYSherpa[1]->Close();
-    fDYPowheg[1]->Close();
-    //----------------------
-
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

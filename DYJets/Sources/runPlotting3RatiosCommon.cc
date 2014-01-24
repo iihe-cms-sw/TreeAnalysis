@@ -65,17 +65,11 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     bool symmetricalErrors(1);
     int optionPlot7TeV(0);
     //-----------------------------------------------------------------------
-    if ( energy == "7TeV"){
-        Luminosity = 5051.;
-        luminosityErr = 0.022;
-        if ( energy == "7TeV" ) outputDirectory = "PNGFiles/FinalUnfold/";
 
-    }
-
-    if ( !isMuon ) leptonFlavor = "DE";
-    if (doXSec) doNormalize = 0 ;
+    if (!isMuon) leptonFlavor = "DE";
+    if (doXSec) doNormalize = 0;
     TH1::SetDefaultSumw2();
-    string fileName = outputDirectory + leptonFlavor + "_" + energy +   "_unfolded_" + variable + "_histograms_" + unfAlg;
+    string fileName = outputDirectory + leptonFlavor + "_" + energy + "_unfolded_" + variable + "_histograms_" + unfAlg;
     if (doVarWidth) fileName += "_VarWidth";
     fileName += ".root";
 
@@ -84,42 +78,35 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     cout << " opening : " << fileName <<endl;
     TFile *f  = new TFile(fileName.c_str());
     TFile *fPDFSyst = NULL;
-    if  (energy == "7TeV") fPDFSyst = new TFile("DMu_7TeV_PDFSystematics.root");
-    else {
         string PDFname = "PDFSystFiles/PDFSyst_gen" + variable + ".root";
         fPDFSyst = new TFile(PDFname.c_str());
-    }
 
 
     string genVariable = "gen" + variable;
-    TH1D *data        = (TH1D*) f->Get("Data");
-    TH1D *dataCentral = (TH1D*) f->Get("Central");
-    TH1D *dataUnfWithSherpa = (TH1D*) f->Get("unfWithSherpa");
-    TH1D *UnfErrors = NULL;
-    TH2D *covUnf      = (TH2D*) f->Get("MyToyCor") ;  // this choice has data, background and response uncertainties included
-    TH1D *genMad      = (TH1D*) f->Get("genMad");
-    TH1D *genShe      = (TH1D*) f->Get("genShe");
-    TH1D *genPow      = (TH1D*) f->Get("genPow");
+    TH1D *data               = (TH1D*) f->Get("Data");
+    TH1D *dataCentral        = (TH1D*) f->Get("Central");
+    TH1D *dataUnfWithSherpa  = (TH1D*) f->Get("unfWithSherpa");
     TH1D *dataCentralOppAlgo = (TH1D*) f->Get("oppCentral");
+    TH1D *genMad             = (TH1D*) f->Get("genMad");
+    TH1D *genShe             = (TH1D*) f->Get("genShe");
+    TH1D *genPow             = (TH1D*) f->Get("genPow");
+
+    TH2D *covUnf             = (TH2D*) f->Get("MyToyCor") ;  // this choice has data, background and response uncertainties included
+    TH2D *myToyStatCov       = (TH2D*) f->Get("MyToyCov");
+    TH2D *myToyJESCov        = (TH2D*) f->Get("MyToyJESCov");
+    TH2D *myToyPUCov         = (TH2D*) f->Get("MyToyPU2Cov");
+    TH2D *myToyXSECCov       = (TH2D*) f->Get("MyToyXSECCov");
+    TH2D *myToyJERCov        = (TH2D*) f->Get("MyToyJER2Cov");
+    TH2D *myToyEFFCov        = (TH2D*) f->Get("MyToyEFFCov");
+
+    TH1D *UnfErrors = getErrors(dataCentral, dataUnfWithSherpa);
 
     // now get histograms for DPS if 7 TeV
-    const int NAddGEN = 5 ;
+    const int NAddGEN = 5;
     int MarkerSel[NAddGEN] = {24, 25, 26, 27 , 28}; 
     TH1D *genDYAdd[NAddGEN];
     TH1D *genDYAddRatio[NAddGEN];
     string namesDYAdd[NAddGEN] = {"MadZ2MPIoff","MadZ2Star","MadZ2StarMPIoff","P84C","PowZjjMiNLO"};
-    if ( energy == "7TeV"){
-        for ( int i(0) ; i < NAddGEN; i++){
-            string histoName = "gen" + namesDYAdd[i] ;
-            genDYAdd[i] = (TH1D*) f->Get(histoName.c_str());
-            genDYAdd[i]->SetTitle("");
-
-            //		 genDYAddRatio[i] = (TH1D*) f->Get(histoName.c_str());
-            //		 genDYAddRatio[i] ->Divide(dataCentral);
-            //		 genDYAddRatio[i] = (TH1D*) dataCentral->Clone(namesDYAdd[i].c_str());
-            //		 genDYAddRatio[i]->Divide(genDYAdd[i]);
-        }
-    }
 
     TH1D *hPDFSyst = NULL;
     hPDFSyst = (TH1D*) fPDFSyst->Get(genVariable.c_str());
@@ -179,7 +166,6 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     string fileNameTableCov = outputFileNamePNG + "_CorrelationMatrix.tex";
     string fileNameTable = outputFileNamePNG + ".tex";
 
-    if ( energy == "7TeV" && optionPlot7TeV == 1) outputFileNamePNG += "_Comparison2";
     outputFileNamePNG += ".png";
 
 
@@ -235,6 +221,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
     if (doXSec) doNormalize = false;
     if (doNormalize) doXSec = false;
+
     //----------------------------------------------------------------------//
     //    Rescale histograms to Luminosity and binWidth for cross-section   //
     //----------------------------------------------------------------------//
@@ -264,14 +251,6 @@ void FuncPlot(string variable, bool logZ, bool decrease)
                 hSyst[syst]->SetBinContent(i, hSyst[syst]->GetBinContent(i)*1./(Luminosity*binW));
                 hSyst[syst]->SetBinError(i, hSyst[syst]->GetBinError(i)*1./(Luminosity*binW));
             }
-
-            if ( energy == "7TeV"){
-                for ( int j(0) ; j < NAddGEN; j++){
-                    genDYAdd[j]->SetBinContent(i, genDYAdd[j]->GetBinContent(i)*1./(Luminosity*binW)); 
-                    genDYAdd[j]->SetBinError(i,genDYAdd[j]->GetBinError(i)*1./(Luminosity*binW));
-                }
-            }
-
         }
     }
     //----------------------------------------------------------------------//
@@ -290,17 +269,8 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         genShe->Scale(1./genShe->Integral(1,nBins));
         genPow->Scale(1./genPow->Integral(1,nBins));
         cout << genMad->GetBinContent(1) << "   " <<genPow->GetBinContent(1)<< endl;
-        for (int syst(0); syst < nSyst; syst++) hSyst[syst]->Scale( 1. / hSyst[syst]->Integral(1, nBins) );
-        for ( int j(0) ; j < NAddGEN; j++) genDYAdd[j]->Scale( 1. /genDYAdd[j]->Integral(1, nBins) );
-    }
-
-    /// now do the ratio so other MC
-    if ( energy == "7TeV"){
-        for ( int i(0) ; i < NAddGEN; i++){
-            genDYAddRatio[i] = (TH1D*) dataCentral->Clone(namesDYAdd[i].c_str());
-            genDYAddRatio[i]->Divide(genDYAdd[i]);
-            genDYAddRatio[i]->SetTitle("");
-        }
+        for (int syst(0); syst < nSyst; syst++) hSyst[syst]->Scale(1./ hSyst[syst]->Integral(1, nBins));
+        for (int j(0); j < NAddGEN; j++) genDYAdd[j]->Scale(1./genDYAdd[j]->Integral(1, nBins));
     }
     //----------------------------------------------------------------------//
 
@@ -312,9 +282,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
     cout << "go to error computation " << endl;
 
-    UnfErrors = getErrors(dataCentral, dataUnfWithSherpa);
-
-    for (int bin(1); bin <= nBins; bin++){
+    for (int bin(1); bin <= nBins; bin++) {
 
         double binW = data->GetBinWidth(bin);
         double totalSystematicsUp(0.), totalSystematicsDown(0.);
@@ -350,11 +318,11 @@ void FuncPlot(string variable, bool logZ, bool decrease)
             myFile << "&  " << totalStatistics << " "; 
         }
         double effSF = 0.01;
-        if (doXSec && !doNormalize ){
+        if (doXSec && !doNormalize){
             totalSystematicsUp += pow( pow((1.+effSF), 2) - 1 , 2 ) / ( pow(Luminosity*binW, 2) );
             totalSystematicsDown += pow( pow((1.+effSF), 2) - 1 , 2 ) / ( pow(Luminosity*binW, 2) );
         }
-        if (doXSec && !doNormalize ){
+        if (doXSec && !doNormalize){
             totalSystematicsUp +=  pow( luminosityErr , 2)  / ( pow(Luminosity*binW, 2) );
             totalSystematicsDown +=  pow( luminosityErr,2)  / ( pow(Luminosity*binW, 2) );
         }
