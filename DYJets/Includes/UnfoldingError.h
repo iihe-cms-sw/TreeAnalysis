@@ -2,89 +2,62 @@
 #define __UnfoldingSyst__
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void createZNGoodJets_Zinc2( TH1D* hCombinedStat, TH2D *hError2D[] , string unfAlg , bool doVarWidth , bool doXSec , bool doNormalize ){
-    string energy = getEnergy();
-    string variable1 = "ZNGoodJets_Zinc";
-    int JetPtMin = 30 ;
-    int JetPtMax = 0 ;
-    string leptonFlavor = "DMu";
-    //if (!isMuon) leptonFlavor = "DE";
-    bool doFlat = 0 ;
-
-    //-- fetch the data files and histograms --------------
-    TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
-    getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
-    TH1D *hData[3];
-    getHistos(hData, fData, variable1);
-    //-----------------------------------------------------
-
-
-    //-- fetch the DY files and histograms ----------------
-    TFile *fDYMadGraph[4];
-    TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
-    TFile *fDYPowheg = NULL ;
-    getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
-    TH1D *hDY[4];
-    TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL,  *hDYGenPowheg = NULL;
-    getHistos(hDY, fDYMadGraph, variable1);
-    hDYGenMadGraph = getHisto(fDYMadGraph[0], "gen" + variable1);
-    hDYGenSherpa = getHisto(fDYSherpa, "gen" + variable1);
-    hDYGenPowheg = getHisto(fDYPowheg, "gen" + variable1);
-    //-----------------------------------------------------
-
-    TH1D* hOut = (TH1D*) hData[0]->Clone();
-
-    // now sum merged histogram
-    // then cum errors histograms
-    const int nBins(hCombinedStat->GetNbinsX());
-    int nSyst = 8 ;
-    for (int bin(1); bin <= nBins; bin++){
-        double sum = hCombinedStat->GetBinContent(bin);
-        double sumErr[nSyst]  ;
-
-        for (int syst(0); syst < nSyst; syst++) sumErr[syst] = hError2D[syst]->GetBinContent(bin , bin) ;
-
-
-        for (int j(bin + 1 ); j <= nBins; j++){
-            sum += hCombinedStat->GetBinContent(j);
-            for (int syst(0); syst < nSyst; syst++) sumErr[syst] += hError2D[syst]->GetBinContent(j,j) ;
-        }
-        hOut->SetBinContent(bin, sum );
-        for (int syst(0); syst < nSyst; syst++) hError2D[syst]->SetBinContent(bin , bin , sumErr[syst]) ;
-        //		for (int syst(0); syst < nSyst; syst++) sumErr[syst] = hError2D[syst]->SetBinContent(bin , bin , 1. ) ;
-    }
-
-
-
-    // and finally produce tables and plots
-    /*
-    // lets create som tables
-    ostringstream optionCorrStr; optionCorrStr << optionCorr ;
-    string fileNameTable = "PNGFiles/NiceUnfold/TableSystematics_" + energy +   "_" + variable + "_" + unfAlg  ;
-    fileNameTable += "_CorrelationOption_" + optionCorrStr.str() ;
-    if (doVarWidth) fileNameTable += "_VarWidth";
-    fileNameTable +=  ".tex";
-    cout << fileNameTable << endl;
-    createTexTable( variable, fileNameTable ,  (TH1D*) h_combine->Clone() , allErrorsTH2  , doXSec , doNormalize , Luminosity);
-    createTexTableCombOpt(variable,  (TH1D*) h_combine->Clone() , doXSec);
-    // end table creation
-
-
-    // create combination histogram with statistical errors
-    TH1D* h_combine_stat =  (TH1D *) SetHistWithErrors(  (TH1D*)  h_combine->Clone() , combined_error_stat, "Stat");
-    //testMat(  (TH1D*) h_combine->Clone()  , combined_error_stat);
-    cout << " used correlation parameters :  " << correlationSameBin << "     "  << correlationDiffBin << endl;
-
-    /// PLOT COMPARISON OF ELECTRONS AND MUONS TO COMBINED
-    plotLepRatioComb(variable, (TH1D*) h_combine->Clone() , (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone() );
-
-    /// PLOT FINAL PLOTS: COMBINATION VS MC
-    plotCombination(variable, (TH1D*) h_combine_stat->Clone() , (TH1D*) h_combine->Clone() , genMad , genShe , genPow );
-
-*/
-}
+//void createZNGoodJets_Zinc2(TH1D* hCombinedStat, TH2D *hError2D[], bool doVarWidth){
+//    string energy = getEnergy();
+//    string variable1 = "ZNGoodJets_Zinc";
+//    int JetPtMin = 30 ;
+//    int JetPtMax = 0 ;
+//    string leptonFlavor = "DMu";
+//    //if (!isMuon) leptonFlavor = "DE";
+//    bool doFlat = 0 ;
+//
+//    //-- fetch the data files and histograms --------------
+//    TFile *fData[3];             // 0 = central, 1 = JES Up, 2 = JES Down 
+//    getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth);
+//    TH1D *hData[3];
+//    getHistos(hData, fData, variable1);
+//    //-----------------------------------------------------
+//
+//
+//    //-- fetch the DY files and histograms ----------------
+//    TFile *fDYMadGraph[4];
+//    TFile *fDYSherpa = NULL;               // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
+//    TFile *fDYPowheg = NULL ;
+//    getFiles(FILESDIRECTORY, fDYMadGraph, leptonFlavor, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, JetPtMin, JetPtMin, doFlat, doVarWidth);
+//    fDYSherpa = getFile(FILESDIRECTORY, leptonFlavor, energy, DYSHERPAFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+//    fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+//    TH1D *hDY[4];
+//    TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL,  *hDYGenPowheg = NULL;
+//    getHistos(hDY, fDYMadGraph, variable1);
+//    hDYGenMadGraph = getHisto(fDYMadGraph[0], "gen" + variable1);
+//    hDYGenSherpa = getHisto(fDYSherpa, "gen" + variable1);
+//    hDYGenPowheg = getHisto(fDYPowheg, "gen" + variable1);
+//    //-----------------------------------------------------
+//
+//    TH1D* hOut = (TH1D*) hData[0]->Clone();
+//
+//    // now sum merged histogram
+//    // then cum errors histograms
+//    const int nBins(hCombinedStat->GetNbinsX());
+//    int nSyst = 8 ;
+//    for (int bin(1); bin <= nBins; bin++) {
+//        double sum = hCombinedStat->GetBinContent(bin);
+//        double sumErr[nSyst];
+//
+//        for (int syst(0); syst < nSyst; syst++) {
+//            sumErr[syst] = hError2D[syst]->GetBinContent(bin, bin);
+//        }
+//        for (int j(bin + 1 ); j <= nBins; j++) {
+//            sum += hCombinedStat->GetBinContent(j);
+//            for (int syst(0); syst < nSyst; syst++) sumErr[syst] += hError2D[syst]->GetBinContent(j, j);
+//        }
+//        hOut->SetBinContent(bin, sum);
+//        for (int syst(0); syst < nSyst; syst++) {
+//            hError2D[syst]->SetBinContent(bin, bin, sumErr[syst]);
+//            //for (int syst(0); syst < nSyst; syst++) sumErr[syst] = hError2D[syst]->SetBinContent(bin, bin, 1.);
+//        }
+//    }
+//}
 
 
 
@@ -123,7 +96,8 @@ void changeToLatexFormat(string& title)
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hError2D[] , bool doXSec , bool doNormalize , double Luminosity  ){
+void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hError2D[], bool doXSec, bool doNormalize, double Luminosity)
+{
     string temp, tempTab;
     if (doXSec ) {
         string xtitle = data->GetXaxis()->GetTitle();
@@ -204,10 +178,6 @@ void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hEr
 
 
         double centralValue(data->GetBinContent(bin)/Norm );
-        double totalStatistics( sqrt (hError2D[0]->GetBinContent(bin,bin)) / Norm );
-        //cout << centralValue << "   "  << totalStatistics << endl;
-        //cout << centralValue << "   "  << totalStatistics << "   " << binW << " "  << Luminosity << endl;
-
         if (variable.find("ZNGoodJets_Zexc") != string::npos && bin > 1) myFile <<  "$= " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets_Zinc") != string::npos && bin > 1) myFile <<  "$\\geq " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets") == string::npos) {
@@ -236,9 +206,6 @@ void createTexTable(string variable, string fileNameTable, TH1D* data, TH2D *hEr
         if (doPrint)  myFile << " \\\\" << endl;
 
     }
-
-
-
 
     myFile << "\\end{tabular}}" << endl;
     myFile << "\\label{tab:" << variable << "}"<< endl;

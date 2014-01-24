@@ -41,7 +41,6 @@ using namespace std;
 
 //-- prototypes ---------------------------------------------------------------------------------//
 void mergeChannelsRun(string var = "ZNGoodJets_Zexc", bool logZ = 0, bool decrease = 0);
-void returnCov(TH1D *dataCentral, TH1D* hUp, TH1D* hDown, TH2D *cov , TH1D* hErrors);
 void plotLepRatioComb(string variable, TH1D* h_combine, TH1D* hMuon, TH1D* hEle);
 void plotCombination(string variable, TH1D* hCombinedStat,  TH1D* hCombinedTot,  TH1D* genMadTemp[] , TH1D* genSheTemp[], TH1D* genPowTemp[]);
 void createZNGoodJets_Zinc( TH1D* hCombinedStat, TH1D* hCombinedSyst , TH2D *hError2D[] , string unfAlg , bool doVarWidth , bool doXSec , bool doNormalize );
@@ -93,15 +92,16 @@ void MymergeChannels()
 //-----------------------------------------------------------------------------------------------//
 
 //-----------------------------------------------------------------------------------------------//
-void mergeChannelsRun(string var,  bool logZ, bool decrease)
+void mergeChannelsRun(string var, bool logZ, bool decrease)
 {
-    LOGZ = logZ; DECREASE = decrease;
+    LOGZ = logZ; 
+    DECREASE = decrease;
     VARIABLE = var;
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl  =  "PNGFiles/FinalUnfold_30/DE_"  + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu  =  "PNGFiles/FinalUnfold_30/DMu_" + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30/DE_"  + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30/DMu_" + energy + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -109,15 +109,10 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     //---------------------------------------------------------------------------------
 
     //-- Retrieve histograms from the files -------------------------------------------
-    //double lumi[2] = {1,1}; not used
-    // get histograms
-    TH1D *dataReco[2], *dataCentral[2], *dataUnfWithSherpa[2], *unfErrorDistr[2], *dataCentralOppAlgo[2], *genMad[2], *genShe[2], *genPow[2], *hErrors[2][4];
+    TH1D *dataReco[2], *dataCentral[2], *dataUnfWithSherpa[2], *unfErrorDistr[2], *dataCentralOppAlgo[2], *genMad[2], *genShe[2], *genPow[2];
     TH2D *myToyStatCov[2], *myToyJESCov[2], *myToyPUCov[2], *myToyXSECCov[2], *myToyJERCov[2], *myToyEFFCov[2], *myToyLUMICov[2];
 
-    int option = 0;
     double luminosityErr = 0.026;
-    double muonIDIsoHLTError = 0.02;
-    double electronIDIsoHLTError = 0.01;
 
     //---- loop to run on muon (i=1) and electron (i=0) ----
     for (int i(0); i < 2; i++){
@@ -140,31 +135,13 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
         unfErrorDistr[i] = getErrors(dataCentral[i], dataUnfWithSherpa[i]);
 
         // set covariance for luminosity uncertainty --> take correlation from JES and rescale
-        //myToyLUMICov[i] = (TH2D*) setCovariance(myToyJESCov[i] , dataCentral[i]	, luminosityErr );
-
-        hErrors[i][0] = (TH1D*) dataReco[i]->Clone();
-        hErrors[i][1] = (TH1D*) dataReco[i]->Clone();
-        hErrors[i][2] = (TH1D*) dataReco[i]->Clone();
-        if (option == 1) {
-            TH1D *hSystUp   = (TH1D*) f[i]->Get("JECup");
-            TH1D *hSystDown = (TH1D*) f[i]->Get("JECdown");	
-            returnCov(dataCentral[i], hSystUp, hSystDown, myToyJESCov[i], hErrors[i][0]);
-
-            //--- PU ---
-            hSystUp   = (TH1D*) f[i]->Get("PUup");
-            hSystDown = (TH1D*) f[i]->Get("PUdown");	
-            returnCov(dataCentral[i], hSystUp, hSystDown, myToyPUCov[i], hErrors[i][1]);
-
-            //--- XSEC ---
-            hSystUp    =  (TH1D*) f[i]->Get("XSECup");
-            hSystDown  =  (TH1D*) f[i]->Get("XSECdown");	
-            returnCov(dataCentral[i], hSystUp, hSystDown, myToyXSECCov[i], hErrors[i][2]);
-        }
+        myToyLUMICov[i] = setCovariance(myToyJESCov[i], dataCentral[i], luminosityErr);
 
     }
     //---------------------------------------------------------------------------------
 
-    TH1D* h_combine  =  (TH1D*) dataReco[0]->Clone();
+    TH1D* h_combine = (TH1D*) dataReco[0]->Clone();
+    h_combine->SetDirectory(0);
 
     // declare the big matrix
     int nbins =  dataCentral[0]->GetNbinsX();
@@ -191,10 +168,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    // get correlation matrix this is need for option 3 of combination
-
-    //        TH2D* hCorrEle = (TH2D*) CovToCorr(CovEle);
-    //        TH2D* hCorrMu = (TH2D*)  CovToCorr(CovMuon);
 
     // set correlation between channels
     double correlationSameBin = 0.;
@@ -218,7 +191,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     TMatrixD covMatrixUNF  = getCovMatrixOfCombinationUNF(unfErrorDistr[0], unfErrorDistr[1], dataCentral[0], dataCentral[1], dataCentralOppAlgo[0], dataCentralOppAlgo[1], optionCorr, 1);
 
     TMatrixD covMatrixLUMI = setCovMatrixOfCombination(luminosityErr, dataCentral[0], dataCentral[1], optionCorr);
-    //TMatrixD covMatrixLEP  = setCovMatrixOfCombinationLep(muonIDIsoHLTError,electronIDIsoHLTError, dataCentral[0], dataCentral[1], optionCorr , 1);
     TMatrixD covMatrixLEP  = getCovMatrixOfCombination(myToyEFFCov[0],myToyEFFCov[1], optStat, 1); // two  leptons are independednt
 
     // create total covariance matrix
@@ -240,7 +212,6 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     //errorM = covMatrixXSEC;
     // now loop over bins to set the matrix content
     double norm = 1.; // this I use to have a reasonable value for determinant ( not needed in general) -> important for inversion so that matrices don't deal with small/big numbers
-    double myDet = 1.;
     for(int ibin = 0; ibin<nbins; ibin++){
         // electron channel
         double value_e = dataCentral[0]->GetBinContent(ibin+1);
@@ -307,7 +278,7 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
     // after all matrix operation, now set the histogram
     // store combined result and all the individual contributions to error in vector
     double result[10][10];
-    for(int i(0); i < nbins;i++){
+    for(int i(0); i < nbins; i++){
 
         h_combine->SetBinContent(i+1, combined_value(i) * norm );
         combined_error_LUMI(i,i) = pow(luminosityErr * combined_value(i) * norm , 2 );
@@ -386,7 +357,7 @@ void mergeChannelsRun(string var,  bool logZ, bool decrease)
 
 
 //////////////////////////////////
-void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[])
+void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[])
 {
 
     //--- fetch the generated histograms for electrons ([0]) and muons ([1]) 
@@ -403,7 +374,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     //-----------------------------
 
     //--- load PDF systematic file ---
-    string genVariable = "gen" + VARIABLE;
+    string genVariable = "gen" + variable;
     string PDFfileName = "PDFSystFiles/PDFSyst_" + genVariable + ".root";
     TFile *fPDF = new TFile(PDFfileName.c_str());
 
@@ -439,9 +410,9 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     if (doXSec) outputFileNamePNG +=  "Combination_XSec_";
     else if (doNormalize)  outputFileNamePNG +=  "Combination_Normalized_";
 
-    outputFileNamePNG +=  VARIABLE ;
+    outputFileNamePNG +=  variable;
     ostringstream optionCorrStr; optionCorrStr << optionCorr;
-    outputFileNamePNG +="_CorrelationOption_" + optionCorrStr.str() ;
+    outputFileNamePNG +="_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth)  outputFileNamePNG += "_VarWidth";
     outputFileNamePNG +=  ".pdf";
 
@@ -453,7 +424,7 @@ void plotCombination(string VARIABLE, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
 
 //////////////////////// NICE plots
-void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuon){
+void plotLepRatioComb(string variable, TH1D* hCombined,  TH1D* hEle , TH1D* hMuon){
 
     TH1D* hCombErr = (TH1D *) hCombined ->Clone();
     hCombErr->GetYaxis()->SetTitle("");
@@ -557,7 +528,7 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
 
 
     ////////////////////////////////////// now do the canvas
-    string mVariable = "Merged_"+VARIABLE;
+    string mVariable = "Merged_" + variable;
     TCanvas *can = new TCanvas(mVariable.c_str(), mVariable.c_str(), 600, 900);
     can->cd();
     TPad *pad1 = new TPad("pad1","pad1", 0, 0.4, 1, 1);
@@ -577,7 +548,7 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
         MineYMax = grCentralSyst->GetMaximum();
     }
     hMuon->GetXaxis()->SetRangeUser(hMuon->GetXaxis()->GetXmin(),hMuon->GetXaxis()->GetXmax());
-    if (VARIABLE.find("ZNGood") !=  std::string::npos) {
+    if (variable.find("ZNGood") !=  std::string::npos) {
         MineYMax = 65.;
         hMuon->GetXaxis()->SetRangeUser(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax()- 2*hMuon->GetBinWidth(1));
         grCentralSyst->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax() -2* hMuon->GetBinWidth(1));
@@ -591,25 +562,25 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
     hMuon->GetYaxis()->SetTitleOffset(0.95);
     if (LOGZ) hMuon->SetMaximum(MineYMax*5);
     else hMuon->SetMaximum(MineYMax*1.5);
-    if (doXSec == 1 || doNormalize == 1) { 
+    if (doXSec || doNormalize) { 
         hMuon->GetYaxis()->SetTitle("");
         string temp;
         temp = "d#sigma/dH_{T} [pb/GeV]";
-        if (VARIABLE.find("Pt") !=  std::string::npos) temp = "d#sigma/dp_{T} [pb/GeV]";
-        if (VARIABLE.find("Eta") !=  std::string::npos) temp = "d#sigma/d#eta [pb]";
-        if (VARIABLE.find("ZNGood") !=  std::string::npos){
+        if (variable.find("Pt") != std::string::npos) temp = "d#sigma/dp_{T} [pb/GeV]";
+        if (variable.find("Eta") != std::string::npos) temp = "d#sigma/d#eta [pb]";
+        if (variable.find("ZNGood") != std::string::npos){
             temp = "d#sigma/dN [pb]";
 
         }
-        if (VARIABLE.find("ZNGood") !=  std::string::npos){
+        if (variable.find("ZNGood") != std::string::npos){
             temp = "d#sigma/dN [pb]";
         }
 
-        if (VARIABLE.find("SpT") !=  std::string::npos) {temp = "d#sigma/dSpT [pb]";
-            if (doNormalize  ==  1)  temp = "1/#sigma d#sigma/dSpT";
+        if (variable.find("SpT") != std::string::npos) {temp = "d#sigma/dSpT [pb]";
+            if (doNormalize) temp = "1/#sigma d#sigma/dSpT";
         }
-        if (VARIABLE.find("PHI") !=  std::string::npos || VARIABLE.find("Phi") !=  std::string::npos ) {temp = "d#sigma/d#Delta#Phi  [pb]";
-            if (doNormalize  ==  1)  temp = "1/#sigma d#sigma/d#Delta#Phi";
+        if (variable.find("PHI") != std::string::npos || variable.find("Phi") !=  std::string::npos ) {temp = "d#sigma/d#Delta#Phi  [pb]";
+            if (doNormalize) temp = "1/#sigma d#sigma/d#Delta#Phi";
         }
         const char *tempYAxisTitle = temp.c_str();
         hMuon->GetYaxis()->SetTitle(tempYAxisTitle);
@@ -666,7 +637,7 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
     grCentralSystMuonRatio->SetMarkerStyle(20);
     grCentralSystMuonRatio->SetMarkerSize(0.8);
     grCentralSystMuonRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin(),hMuon->GetXaxis()->GetXmax());
-    if (VARIABLE.find("ZNGood") !=  std::string::npos) grCentralSystMuonRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax() - hMuon->GetBinWidth(1));
+    if (variable.find("ZNGood") !=  std::string::npos) grCentralSystMuonRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax() - hMuon->GetBinWidth(1));
     //grCentralSystMuonRatio->GetYaxis()->SetRangeUser(0.41,1.59);
     grCentralSystMuonRatio->GetYaxis()->SetRangeUser(0.7,1.3);
     grCentralSystMuonRatio->GetYaxis()->SetTitle("Muon / Comb.");
@@ -712,7 +683,7 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
     grCentralSystEleRatio->SetMarkerStyle(20);
     grCentralSystEleRatio->SetMarkerSize(0.8);
     grCentralSystEleRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin(),hMuon->GetXaxis()->GetXmax());
-    if (VARIABLE.find("ZNGood") !=  std::string::npos) grCentralSystEleRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax() - hMuon->GetBinWidth(1));
+    if (variable.find("ZNGood") !=  std::string::npos) grCentralSystEleRatio->GetXaxis()->SetLimits(hMuon->GetXaxis()->GetXmin()+hMuon->GetBinWidth(1),hMuon->GetXaxis()->GetXmax() - hMuon->GetBinWidth(1));
     grCentralSystEleRatio->GetXaxis()->SetTitle(hMuon->GetXaxis()->GetTitle());
     grCentralSystEleRatio->GetXaxis()->SetTitleSize(0.1);
     grCentralSystEleRatio->GetXaxis()->SetTitleOffset(1.14);
@@ -748,8 +719,8 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
     else if (doNormalize) outputFileNamePNG += "CompLeptonsAndComb_Normalized_";
 
     ostringstream optionCorrStr; optionCorrStr << optionCorr;
-    outputFileNamePNG += VARIABLE ;
-    outputFileNamePNG += "_CorrelationOption_" + optionCorrStr.str()  ;
+    outputFileNamePNG += variable;
+    outputFileNamePNG += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) outputFileNamePNG += "_VarWidth";
     outputFileNamePNG += ".pdf";
 
@@ -757,40 +728,8 @@ void plotLepRatioComb(string VARIABLE, TH1D* hCombined,  TH1D* hEle , TH1D* hMuo
 
 }
 
-///////////////////////////////////////////////
-void returnCov(TH1D *dataCentral, TH1D* hUp, TH1D* hDown, TH2D *cov , TH1D *hErrors){
-
-    const int nBins(dataCentral->GetNbinsX());
-    TMatrixD outCov(nBins,nBins);
-
-    double sigma[nBins];
-    for (int bin(1); bin  <=   nBins; bin++){
-        double centralValue  =  dataCentral->GetBinContent(bin);
-        double difference1  =  -dataCentral->GetBinContent(bin)+hUp->GetBinContent(bin);	
-        double difference2(dataCentral->GetBinContent(bin)-hDown->GetBinContent(bin));	
-        if (fabs(difference1) > fabs(difference2) ) sigma[bin-1] = fabs(difference1);
-        else sigma[bin-1] = fabs(difference2);
-        hErrors->SetBinContent(bin,sigma[bin-1]);
-    }
-
-    for (int bin(1); bin  <=   nBins; bin++){
-
-        for (int bin1(1); bin1  <=   nBins; bin1++){
-            double corr  =  1;
-            if ( VARIABLE.find("ZNGoodJets_Zexc") !=  std::string::npos && ((bin  ==  1 && bin1 !=  bin) || (bin1  ==  1 && bin1 !=  bin) ) ) corr  =  -1. ;
-            corr  =  0.;
-            if (bin  ==  bin1 ) corr  =  1;
-            cov->SetBinContent(bin,bin1,corr * sigma[bin-1]*sigma[bin1-1]);
-            cout<<cov->GetBinContent(bin,bin1)<<"  ";
-        }
-        cout<<endl;
-    }
-    cout << " END fetching cov matrix "<<endl;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void createZNGoodJets_Zinc( TH1D* hCombinedStat, TH1D* hCombinedSyst, TH2D *hError2D[], string unfAlg, bool doVarWidth, bool doXSec, bool doNormalize)
 {
     string energy = getEnergy();
