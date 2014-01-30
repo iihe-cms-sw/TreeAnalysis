@@ -358,10 +358,6 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     //int myToyN[5] = {400, 400, 400, 400, 400};
 
     for (int i(0); i < nUnfold; i++){	
-        cout << endl;
-        cout << endl;
-        cout << "Doing my TOY " << Cov[i] << " with type  " << SetTypeOfVariation[i] << endl;
-        cout << endl;
         string CovName = Cov[i] + "Cov";
         string CorName = Cov[i] + "Cor";
         string hNameTemp = "h" + Cov[i];

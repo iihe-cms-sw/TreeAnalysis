@@ -6,6 +6,7 @@
   sources.push_back("functions");
   sources.push_back("writeFastPlotsTex");
   sources.push_back("unfoldingFunctions");
+  sources.push_back("UnfoldingSyst");
   sources.push_back("FinalUnfold");
   sources.push_back("FinalUnfoldAndCombination");
 

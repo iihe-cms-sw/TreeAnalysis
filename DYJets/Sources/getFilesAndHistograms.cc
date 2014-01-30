@@ -189,7 +189,7 @@ void closeFiles(TFile *Files[], int nFiles)
 }
 
 
-TH1D* getHisto(const TFile *File, const string variable)
+TH1D* getHisto(TFile *File, const string variable)
 {
     TH1D *histo = (TH1D*) File->Get(variable.c_str());
     histo->SetDirectory(0);
