@@ -157,7 +157,7 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
     ofstream myFile(fileNameTable.c_str());
     myFile << "\\begin{table}[htb!]\\begin{center}\n";
-    myFile << "\\caption{ Differential cross section in " << title << " and break down of the systematic uncertainites for the combinaton of both decay channels." ; 
+    myFile << "\\caption{ Differential cross section in " << title << " and break down of the systematic uncertainties for the combination of both decay channels." ; 
     myFile << "}"<<endl;
     myFile << "\\scriptsize{" << endl;
     myFile << "\\begin{tabular}{c|cc|cccccccc}\n \\multicolumn{11}{c}{";
@@ -216,6 +216,10 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create an histogram with name "name" and content copied from "hInput" but with errors
+// computed from the diagonal of the matrix MatInp.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* SetHistWithErrors(const TH1D* hInput, const TMatrixD &MatInp, const string name)
 {
@@ -224,7 +228,6 @@ TH1D* SetHistWithErrors(const TH1D* hInput, const TMatrixD &MatInp, const string
 
     for (int i(1); i <= hInput->GetNbinsX(); i++) {
         hOut->SetBinError(i, sqrt(MatInp(i-1, i-1)));
-        std::cout << i << " " << sqrt(MatInp(i-1, i-1)) << "/" << hOut->GetBinContent(i) << " = " << sqrt(MatInp(i-1, i-1)) / hOut->GetBinContent(i) << std::endl;
     }
 
     return hOut;
@@ -400,33 +403,28 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
     TH2D* hCorrEle = CovToCorr(CovEle);
     TH2D* hCorrMu = CovToCorr(CovMuon);
 
-    double correlationSameBin  =  0.;
-    double correlationDiffBin  =  0.;
-    if ( optionCorrTemp  ==  1 ) correlationSameBin  =  0.;
-    if ( optionCorrTemp  ==  2 ) correlationSameBin  =  1.;
-    if ( optionCorrTemp  ==  3 ) correlationSameBin  =  1.;
-    if ( optionCorrTemp  >=  4 ) {
-        correlationSameBin  =  1.;
-        correlationDiffBin  =  1.;
+    double correlationSameBin = 0.;
+    double correlationDiffBin = 0.;
+    if (optionCorrTemp == 1) correlationSameBin = 0.;
+    if (optionCorrTemp == 2) correlationSameBin = 1.;
+    if (optionCorrTemp == 3) correlationSameBin = 1.;
+    if (optionCorrTemp >= 4) {
+        correlationSameBin = 1.;
+        correlationDiffBin = 1.;
     }
-
 
     // declare the big matrix
     int nbins =  CovEle->GetNbinsX();
-    //int nbins =  8 ;
     const int NELE = 2*nbins;
     TMatrixD errorMTemp(NELE,NELE);
 
     for(int ibin = 0; ibin<nbins; ibin++){
 
         // first put electron error matrix component
-        //errorMTemp(ibin,ibin)  =  total_e_2; 
-        errorMTemp(ibin,ibin)  =  CovEle->GetBinContent(ibin+1,ibin+1);
+        errorMTemp(ibin, ibin) = CovEle->GetBinContent(ibin + 1, ibin + 1);
         // then mu
-        errorMTemp(nbins+ibin,nbins+ibin)  =  CovMuon->GetBinContent(ibin+1,ibin+1);
-        // correlation between same bins in muon and electron??????????
-        //correlationSameBin  =  1.;
-        if ( optionCorrTemp > 1 ) {
+        errorMTemp(nbins + ibin, nbins + ibin) = CovMuon->GetBinContent(ibin + 1, ibin + 1);
+        if (optionCorrTemp > 1) {
             errorMTemp(ibin,nbins+ibin)  =  correlationSameBin * sqrt(CovEle->GetBinContent(ibin+1,ibin+1) * CovMuon->GetBinContent(ibin+1,ibin+1));
 
             errorMTemp(ibin+nbins,ibin)  =  errorMTemp(ibin,nbins+ibin) ;
@@ -462,15 +460,9 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
                     // muon-electron channel
                     errorMTemp(nbins+ibin,jbin) =  correlationDiffBin*sqrt(fabs(CovMuon->GetBinContent(ibin+1,ibin+1)*CovEle->GetBinContent(jbin+1,jbin+1)));
                 }
-                cout << " correlation hist : " << ibin << "   " << jbin << "   "  <<  hCorrEle->GetBinContent(ibin, jbin) << "   " << hCorrMu->GetBinContent(ibin, jbin) <<"    "  << correlationDiffBin <<  "   " << optionCorrTemp << endl;
-
             }      
-
-
         }      
-
     } // loop over the number of bins
-
 
     for(int ibin = 0; ibin < 2 * nbins; ibin++){
         for(int jbin = 0; jbin < 2 * nbins; jbin++){

@@ -15,6 +15,7 @@ tmp*.cc
 
 # ignores input data files
 Data_Z_5311
+Data_Z_5311_New
 DataW
 DataTTbarEMu
 

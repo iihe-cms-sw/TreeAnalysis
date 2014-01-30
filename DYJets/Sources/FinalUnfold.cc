@@ -40,10 +40,11 @@ using namespace std;
 #include "variablesOfInterestVarWidth.h"
 //-------------------------------------------------------------------------------------------
 
-void FinalUnfold()
+void FinalUnfold(int start, int end)
 {
     bool isMuon(0);
-    for (int i(0); i < 1/*NVAROFINTERESTZJETS*/; i++) {
+    if (end == -1) end = start + 1;
+    for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++) {
         for (int j(0); j < 2; j++){
             isMuon = j;
             if (isMuon) FuncUnfold(isMuon, VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
@@ -66,13 +67,13 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     TH1::SetDefaultSumw2();
 
     JetPtMin = 30;
-    if (JetPtMin == 30) outputDirectory = "PNGFiles/FinalUnfold_30/";
-    else if (JetPtMin == 20) outputDirectory = "PNGFiles/FinalUnfold_20/";
+    if (JetPtMin == 30) outputDirectory = "PNGFiles/FinalUnfold_30_50_Toys/";
+    else if (JetPtMin == 20) outputDirectory = "PNGFiles/FinalUnfold_20_50_Toys/";
     if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 20) JetPtMin = 15;
     if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 30) JetPtMin = 20;
 
 
-    int NumberOfToys(400), oppNumberOfToys(4);
+    int NumberOfToys(50), oppNumberOfToys(4);
     int UsedKterm = UsedKtermBayes, oppUsedKterm = UsedKtermSVD;
     string oppUnfAlg = "SVD";
     if (unfAlg == "SVD") {
@@ -113,8 +114,16 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL, *hDYGenPowheg = NULL;//, *hDYGenPowhegUp = NULL, *hDYGenPowhegDown = NULL;
     getHistos(hDY, fDYMadGraph, variable);
     hDYGenMadGraph = getHisto(fDYMadGraph[0], "gen" + variable);
-    hDYGenSherpa   = getHisto(fDYSherpa,      "gen" + variable);
-    hDYGenPowheg   = getHisto(fDYPowheg,      "gen" + variable);
+    if (fDYSherpa->IsOpen()) hDYGenSherpa = getHisto(fDYSherpa, "gen" + variable);
+    else {
+        hDYGenSherpa = (TH1D*) hDYGenMadGraph->Clone();
+        hDYGenSherpa->SetDirectory(0);
+    }
+    if (fDYPowheg->IsOpen()) hDYGenPowheg = getHisto(fDYPowheg, "gen" + variable);
+    else {
+        hDYGenPowheg = (TH1D*) hDYGenMadGraph->Clone();
+        hDYGenPowheg->SetDirectory(0);
+    }
     //hDYGenPowhegUp = getHisto(fDYPowhegUp, "gen" + variable);
     //hDYGenPowhegDown = getHisto(fDYPowhegDown, "gen" + variable);
 
@@ -127,7 +136,9 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     stringstream sheUnfFile;
     sheUnfFile << "HistoFiles/" << leptonFlavor << "_" << energy << "_DYJets_Sherpa_UNFOLDING_dR_5311_Inf_mcEveWeight_EffiCorr_0_TrigCorr_1_Syst_0_JetPtMin_" << JetPtMin << "_VarWidth.root";
     TFile *sheUnf = new TFile(sheUnfFile.str().c_str());
-    RooUnfoldResponse *resDYSherpa = (RooUnfoldResponse*) sheUnf->Get(string("response" + variable).c_str()); 
+    RooUnfoldResponse *resDYSherpa = NULL;
+    if (sheUnf->IsOpen()) resDYSherpa = (RooUnfoldResponse*) sheUnf->Get(string("response" + variable).c_str()); 
+    else resDYSherpa = (RooUnfoldResponse*) resDY[0]->Clone();
     //-----------------------------------------------------
 
 
@@ -226,7 +237,9 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     cout << " saved data reco and madgraph files" << endl;
     //-- save sherpa and powheg gen also in the file
     outputRootFile->cd();  
+    cout << __LINE__ << endl;
     hDYGenSherpa->Write("genShe");
+    cout << __LINE__ << endl;
     //-- save powheg gen also in the file
     outputRootFile->cd();  
     cout << "lepton flavor: " << leptonFlavor << endl;
@@ -240,7 +253,7 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     if ( energy == "7TeV"){
         const	int NAddGEN = 5 ;
         string names[NAddGEN] = {"MadZ2MPIoff","MadZ2Star","MadZ2StarMPIoff","P84C","PowZjjMiNLO"};
-        for ( int i(0) ; i < NAddGEN; i++){
+        for (int i(0); i < NAddGEN; i++){
             cout << GenMCFILENAMES[i] << endl;
             TFile* fDYGenTemp = NULL ;
             fDYGenTemp = getFile(FILESDIRECTORY, leptonFlavor, energy, GenMCFILENAMES[i], JetPtMin, JetPtMin, doFlat, doVarWidth);
@@ -279,8 +292,8 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
 
     int xbin(hData[0]->GetNbinsX());	
     // now for central values compute Roounfold Cov matrix
-    TH2D* covCentralRoo    = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCov",      1);
-    TH2D* covCentralRooToy = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCovToy", NumberOfToys );
+    TH2D* covCentralRoo    = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCov", 1);
+    TH2D* covCentralRooToy = CovFromRoo(unfAlg, resDY[0], hData[0], hSumBG[0], UsedKterm, "CentralCovToy", NumberOfToys);
     outputRootFile->cd();  covCentralRoo->Write();  covCentralRooToy->Write();
 
     TH2D*  corCentralRoo= CovToCorr2((TH2D*) covCentralRoo->Clone("RooCor"), "RooCor");
@@ -288,8 +301,8 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     outputRootFile->cd();  corCentralRoo->Write();  corCentralRooToy->Write();
 
     //// now the covariance and correlation of the Opposite Algo
-    TH2D* covCentralRooOpp    = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovOpp",      1);
-    TH2D* covCentralRooToyOpp = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovToyOpp", NumberOfToys );
+    TH2D* covCentralRooOpp    = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovOpp", 1);
+    TH2D* covCentralRooToyOpp = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovToyOpp", NumberOfToys);
     outputRootFile->cd();  covCentralRooOpp->Write("CentralCovOpp");  covCentralRooToyOpp->Write("CentralCovToyOpp");
 
     TH2D* corCentralRooOpp = CovToCorr2((TH2D*) covCentralRooOpp->Clone("RooCorOpp"), "RooCorOpp");
@@ -330,13 +343,13 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
 
 
     const int nUnfold =9; 
-    string Cov[nUnfold] = {"MyToy","MyToyMC", "MyToyJES", "MyToyPU", "MyToyXSEC", "MyToyJER", "MyToyEFF","MyToyJER2","MyToyPU2"};
-    int selRes[nUnfold]      = { 0, 0, 0, 1, 0, 2 , 0, 0, 0 };
-    int selBGerrors[nUnfold] = { 0, 0, 0, 1, 2, 0 , 0, 0, 0};
+    string Cov[nUnfold] = {"MyToy", "MyToyMC", "MyToyJES", "MyToyPU", "MyToyXSEC", "MyToyJER", "MyToyEFF","MyToyJER2","MyToyPU2"};
+    int selRes[nUnfold] = {0, 0, 0, 1, 0, 2, 0, 0, 0};
+    int selBGerrors[nUnfold] = {0, 0, 0, 1, 2, 0, 0, 0, 0};
     TH2D *hCovariance[nUnfold];
     TH2D *hCorrelation[nUnfold];
     TH1D *hOyMySyst[nUnfold];
-    int SetTypeOfVariation[nUnfold] = {1, 101, 10, 2, 11, 4 , 10, 10, 10 }; // select what and how to varry
+    int SetTypeOfVariation[nUnfold] = {1, 101, 10, 2, 11, 4, 10, 10, 10}; // select what and how to varry
     /// option 3 --- data bins are varries independently; option 10 -- global variation pf all bins
     //int SetTypeOfVariation[6] = {1, 3, 2, 11, 4 , 3}; // select what and how to varry : ORIGINAL SELECTION
     //if (variable.find("ZNG")!= string::npos ) SetTypeOfVariation[1] = 103 ;
@@ -366,20 +379,12 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
         TH1D *hToy2 ;
         if ( i == 4 ) hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys , SetTypeOfVariation[i]);
         else hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, vhBack, responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], NumberOfToys, SetTypeOfVariation[i]);
-        //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, hSumBGgroupErrors[selBGerrors[i]], responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
-        //TH1D *hToy2 = (TH1D*) ToyMCErrorsStat(unfAlg, hDataTem, (TH1D*) hSumBG[selBGerrors[i]]->Clone(), responseTemp, UsedKterm, hCovariance[i], hCorrelation[i], myToyN[i], SetTypeOfVariation[i]);
         hOyMySyst[i] = (TH1D*) hToy2->Clone(hNameTemp.c_str());
 
         outputRootFile->cd();
         hOyMySyst[i]->Write();
         hCovariance[i]->Write();
         hCorrelation[i]->Write();
-        //      TCanvas* aC = new TCanvas();
-        //      aC->cd();
-        //      responseTemp->DrawCopy();
-        //	hDataTem->DrawCopy();
-        //	hToy2->DrawCopy("same");     
-        //	hSumBG[selBGerrors[i]]->DrawCopy("same");     
     }
 
     //-- Close all the files ------------------------------
@@ -387,9 +392,9 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     //closeFile(outputRootFile);
     closeFiles(fData);
     closeFiles(fDYMadGraph);
-    closeFile(fDYSherpa);
-    closeFile(fDYPowheg);
-    sheUnf->Close();
+    if (fDYSherpa->IsOpen()) closeFile(fDYSherpa);
+    if (fDYPowheg->IsOpen()) closeFile(fDYPowheg);
+    if (sheUnf->IsOpen()) sheUnf->Close();
     //closeFile(fDYPowhegUp);
     //closeFile(fDYPowhegDown);
     for (int i(0); i < nFilesBkg; i++) closeFiles(fBG[i]);

@@ -49,9 +49,10 @@ void dumpElements(TVectorD& a);
 
 //-- global variables ---------------------------------------------------------------------------//
 string VARIABLE  =   "ZNGoodJets_Zexc" ;
-string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold/";
+string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_1000_Toys/";
 
-int optionCorr = 2;      // 0 - simple weighted average, 
+int optionCorr = 2;      
+// 0 - simple weighted average, 
 // 1 - full cov matrix for each channel 
 // 2 - full cov matrix for each channel and  correlation = 1 for same bins in the two channels 
 // 3 - full cov matrix for each channel is geometric average for two channels (for each bin)  
@@ -60,7 +61,7 @@ int optionCorr = 2;      // 0 - simple weighted average,
 bool LOGZ = 0, DECREASE = 0;
 int doXSec  =  1;
 int doNormalize  =  0;
-double Luminosity(19789.);
+double Luminosity(19549.);
 string ENERGY =  getEnergy();
 string unfAlg  =  "Bayes";
 bool doVarWidth  =  true ;
@@ -73,7 +74,7 @@ int SelComb[] = {0,1,3,4,5} ; //selection Of Combination Opi
 
 
 //--- Main function -----------------------------------------------------------------------------//
-void MymergeChannels()
+void MymergeChannels(int start = 0, int end = -1)
 {
     setTDRStyle();
     gStyle->SetOptStat(0);
@@ -81,7 +82,8 @@ void MymergeChannels()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(2); i < 3/*NVAROFINTERESTZJETS*/; i++){
+    if (end == -1) end = start + 1;
+    for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
         for (int k(0); k < kCorrMax; k++){
             optionCorr = SelComb[k];
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
@@ -99,8 +101,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "PNGFiles/FinalUnfold_30/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "PNGFiles/FinalUnfold_30/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -113,8 +115,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     double luminosityErr = 0.026;
 
-    //---- loop to run on muon (i=1) and electron (i=0) ----
-    for (int i(0); i < 2; i++){
+    //--- loop to run on muon (i=1) and electron (i=0) ---
+    for (int i(0); i < 2; i++) {
         dataReco[i]           = (TH1D*) f[i]->Get("Data");
         dataCentral[i]        = (TH1D*) f[i]->Get("Central");
         dataUnfWithSherpa[i]  = (TH1D*) f[i]->Get("unfWithSherpa");
@@ -193,7 +195,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     TMatrixD covMatrixUNF  = getCovMatrixOfCombinationUNF(unfErrorDistr[0], unfErrorDistr[1], dataCentral[0], dataCentral[1], dataCentralOppAlgo[0], dataCentralOppAlgo[1], optionCorr, 1);
 
     TMatrixD covMatrixLUMI = setCovMatrixOfCombination(luminosityErr, dataCentral[0], dataCentral[1], optionCorr);
-    TMatrixD covMatrixLEP  = getCovMatrixOfCombination(myToyEFFCov[0],myToyEFFCov[1], optStat, 1); // two  leptons are independednt
+    TMatrixD covMatrixLEP  = getCovMatrixOfCombination(myToyEFFCov[0], myToyEFFCov[1], optStat, 1); // two  leptons are independednt
 
     // create total covariance matrix
     // sum all matrices
@@ -332,7 +334,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     // lets create som tables
     ostringstream optionCorrStr; optionCorrStr << optionCorr ;
-    string fileNameTable = "PNGFiles/NiceUnfold/TableSystematics_" + ENERGY + "_" + VARIABLE + "_" + unfAlg;
+    string fileNameTable = OUTPUTDIRECTORY + "/TableSystematics_" + ENERGY + "_" + VARIABLE + "_" + unfAlg;
     fileNameTable += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) fileNameTable += "_VarWidth";
     fileNameTable += ".tex";
@@ -406,6 +408,8 @@ void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     }
 
     TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDF, genShe, genPow, genMad);
+    
+
 
     string outputFileNamePNG  =  OUTPUTDIRECTORY;
     if (doXSec) outputFileNamePNG +=  "Combination_XSec_";

@@ -24,7 +24,7 @@
 void FuncPlot(string  variable = "SpTJets_Zinc2jet", bool log = 0, bool decrease = 0);
 
 
-double Luminosity(19789.);
+double Luminosity(19549.);
 //double Luminosity(4950.);
 double luminosityErr = 0.044;
 string energy = "8TeV";//getEnergy();
@@ -33,7 +33,7 @@ string leptonFlavor = "DMu";
 string unfAlg = "Bayes";
 bool doVarWidth = true ;
 /// define names od output png files and tex
-string outputDirectory = "PNGFiles/FinalUnfold_30/";
+string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
 
 
 void runPlotting3RatiosCommon()
@@ -45,7 +45,7 @@ void runPlotting3RatiosCommon()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(2); i < 3/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(0); i < 3/*NVAROFINTERESTZJETS*/; i++){
         for (int j(1); j < 2; j++){
             isMuon = j;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
@@ -156,7 +156,6 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
     cout << " We fetched all histograms" << endl;
 
-    //if (!isMuon) outputDirectory = "PNGFiles/FinalDataUnfoldElectron/";
     string outputFileNamePNG = outputDirectory + leptonFlavor + "_" + energy + "_RunPlotting_";
     if (doXSec)         outputFileNamePNG += "XSec_";
     else if (doNormalize) outputFileNamePNG += "Normalized_";

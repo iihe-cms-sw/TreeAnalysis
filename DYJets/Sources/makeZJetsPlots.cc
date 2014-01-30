@@ -48,7 +48,10 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     //---------------------------------------------
 
     //--- Main Canvas ---
-    TCanvas *plots = new TCanvas("plots", "plots", 600, 800);
+    string variable = gen1->GetName();
+    variable = variable.substr(3);
+    string canvasName = "plots_" + variable;
+    TCanvas *plots = new TCanvas(canvasName.c_str(), canvasName.c_str(), 600, 800);
     //-------------------
 
     //--- First Pad ---
