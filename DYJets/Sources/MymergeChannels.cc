@@ -408,8 +408,6 @@ void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, T
     }
 
     TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDF, genShe, genPow, genMad);
-    
-
 
     string outputFileNamePNG  =  OUTPUTDIRECTORY;
     if (doXSec) outputFileNamePNG +=  "Combination_XSec_";
