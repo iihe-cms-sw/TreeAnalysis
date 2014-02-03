@@ -5,6 +5,7 @@
 #include "fileNames.h"
 #include "getFilesAndHistograms.h"
 #include <string.h>
+#include <algorithm>
 using namespace std;
 
 //------------------------------------------------------------
@@ -334,6 +335,7 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
     fclose(outFile);
 }
 
+/*
 TH1D* newTH1D(string name, string title, string xTitle, int nBins, double xLow, double xUp)
 {
     TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xLow, xUp);
@@ -359,12 +361,39 @@ TH1D* newTH1D(string name, string title, string xTitle, int nBins, double *xBins
     return hist;
 }
 
+TH1D* newTH1D(string name, string title, string xTitle, vector<double>& xBinsVect)
+{
+    int nBins = xBinsVect.size()-1;
+    double *xBins = new double[xBinsVect.size()];
+    std::copy(xBinsVect.begin(), xBinsVect.end(), xBins);
+    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
+    hist->GetXaxis()->SetTitle(xTitle.c_str());
+    hist->GetYaxis()->SetTitle("# Events");
+    delete [] xBins;
+    return hist;
+}
+
 TH2D* newTH2D(string name, string title, int nBinsX, double *xBins, int nBinsY, double *yBins)
 {
     TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xBins, nBinsY, yBins);
     hist->GetZaxis()->SetTitle("# Events");
     return hist;
 }
+
+vector<double> makeVector(int num, ...)
+{
+    va_list list;
+    va_start(list, num);
+    vector<double> vec;
+    for (int i(0); i < num; i++) {
+        double next = va_arg(list, double);
+        vec.push_back(next);
+    }
+    va_end(list);
+    return vec;
+    
+}
+*/
 
 
 

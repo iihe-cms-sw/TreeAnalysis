@@ -2984,7 +2984,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
     //--- Save all the histograms ---
     unsigned short numbOfHistograms = listOfHistograms.size();
-    for (unsigned short i(0); i < numbOfHistograms; i++){
+    for (unsigned short i(0); i < numbOfHistograms; i++) {
         string hName = listOfHistograms[i]->GetName();
         if ( (!hasGenInfo && hName.find("gen") != string::npos ) || (!hasRecoInfo && hName.find("gen") == string::npos )) continue; 
         if (fileName.find("HepMC") != string::npos){
@@ -2992,52 +2992,53 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (doTTreweighting) listOfHistograms[i]->Scale(weightSumNoTopRew / weightSum );
         }
 
-        listOfHistograms[i]->Write();        }
-        //--- Save all the RooUnfoldResponses ---
-        if ( hasGenInfo && hasRecoInfo ){
-            unsigned short numbOfResponses = listOfResponses.size();
-            for (unsigned short i(0); i < numbOfResponses; i++){
-                string currentName = listOfResponses[i]->GetName();
-                currentName = currentName.substr(0, currentName.find("_gen"));
-                string savingName = "response" + currentName;
-                outputFile->WriteTObject(listOfResponses[i], savingName.c_str());
-            }
+        listOfHistograms[i]->Write();        
+    }
+    //--- Save all the RooUnfoldResponses ---
+    if ( hasGenInfo && hasRecoInfo ){
+        unsigned short numbOfResponses = listOfResponses.size();
+        for (unsigned short i(0); i < numbOfResponses; i++){
+            string currentName = listOfResponses[i]->GetName();
+            currentName = currentName.substr(0, currentName.find("_gen"));
+            string savingName = "response" + currentName;
+            outputFile->WriteTObject(listOfResponses[i], savingName.c_str());
         }
-        outputFile->Write();
-        outputFile->Close();
-        // let's delete all histograms, just to be safe
-        for (unsigned short i(0); i < numbOfHistograms; i++){
-            delete listOfHistograms[i];
-        }
-        //==========================================================================================================//
+    }
+    outputFile->Write();
+    outputFile->Close();
+    // let's delete all histograms, just to be safe
+    for (unsigned short i(0); i < numbOfHistograms; i++){
+        delete listOfHistograms[i];
+    }
+    //==========================================================================================================//
 
 
-        cout << "Number of events                               : " << nEvents << endl;
-        cout << "Total GEN weight of all events                 : " << TotalGenWeight << endl;
-        cout << "Number with two good leptons no charge no mass : " << nEventsWithTwoGoodLeptonsNoChargeNoMass << endl;
-        cout << "Number with two good leptons no mass           : " << nEventsWithTwoGoodLeptonsNoMass << endl;
-        cout << "Total GEN pass: RECO weight of all events      : " << TotalGenWeightPassGENPU << endl;
-        cout << "Total GEN pass: GEN weight of all events       : " << TotalGenWeightPassGEN << endl;
-        cout << "Total RECO pass: RECO weight of all events     : " << TotalRecoWeightPassRECO << endl;
-        cout << "Total RECO pass: GEN weight of all events      : " << TotalGenWeightPassRECO << endl;
-        cout << "Number with two good leptons                   : " << nEventsWithTwoGoodLeptons << endl;
-        cout << "How many times do we visit unfolding 0 jets    : " << nEventsUNFOLDIncl0Jets << endl;
-        cout << "Number Inclusif 0 jets                         : " << nEventsIncl0Jets << endl;
-        cout << "Number Exclusif 0 jets                         : " << nEventsExcl0Jets << endl;
-        cout << "Number Exclusif 1 jets                         : " << nEventsExcl1Jets << endl;
-        cout << "Number Exclusif 2 jets                         : " << nEventsExcl2Jets << endl;
-        cout << "Number Exclusif 3 jets                         : " << nEventsExcl3Jets << endl;
-        cout << "Number Inclusive 1 B-jet                       : " << nEventsIncBJets << endl;
-        cout << "Number GEN Inclusif 0 jets                     : " << GENnEventsIncl0Jets << endl;
-        cout << "Number GEN Inclusif 1 jets                     : " << GENnEventsIncl1Jets << endl;
-        cout << "Number GEN Inclusif 2 jets                     : " << GENnEventsIncl2Jets << endl;
-        cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
-        cout << "Sherpa weight                                  : " << sumSherpaW << endl;
-        if (doTTreweighting)       cout << "We run to TTbar with reweighting :   " << weightSum << "  and the original weight is :" << weightSumNoTopRew << endl;
-        cout << " Trigger summary"<< endl;
-        for (unsigned short k(0); k < 4; k++) {
-            if (countTrigSum[k] > 0) cout << sumTrig[k] << "    " << countTrigSum[k]  << "    " << sumTrig[k]/countTrigSum[k] << endl;
-        }
+    cout << "Number of events                               : " << nEvents << endl;
+    cout << "Total GEN weight of all events                 : " << TotalGenWeight << endl;
+    cout << "Number with two good leptons no charge no mass : " << nEventsWithTwoGoodLeptonsNoChargeNoMass << endl;
+    cout << "Number with two good leptons no mass           : " << nEventsWithTwoGoodLeptonsNoMass << endl;
+    cout << "Total GEN pass: RECO weight of all events      : " << TotalGenWeightPassGENPU << endl;
+    cout << "Total GEN pass: GEN weight of all events       : " << TotalGenWeightPassGEN << endl;
+    cout << "Total RECO pass: RECO weight of all events     : " << TotalRecoWeightPassRECO << endl;
+    cout << "Total RECO pass: GEN weight of all events      : " << TotalGenWeightPassRECO << endl;
+    cout << "Number with two good leptons                   : " << nEventsWithTwoGoodLeptons << endl;
+    cout << "How many times do we visit unfolding 0 jets    : " << nEventsUNFOLDIncl0Jets << endl;
+    cout << "Number Inclusif 0 jets                         : " << nEventsIncl0Jets << endl;
+    cout << "Number Exclusif 0 jets                         : " << nEventsExcl0Jets << endl;
+    cout << "Number Exclusif 1 jets                         : " << nEventsExcl1Jets << endl;
+    cout << "Number Exclusif 2 jets                         : " << nEventsExcl2Jets << endl;
+    cout << "Number Exclusif 3 jets                         : " << nEventsExcl3Jets << endl;
+    cout << "Number Inclusive 1 B-jet                       : " << nEventsIncBJets << endl;
+    cout << "Number GEN Inclusif 0 jets                     : " << GENnEventsIncl0Jets << endl;
+    cout << "Number GEN Inclusif 1 jets                     : " << GENnEventsIncl1Jets << endl;
+    cout << "Number GEN Inclusif 2 jets                     : " << GENnEventsIncl2Jets << endl;
+    cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
+    cout << "Sherpa weight                                  : " << sumSherpaW << endl;
+    if (doTTreweighting)       cout << "We run to TTbar with reweighting :   " << weightSum << "  and the original weight is :" << weightSumNoTopRew << endl;
+    cout << " Trigger summary"<< endl;
+    for (unsigned short k(0); k < 4; k++) {
+        if (countTrigSum[k] > 0) cout << sumTrig[k] << "    " << countTrigSum[k]  << "    " << sumTrig[k]/countTrigSum[k] << endl;
+    }
 }
 
 ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
