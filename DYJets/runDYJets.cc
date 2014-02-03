@@ -9,7 +9,8 @@
 
     ////--- Load shaared libraries ---
     unsigned int nSources = sources.size();
-    gROOT->ProcessLine(".L /usr/local/lib/libLHAPDF.dylib");
+    //gROOT->ProcessLine(".L /usr/local/lib/libLHAPDF.dylib");
+    gROOT->ProcessLine(".L /user/aleonard/LHAPDF/lib/libLHAPDF.so");
     for (unsigned int i(0); i < nSources; i++){
         std::cout << "Compiling " << srcdir + sources[i] << ".cc" << std::endl;
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
@@ -59,7 +60,7 @@
     bool doDataEff(0);
     int NSystData(3),NSystMC(5);
     bool doSysRunning(0);
-    int doWhat = 0 ; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen, 90 - PDF Syst.
+    int doWhat = -99; // 100 - all ; 0 - data, 1 - background , 2 - tau ???, 3 - DY, 4 - W+jets, 51 - MC gen, 90 - PDF Syst.
     if ( lepSel.find("DE") == 0)  NSystData = 5 ;
 
     if ( !doSysRunning ) {NSystData = 1; NSystMC = 1; }

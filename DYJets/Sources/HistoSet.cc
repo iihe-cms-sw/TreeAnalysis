@@ -113,7 +113,6 @@ RooUnfoldResponse* HistoSet::newResp(TH2D* reco, TH2D* gen)
     return response;
 }
 
-
 HistoSet::HistoSet(string leptonFlavor)
 {
     TH1::SetDefaultSumw2();

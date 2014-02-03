@@ -22,13 +22,5 @@ void getResp(RooUnfoldResponse*, TFile*, string);
 RooUnfoldResponse* getResp(TFile*, string);
 void getResps(RooUnfoldResponse *responses[], TFile *Files[], string);
 void getStatistics(string leptonFlavor = "Muons",  int JetPtMin = 30, int JetPtMax = 0,  bool doFlat = false , bool doVarWidth = true, int doQCD = 0 , bool doSSign = false ,  bool doInvMassCut = false , int MET = 0 , int doBjets = 0 );
-/*
-TH1D* newTH1D(string, string, string, int, double, double);
-TH1D* newTH1D(string, string, string, int, double* );
-TH1D* newTH1D(string name, string title, string xTitle, vector<double>& xBinsVect);
-TH2D* newTH2D(string name, string title, int nBinsX, double xLow, double xUp, int nBinsY, double yLow, double yUp);
-TH2D* newTH2D(string name, string title, int nBinsX, double *xBins, int nBinsY, double *yBins);
-vector<double> makeVector(int num, ...);
-*/
 #endif
 

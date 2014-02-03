@@ -49,7 +49,7 @@ void dumpElements(TVectorD& a);
 
 //-- global variables ---------------------------------------------------------------------------//
 string VARIABLE  =   "ZNGoodJets_Zexc" ;
-string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_1000_Toys/";
+string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_50_Toys/";
 
 int optionCorr = 2;      
 // 0 - simple weighted average, 
@@ -101,8 +101,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "PNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "PNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30_50_Toys/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30_50_Toys/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -334,6 +334,9 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     // lets create som tables
     ostringstream optionCorrStr; optionCorrStr << optionCorr ;
+
+    string command = "mkdir -p " + OUTPUTDIRECTORY;
+    system(command.c_str());
     string fileNameTable = OUTPUTDIRECTORY + "/TableSystematics_" + ENERGY + "_" + VARIABLE + "_" + unfAlg;
     fileNameTable += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) fileNameTable += "_VarWidth";
