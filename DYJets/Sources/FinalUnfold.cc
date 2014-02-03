@@ -45,7 +45,7 @@ void FinalUnfold(int start, int end)
     bool isMuon(0);
     if (end == -1) end = start + 1;
     for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++) {
-        for (int j(0); j < 2; j++){
+        for (int j(0); j < 1; j++){
             isMuon = j;
             if (isMuon) FuncUnfold(isMuon, VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
             else FuncUnfold(isMuon, VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].EBayeskterm, VAROFINTERESTZJETS[i].ESVDkterm);
@@ -69,6 +69,8 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     JetPtMin = 30;
     if (JetPtMin == 30) outputDirectory = "PNGFiles/FinalUnfold_30_50_Toys/";
     else if (JetPtMin == 20) outputDirectory = "PNGFiles/FinalUnfold_20_50_Toys/";
+    string command = "mkdir -p " + outputDirectory;
+    system(command.c_str());
     if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 20) JetPtMin = 15;
     if (variable.find("JetPt")!= string::npos && variable.find("Highest") == string::npos && JetPtMin == 30) JetPtMin = 20;
 
@@ -89,7 +91,6 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     double EffError = muonIDIsoHLTError;
     if (!isMuon) EffError = electronIDIsoHLTError;
 
-
     cout << " We now unfold:  " << variable << " jet pt:" << JetPtMin << " - " << JetPtMax << endl;
 
     //-- fetch the data files and histograms --------------
@@ -98,7 +99,6 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     getFiles(FILESDIRECTORY, fData, leptonFlavor, energy, ProcessInfo[DATAFILENAME].filename, JetPtMin, JetPtMax, doFlat, doVarWidth, 0, 0, 0, 0, 0, 1);
     getHistos(hData, fData, variable);
     //-----------------------------------------------------
-
 
     //-- fetch the DY files and histograms ----------------
     TFile *fDYMadGraph[4] = {NULL}; // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
@@ -109,6 +109,7 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     fDYPowheg = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
     //fDYPowhegUp = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGUPFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
     //fDYPowhegDown = getFile(FILESDIRECTORY, leptonFlavor, energy, DYPOWHEGDOWNFILENAME, JetPtMin, JetPtMin, doFlat, doVarWidth);
+    
 
     TH1D *hDY[4] = {NULL}; // 0 = central, 1 = PU Up,  2 = PU Down,  3 = JER Up
     TH1D *hDYGenMadGraph = NULL, *hDYGenSherpa = NULL, *hDYGenPowheg = NULL;//, *hDYGenPowhegUp = NULL, *hDYGenPowhegDown = NULL;

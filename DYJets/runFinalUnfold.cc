@@ -8,12 +8,12 @@
   sources.push_back("unfoldingFunctions");
   sources.push_back("UnfoldingSyst");
   sources.push_back("FinalUnfold");
-  sources.push_back("FinalUnfoldAndCombination");
+  //sources.push_back("FinalUnfoldAndCombination");
 
   //--- Load shaared libraries ---
   unsigned int nSources = sources.size();
   for (unsigned int i(0); i < nSources; i++){
-      cout <<"Compiling " << srcdir + sources[i] << ".cc" << endl;
+      cout << "Compiling " << srcdir + sources[i] << ".cc" << endl;
       gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
   }
 

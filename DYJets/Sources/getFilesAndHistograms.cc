@@ -97,9 +97,8 @@ TFile* getFile(string histoFilesDirectory, string leptonFlavor, string energy, s
     fileName += ".root";
     TFile *File = new TFile(fileName.c_str(), "READ");
     std::cout << "Opening: " << fileName << "   --->   Opened ? " << File->IsOpen() << std::endl;
+    return File;
     //----------------------------------------------------------------
-
-    return File; 
 }
 
 void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, string energy, string Name, int JetPtMin, int JetPtMax, bool doFlat, bool doVarWidth, int doQCD, bool doSSign, bool doInvMassCut, int MET, int doBJets, bool useUnfoldingFiles)
@@ -128,15 +127,14 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
             Syst.push_back("5_Down");        //   5 down: scale factor down
         }
     }
-    // for DYJets in case of Z+Jets or for WJets in case of W+Jets analysis we have:
     else if (Name.find("UNFOLDING") != string::npos && ((isDoubleLep && Name.find("DYJets") != string::npos) || (!isDoubleLep && Name.find("WJets") != string::npos))) {
+        // for DYJets in case of Z+Jets or for WJets in case of W+Jets analysis we have:
         Syst.push_back("0");         // 0: central
         Syst.push_back("1_Up");      // 1 up: PU up
         Syst.push_back("1_Down");    // 1 down: PU down
         Syst.push_back("4_Up");      // 4 up: JER up
     }
-    // for background we have
-    else {
+    else { // for background we have
         Syst.push_back("0");         // 0: central
         Syst.push_back("1_Up");      // 1 up: PU up
         Syst.push_back("1_Down");    // 1 down: PU down
@@ -157,25 +155,29 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
 //------------------------------------------------------------
 void closeFile(TFile *File)
 {
-    if (File->IsOpen()) File->Close();
-    std::cout << "Closing file: " << File->GetName() << "   --->   Closed ? " << (!(File->IsOpen())) << std::endl;
-    delete File;
-    File = NULL;
+    if (File) {
+        if (File->IsOpen()) File->Close();
+        std::cout << "Closing: " << File->GetName() << "   --->   Closed ? " << (!(File->IsOpen())) << std::endl;
+        //delete File;
+        //File = NULL;
+    }
 }
 
 void closeFiles(TFile *Files[])
 {
-    string fileName = Files[0]->GetName();
-    int nFiles;
-    if (fileName.find("Data") != string::npos) {
-        nFiles = 3; 
-        if (fileName.find("DE") != string::npos) nFiles = 5;
-    }
-    else if (fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
-    else nFiles = 5;
+    if (Files[0]) {
+        string fileName = Files[0]->GetName();
+        int nFiles;
+        if (fileName.find("Data") != string::npos) {
+            nFiles = 3; 
+            if (fileName.find("DE") != string::npos) nFiles = 5;
+        }
+        else if (fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
+        else nFiles = 5;
 
-    for (int i(0); i < nFiles; i++){
-        closeFile(Files[i]);
+        for (int i(0); i < nFiles; i++){
+            closeFile(Files[i]);
+        }
     }
 }
 
@@ -257,11 +259,11 @@ void getStatistics(string leptonFlavor, int JetPtMin, int JetPtMax, bool doFlat,
         doDY = true;
         NBins = 8 ; /// FIXED !!!!
     }
-    for ( int i = 0 ; i < usedFiles ; i++) {
+    for (int i(0); i < usedFiles; i++) {
         TFile *fData;
-        int sel = i ; 
-        if ( doDY ) sel = FilesDYJets[i];
-        else if  ( leptonFlavor.find("SMuE") != string::npos  ) sel = FilesTTbar[i] ;
+        int sel = i; 
+        if (doDY) sel = FilesDYJets[i];
+        else if (leptonFlavor.find("SMuE") != string::npos) sel = FilesTTbar[i];
         else sel = FilesTTbarWJets[i];
 
         if ((doQCD > 0 || doInvMassCut || doSSign ) && ProcessInfo[sel].filename.find("QCD") != string::npos) continue;
