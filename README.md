@@ -14,7 +14,7 @@ if you want to run on:
   2) TTbar to emu : move DYJets directory to TTbarEMu
 
 Be aware that a rootlogon.C is provided. This is needed to load ROoUnfold
-automatically.
+automatically. CHECK THIS FIRST TO HAVE ALL THE NEEDED VARIABLES SETUP !
 
 Once you have cloned the repository, you just have to build the RooUnfold-1.1.1
 that is provided. This RooUnfold is a sloghtly modified version of the one 
@@ -45,11 +45,11 @@ Next you need to have the data to run on. For this, if your running on m-machine
 a simple symbolic link will be enough. You can also opy the full directory.
 
 Go to the racine directory TreeAnalysis2012
-$ ln -s /user/tseva/analysis/TreeAnalysis2012/Data_Z_5311 Data_Z_5311
+$ ln -s /THIS_is_wehre_I_store_data/Data_Z_5311 Data_Z_5311
 
-$ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataTTbarEMu DataTTbarEMu
+$ ln -s /THIS_is_wehre_I_store_data/DataTTbarEMu DataTTbarEMu
 
-$ ln -s /user/aleonard/../tseva/analysis/TreeAnalysis2012/DataW DataW
+$ ln -s /THIS_is_wehre_I_store_data/DataW DataW
 
 #############################
 ################  quick fix for lxplus from Darin
