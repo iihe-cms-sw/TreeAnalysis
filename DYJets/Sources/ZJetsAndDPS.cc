@@ -58,7 +58,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
     //==========================================================================================================//
     double MTCut(50.);
-    double ZMCutLow(71); ZMCutHigh(111);
+    double ZMCutLow(71), ZMCutHigh(111);
     bool doZ(true), doW(false), doTT(false), doDR(false), doTTreweighting(false);
     if (leptonFlavor == "SingleElectron" || leptonFlavor == "SingleMuon"){
         doW = true; 
@@ -234,7 +234,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //===================================//
     cout << endl;
     printf("\nProcessing : %s    -->   %s \n", fileName.c_str(), outputFileName.c_str()); 
-    std::cout << "We will run on " << nentries << " events" << std::endl;
     double weightSum(0.), weightSumNoTopRew(0.);
 
     //--- Initialize the tree branches ---
@@ -246,6 +245,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         nentries = 10000;
         std::cout << "We plane to run on 100000 events" << std::endl;
     }
+    std::cout << "We will run on " << nentries << " events" << std::endl;
     //------------------------------------
 
     for (Long64_t jentry(0); jentry < nentries; jentry++){
