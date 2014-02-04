@@ -27,7 +27,7 @@ using namespace std;
 ClassImp(ZJetsAndDPS);
 
 void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSign, bool doInvMassCut, 
-        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, string pdfSet, int pdfMember)
+        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, string pdfSet, int pdfMember, int startEvent,  int skipEvent )
 {
 
     //--- Initialize PDF from LHAPDF if needed ---
@@ -67,7 +67,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if (leptonFlavor == "TTMuE") doTT = true; 
     if (doW || doTT) doZ = false;
     if (fileName.find("_dR_") != string::npos) doDR = true;
-    if (fileName.find("TopReweighting") != string::npos) { hasGenInfo = false ; doTTreweighting = true;} // we don't want to use gen plots for ttbar, we just need to load the lepton branch to read the t qurak pt 
+    if (fileName.find("TopReweighting") != string::npos) { hasGenInfo = true ; doTTreweighting = true;} // we don't want to use gen plots for ttbar, we just need to load the lepton branch to read the t qurak pt 
     if ( doZ ) METcut = 0; // no need for MET cut on Z+jets analysis 
     // additional muons variables
     double leptonMass(0.00051);  // 
@@ -80,7 +80,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //==========================================================================================================//
     //         Output file name           //
     //===================================//
-    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, pdfSet, pdfMember);
+    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, pdfSet, pdfMember, startEvent, skipEvent );
     TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
     //TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
@@ -246,9 +246,10 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         std::cout << "We plane to run on 100000 events" << std::endl;
     }
     std::cout << "We will run on " << nentries << " events" << std::endl;
+    if ( startEvent != 0 || skipEvent != 1 ) cout << " it seems we will do Pulls !!! " << startEvent <<"  " << skipEvent<< endl;
     //------------------------------------
 
-    for (Long64_t jentry(0); jentry < nentries; jentry++){
+    for (Long64_t jentry(startEvent); jentry < nentries; jentry+=skipEvent){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
 
@@ -393,7 +394,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                     bool muPassesAnyTrig((doZ && ((energy == "7TeV" && whichTrigger > 0) || (energy == "8TeV" && whichTrigger > 7 && !muPassesEMuAndWJetsTrig))) ||
                             (doW && whichTrigger % 2 == 1) || (doTT && whichTrigger >= 16)); // 8TeV comment: Mu17Mu8Tk = 4; Mu17Mu8 = 8 
                     /// for files obtained form bugra
-                    if (fileName.find("DYJets_Sherpa_UNFOLDING_dR_5311") != string::npos && whichTrigger > 0) muPassesAnyTrig = 1;
+                    if (fileName.find("DYJets_Sherpa_UNFOLDING_dR_5311") != string::npos && whichTrigger > 0) muPassesAnyTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
 
                     // select the good muons only
                     //-- no Isolation Cut
@@ -702,7 +703,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         if ( doTTreweighting ) {
             //https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting
             nTotGenLeptons = genLepEta_->size();
+        if (DEBUG) std::cout << "Stop after line " << __LINE__ << std::endl;
             for (unsigned short i(0); i < nTotGenLeptons; i++){
+        if (DEBUG) std::cout << "Stop after line " << __LINE__ << "    " << abs(genLepId_->at(i)) << std::endl;
                 if (  abs(genLepId_->at(i)) == 6){
                     weight *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
                     weightTop *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
@@ -2984,7 +2987,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
     //--- Save all the histograms ---
     unsigned short numbOfHistograms = listOfHistograms.size();
-    for (unsigned short i(0); i < numbOfHistograms; i++) {
+    for (unsigned short i(0); i < numbOfHistograms; i++){
         string hName = listOfHistograms[i]->GetName();
         if ( (!hasGenInfo && hName.find("gen") != string::npos ) || (!hasRecoInfo && hName.find("gen") == string::npos )) continue; 
         if (fileName.find("HepMC") != string::npos){
@@ -2994,51 +2997,51 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
         listOfHistograms[i]->Write();        
     }
-    //--- Save all the RooUnfoldResponses ---
-    if ( hasGenInfo && hasRecoInfo ){
-        unsigned short numbOfResponses = listOfResponses.size();
-        for (unsigned short i(0); i < numbOfResponses; i++){
-            string currentName = listOfResponses[i]->GetName();
-            currentName = currentName.substr(0, currentName.find("_gen"));
-            string savingName = "response" + currentName;
-            outputFile->WriteTObject(listOfResponses[i], savingName.c_str());
+        //--- Save all the RooUnfoldResponses ---
+        if ( hasGenInfo && hasRecoInfo ){
+            unsigned short numbOfResponses = listOfResponses.size();
+            for (unsigned short i(0); i < numbOfResponses; i++){
+                string currentName = listOfResponses[i]->GetName();
+                currentName = currentName.substr(0, currentName.find("_gen"));
+                string savingName = "response" + currentName;
+                outputFile->WriteTObject(listOfResponses[i], savingName.c_str());
+            }
         }
-    }
-    outputFile->Write();
-    outputFile->Close();
-    // let's delete all histograms, just to be safe
-    for (unsigned short i(0); i < numbOfHistograms; i++){
-        delete listOfHistograms[i];
-    }
-    //==========================================================================================================//
+        outputFile->Write();
+        outputFile->Close();
+        // let's delete all histograms, just to be safe
+        for (unsigned short i(0); i < numbOfHistograms; i++){
+            delete listOfHistograms[i];
+        }
+        //==========================================================================================================//
 
 
-    cout << "Number of events                               : " << nEvents << endl;
-    cout << "Total GEN weight of all events                 : " << TotalGenWeight << endl;
-    cout << "Number with two good leptons no charge no mass : " << nEventsWithTwoGoodLeptonsNoChargeNoMass << endl;
-    cout << "Number with two good leptons no mass           : " << nEventsWithTwoGoodLeptonsNoMass << endl;
-    cout << "Total GEN pass: RECO weight of all events      : " << TotalGenWeightPassGENPU << endl;
-    cout << "Total GEN pass: GEN weight of all events       : " << TotalGenWeightPassGEN << endl;
-    cout << "Total RECO pass: RECO weight of all events     : " << TotalRecoWeightPassRECO << endl;
-    cout << "Total RECO pass: GEN weight of all events      : " << TotalGenWeightPassRECO << endl;
-    cout << "Number with two good leptons                   : " << nEventsWithTwoGoodLeptons << endl;
-    cout << "How many times do we visit unfolding 0 jets    : " << nEventsUNFOLDIncl0Jets << endl;
-    cout << "Number Inclusif 0 jets                         : " << nEventsIncl0Jets << endl;
-    cout << "Number Exclusif 0 jets                         : " << nEventsExcl0Jets << endl;
-    cout << "Number Exclusif 1 jets                         : " << nEventsExcl1Jets << endl;
-    cout << "Number Exclusif 2 jets                         : " << nEventsExcl2Jets << endl;
-    cout << "Number Exclusif 3 jets                         : " << nEventsExcl3Jets << endl;
-    cout << "Number Inclusive 1 B-jet                       : " << nEventsIncBJets << endl;
-    cout << "Number GEN Inclusif 0 jets                     : " << GENnEventsIncl0Jets << endl;
-    cout << "Number GEN Inclusif 1 jets                     : " << GENnEventsIncl1Jets << endl;
-    cout << "Number GEN Inclusif 2 jets                     : " << GENnEventsIncl2Jets << endl;
-    cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
-    cout << "Sherpa weight                                  : " << sumSherpaW << endl;
-    if (doTTreweighting)       cout << "We run to TTbar with reweighting :   " << weightSum << "  and the original weight is :" << weightSumNoTopRew << endl;
-    cout << " Trigger summary"<< endl;
-    for (unsigned short k(0); k < 4; k++) {
-        if (countTrigSum[k] > 0) cout << sumTrig[k] << "    " << countTrigSum[k]  << "    " << sumTrig[k]/countTrigSum[k] << endl;
-    }
+        cout << "Number of events                               : " << nEvents << endl;
+        cout << "Total GEN weight of all events                 : " << TotalGenWeight << endl;
+        cout << "Number with two good leptons no charge no mass : " << nEventsWithTwoGoodLeptonsNoChargeNoMass << endl;
+        cout << "Number with two good leptons no mass           : " << nEventsWithTwoGoodLeptonsNoMass << endl;
+        cout << "Total GEN pass: RECO weight of all events      : " << TotalGenWeightPassGENPU << endl;
+        cout << "Total GEN pass: GEN weight of all events       : " << TotalGenWeightPassGEN << endl;
+        cout << "Total RECO pass: RECO weight of all events     : " << TotalRecoWeightPassRECO << endl;
+        cout << "Total RECO pass: GEN weight of all events      : " << TotalGenWeightPassRECO << endl;
+        cout << "Number with two good leptons                   : " << nEventsWithTwoGoodLeptons << endl;
+        cout << "How many times do we visit unfolding 0 jets    : " << nEventsUNFOLDIncl0Jets << endl;
+        cout << "Number Inclusif 0 jets                         : " << nEventsIncl0Jets << endl;
+        cout << "Number Exclusif 0 jets                         : " << nEventsExcl0Jets << endl;
+        cout << "Number Exclusif 1 jets                         : " << nEventsExcl1Jets << endl;
+        cout << "Number Exclusif 2 jets                         : " << nEventsExcl2Jets << endl;
+        cout << "Number Exclusif 3 jets                         : " << nEventsExcl3Jets << endl;
+        cout << "Number Inclusive 1 B-jet                       : " << nEventsIncBJets << endl;
+        cout << "Number GEN Inclusif 0 jets                     : " << GENnEventsIncl0Jets << endl;
+        cout << "Number GEN Inclusif 1 jets                     : " << GENnEventsIncl1Jets << endl;
+        cout << "Number GEN Inclusif 2 jets                     : " << GENnEventsIncl2Jets << endl;
+        cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
+        cout << "Sherpa weight                                  : " << sumSherpaW << endl;
+        if (doTTreweighting)       cout << "We run to TTbar with reweighting :   " << weightSum << "  and the original weight is :" << weightSumNoTopRew << endl;
+        cout << " Trigger summary"<< endl;
+        for (unsigned short k(0); k < 4; k++) {
+            if (countTrigSum[k] > 0) cout << sumTrig[k] << "    " << countTrigSum[k]  << "    " << sumTrig[k]/countTrigSum[k] << endl;
+        }
 }
 
 ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
@@ -3089,7 +3092,7 @@ ZJetsAndDPS::~ZJetsAndDPS(){
     if (!fChain) return;
     delete fChain->GetCurrentFile();
 }
-string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStudy, bool doVarWidth, int doBJets, int doQCD, bool doSSign, bool doInvMassCut, string pdfSet, int pdfMember)
+string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStudy, bool doVarWidth, int doBJets, int doQCD, bool doSSign, bool doInvMassCut, string pdfSet, int pdfMember, int startEvent, int skipEvent )
 {
     ostringstream result;
     result << outputDirectory << fileName;
@@ -3117,7 +3120,9 @@ string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStud
     if (doQCD>0) result << "_QCD" << doQCD;
     if (METcut > 0) result << "_MET" << METcut;
     if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
-
+    if (startEvent > 0 || skipEvent > 1) {
+        result << "_PullStart_"<<startEvent<< "_steps_"<< skipEvent ;
+    }
     //--- Add your test names here ---
     //result << "_NoPUCut";
     //result << "_LooseID";
@@ -3223,8 +3228,8 @@ void ZJetsAndDPS::Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo){
     if (fileName.find("UNFOLDING") != string::npos) fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
     if (hasRecoInfo){
         fChain->SetBranchAddress("EvtInfo_NumVtx", &EvtInfo_NumVtx, &b_EvtInfo_NumVtx);
-        //fChain->SetBranchAddress("EvtInfo_RunNum", &EvtInfo_RunNum, &b_EvtInfo_RunNum); // not used
-        //fChain->SetBranchAddress("EvtInfo_EventNum", &EvtInfo_EventNum, &b_EvtInfo_EventNum); // not used
+        fChain->SetBranchAddress("EvtInfo_RunNum", &EvtInfo_RunNum, &b_EvtInfo_RunNum); // not used
+        fChain->SetBranchAddress("EvtInfo_EventNum", &EvtInfo_EventNum, &b_EvtInfo_EventNum); // not used
 
         fChain->SetBranchAddress("patJetPfAk05En_", &patJetPfAk05En_, &b_patJetPfAk05En_);
         fChain->SetBranchAddress("patJetPfAk05Pt_", &patJetPfAk05Pt_, &b_patJetPfAk05Pt_);
