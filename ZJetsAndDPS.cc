@@ -3001,8 +3001,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (doTTreweighting) listOfHistograms[i]->Scale(weightSumNoTopRew / weightSum );
         }
 
-        listOfHistograms[i]->Write();        
-    }
+        listOfHistograms[i]->Write();        }
         //--- Save all the RooUnfoldResponses ---
         if ( hasGenInfo && hasRecoInfo ){
             unsigned short numbOfResponses = listOfResponses.size();
@@ -3132,7 +3131,7 @@ string ZJetsAndDPS::CreateOutputFileName(bool useRoch, bool doFlat, int doPUStud
     //--- Add your test names here ---
     //result << "_NoPUCut";
     //result << "_LooseID";
-    result << "_SRANJE";
+    //result << "_SRANJE";
 
     result << ".root";
     return result.str();

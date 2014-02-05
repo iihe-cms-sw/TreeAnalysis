@@ -56,9 +56,11 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
+
     //==========================================================================================================//
     double MTCut(50.);
     double ZMCutLow(71), ZMCutHigh(111);
+   cout << " begin: "<< hasRecoInfo <<"  " << hasGenInfo <<"  " << doQCD<<"  " << doSSign<<"  " << doInvMassCut << "  " << METcut << "  " <<doBJets <<"  " <<doPUStudy << endl;
     bool doZ(true), doW(false), doTT(false), doDR(false), doTTreweighting(false);
     if (leptonFlavor == "SingleElectron" || leptonFlavor == "SingleMuon"){
         doW = true; 
@@ -158,6 +160,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         if (leptonFlavor == "TTMuE"     )  LeptTrig = TrigMuE ; 
     }
     //==========================================================================================================//
+    cout << "Phase space cuts -- jet pt:" << jetPtCutMin <<"  " << jetPtCutMax<<"  -- jet eta : " << jetEtaCutMin<< "  " << jetEtaCutMax<< "  " << "  -- Z eta: " << ZEtaCutMin<<"   " << ZEtaCutMax<< "  -- MET cut: " << METcut << "    "   << endl;
+    cout << " other selections:  " <<endl;
+    cout << " doQCD: " << doQCD <<"  do SS: " << doSSign <<" inv. mass cut: " << doInvMassCut <<"  use MET cut: " << METcut<<"  use B jets: " << doBJets <<" do PU study: " << doPUStudy << endl;
 
 
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
@@ -248,7 +253,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     std::cout << "We will run on " << nentries << " events" << std::endl;
     if ( startEvent != 0 || skipEvent != 1 ) cout << " it seems we will do Pulls !!! " << startEvent <<"  " << skipEvent<< endl;
     //------------------------------------
-
     for (Long64_t jentry(startEvent); jentry < nentries; jentry+=skipEvent){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -615,6 +619,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                         }
                         //weight = weight / Data_GSFtoPF.getEfficiency(lepton1.eta, lepton2.eta);
                         //weight = weight * MC_GSFtoPF.getEfficiency(lepton1.eta, lepton2.eta);
+                        if ( DEBUG ) cout << " lep SF: " << Ele_Rec.getEfficiency(lepton1.pt, fabs(lepton1.scEta)) <<"  " << Ele_Rec.getEfficiency(lepton2.pt, fabs(lepton2.scEta)) <<"  " << LeptID.getEfficiency(lepton1.pt, fabs(lepton1.scEta)) << "   " << LeptID.getEfficiency(lepton2.pt, fabs(lepton2.scEta)) << " total : " << effWeight << endl;
                     }
                     if (isData) weight /= effWeight;
                     else weight *= effWeight;
@@ -853,11 +858,12 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 jetStruct jet = {patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i), patJetPfAk05Phi_->at(i), patJetPfAk05En_->at(i), i, passBJets};
 
                 //-- apply jet energy scale uncertainty (need to change the scale when initiating the object)
-                double jetEnergyCorr = 0; 
+                double jetEnergyCorr = 0.; 
                 bool jetPassesPtCut(jet.pt >= 10); // for MET uncertainty should the cut be before or aftes adding unc.?????
                 jetEnergyCorr = TableJESunc.getEfficiency(jet.pt, jet.eta);
 
                 jet.pt *= (1 + scale * jetEnergyCorr);
+                jet.energy *= (1 + scale * jetEnergyCorr);
 
                 bool jetPassesEtaCut((jet.eta >= jetEtaCutMin / 10.) && (jet.eta <= jetEtaCutMax / 10.)); 
                 bool jetPassesIdCut(patJetPfAk05LooseId_->at(i) > 0);
@@ -2995,8 +3001,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (doTTreweighting) listOfHistograms[i]->Scale(weightSumNoTopRew / weightSum );
         }
 
-        listOfHistograms[i]->Write();        
-    }
+        listOfHistograms[i]->Write();        }
         //--- Save all the RooUnfoldResponses ---
         if ( hasGenInfo && hasRecoInfo ){
             unsigned short numbOfResponses = listOfResponses.size();
