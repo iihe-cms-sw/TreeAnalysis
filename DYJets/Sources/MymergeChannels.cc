@@ -49,7 +49,7 @@ void dumpElements(TVectorD& a);
 
 //-- global variables ---------------------------------------------------------------------------//
 string VARIABLE  =   "ZNGoodJets_Zexc" ;
-string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_50_Toys/";
+string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_1000_Toys/";
 
 int optionCorr = 2;      
 // 0 - simple weighted average, 
@@ -62,8 +62,6 @@ bool LOGZ = 0, DECREASE = 0;
 int doXSec  =  1;
 int doNormalize  =  0;
 double Luminosity(19549.);
-string ENERGY =  getEnergy();
-string unfAlg  =  "Bayes";
 bool doVarWidth  =  true ;
 double mergedValuesAllOpt[30][10] = {{0}};
 double mergedErrorsAllOpt[30][10] = {{0}};
@@ -84,6 +82,7 @@ void MymergeChannels(int start = 0, int end = -1)
 
     if (end == -1) end = start + 1;
     for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
+        std::cout << "Processing variable n°: " << i << "  " << VAROFINTERESTZJETS[i].name << std::endl;
         for (int k(0); k < kCorrMax; k++){
             optionCorr = SelComb[k];
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
@@ -95,14 +94,16 @@ void MymergeChannels(int start = 0, int end = -1)
 //-----------------------------------------------------------------------------------------------//
 void mergeChannelsRun(string var, bool logZ, bool decrease)
 {
+    string ENERGY =  getEnergy();
+    string unfAlg  =  "Bayes";
     LOGZ = logZ; 
     DECREASE = decrease;
     VARIABLE = var;
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "PNGFiles/FinalUnfold_30_50_Toys/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "PNGFiles/FinalUnfold_30_50_Toys/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + VARIABLE + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -111,6 +112,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     //-- Retrieve histograms from the files -------------------------------------------
     TH1D *dataReco[2], *dataCentral[2], *dataUnfWithSherpa[2], *unfErrorDistr[2], *dataCentralOppAlgo[2], *genMad[2], *genShe[2], *genPow[2];
+    TH1D *dataPUup[2], *dataPUdown[2], *dataJERup[2], *dataPU[2], *dataJER[2];
     TH2D *myToyStatCov[2], *myToyJESCov[2], *myToyPUCov[2], *myToyXSECCov[2], *myToyJERCov[2], *myToyEFFCov[2], *myToyLUMICov[2];
 
     double luminosityErr = 0.026;
@@ -125,6 +127,9 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
         genShe[i]             = (TH1D*) f[i]->Get("genShe");
         genPow[i]             = (TH1D*) f[i]->Get("genPow");
 
+        dataPUup[i]           = (TH1D*) f[i]->Get("PUup");
+        dataPUdown[i]         = (TH1D*) f[i]->Get("PUdown");
+        dataJERup[i]          = (TH1D*) f[i]->Get("JERup");
         myToyStatCov[i]       = (TH2D*) f[i]->Get("MyToyCov");
         myToyJESCov[i]        = (TH2D*) f[i]->Get("MyToyJESCov");
         myToyPUCov[i]         = (TH2D*) f[i]->Get("MyToyPU2Cov");
@@ -134,6 +139,12 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
         //--- call errors from unfolding with Sherpa and MadGraph ----
         unfErrorDistr[i] = getErrors(dataCentral[i], dataUnfWithSherpa[i]);
+
+        //--- compute error for PU ---
+        dataPU[i] = getPUErrors(dataCentral[i], dataPUup[i], dataPUdown[i]);
+
+        //--- compute error for JER ---
+        dataJER[i] = getJERErrors(dataCentral[i], dataJERup[i]);
 
         // set covariance for luminosity uncertainty --> take correlation from JES and rescale
         myToyLUMICov[i] = setCovariance(myToyJESCov[i], dataCentral[i], luminosityErr);
@@ -189,9 +200,11 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     if (optionCorr > 0) optStat = 1;
     TMatrixD covMatrixStat = getCovMatrixOfCombination(myToyStatCov[0], myToyStatCov[1], optStat, 1);
     TMatrixD covMatrixJES  = getCovMatrixOfCombination(myToyJESCov[0], myToyJESCov[1], optionCorr, 1);
-    TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], myToyPUCov[1], optionCorr, 1);
+    TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], dataPU[0], dataPU[1], optionCorr, 1);
+    //TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], myToyPUCov[1], optionCorr, 1);
     TMatrixD covMatrixXSEC = getCovMatrixOfCombination(myToyXSECCov[0], myToyXSECCov[1], optionCorr, 1);
-    TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], myToyJERCov[1], optionCorr, 1);
+    TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], dataJER[0], dataJER[1], optionCorr, 1);
+    //TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], myToyJERCov[1], optionCorr, 1);
     TMatrixD covMatrixUNF  = getCovMatrixOfCombinationUNF(unfErrorDistr[0], unfErrorDistr[1], dataCentral[0], dataCentral[1], dataCentralOppAlgo[0], dataCentralOppAlgo[1], optionCorr, 1);
 
     TMatrixD covMatrixLUMI = setCovMatrixOfCombination(luminosityErr, dataCentral[0], dataCentral[1], optionCorr);
@@ -354,8 +367,14 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     /// PLOT FINAL PLOTS: COMBINATION VS MC
     plotCombination(VARIABLE, (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), genMad, genShe, genPow);
 
+    std::cout << f[0]->IsOpen() << std::endl;
+    std::cout << f[1]->IsOpen() << std::endl;
+
     f[0]->Close();
     f[1]->Close();
+
+    std::cout << f[0]->IsOpen() << std::endl;
+    std::cout << f[1]->IsOpen() << std::endl;
 }
 
 

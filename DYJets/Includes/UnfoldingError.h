@@ -64,6 +64,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void changeToLatexFormat(string& title)
 {
+
     cout << "Start formating:  " << title << endl;
     myReplace(title, "#", "\\");
     //cout << "Remove #:         " << title << endl;
@@ -253,16 +254,22 @@ TH2D* CovToCorr(const TH2D *h)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH2D* setCovariance(const TH2D *h, const TH1D* hCent, const double error)
 {
+    std::cout << "ok " << __LINE__ << std::endl;
     TH2D* hCorr = (TH2D *) h->Clone();
     hCorr->SetDirectory(0);
+
+    std::cout << "ok " << __LINE__ << std::endl;
     int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
+    std::cout << "ok " << __LINE__ << std::endl;
     for (int i(1); i <= ybin; i++) {
+    std::cout << "ok " << __LINE__ << std::endl;
         for (int j(1); j <= xbin; j++) {
             double temp = 0.;
             temp = h->GetBinContent(j, i) / sqrt(h->GetBinContent(i, i) * h->GetBinContent(j, j));
             hCorr->SetBinContent(j, i, temp * hCent->GetBinContent(i) * error * hCent->GetBinContent(j) * error);
         }
     }
+    std::cout << "ok " << __LINE__ << std::endl;
     return hCorr;
 }
 
@@ -391,12 +398,6 @@ TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronI
 
     return errorMTemp;
 }
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int optionCorrTemp, double norm = 1.)
 {
     // get correlation matrix this is needed for option 3 of combination
@@ -539,6 +540,73 @@ TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* 
 
     return errorMTemp;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* getPUErrors(const TH1D *dataCentral, const TH1D *PUup, const TH1D *PUdown)
+{
+    TH1D *dataPU = (TH1D*) dataCentral->Clone();
+    dataPU->SetDirectory(0);
+
+    int nbins = dataCentral->GetNbinsX();
+
+    for (int i(0); i <= nbins + 1; i++) {
+        double diff = fabs(PUup->GetBinContent(i) - dataCentral->GetBinContent(i));
+        diff = max(diff, fabs(PUdown->GetBinContent(i) - dataCentral->GetBinContent(i)));
+        dataPU->SetBinContent(i, diff);
+    }
+
+    return dataPU;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* getJERErrors(const TH1D *dataCentral, const TH1D *JERup)
+{
+    TH1D *dataJER = (TH1D*) dataCentral->Clone();
+    dataJER->SetDirectory(0);
+
+    int nbins = dataCentral->GetNbinsX();
+
+    for (int i(0); i <= nbins + 1; i++) {
+        double diff = fabs(JERup->GetBinContent(i) - dataCentral->GetBinContent(i));
+        dataJER->SetBinContent(i, diff);
+    }
+
+    return dataJER;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+TMatrixD getCovMatrixOfCombination(const TH2D* Cov2D, const TH1D* DiffEle, const TH1D* DiffMuon, int optionCorrTemp, double norm = 1.)
+{
+    TH2D *CovEle2D = (TH2D*) Cov2D->Clone();
+    CovEle2D->SetDirectory(0);
+
+    TH2D *CovMuon2D = (TH2D*) Cov2D->Clone();
+    CovMuon2D->SetDirectory(0);
+
+    int nbins =  DiffEle->GetNbinsX();
+
+    for (int i(1); i <= nbins; i++) {
+        for (int j(1); j <= nbins; j++) {
+            if (i == j) {
+                CovEle2D->SetBinContent(i, j, pow(DiffEle->GetBinContent(i), 2));
+                CovMuon2D->SetBinContent(i, j, pow(DiffMuon->GetBinContent(i), 2));
+            }
+            else {
+                CovEle2D->SetBinContent(i, j, 0.);
+                CovMuon2D->SetBinContent(i, j, 0.);
+            }
+        }
+    }
+
+    TMatrixD errorMTemp = getCovMatrixOfCombination(CovEle2D, CovMuon2D, optionCorrTemp, norm);
+    return errorMTemp;
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 #endif
