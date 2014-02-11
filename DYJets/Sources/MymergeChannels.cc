@@ -51,7 +51,7 @@ void dumpElements(TVectorD& a);
 string VARIABLE  =   "ZNGoodJets_Zexc" ;
 string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_1000_Toys/";
 
-int optionCorr = 2;      
+int optionCorr = 0;      
 // 0 - simple weighted average, 
 // 1 - full cov matrix for each channel 
 // 2 - full cov matrix for each channel and  correlation = 1 for same bins in the two channels 
@@ -66,8 +66,8 @@ bool doVarWidth  =  true ;
 double mergedValuesAllOpt[30][10] = {{0}};
 double mergedErrorsAllOpt[30][10] = {{0}};
 int tempNBin = 0;
-int kCorrMax = 1; 
-int SelComb[] = {0,1,3,4,5} ; //selection Of Combination Opi
+int kCorrMax = 6; 
+int SelComb[] = {0,1,2,3,4,5} ; //selection Of Combination Opi
 //-----------------------------------------------------------------------------------------------//
 
 
@@ -437,7 +437,7 @@ void plotCombination(string variable, TH1D* hCombinedStat, TH1D* hCombinedTot, T
 
     outputFileNamePNG +=  variable;
     ostringstream optionCorrStr; optionCorrStr << optionCorr;
-    outputFileNamePNG +="_CorrelationOption_" + optionCorrStr.str();
+    outputFileNamePNG += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth)  outputFileNamePNG += "_VarWidth";
     outputFileNamePNG +=  ".pdf";
 

@@ -56,7 +56,8 @@ const int NFILESTTBAR(9);
 const int FilesTTbarWJets[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};
 const int FilesTTbar[NFILESTTBAR] = {0, 4, 3, 2, 23, 20, 22, 11, 24};
 const int DATAFILENAME(0);
-const int DYMADGRAPHFILENAME(13);
+const int DYMADGRAPHFILENAME(13); // Exclusive files
+//const int DYMADGRAPHFILENAME(27); // Inclusive file
 
 //-- file names ---------------------------------------
 const string FILENAMESTTbar[NFILESTTBAR] = {
