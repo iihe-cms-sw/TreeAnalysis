@@ -22,6 +22,10 @@ DataTTbarEMu
 
 # ignores output root files
 DYJets/HistoFiles
+DYJets/HistoFilesTest
+DYJets/HistoFilesNew
 
 # ignores pngs and pdf output files
 DYJets/PNGFiles
+DYJets/PNGFilesTest
+DYJets/PNGFilesNew

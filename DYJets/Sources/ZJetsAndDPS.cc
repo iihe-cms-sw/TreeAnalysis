@@ -60,7 +60,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //==========================================================================================================//
     double MTCut(50.);
     double ZMCutLow(71), ZMCutHigh(111);
-   cout << " begin: "<< hasRecoInfo <<"  " << hasGenInfo <<"  " << doQCD<<"  " << doSSign<<"  " << doInvMassCut << "  " << METcut << "  " <<doBJets <<"  " <<doPUStudy << endl;
+    cout << " begin: "<< hasRecoInfo <<"  " << hasGenInfo <<"  " << doQCD<<"  " << doSSign<<"  " << doInvMassCut << "  " << METcut << "  " <<doBJets <<"  " <<doPUStudy << endl;
     bool doZ(true), doW(false), doTT(false), doDR(false), doTTreweighting(false);
     if (leptonFlavor == "SingleElectron" || leptonFlavor == "SingleMuon"){
         doW = true; 
@@ -705,13 +705,13 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         // to use the TOP PAG TTBAR reweighting recommendation
         // line below is to check contribution from mainy tau decay : use passesLeptonCut = 0  only if you want to have RECO events that originate from tau ; countTauS3 is used in passesGenLeptonCut
         // I also put top quarks in this collection
-        if ( doTTreweighting ) {
+        if (doTTreweighting ) {
             //https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting
             nTotGenLeptons = genLepEta_->size();
-        if (DEBUG) std::cout << "Stop after line " << __LINE__ << std::endl;
+            if (DEBUG) std::cout << "Stop after line " << __LINE__ << std::endl;
             for (unsigned short i(0); i < nTotGenLeptons; i++){
-        if (DEBUG) std::cout << "Stop after line " << __LINE__ << "    " << abs(genLepId_->at(i)) << std::endl;
-                if (  abs(genLepId_->at(i)) == 6){
+                if (DEBUG) std::cout << "Stop after line " << __LINE__ << "    " << abs(genLepId_->at(i)) << std::endl;
+                if (abs(genLepId_->at(i)) == 6) {
                     weight *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
                     weightTop *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
                 }
@@ -1014,13 +1014,15 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 
             // line below to test reco events that originate from TAU
-            if (fileName.find("Tau") != string::npos && countTauS3 == 0 && hasGenInfo ){
+            if (fileName.find("Tau") != string::npos && countTauS3 == 0 && hasGenInfo ) {
                 passesLeptonCut = 0;
             }
-            if (doBJets < 0 && countBJets >= fabs(doBJets) )  { nEventsIncBJets++; 
-                passesLeptonCut = 0  ; }
+            if (doBJets < 0 && countBJets >= fabs(doBJets)) { 
+                nEventsIncBJets++; 
+                passesLeptonCut = 0; 
+            }
 
-                if (doBJets > 0 && countBJets < fabs(doBJets) ) passesLeptonCut = 0  ;   
+            if (doBJets > 0 && countBJets < fabs(doBJets)) passesLeptonCut = 0;   
         }  // END IF HAS RECO
         //=======================================================================================================//
 

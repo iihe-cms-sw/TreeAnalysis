@@ -49,7 +49,7 @@ void dumpElements(TVectorD& a);
 
 //-- global variables ---------------------------------------------------------------------------//
 string VARIABLE  =   "ZNGoodJets_Zexc" ;
-string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_2_1000_Toys/";
+string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold/";
 
 int optionCorr = 0;      
 // 0 - simple weighted average, 
@@ -63,8 +63,6 @@ int doXSec  =  1;
 int doNormalize  =  0;
 double Luminosity(19549.);
 bool doVarWidth  =  true ;
-double mergedValuesAllOpt[30][10] = {{0}};
-double mergedErrorsAllOpt[30][10] = {{0}};
 int tempNBin = 0;
 int kCorrMax = 6; 
 int SelComb[] = {0,1,2,3,4,5} ; //selection Of Combination Opi
@@ -181,7 +179,6 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     TVectorD jesSys_ele(nbins);
     TVectorD jesSys_muo(nbins);
 
-
     ////////////////////////////////////////////////////////////////////////////////
 
     // set correlation between channels
@@ -290,8 +287,7 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
 
     // after all matrix operation, now set the histogram
     // store combined result and all the individual contributions to error in vector
-    double result[10][10];
-    for(int i(0); i < nbins; i++){
+    for(int i(0); i < nbins; i++) {
 
         h_combine->SetBinContent(i+1, combined_value(i) * norm );
         combined_error_LUMI(i,i) = pow(luminosityErr * combined_value(i) * norm , 2 );
@@ -301,12 +297,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
         if (error > 1e-10) error = sqrt(error);
         else error = 1e-10;
 
+        /// add luminosity error to the combination result instead of each of channels before the combination
         h_combine->SetBinError(i+1,error);
-        mergedValuesAllOpt[i][optionCorr] = h_combine->GetBinContent(i+1);
-        mergedErrorsAllOpt[i][optionCorr] = error;
-
-        result[0][i] = h_combine->GetBinContent(i);
-        result[1][i] = error;
     }
     /// NOW ADD LUMI ERRORS TO COMBINATION
     combined_error += combined_error_LUMI;
@@ -367,14 +359,8 @@ void mergeChannelsRun(string var, bool logZ, bool decrease)
     /// PLOT FINAL PLOTS: COMBINATION VS MC
     plotCombination(VARIABLE, (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), genMad, genShe, genPow);
 
-    std::cout << f[0]->IsOpen() << std::endl;
-    std::cout << f[1]->IsOpen() << std::endl;
-
     f[0]->Close();
     f[1]->Close();
-
-    std::cout << f[0]->IsOpen() << std::endl;
-    std::cout << f[1]->IsOpen() << std::endl;
 }
 
 

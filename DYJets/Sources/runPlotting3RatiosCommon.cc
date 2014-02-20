@@ -24,16 +24,13 @@
 void FuncPlot(string  variable = "SpTJets_Zinc2jet", bool log = 0, bool decrease = 0);
 
 
-double Luminosity(19549.);
+double Luminosity(19602.);
+//double Luminosity(19549.);
 //double Luminosity(4950.);
 double luminosityErr = 0.044;
-string energy = "8TeV";//getEnergy();
 bool isMuon = 0;
-string leptonFlavor = "DMu";
-string unfAlg = "Bayes";
 bool doVarWidth = true ;
 /// define names od output png files and tex
-string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
 
 
 void runPlotting3RatiosCommon()
@@ -45,7 +42,7 @@ void runPlotting3RatiosCommon()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(0); i < 3/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(0); i < 60/*NVAROFINTERESTZJETS*/; i++){
         for (int j(1); j < 2; j++){
             isMuon = j;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
@@ -66,9 +63,14 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     int optionPlot7TeV(0);
     //-----------------------------------------------------------------------
 
-    if (!isMuon) leptonFlavor = "DE";
     if (doXSec) doNormalize = 0;
     TH1::SetDefaultSumw2();
+
+    string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
+    string leptonFlavor = "DMu";
+    if (!isMuon) leptonFlavor = "DE";
+    string unfAlg = "Bayes";
+    string energy = "8TeV";//getEnergy();
     string fileName = outputDirectory + leptonFlavor + "_" + energy + "_unfolded_" + variable + "_histograms_" + unfAlg;
     if (doVarWidth) fileName += "_VarWidth";
     fileName += ".root";
@@ -76,10 +78,11 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
 
     cout << " opening : " << fileName <<endl;
-    TFile *f  = new TFile(fileName.c_str());
+    TFile *f = new TFile(fileName.c_str());
+
     TFile *fPDFSyst = NULL;
-        string PDFname = "PDFSystFiles/PDFSyst_gen" + variable + ".root";
-        fPDFSyst = new TFile(PDFname.c_str());
+    string PDFname = "PDFSystFiles/PDFSyst_gen" + variable + ".root";
+    fPDFSyst = new TFile(PDFname.c_str());
 
 
     string genVariable = "gen" + variable;
@@ -165,7 +168,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     string fileNameTableCov = outputFileNamePNG + "_CorrelationMatrix.tex";
     string fileNameTable = outputFileNamePNG + ".tex";
 
-    outputFileNamePNG += ".png";
+    outputFileNamePNG += ".pdf";
 
 
     string title = data->GetTitle(); changeToLatexFormat(title);
@@ -298,7 +301,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         //totalSystematicsDown += diffUnfError * diffUnfError;
         std::cout << "unf syst done" << std::endl;
 
-        myFile.precision(4);
+        myFile.precision(6);
         double xLow = dataCentral->GetBinLowEdge(bin);
         double xHigh = xLow + binW;
         if (fabs(xLow) < 0.00001) xLow = 0.;
@@ -306,15 +309,15 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         if (variable.find("ZNGoodJets_Zexc") != string::npos && bin > 1) myFile <<  "$= " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets_Zinc") != string::npos && bin > 1) myFile <<  "$\\geq " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets") == string::npos) myFile << xLow << "\\ -\\ " << xHigh << " & ";
-        myFile.precision(3);
+        myFile.precision(6);
         if (variable.find("ZNGoodJets") != string::npos && bin > 1){
             myFile << centralValue;
-            myFile.precision(2);
+            myFile.precision(6);
             myFile << "&  " << totalStatistics << " "; 
         }
         else if (variable.find("ZNGoodJets") == string::npos ){
             myFile << centralValue ; 
-            myFile.precision(2);
+            myFile.precision(6);
             myFile << "&  " << totalStatistics << " "; 
         }
         double effSF = 0.01;
@@ -340,7 +343,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         yStat[bin-1]    = totalStatistics;
 
         double systUp(0.), systDown(0.);
-        
+
         for (int syst(0); syst < nSyst; syst++){
             double difference(hSyst[syst]->GetBinContent(bin) - centralValue);
             if ( difference > 0  || syst == 6) totalSystematicsUp += difference * difference;
@@ -356,7 +359,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
             }
         } 
-        
+
 
         // compute systematics between two unfolding methods
         double diffBayesSVD(centralValueOppAlgo - centralValue);
@@ -403,8 +406,11 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     plots->Print(outputFileNamePNG.c_str());
 
     myFile.close();
-    f->Close();
+
+    if(f) f->Close();
     if (fPDFSyst->IsOpen()) fPDFSyst->Close(); 
+    
+    std::cout << __LINE__ << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

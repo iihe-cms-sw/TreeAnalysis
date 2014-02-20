@@ -73,7 +73,7 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     customizeGenHist(gen1, 1, legend, "Sherpa2 (0,1j@NLO#leq4j@LO + PS)");
     gen1->DrawCopy("ESAME");
     if (gen2) {
-        customizeGenHist(gen2, 2, legend, "Powheg + Pythia6 (Z+1j@NLO + PS)");
+        customizeGenHist(gen2, 2, legend, "Powheg + Pythia6 (Z+2j@NLO + PS)");
         gen2->DrawCopy("ESAME");
     }
     if (gen3) {

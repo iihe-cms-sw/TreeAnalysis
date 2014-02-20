@@ -254,15 +254,11 @@ TH2D* CovToCorr(const TH2D *h)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH2D* setCovariance(const TH2D *h, const TH1D* hCent, const double error)
 {
-    std::cout << "ok " << __LINE__ << std::endl;
     TH2D* hCorr = (TH2D *) h->Clone();
     hCorr->SetDirectory(0);
 
-    std::cout << "ok " << __LINE__ << std::endl;
     int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    std::cout << "ok " << __LINE__ << std::endl;
     for (int i(1); i <= ybin; i++) {
-    std::cout << "ok " << __LINE__ << std::endl;
         for (int j(1); j <= xbin; j++) {
             double temp = 0.;
             temp = h->GetBinContent(j, i) / sqrt(h->GetBinContent(i, i) * h->GetBinContent(j, j));
