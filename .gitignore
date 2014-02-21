@@ -1,5 +1,7 @@
 # git will not consider the following files:
+
 *.o
+DYJets/RooUnfold-1.1.1/libRooUnfold.rootmap
 DYJets/RooUnfold-1.1.1/tmp
 *.so
 *.d
