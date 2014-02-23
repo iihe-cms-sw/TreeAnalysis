@@ -319,9 +319,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         //-- get the pdgId of the two colliding partons 
         double wPdf(1);
         if (pdfSet != "") {
-            int id1 = pdfInfo_->at(2);
-            int id2 = pdfInfo_->at(3);
-            if (id1 == 21) id1 = 0;
+            int id1 = pdfInfo_->at(0);
+            int id2 = pdfInfo_->at(1);
+            if (id1 == 21) id1 = 0; // 21 is Pythia convention for gluon, but needs to be 0 for LHAPDF
             if (id2 == 21) id2 = 0;
 
             LHAPDF::usePDFMember(2, 0);
