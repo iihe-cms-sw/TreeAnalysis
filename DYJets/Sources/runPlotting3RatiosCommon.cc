@@ -24,16 +24,15 @@
 void FuncPlot(string  variable = "SpTJets_Zinc2jet", bool log = 0, bool decrease = 0);
 
 
-double Luminosity(19602.);
-//double Luminosity(19549.);
-//double Luminosity(4950.);
+//double Luminosity(19602.);
+double Luminosity(0);
 double luminosityErr = 0.044;
 bool isMuon = 0;
 bool doVarWidth = true ;
 /// define names od output png files and tex
 
 
-void runPlotting3RatiosCommon()
+void runPlotting3RatiosCommon(int start, int end = -1)
 {
 
     setTDRStyle();
@@ -42,9 +41,12 @@ void runPlotting3RatiosCommon()
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
 
-    for (int i(0); i < 60/*NVAROFINTERESTZJETS*/; i++){
-        for (int j(1); j < 2; j++){
+    if (end == -1) end = start + 1;
+    for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
+        for (int j(0); j < 1; j++){
             isMuon = j;
+            if (isMuon) Luminosity = 19549.;
+            else Luminosity = 19602;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
         }
     }

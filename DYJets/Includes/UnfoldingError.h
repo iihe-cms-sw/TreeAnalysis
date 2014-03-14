@@ -290,15 +290,6 @@ TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TMatrixD setCovMatrixOfCombination(double luminosityErr, TH1D* hEle, TH1D* hMu, int optionCorrTemp){
-    double correlationSameBin  =  0.;
-    double correlationDiffBin  =  0.;
-    if ( optionCorrTemp  ==  1 ) correlationSameBin  =  0.;
-    if ( optionCorrTemp  ==  2 ) correlationSameBin  =  1.;
-    if ( optionCorrTemp  ==  3 ) correlationSameBin  =  1.;
-    if ( optionCorrTemp  ==  4 ) {
-        correlationSameBin  =  1.;
-        correlationDiffBin  =  1.;
-    }
 
     // declare the big matrix
     int nbins = hEle->GetNbinsX();
@@ -411,51 +402,50 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
     }
 
     // declare the big matrix
-    int nbins =  CovEle->GetNbinsX();
-    const int NELE = 2*nbins;
-    TMatrixD errorMTemp(NELE,NELE);
+    int nbins = CovEle->GetNbinsX();
+    const int NELE = 2 * nbins;
+    TMatrixD errorMTemp(NELE, NELE);
 
-    for(int ibin = 0; ibin<nbins; ibin++){
+    for (int ibin = 0; ibin < nbins; ibin++) {
 
         // first put electron error matrix component
         errorMTemp(ibin, ibin) = CovEle->GetBinContent(ibin + 1, ibin + 1);
         // then mu
         errorMTemp(nbins + ibin, nbins + ibin) = CovMuon->GetBinContent(ibin + 1, ibin + 1);
         if (optionCorrTemp > 1) {
-            errorMTemp(ibin,nbins+ibin)  =  correlationSameBin * sqrt(CovEle->GetBinContent(ibin+1,ibin+1) * CovMuon->GetBinContent(ibin+1,ibin+1));
-
-            errorMTemp(ibin+nbins,ibin)  =  errorMTemp(ibin,nbins+ibin) ;
+            errorMTemp(ibin, nbins + ibin) = correlationSameBin * sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(ibin + 1, ibin + 1));
+            errorMTemp(ibin + nbins, ibin) = errorMTemp(ibin, nbins + ibin);
         }
-        for(int jbin = 0; jbin<nbins; jbin++){
-            if(optionCorrTemp > 0 ){
+        for (int jbin = 0; jbin < nbins; jbin++) {
+            if(optionCorrTemp > 0) {
 
                 // electron channel
-                errorMTemp(ibin,jbin) = CovEle->GetBinContent(ibin+1,jbin+1);
-                if ( optionCorrTemp == 5 )  errorMTemp(ibin,jbin) = sqrt(CovEle->GetBinContent(ibin+1, ibin + 1) * CovEle->GetBinContent(jbin+1, jbin+1));
+                errorMTemp(ibin, jbin) = CovEle->GetBinContent(ibin + 1, jbin + 1);
+                if (optionCorrTemp == 5) {
+                    errorMTemp(ibin, jbin) = sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovEle->GetBinContent(jbin + 1, jbin + 1));
+                }
                 // muon channel
-                errorMTemp(nbins+ibin,nbins+jbin) = CovMuon->GetBinContent(ibin+1,jbin+1);
-                if ( optionCorrTemp == 5 )  errorMTemp(nbins+ibin,nbins+jbin)  = sqrt (  CovMuon-> GetBinContent(ibin+1,ibin + 1 ) *  CovMuon-> GetBinContent(jbin+1 ,   jbin+1)) ;
+                errorMTemp(nbins + ibin, nbins + jbin) = CovMuon->GetBinContent(ibin + 1, jbin + 1);
+                if (optionCorrTemp == 5) {
+                    errorMTemp(nbins + ibin, nbins + jbin) = sqrt(CovMuon->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(jbin + 1, jbin + 1));
+                }
 
-                if ( ibin != jbin){
-                    //correlationDiffBin  =  1.;
+                if (ibin != jbin){
                     // electron-muon channel
-                    if ( optionCorrTemp  ==  3 ) {
+                    if (optionCorrTemp == 3) {
                         double valueEle = hCorrEle->GetBinContent(ibin, jbin);
                         double valueMu = hCorrMu->GetBinContent(ibin, jbin);
-                        // correlationDiffBin = sqrt( fabs(hCorrEle->GetBinContent(ibin, jbin) * hCorrMu->GetBinContent(ibin, jbin)));
-                        correlationDiffBin = sqrt( fabs(valueEle * valueMu ));
-                        if ( valueEle < 0 && valueMu < 0 ) correlationDiffBin *= -1;
-                        if ( valueEle * valueMu < 0 ) {
-                            if (fabs(valueEle) > fabs(valueMu) ) correlationDiffBin *= ( valueEle / fabs(valueEle) ) ;
-                            else  correlationDiffBin *= ( valueMu / fabs(valueMu) ) ;
+                        correlationDiffBin = sqrt(fabs(valueEle * valueMu));
+                        if (valueEle < 0 && valueMu < 0) correlationDiffBin *= -1;
+                        if (valueEle * valueMu < 0) {
+                            if (fabs(valueEle) > fabs(valueMu)) correlationDiffBin *= valueEle / fabs(valueEle);
+                            else correlationDiffBin *= valueMu / fabs(valueMu);
                         } 	
-                        //	correlationDiffBin = 0;
                     }
-                    errorMTemp(ibin,nbins+jbin) =  correlationDiffBin*sqrt(CovEle->GetBinContent(ibin+1, ibin+1)*CovMuon->GetBinContent(jbin+1, jbin+1));
-
+                    errorMTemp(ibin, nbins + jbin) = correlationDiffBin * sqrt(fabs(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(jbin + 1, jbin + 1)));
 
                     // muon-electron channel
-                    errorMTemp(nbins+ibin,jbin) =  correlationDiffBin*sqrt(fabs(CovMuon->GetBinContent(ibin+1,ibin+1)*CovEle->GetBinContent(jbin+1,jbin+1)));
+                    errorMTemp(nbins + ibin, jbin) = correlationDiffBin * sqrt(fabs(CovMuon->GetBinContent(ibin + 1, ibin + 1) * CovEle->GetBinContent(jbin + 1, jbin + 1)));
                 }
             }      
         }      
@@ -463,8 +453,7 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
 
     for(int ibin = 0; ibin < 2 * nbins; ibin++){
         for(int jbin = 0; jbin < 2 * nbins; jbin++){
-            errorMTemp(ibin,jbin) = errorMTemp(ibin,jbin)  / (norm * norm ) ;
-
+            errorMTemp(ibin, jbin) = errorMTemp(ibin, jbin) / (norm * norm);
         }
     }
     return errorMTemp;

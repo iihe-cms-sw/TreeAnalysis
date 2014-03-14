@@ -20,7 +20,7 @@
 using namespace std;
 
 void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
-        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, int MET = 0 , int doBJets = 0 , 
+        int doQCD = 0, bool doSSign = 0, bool doInvMassCut = 0, int MET = 0, int doBJets = 0, 
         int JetPtMax = 0, int ZEtaMin = -999999, int ZEtaMax = 999999, 
         bool doRoch = 0, bool doFlat = 0, bool doVarWidth = 1)
 {
@@ -206,7 +206,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     for (int i = 0; i < nFiles; i++) {
         cout << i <<"  "<<legendNames[i]  << "   "<<  endl;
         for (int j = 0; j < nHistNoGen ; j++) {
-            // cout << i <<"  "<<legendNames[i]  << "   "<< j << "   " <<  histoName[j] << endl;
+            cout << i << "  " << legendNames[i] << "   " << j << "   " <<  histoName[j] << endl;
             hist[i][j] = getHisto(file[i], histoName[j]);
             hist[i][j]->SetTitle(histoTitle[j].c_str());
             if ( i == 0) {
