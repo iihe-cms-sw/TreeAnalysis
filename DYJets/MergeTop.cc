@@ -113,36 +113,36 @@ void runMergeTop(string lepSelection, int systematics, int jetPtCutMin, int doQC
     /*
     //// merge DY files
     if (lepSelection == "SMuE"){
-        /// DY
-        //   int nDYfiles = 3 ;
-        //     string sstrDY[10];
-        //     sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-        //     sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
-        //     sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_0_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
-        TFile *fDY[10];
-        for ( int i = 0 ; i < nDYfiles ; i++){
-            if ( i == nDYfiles - 1 )  fDY[i] =  new TFile(sstrDY[i].c_str(), "recreate");
-            else fDY[i] =  new TFile(sstrDY[i].c_str(), "read");
-            cout << sstrDY[i] << endl;
+    /// DY
+    //   int nDYfiles = 3 ;
+    //     string sstrDY[10];
+    //     sstrDY[0] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10to50_dR_5311_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+    //     sstrDY[1] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3_EffiCorr_0_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root";
+    //     sstrDY[2] = "HistoFiles/"+ lepSelection +  "_8TeV_DYJets10toInf3_dR_5311_EffiCorr_0_TrigCorr_1" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_VarWidth_InvMass_SS.root"; 
+    TFile *fDY[10];
+    for ( int i = 0 ; i < nDYfiles ; i++){
+    if ( i == nDYfiles - 1 )  fDY[i] =  new TFile(sstrDY[i].c_str(), "recreate");
+    else fDY[i] =  new TFile(sstrDY[i].c_str(), "read");
+    cout << sstrDY[i] << endl;
 
-        }
+    }
 
-        nHist = fDY[0]->GetListOfKeys()->GetEntries();
-        for (int i(0); i < nHist; i++){
-            string hName = fDY[0]->GetListOfKeys()->At(i)->GetName();
-            cout << i <<"  " << hName << nHist << endl;
-            TH1D* hSum; TH1D* hDY[10];
-            for ( int j = 0 ; j < nDYfiles -1 ; j++){
-                hDY[j] = (TH1D*) fDY[j]->Get(hName.c_str());
-                if ( j == 0 ) hSum = (TH1D*) hDY[j]->Clone();
-                else hSum->Add(hDY[j]);
-            }
-            fDY[nDYfiles -1]->cd();
-            hSum->Write();
-        }
-        for ( int i = 0 ; i < nDYfiles ; i++){
-            fDY[i] ->Close();
-        }
+    nHist = fDY[0]->GetListOfKeys()->GetEntries();
+    for (int i(0); i < nHist; i++){
+    string hName = fDY[0]->GetListOfKeys()->At(i)->GetName();
+    cout << i <<"  " << hName << nHist << endl;
+    TH1D* hSum; TH1D* hDY[10];
+    for ( int j = 0 ; j < nDYfiles -1 ; j++){
+    hDY[j] = (TH1D*) fDY[j]->Get(hName.c_str());
+    if ( j == 0 ) hSum = (TH1D*) hDY[j]->Clone();
+    else hSum->Add(hDY[j]);
+    }
+    fDY[nDYfiles -1]->cd();
+    hSum->Write();
+    }
+    for ( int i = 0 ; i < nDYfiles ; i++){
+    fDY[i] ->Close();
+    }
 
     } /// end if DY
     */

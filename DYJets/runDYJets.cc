@@ -1,13 +1,12 @@
 {
     string srcdir = "Sources/";
-
     vector<string> sources;
     sources.push_back("getFilesAndHistograms");
     sources.push_back("functions");
     sources.push_back("HistoSet");
     sources.push_back("ZJetsAndDPS");
 
-    //--- Load shaared libraries -------------------------------------------------------
+    //--- Load shared libraries -------------------------------------------------------
     unsigned int nSources = sources.size();
     // choose the right library (MAC or Linux)
     //gROOT->ProcessLine(".L /usr/local/lib/libLHAPDF.dylib");
@@ -37,7 +36,6 @@
     enum Samples {
         DATA, BACKGROUND, TAU, DYJETS, WJETS, ALL
     };
-
 
     //--- Settings ---------
     string lepSel = "DMu";

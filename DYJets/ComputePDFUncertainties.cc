@@ -29,65 +29,65 @@ void ComputePDFUncertainties() {
         cout << ii << "  Histo name: " << histos[ii]->GetName() << endl;
         int nBins = histos[ii]->GetNbinsX();
         /*
-        for (int bin(0); bin <= nBins; ++bin) {
-            //cout << "Bin number: " << bin << endl;
+           for (int bin(0); bin <= nBins; ++bin) {
+        //cout << "Bin number: " << bin << endl;
 
-            double maxMeanPlusSigma(-999999999999);
-            double minMeanMinusSigma(999999999999);
-            for (vector<pair<string, int> >::iterator ppdfSet = pdfSets.begin(); ppdfSet != pdfSets.end(); ++ppdfSet) {
-                pair<string, int> pdfSet = (*ppdfSet); 
-                //cout << "PDF set: " << pdfSet.first << endl;
+        double maxMeanPlusSigma(-999999999999);
+        double minMeanMinusSigma(999999999999);
+        for (vector<pair<string, int> >::iterator ppdfSet = pdfSets.begin(); ppdfSet != pdfSets.end(); ++ppdfSet) {
+        pair<string, int> pdfSet = (*ppdfSet); 
+        //cout << "PDF set: " << pdfSet.first << endl;
 
-                //-- Get mu_0 --
-                TFile *pdfMembFile_0 = new TFile((fileName + pdfSet.first + "_0.root").c_str());
-                TH1D *h_0 = (TH1D*) pdfMembFile_0->Get(histos[ii]->GetName());
-                double mu_0 = h_0->GetBinContent(bin);
-                pdfMembFile_0->Close();
+        //-- Get mu_0 --
+        TFile *pdfMembFile_0 = new TFile((fileName + pdfSet.first + "_0.root").c_str());
+        TH1D *h_0 = (TH1D*) pdfMembFile_0->Get(histos[ii]->GetName());
+        double mu_0 = h_0->GetBinContent(bin);
+        pdfMembFile_0->Close();
 
-                //------ Compute sigma ------
-                double tmpsigma2(0.);
-                double mu(0);
-                double tmpsigma2Bis(0.);
-                for (int pdfMemb(1); pdfMemb <= pdfSet.second; ++pdfMemb) {
-                    stringstream pdfMembFileName("");
-                    pdfMembFileName << fileName << pdfSet.first << "_" << pdfMemb << ".root";
-                    TFile *pdfMembFile = new TFile(pdfMembFileName.str().c_str());
-                    TH1D *h = (TH1D*) pdfMembFile->Get(histos[ii]->GetName());
-                    double content = h->GetBinContent(bin);
-                    tmpsigma2 += content*content;
-                    mu += content;
-                    tmpsigma2Bis += (content - mu_0)*(content - mu_0);
+        //------ Compute sigma ------
+        double tmpsigma2(0.);
+        double mu(0);
+        double tmpsigma2Bis(0.);
+        for (int pdfMemb(1); pdfMemb <= pdfSet.second; ++pdfMemb) {
+        stringstream pdfMembFileName("");
+        pdfMembFileName << fileName << pdfSet.first << "_" << pdfMemb << ".root";
+        TFile *pdfMembFile = new TFile(pdfMembFileName.str().c_str());
+        TH1D *h = (TH1D*) pdfMembFile->Get(histos[ii]->GetName());
+        double content = h->GetBinContent(bin);
+        tmpsigma2 += content*content;
+        mu += content;
+        tmpsigma2Bis += (content - mu_0)*(content - mu_0);
 
-                    pdfMembFile->Close();
-                }
-                mu = mu*1./pdfSet.second;
-                tmpsigma2 = tmpsigma2*1./pdfSet.second; 
-                tmpsigma2Bis = tmpsigma2Bis*1./pdfSet.second; 
+        pdfMembFile->Close();
+        }
+        mu = mu*1./pdfSet.second;
+        tmpsigma2 = tmpsigma2*1./pdfSet.second; 
+        tmpsigma2Bis = tmpsigma2Bis*1./pdfSet.second; 
 
-                //cout << "tmpsigma2: " << tmpsigma2 << endl;
-                //cout << "tmpsigma2Bis: " << tmpsigma2Bis << endl;
-                //cout << "mu: " << mu << endl;
-                //cout << "mu_0: " << mu_0 << endl;
-                //cout << "tmpsigma2 - mu*mu = " << tmpsigma2 - mu*mu << endl;
-                double sigma2 = tmpsigma2 - mu*mu;
-                double sigma = sqrt(sigma2);
-                //cout << "sigma2: " << sigma2 << endl;
-                //cout << "sigma: " << sigma << endl;
+        //cout << "tmpsigma2: " << tmpsigma2 << endl;
+        //cout << "tmpsigma2Bis: " << tmpsigma2Bis << endl;
+        //cout << "mu: " << mu << endl;
+        //cout << "mu_0: " << mu_0 << endl;
+        //cout << "tmpsigma2 - mu*mu = " << tmpsigma2 - mu*mu << endl;
+        double sigma2 = tmpsigma2 - mu*mu;
+        double sigma = sqrt(sigma2);
+        //cout << "sigma2: " << sigma2 << endl;
+        //cout << "sigma: " << sigma << endl;
 
-                maxMeanPlusSigma = max(maxMeanPlusSigma, mu + sigma);
-                minMeanMinusSigma = min(minMeanMinusSigma, mu - sigma);
-                //cout << "Tmp Max: " << maxMeanPlusSigma << endl;
-                //cout << "Tmp Min: " << minMeanMinusSigma << endl;
-            }
-            //cout << "Max: " << maxMeanPlusSigma << endl;
-            //cout << "Min: " << minMeanMinusSigma << endl;
-            double belt = maxMeanPlusSigma - minMeanMinusSigma;
-            double center = minMeanMinusSigma + 0.5 * belt;
-            //graphs[ii]->SetPointEYhigh(bin, center + 0.5 * belt);
-            histos[ii]->SetBinContent(bin, 1.);
-            
-            if (center > 0) histos[ii]->SetBinError(bin, (0.5 * belt)/center);
-            else histos[ii]->SetBinError(bin, 0.);
+        maxMeanPlusSigma = max(maxMeanPlusSigma, mu + sigma);
+        minMeanMinusSigma = min(minMeanMinusSigma, mu - sigma);
+        //cout << "Tmp Max: " << maxMeanPlusSigma << endl;
+        //cout << "Tmp Min: " << minMeanMinusSigma << endl;
+        }
+        //cout << "Max: " << maxMeanPlusSigma << endl;
+        //cout << "Min: " << minMeanMinusSigma << endl;
+        double belt = maxMeanPlusSigma - minMeanMinusSigma;
+        double center = minMeanMinusSigma + 0.5 * belt;
+        //graphs[ii]->SetPointEYhigh(bin, center + 0.5 * belt);
+        histos[ii]->SetBinContent(bin, 1.);
+
+        if (center > 0) histos[ii]->SetBinError(bin, (0.5 * belt)/center);
+        else histos[ii]->SetBinError(bin, 0.);
 
 
         }
