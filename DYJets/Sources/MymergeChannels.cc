@@ -45,10 +45,11 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* h_combine, TH1D* hM
 void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[]);
 void dumpElements(TMatrixD& a);
 void dumpElements(TVectorD& a);
+void exclusifToInclusif(TH1D *h);
 //-----------------------------------------------------------------------------------------------//
 
 //-- global variables ---------------------------------------------------------------------------//
-string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_inc_100_Toys/";
+string OUTPUTDIRECTORY = "MyPNGFiles/NiceUnfold_30_1000_Toys/";
 
 int doXSec = 1;
 int doNormalize = 0;
@@ -91,8 +92,8 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "PNGFiles/FinalUnfold_inc_30_100_Toys/DE_"  + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "PNGFiles/FinalUnfold_inc_30_100_Toys/DMu_" + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "MyPNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "MyPNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -412,14 +413,72 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
     ostringstream optionCorrStr; optionCorrStr << optionCorr;
     outputFileNamePNG += "_CorrelationOption_" + optionCorrStr.str();
     if (doVarWidth) outputFileNamePNG += "_VarWidth";
+    string outputFileNameROOT = outputFileNamePNG + ".root";
     outputFileNamePNG += ".pdf";
 
     plots->Print(outputFileNamePNG.c_str());
+    plots->SaveAs(outputFileNameROOT.c_str());
+
+
+    if (variable == "ZNGoodJets_Zexc") {
+        
+        string variable_Zinc = "ZNGoodJets_Zinc";
+        TH1D *hCombinedStat_Zinc = (TH1D*) hCombinedStat->Clone();
+        hCombinedStat_Zinc->SetDirectory(0);
+        exclusifToInclusif(hCombinedStat_Zinc);
+        TH1D *hCombinedTot_Zinc = (TH1D*) hCombinedTot->Clone();
+        hCombinedTot_Zinc->SetDirectory(0);
+        exclusifToInclusif(hCombinedTot_Zinc);
+        TH1D *hPDF_Zinc = (TH1D*) hPDF->Clone();
+        hPDF_Zinc->SetDirectory(0);
+        exclusifToInclusif(hPDF_Zinc);
+        TH1D *genShe_Zinc = (TH1D*) genShe->Clone();
+        genShe_Zinc->SetDirectory(0);
+        exclusifToInclusif(genShe_Zinc);
+        TH1D *genPow_Zinc = (TH1D*) genPow->Clone();
+        genPow_Zinc->SetDirectory(0);
+        exclusifToInclusif(genPow_Zinc);
+        TH1D *genMad_Zinc = (TH1D*) genMad->Clone();
+        genMad_Zinc->SetDirectory(0);
+        exclusifToInclusif(genMad_Zinc);
+
+        TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDF_Zinc, genShe_Zinc, genPow_Zinc, genMad_Zinc);
+
+        string outputFileNamePNG_Zinc = OUTPUTDIRECTORY;
+        if (doXSec) outputFileNamePNG_Zinc += "Combination_XSec_";
+        else if (doNormalize) outputFileNamePNG_Zinc += "Combination_Normalized_";
+
+        outputFileNamePNG_Zinc += variable_Zinc;
+        ostringstream optionCorrStr_Zinc; optionCorrStr_Zinc << optionCorr;
+        outputFileNamePNG_Zinc += "_CorrelationOption_" + optionCorrStr_Zinc.str();
+        if (doVarWidth) outputFileNamePNG_Zinc += "_VarWidth";
+        string outputFileNameROOT_Zinc = outputFileNamePNG_Zinc + ".root";
+        outputFileNamePNG_Zinc += ".pdf";
+
+        plots_Zinc->Print(outputFileNamePNG_Zinc.c_str());
+        plots_Zinc->SaveAs(outputFileNameROOT_Zinc.c_str());
+
+
+
+    }
 
     fPDF->Close();
 
 }
 
+void exclusifToInclusif(TH1D *h) {
+    int nBins = h->GetNbinsX();
+    for (int i(1); i <= nBins; i++) {
+        double sum(0);
+        double error2(0);
+        for (int j(i); j <= nBins + 1; j++) {
+            sum += h->GetBinContent(j);     
+            error2 += pow(h->GetBinError(j), 2);
+        }
+        h->SetBinContent(i, sum);
+        h->SetBinError(i, sqrt(error2));
+    }
+}
 
 //////////////////////// NICE plots
 void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hEle, TH1D* hMuon, bool logz, bool decrease){

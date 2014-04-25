@@ -18,7 +18,7 @@
     }
 
     // BUG with variable 45 ! We skip it.
-    MymergeChannels(0, 45);
-    MymergeChannels(46, 60);
+    MymergeChannels(0, 1);
+    //MymergeChannels(46, 60);
 
 }

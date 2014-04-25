@@ -30,7 +30,7 @@ double Luminosity(19549.);
 double luminosityErr = 0.044;
 string energy = "8TeV";//getEnergy();
 bool isMuon = 0;
-string leptonFlavor = "DE";
+string leptonFlavor = "DMu";
 string unfAlg = "Bayes";
 bool doVarWidth = true ;
 /// define names od output png files and tex
@@ -39,7 +39,6 @@ string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
 
 void runPlotting3RatiosCommon()
 {
-
     setTDRStyle();
     gStyle->SetOptStat(0);
     gStyle->SetErrorX(0.5);
@@ -47,12 +46,11 @@ void runPlotting3RatiosCommon()
     gStyle->SetPadGridY(0);
 
     for (int i(0); i < 1/*NVAROFINTERESTZJETS*/; i++){
-        for (int j(0); j < 1; j++){
+        for (int j(0); j < 2; j++){
             isMuon = j;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
         }
     }
-
 }
 
 

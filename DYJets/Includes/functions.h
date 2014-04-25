@@ -70,7 +70,7 @@ class table{
         vector<record> recd;
 };
 
-double SmearJetPt(double, double, double);
+double SmearJetPt(double, double, double, int);
 void normalizeTH2D(TH2D*);
 void bestTwoJetsCandidatesPt(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);
 void bestTwoJetsCandidatesPhi(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);

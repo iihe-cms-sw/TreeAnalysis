@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include <TH1.h>
 #include <TH2.h>
 #include <TLorentzVector.h>
@@ -228,24 +229,14 @@ table::table(string filename)
     cout << filename << endl;
     if (file) cout << "OK" << endl;
     else cout << "Not OK" << endl;
-    /*
-       double  pt1, pt2, eta1, eta2, effi, effiErrorLow, effiErrorHigh ;
-       while( file >> eta1 >> eta2 >> pt1 >> pt2 >> effi >> effiErrorLow >> effiErrorHigh){
-    //    cout << eta1 << "  " << eta2 << "  " << pt1 << "  " << pt2 << endl;
-    recd.push_back(record(pt1, pt2, eta1, eta2, effi,effiErrorLow, effiErrorHigh));
-    //    cout << "ef " << effi << endl;
-    }
-    */
     double data[7];
-    while( file ){
-        for (int i=0;i<7;i++)
-        {
-            file>>data[i];
-            cout << data[i] <<"  " ;
+    while (file) {
+        for (int i(0); i < 7; i++) {
+            file >> data[i];
+            //cout << data[i] <<"  " ;
         }
-        cout << endl;
-        recd.push_back(record(data[2],data[3],data[0],data[1],data[4],data[5],data[6]));
-
+        //cout << endl;
+        recd.push_back(record(data[2], data[3], data[0], data[1], data[4], data[5], data[6]));
     }
 
 }
@@ -253,52 +244,63 @@ table::table(string filename)
 double table::getEfficiency(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
-        if((recd[i]).belongTo(pt, eta)) return recd[i].effi;
-        if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        if ((recd[i]).belongTo(pt, eta)) return recd[i].effi;
+        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }
 double table::getEfficiencyLow(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
-        if((recd[i]).belongTo(pt, eta)) return recd[i].effi-recd[i].effiErrorLow;
-        if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        if ((recd[i]).belongTo(pt, eta)) return recd[i].effi-recd[i].effiErrorLow;
+        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }
 double table::getEfficiencyHigh(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
-        if((recd[i]).belongTo(pt, eta)) return recd[i].effi+recd[i].effiErrorHigh;
-        if((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        if ((recd[i]).belongTo(pt, eta)) return recd[i].effi+recd[i].effiErrorHigh;
+        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }
 
-double SmearJetPt(double recoPt, double genPt, double eta){
+double SmearJetPt(double recoPt, double genPt, double eta, int smearJet){
     // summer 2011 resolution scale factor
     // twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-    bool intrinsecMCRes(false);
-    double resSF(1.0000001);
-    if      (fabs(eta) < 0.5) resSF = 1.052;
-    else if (fabs(eta) < 1.1) resSF = 1.057;
-    else if (fabs(eta) < 1.7) resSF = 1.096;
-    else if (fabs(eta) < 2.3) resSF = 1.134;
-    else if (fabs(eta) < 5.0) resSF = 1.288;
+    double centralSF(1.00);
+    if      (fabs(eta) < 0.5) centralSF = 1.052;
+    else if (fabs(eta) < 1.1) centralSF = 1.057;
+    else if (fabs(eta) < 1.7) centralSF = 1.096;
+    else if (fabs(eta) < 2.3) centralSF = 1.134;
+    else centralSF = 1.288;
 
-    // intrinsec MC resolution
-    // twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-    double sigMC(1.000001);
-    if      (fabs(eta) < 1.1) sigMC = 1.066;
-    else if (fabs(eta) < 1.7) sigMC = 1.191;
-    else if (fabs(eta) < 2.3) sigMC = 1.096;
-    else if (fabs(eta) < 5.0) sigMC = 1.166;
-    else sigMC = 1.0000;
+    double upSF(1.00);
+    if      (fabs(eta) < 0.5) upSF = 1.115;
+    else if (fabs(eta) < 1.1) upSF = 1.114;
+    else if (fabs(eta) < 1.7) upSF = 1.161;
+    else if (fabs(eta) < 2.3) upSF = 1.228;
+    else upSF = 1.488;
 
+    double downSF(1.00);
+    if      (fabs(eta) < 0.5) downSF = 0.990;
+    else if (fabs(eta) < 1.1) downSF = 1.001;
+    else if (fabs(eta) < 1.7) downSF = 1.032;
+    else if (fabs(eta) < 2.3) downSF = 1.042;
+    else downSF = 1.089;
 
     double smearedPt(0);
-    if (intrinsecMCRes) smearedPt = (genPt + sigMC*(recoPt - genPt)) > 0 ? genPt + sigMC*(recoPt - genPt) : 0;
-    else  smearedPt = (genPt + resSF*(recoPt - genPt)) > 0 ? genPt + resSF*(recoPt - genPt) : 0;
+
+    if (smearJet == 0) {
+        smearedPt = std::max(0., genPt + centralSF*(recoPt - genPt));
+    }
+    else if (smearJet == 1) {
+        smearedPt = std::max(0., genPt + upSF*(recoPt - genPt));
+    }
+    else if (smearJet == -1) {
+        smearedPt = std::max(0., genPt + downSF*(recoPt - genPt));
+    }
 
     return smearedPt;
 

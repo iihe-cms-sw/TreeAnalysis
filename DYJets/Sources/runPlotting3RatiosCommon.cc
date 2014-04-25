@@ -24,7 +24,6 @@
 void FuncPlot(string  variable = "SpTJets_Zinc2jet", bool log = 0, bool decrease = 0);
 
 
-//double Luminosity(19602.);
 double Luminosity(0);
 double luminosityErr = 0.044;
 bool isMuon = 0;
@@ -43,10 +42,10 @@ void runPlotting3RatiosCommon(int start, int end = -1)
 
     if (end == -1) end = start + 1;
     for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
-        for (int j(0); j < 1; j++){
+        for (int j(1); j < 2; j++){
             isMuon = j;
             if (isMuon) Luminosity = 19549.;
-            else Luminosity = 19602;
+            else Luminosity = 19602.;
             FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
         }
     }
@@ -68,7 +67,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     if (doXSec) doNormalize = 0;
     TH1::SetDefaultSumw2();
 
-    string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
+    string outputDirectory = "MyPNGFiles/FinalUnfold_30_1000_Toys/";
     string leptonFlavor = "DMu";
     if (!isMuon) leptonFlavor = "DE";
     string unfAlg = "Bayes";

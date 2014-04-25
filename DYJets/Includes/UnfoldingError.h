@@ -158,7 +158,7 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
     ofstream myFile(fileNameTable.c_str());
     myFile << "\\begin{table}[htb!]\\begin{center}\n";
-    myFile << "\\caption{ Differential cross section in " << title << " and break down of the systematic uncertainties for the combination of both decay channels." ; 
+    myFile << "\\caption{ Differential cross section in " << title << " and break down of the systematic uncertainties (in percent) for the combination of both decay channels." ; 
     myFile << "}"<<endl;
     myFile << "\\scriptsize{" << endl;
     myFile << "\\begin{tabular}{c|cc|cccccccc}\n \\multicolumn{11}{c}{";
@@ -199,8 +199,8 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
 
         for (int syst(0); syst < nSyst; syst++){
-            if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << sqrt (hError2D[syst]->GetBinContent(bin,bin)) / Norm  << "  ";
-            else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << sqrt (hError2D[syst]->GetBinContent(bin,bin)) / Norm << "  ";
+            if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm)  << "  ";
+            else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm) << "  ";
 
         }
 

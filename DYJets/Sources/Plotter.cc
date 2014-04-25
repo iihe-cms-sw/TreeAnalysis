@@ -89,7 +89,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     nFiles = countFiles ;
     //-----------------------------------------------------
 
-    string outputFileName = "PNGFiles/Comparison_" + leptonFlavor + "_" + energy + "_Data_All_MC_";
+    string outputFileName = "MyPNGFiles/Comparison_" + leptonFlavor + "_" + energy + "_Data_All_MC_";
 
     outputFileName += "JetPtMin_" + JetPtMinStr.str();
     if (JetPtMax > JetPtMin) outputFileName += "_JetPtMax_" + JetPtMaxStr.str();
@@ -224,7 +224,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
     }
     cout << " added all histograms " << endl;
 
-    for (unsigned short i(0); i < nHistNoGen; i++) {
+    for (unsigned short i(0); i < 5/*nHistNoGen*/; i++) {
         if (!file[0]->Get(histoName[i].c_str())->InheritsFrom(TH1D::Class())) continue;
         //cout << histoName[i] << endl;
         unsigned short nBins(hist[0][i]->GetNbinsX());

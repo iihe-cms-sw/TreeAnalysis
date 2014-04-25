@@ -29,5 +29,6 @@ DYJets/HistoFilesNew
 
 # ignores pngs and pdf output files
 DYJets/PNGFiles
+DYJets/MyPNGFiles
 DYJets/PNGFilesTest
 DYJets/PNGFilesNew
