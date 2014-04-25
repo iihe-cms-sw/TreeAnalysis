@@ -1,6 +1,5 @@
 {
     string srcdir = "Sources/";
-
     vector<string> sources;
     sources.push_back("getFilesAndHistograms");
     sources.push_back("functions");
@@ -17,8 +16,6 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
     }
 
-    // BUG with variable 45 ! We skip it.
     MymergeChannels(0, 1);
-    //MymergeChannels(46, 60);
 
 }

@@ -27,9 +27,7 @@
         //getStatistics("Electrons", 30,0,0,1,0,1);
 
     }    
-    //PlotterPAS("Muons", 30, 0, 1 ); // fo samee sign 
-    //PlotterPAS("Electrons", 30, 0, 1); // for same sign
-    else if ( fileBeingProcessed.str().find("TTbar") != string::npos) {
+    else if (fileBeingProcessed.str().find("TTbar") != string::npos) {
         Plotter("SMuE",30,0,0,0,0,-1);
         //Plotter("SMuE",30,0,1,0,0,-1);
         //
@@ -43,7 +41,7 @@
         //getStatistics("SMuE", 30, 0, 0, 1, 0, 1, 0, 30);
 
     }
-    else if ( fileBeingProcessed.str().find("WJets") != string::npos) {
+    else if (fileBeingProcessed.str().find("WJets") != string::npos) {
         //PlotterPAS("Muon",30,0);
         //PlotterPAS("Muon",30,1);
         //PlotterPAS("Muon",30,2);
