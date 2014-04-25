@@ -16,7 +16,7 @@ if you want to run on:
   2. TTbar to emu : move DYJets directory to TTbarEMu
 
 Be aware that a rootlogon.C is provided. This is needed to load RooUnfold
-automatically. CHECK THIS FIRST TO HAVE ALL THE NEEDED VARIABLES SETUP !
+automatically. 
 
 Once you have cloned the repository, you just have to build the RooUnfold-1.1.1
 that is provided. This RooUnfold is a slightly modified version of the one 
@@ -35,7 +35,7 @@ You can also create some directories that will be needed later:
 
     $ mkdir HistoFiles PNGFiles
 
-These first directory will contain the .root files created by runDYJets and co.
+The first directory will contain the .root files created by runDYJets and co.
 and containing the histograms used during the whole process up to cross section
 measurements.
 
