@@ -150,7 +150,9 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         }
         cout << shortVar << "   unit: " << unit << endl;
         temp = "d#sigma/d" + shortVar;
-        tempTab = "$\\frac{d\\sigma}{d" + shortVar + "}$";
+        string shortVarLatex = shortVar;  // changeToLatexFormat(shortVarLatex);
+        myReplace(shortVarLatex, "#", "\\");
+        tempTab = "$\\frac{d\\sigma}{d" + shortVarLatex + "}$";
         if (doNormalize) temp = "1/#sigma " + temp;
         else if (doXSec){
             temp += " [pb";
@@ -185,8 +187,10 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
 
     string title = data->GetTitle(); changeToLatexFormat(title);
+    myReplace(title, "1 2", "1");
+    myReplace(title, "2 2", "2");
     string sigmaTitle = temp; changeToLatexFormat(sigmaTitle); 
-    string sigmaTitleTab = tempTab;
+    string sigmaTitleTab = tempTab; //changeToLatexFormat(sigmaTitleTab);
     string xtitle = data->GetXaxis()->GetTitle(); changeToLatexFormat(xtitle);
     myReplace(title, "1st", "$1^{\\text{st}}$");
     myReplace(title, "2nd", "$2^{\\text{nd}}$");

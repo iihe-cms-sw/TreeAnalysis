@@ -1,5 +1,6 @@
 #ifndef __UnfoldingSyst__ 
 #define __UnfoldingSyst__
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //void createZNGoodJets_Zinc2(TH1D* hCombinedStat, TH2D *hError2D[], bool doVarWidth){
@@ -58,7 +59,108 @@
 //        }
 //    }
 //}
+#include <fstream>
+#include <string>
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <algorithm>
+#include <assert.h>
+#include <iostream>
 
+#include <cstring>
+
+std::string pground(double& val, std::vector<double>& sys);
+
+std::string pground(double& val, std::vector<double>& sys, std::vector<std::string>& result){
+    std::string sval = pground(val, sys);
+    result.resize(1+sys.size());
+    result[0] = sval;
+
+    for(unsigned j = 0; j < sys.size(); ++j){
+        char buf[256];
+
+        sprintf(buf, "%.2lg", sys[j]);
+
+        //fix trailing 0
+        int n = strlen(buf);
+        int i = 0;
+        int nd = 0;
+        int dp = 0;
+        int heading_zero = 1;
+        while(i < n){
+            if(buf[i]!='0') heading_zero = 0;
+            if(heading_zero) { ++i; continue;}
+            if(buf[i]=='e' || buf[i]=='E') break;
+            if(isdigit(buf[i])) ++nd;
+            if(buf[i]=='.') dp = 1;
+            ++i;
+
+        }
+
+        if(nd<2){
+            if(dp){
+                buf[n] = '0';
+                buf[n+1] = 0;
+            } else{
+                buf[n] = '.';
+                buf[n+1] = '0';
+                buf[n+2] = 0;
+            }
+        }
+
+        result[1+j] = buf;
+    }
+
+    return sval;
+}
+
+std::string pground(double& val, std::vector<double>& sys){
+    assert(sys.size()>0);
+    double sys_min = fabsl(sys[0]);
+    for(unsigned i(0); i < sys.size(); ++i) if(fabsl(sys[i])<sys_min) sys_min = fabsl(sys[i]);
+
+    //rounding systematics
+    std::vector<std::string> sSys(sys.size());
+    char buf[256];
+    for(unsigned i = 0; i < sys.size(); ++i){
+        sprintf(buf, "%.2lg", sys[i]);
+        sys[i] = strtod(buf, 0);
+        sSys[i] = buf;
+    }
+
+    //number of digis:
+    double l10 = floor(log10(sys_min));
+    double a = pow(10, l10-1);
+
+    sprintf(buf, "%%.%dlf", std::max(0, (int)(1-l10)));
+
+    char buf2[256];
+
+    val = round(val / a) * a;
+
+    sprintf(buf2, buf, val);
+
+    std::string r = buf2;
+
+    //r.insert(0, "$");
+    //size_t i = r.find('.');
+    //if(i!=std::string::npos){
+    //    r.replace(i, 1, "$&$.");
+    //    r += "$";
+    //} else{
+    //    r+="$&";
+    //}
+    return r;
+}
+
+std::string pground(double& val, double& sys){
+    std::vector<double> s(1, sys);
+    std::string sv = pground(val, s);
+    sys = s[0];
+    return sv;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +212,9 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
             unit = unit.substr(0, unit.find("]"));
         }
         temp = "d#sigma/d" + shortVar;
-        tempTab = "$\\frac{d\\sigma}{d" + shortVar + "}$";
+        string shortVarLatex = shortVar;  // changeToLatexFormat(shortVarLatex);
+        myReplace(shortVarLatex, "#", "\\");
+        tempTab = "$\\frac{d\\sigma}{d" + shortVarLatex + "}$";
         if (doNormalize) temp = "1/#sigma " + temp;
         else if (doXSec){
             temp += "  [pb";
@@ -126,9 +230,15 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
     }
 
     string title = data->GetTitle(); changeToLatexFormat(title);
+    // fix a bug
+    myReplace(title, "1 2", "1");
+    myReplace(title, "2 2", "2");
+    cout << "HERE IS THE TITLE " << title << endl;
     string xtitle = data->GetXaxis()->GetTitle(); changeToLatexFormat(xtitle);
     string sigmaTitle = temp; changeToLatexFormat(sigmaTitle);
-    string sigmaTitleTab = tempTab;
+    cout << "CHANGE" << endl;
+    string sigmaTitleTab = tempTab;// changeToLatexFormat(sigmaTitleTab);
+    cout << "CHANGE" << endl;
 
     myReplace(title, "1st", "$1^{\\text{st}}$");
     myReplace(title, "2nd", "$2^{\\text{nd}}$");
@@ -158,15 +268,15 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
     ofstream myFile(fileNameTable.c_str());
     myFile << "\\begin{table}[htb!]\\begin{center}\n";
-    myFile << "\\caption{ Differential cross section in " << title << " and break down of the systematic uncertainties (in percent) for the combination of both decay channels." ; 
+    myFile << "\\caption{Differential cross section in " << title << " and break down of the systematic uncertainties (in percentage) for the combination of both decay channels."; 
     myFile << "}"<<endl;
     myFile << "\\scriptsize{" << endl;
     myFile << "\\begin{tabular}{c|cc|cccccccc}\n \\multicolumn{11}{c}{";
     myFile << title << "} \\\\" << endl;
     myFile << xtitle << " & ";
-    myFile << sigmaTitleTab << " & Err.Tot.  & stat & JES & PU & XSEC & JER & Lumi & Unf & Eff  \\\\ \\hline" << endl;
+    myFile << sigmaTitleTab << " & Tot. Err.  & stat & JES & PU & XSEC & JER & Lumi & Unf & Eff  \\\\ \\hline" << endl;
 
-    int nSyst =  9 ;
+    int nSyst = 9;
     const int nBins(data->GetNbinsX());
 
     for (int bin(1); bin <= nBins; bin++){
@@ -175,44 +285,51 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
         double binW = data->GetBinWidth(bin);
         double Norm = 1.;
-        if (doXSec)  Norm = binW * Luminosity ;
+        if (doXSec) Norm = binW * Luminosity;
 
 
-        double centralValue(data->GetBinContent(bin)/Norm );
+        double centralValue(data->GetBinContent(bin)/Norm);
+        myFile.precision(4);
         if (variable.find("ZNGoodJets_Zexc") != string::npos && bin > 1) myFile <<  "$= " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets_Zinc") != string::npos && bin > 1) myFile <<  "$\\geq " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets") == string::npos) {
             if ( fabs(data->GetBinLowEdge(bin) + binW) < 0.01) myFile << data->GetBinLowEdge(bin) << "\\ -\\ " <<  0  << " & ";
             else myFile << data->GetBinLowEdge(bin) << "\\ -\\ " <<  data->GetBinLowEdge(bin) + binW  << " & ";
-
-
         }
-        myFile.precision(3);
+        myFile.precision(4);
         if (variable.find("ZNGoodJets") != string::npos && bin > 1){
-            myFile << centralValue ;
+            double err = sqrt(hError2D[0]->GetBinContent(bin, bin)) / Norm;
+            cout << "oooo " << pground(centralValue, err) << endl;
+            myFile << pground(centralValue, err) ;
             myFile.precision(2);
         }
-        else if (variable.find("ZNGoodJets") == string::npos ){
-            myFile << centralValue  ;
-            myFile.precision(3);
+        else if (variable.find("ZNGoodJets") == string::npos){
+            double err = sqrt(hError2D[0]->GetBinContent(bin, bin)) / Norm;
+            cout << "oooo " << pground(centralValue, err) << endl;
+            myFile << pground(centralValue, err) ;
+            myFile.precision(2);
         }
 
-
         for (int syst(0); syst < nSyst; syst++){
-            if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm)  << "  ";
-            else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm) << "  ";
+            // percentage
+            //if (syst == 0) {
+                if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm)  << "  ";
+                else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm) << "  ";
+            //}
+            //else {
+            //    if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (Norm)  << "  ";
+            //    else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (Norm) << "  ";
+            //}
 
         }
 
         if (doPrint)  myFile << " \\\\" << endl;
-
     }
 
     myFile << "\\end{tabular}}" << endl;
     myFile << "\\label{tab:" << variable << "}"<< endl;
     myFile << "\\end{center}\\end{table}\n";
     myFile.close();
-
 
 }
 
@@ -274,17 +391,27 @@ TH2D* setCovariance(const TH2D *h, const TH1D* hCent, const double error)
 
 TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
 {
+    // clone the histogram to make sure we don't mess it up
     TH1D *UnfErrors = (TH1D*) dataCentral->Clone();
     UnfErrors->SetDirectory(0);
+
+    // get the number of bins to run on each of them
     int nBins = dataCentral->GetNbinsX();
-    for (int i(0); i <= nBins; i++) {
+    for (int i(0); i <= nBins + 1; i++) {
+
+        // compute the absolute difference between the two generators
         double diff = fabs(dataCentral->GetBinContent(i) - dataUnfWithSherpa->GetBinContent(i));
+
+        // make it relative to the bin content of dataCentral
         if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
         else diff = 0.;
+
+        // fill in the histogram with the relative error
         UnfErrors->SetBinContent(i, diff);
         UnfErrors->SetBinError(i, 0);
     }
 
+    // return the histogram containing the relative error for each bin
     return UnfErrors;
 }
 
@@ -496,6 +623,8 @@ TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* 
         err_m[ibin]   =  unfErrorDistrMu->GetBinContent(ibin+1) / norm;
         err_e_algo[ibin] = fabs(value_e[ibin] - hEleOpp->GetBinContent(ibin+1)) / norm;
         err_m_algo[ibin] = fabs(value_m[ibin] - hMuOpp->GetBinContent(ibin+1)) / norm;
+        err_e_algo[ibin] = 0.;
+        err_m_algo[ibin] = 0.;
 
     }	
 
@@ -529,12 +658,16 @@ TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* getPUErrors(const TH1D *dataCentral, const TH1D *PUup, const TH1D *PUdown)
 {
+    // clone the data histogram to make sure we don't mess it up
     TH1D *dataPU = (TH1D*) dataCentral->Clone();
     dataPU->SetDirectory(0);
 
+    // get the number of bins and run on each of them
     int nbins = dataCentral->GetNbinsX();
-
     for (int i(0); i <= nbins + 1; i++) {
+
+        // compute the absolute difference between central and up, 
+        // and central and down, and take the max as the error
         double diff = fabs(PUup->GetBinContent(i) - dataCentral->GetBinContent(i));
         diff = max(diff, fabs(PUdown->GetBinContent(i) - dataCentral->GetBinContent(i)));
         dataPU->SetBinContent(i, diff);
@@ -545,15 +678,20 @@ TH1D* getPUErrors(const TH1D *dataCentral, const TH1D *PUup, const TH1D *PUdown)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* getJERErrors(const TH1D *dataCentral, const TH1D *JERup)
+TH1D* getJERErrors(const TH1D *dataCentral, const TH1D *JERup, const TH1D *JERdown)
 {
+    // clone the data histogram to make sure we don't mess it up
     TH1D *dataJER = (TH1D*) dataCentral->Clone();
     dataJER->SetDirectory(0);
 
+    // get the number of bins and run on each of them
     int nbins = dataCentral->GetNbinsX();
-
     for (int i(0); i <= nbins + 1; i++) {
+
+        // compute the absolute difference between central and up, 
+        // and central and down, and take the max as the error
         double diff = fabs(JERup->GetBinContent(i) - dataCentral->GetBinContent(i));
+        diff = max(diff, fabs(JERdown->GetBinContent(i) - dataCentral->GetBinContent(i)));
         dataJER->SetBinContent(i, diff);
     }
 

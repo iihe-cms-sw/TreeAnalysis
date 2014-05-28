@@ -18,9 +18,10 @@ TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* 
 void hBinCon(TH1D* hData);
 TH1D* SetSystErrorsMax(TH1D* hCent, TH1D* hUp, TH1D* hDown, string name);
 TH1D* SetSystErrorsMean(TH1D* hData, double Error, string name);
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hUp, TH1D* hDown, string name);
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, string name, int option = 0);
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, double Error, string name);
-TH2D* SetResponseErrors(TH2D* hCen, TH2D* hUp, TH2D* hDown);
+TH1D* SetSystErrorsMean(TH1D* hCent, TH1D* hUp, TH1D* hDown, string name);
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCent, TH1D* hUp, TH1D* hDown, string name);
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCent, TH1D* hUp, TH1D* hDown, double Error, string name);
+TH2D* SetResponseErrorsMax(TH2D* hCent, TH2D* hUp, TH2D* hDown);
+TH2D* SetResponseErrorsMean(TH2D* hCent, TH2D* hUp, TH2D* hDown);
 TH1D* ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos, int selection, bool useOverFlow = true, int NBkgGroups = 6);
 #endif

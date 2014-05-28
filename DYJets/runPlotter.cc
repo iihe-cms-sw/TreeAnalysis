@@ -16,10 +16,10 @@
     ostringstream fileBeingProcessed; fileBeingProcessed << __FILE__;
     cout << " Run plotter:  " << fileBeingProcessed.str()  << endl;
     if (fileBeingProcessed.str().find("DYJets") != string::npos) {
-        Plotter("Electrons", 30);
+        //Plotter("Electrons", 30);
         //PlotterPAS("Electrons");
         //Plotter("Muons", 30);
-        //PlotterPAS("Muons");
+        PlotterPAS("Muons");
 
         //getStatistics("Electrons", 30);
         //getStatistics("Muons", 30);

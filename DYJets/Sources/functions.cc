@@ -244,8 +244,10 @@ table::table(string filename)
 double table::getEfficiency(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
+        // if finds the proper bin, then return the efficiency
         if ((recd[i]).belongTo(pt, eta)) return recd[i].effi;
-        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        // else store the average pt of the current bin efficency but do not return and try the next bin
+        if ((recd[i]).belongTo(0.5*(recd[i].ptHi + recd[i].ptLow), eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }
@@ -253,7 +255,7 @@ double table::getEfficiencyLow(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
         if ((recd[i]).belongTo(pt, eta)) return recd[i].effi-recd[i].effiErrorLow;
-        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        if ((recd[i]).belongTo(350, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }
@@ -261,7 +263,7 @@ double table::getEfficiencyHigh(double pt, double eta){
     double hiPtBin= 0;
     for (unsigned int i=0; i != recd.size(); i++) {
         if ((recd[i]).belongTo(pt, eta)) return recd[i].effi+recd[i].effiErrorHigh;
-        if ((recd[i]).belongTo(190, eta)) hiPtBin = recd[i].effi;
+        if ((recd[i]).belongTo(350, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
 }

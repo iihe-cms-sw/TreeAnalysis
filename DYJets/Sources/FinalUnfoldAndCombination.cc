@@ -537,13 +537,13 @@ void FuncUnfold(string variable,  int UsedKtermBayes, bool doFlat , bool doVarWi
         //hData[3]->Draw();
         cout << "Set errors on response object "<<endl;
         //  if ( leptonFlavor == "DE" ) hDataEFF = SetSystErrorsMean(hData[0],hData[0], hData[3], hData[4],EffError,                  "EFFerrors");     // lepton EFF errors
-        TH1D *hDataJER = SetSystErrorsMean(hData[0], hDYmerge[0], hDYmerge[3], hDYmerge[3], "JERerrors", 0 );     // JER errors
+        TH1D *hDataJER = SetSystErrorsMean(hData[0], hDYmerge[0], hDYmerge[3], hDYmerge[3], "JERerrors");     // JER errors
         cout << "Set errors on response object "<<endl;
-        TH1D *hDataPU = SetSystErrorsMean(hData[0], hDYmerge[0], hDYmerge[1], hDYmerge[2], "JERerrors", 0 );      // PU errors
+        TH1D *hDataPU = SetSystErrorsMean(hData[0], hDYmerge[0], hDYmerge[1], hDYmerge[2], "JERerrors");      // PU errors
         cout << "Set errors on response object "<<endl;
-        TH2D *hResPUErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());    // PU effect on response 
+        TH2D *hResPUErrors = SetResponseErrorsMax( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());    // PU effect on response 
         cout << "Set errors on response object "<<endl;
-        TH2D *hResJERErrors = SetResponseErrors( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[3]->Hresponse());    // JER effect on response 
+        TH2D *hResJERErrors = SetResponseErrorsMax( (TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[3]->Hresponse());    // JER effect on response 
         cout << "Set errors on response object "<<endl;
 
         // my stat variation of data, BG and response object 

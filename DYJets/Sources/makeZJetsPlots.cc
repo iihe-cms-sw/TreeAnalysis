@@ -1,4 +1,5 @@
 #include "makeZJetsPlots.h"
+#include <sstream>
 
 
 int fillColor[3] = {kBlue-10, kGreen-8, kOrange-2};
@@ -446,6 +447,7 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
         leEntry2->SetFillColor(pdfFillColor[genNum-1]);
         leEntry2->SetFillStyle(fillStyle);
     }
+
 
 }
 

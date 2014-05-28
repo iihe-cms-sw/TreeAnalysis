@@ -426,13 +426,14 @@ class BonzaiMaker {
 
         BonzaiMaker(string dataset_, string fileName_ );
         virtual ~BonzaiMaker();
-        virtual Int_t    GetEntry(Long64_t entry);
+        virtual Int_t GetEntry(Long64_t entry);
         virtual Long64_t LoadTree(Long64_t entry);
-        virtual void     Init(TChain *tree);
-        virtual void     Loop(string dataset_, string fileName_, int doMuon = 1, bool doUnfold =0, bool hasRecoInfo = 1, bool hasGenInfo = 1, bool hasPartonInfo = 0);
+        virtual void Init(TChain *tree);
+        virtual void Loop(string dataset_, string fileName_, int leptonIdSum = 1, bool doUnfold =0, bool hasRecoInfo = 1, bool hasGenInfo = 1, bool hasPartonInfo = 0);
 
-        virtual Bool_t   Notify();
-        virtual void     Show(Long64_t entry = -1);
+        virtual Bool_t Notify();
+        virtual void Show(Long64_t entry = -1);
+        string storageElement;
 };
 
 #endif
@@ -448,7 +449,7 @@ BonzaiMaker::BonzaiMaker(string dataset_, string fileName_) : fChain(0)
     string fullFileName = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/tseva/WJetsNtuplesAN6S27_v2/" + fileName_ ;
     //string fullFileName ="/user/tseva/DPS8/CMSSW_5_3_11/src/UserCode/llvv_fwk/test/"+fileName_ ;
 
-    string storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples/";
+    storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples/";
     string dirPath = "/dataAnalyzer";
     string treeName = "/data";
 

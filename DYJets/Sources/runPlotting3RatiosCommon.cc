@@ -25,13 +25,13 @@ void FuncPlot(string  variable = "SpTJets_Zinc2jet", bool log = 0, bool decrease
 
 
 double Luminosity(0);
-double luminosityErr = 0.044;
+double luminosityErr = 0.026;
 bool isMuon = 0;
 bool doVarWidth = true ;
 /// define names od output png files and tex
 
 
-void runPlotting3RatiosCommon(int start, int end = -1)
+void runPlotting3RatiosCommon(bool doMuon, int start, int end = -1)
 {
 
     setTDRStyle();
@@ -42,12 +42,10 @@ void runPlotting3RatiosCommon(int start, int end = -1)
 
     if (end == -1) end = start + 1;
     for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
-        for (int j(1); j < 2; j++){
-            isMuon = j;
-            if (isMuon) Luminosity = 19549.;
-            else Luminosity = 19602.;
-            FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
-        }
+        isMuon = doMuon;
+        if (isMuon) Luminosity = 19584.;
+        else Luminosity = 19618.;
+        FuncPlot(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease);
     }
 
 }
@@ -67,7 +65,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     if (doXSec) doNormalize = 0;
     TH1::SetDefaultSumw2();
 
-    string outputDirectory = "MyPNGFiles/FinalUnfold_30_1000_Toys/";
+    string outputDirectory = "PNGFiles/FinalUnfold_30_1000_Toys/";
     string leptonFlavor = "DMu";
     if (!isMuon) leptonFlavor = "DE";
     string unfAlg = "Bayes";
@@ -75,8 +73,6 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     string fileName = outputDirectory + leptonFlavor + "_" + energy + "_unfolded_" + variable + "_histograms_" + unfAlg;
     if (doVarWidth) fileName += "_VarWidth";
     fileName += ".root";
-
-
 
     cout << " opening : " << fileName <<endl;
     TFile *f = new TFile(fileName.c_str());
@@ -116,8 +112,8 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     hPDFSyst = (TH1D*) fPDFSyst->Get(genVariable.c_str());
     hPDFSyst->SetTitle("");
 
-    int nSyst(7);
-    TH1D *hSyst[7];
+    int nSyst(8);
+    TH1D *hSyst[8];
     hSyst[0]          = (TH1D*) f->Get("JECup");
     hSyst[1]          = (TH1D*) f->Get("JECdown");
     hSyst[2]          = (TH1D*) f->Get("PUup");
@@ -125,7 +121,8 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     hSyst[4]          = (TH1D*) f->Get("XSECup");
     hSyst[5]          = (TH1D*) f->Get("XSECdown");
     hSyst[6]          = (TH1D*) f->Get("JERup");
-    string systNames[7] = {"JEC", "JEC", "PU", "PU", "XSEC", "XSEC", "JER"};
+    hSyst[7]          = (TH1D*) f->Get("JERdown");
+    string systNames[8] = {"JEC", "JEC", "PU", "PU", "XSEC", "XSEC", "JER", "JER"};
     string temp, tempTab;
     if (doXSec || doNormalize) { 
         string xtitle = genMad->GetXaxis()->GetTitle();
@@ -138,7 +135,9 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         }
         cout << shortVar << "   unit: " << unit << endl;
         temp = "d#sigma/d" + shortVar;
-        tempTab = "$\\frac{d\\sigma}{d" + shortVar + "}$";
+        string shortVarLatex = shortVar; //  changeToLatexFormat(shortVarLatex);
+        myReplace(shortVarLatex, "#", "\\");
+        tempTab = "$\\frac{d\\sigma}{d" + shortVarLatex + "}$";
         if (doNormalize) temp = "1/#sigma " + temp;
         else if (doXSec){
             temp += " [pb";
@@ -173,8 +172,10 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
 
     string title = data->GetTitle(); changeToLatexFormat(title);
+    myReplace(title, "1 2", "1");
+    myReplace(title, "2 2", "2");
     string sigmaTitle = temp; changeToLatexFormat(sigmaTitle); 
-    string sigmaTitleTab = tempTab;
+    string sigmaTitleTab = tempTab; //changeToLatexFormat(sigmaTitleTab);
     string xtitle = data->GetXaxis()->GetTitle(); changeToLatexFormat(xtitle);
     myReplace(title, "1st", "$1^{\\text{st}}$");
     myReplace(title, "2nd", "$2^{\\text{nd}}$");
@@ -203,7 +204,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     ////////////////////////  INITIALIZE TABLES FOR CROSS SECTION
     writeCorrTable(leptonFlavor, variable, title, fileNameTableCov ,(TH2D*) covUnf );
     //covUnf->Draw("text");
-
+    
     ////////////////////////  INITIALIZE TABLES FOR CROSS SECTION
     ofstream myFile(fileNameTable.c_str());
     myFile << "\\begin{table}[htb!]\\begin{center}" << endl;
@@ -305,30 +306,37 @@ void FuncPlot(string variable, bool logZ, bool decrease)
         myFile.precision(6);
         double xLow = dataCentral->GetBinLowEdge(bin);
         double xHigh = xLow + binW;
+
+        double total = 0;
         if (fabs(xLow) < 0.00001) xLow = 0.;
         if (fabs(xHigh) < 0.00001) xHigh = 0.; 
         if (variable.find("ZNGoodJets_Zexc") != string::npos && bin > 1) myFile <<  "$= " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets_Zinc") != string::npos && bin > 1) myFile <<  "$\\geq " << bin - 1 << " $& ";
         else if (variable.find("ZNGoodJets") == string::npos) myFile << xLow << "\\ -\\ " << xHigh << " & ";
-        myFile.precision(6);
+        myFile.precision(5);
         if (variable.find("ZNGoodJets") != string::npos && bin > 1){
             myFile << centralValue;
-            myFile.precision(6);
-            myFile << "&  " << totalStatistics << " "; 
+            myFile.precision(2);
+            myFile << "&  " << 100*totalStatistics/centralValue << " "; 
+            total += pow(totalStatistics, 2);
         }
         else if (variable.find("ZNGoodJets") == string::npos ){
+            myFile.precision(4);
             myFile << centralValue ; 
-            myFile.precision(6);
-            myFile << "&  " << totalStatistics << " "; 
+            myFile.precision(2);
+            myFile << "&  " << 100*totalStatistics/centralValue << " "; 
+            total += pow(totalStatistics, 2);
         }
         double effSF = 0.01;
         if (doXSec && !doNormalize){
             totalSystematicsUp += pow( pow((1.+effSF), 2) - 1 , 2 ) / ( pow(Luminosity*binW, 2) );
             totalSystematicsDown += pow( pow((1.+effSF), 2) - 1 , 2 ) / ( pow(Luminosity*binW, 2) );
+            total += pow( pow((1.+effSF), 2) - 1 , 2 ) / ( pow(Luminosity*binW, 2) );
         }
         if (doXSec && !doNormalize){
             totalSystematicsUp +=  pow( luminosityErr , 2)  / ( pow(Luminosity*binW, 2) );
             totalSystematicsDown +=  pow( luminosityErr,2)  / ( pow(Luminosity*binW, 2) );
+            total += pow( luminosityErr , 2)  / ( pow(Luminosity*binW, 2) );
         }
 
         if (doNormalize){
@@ -347,27 +355,47 @@ void FuncPlot(string variable, bool logZ, bool decrease)
 
         for (int syst(0); syst < nSyst; syst++){
             double difference(hSyst[syst]->GetBinContent(bin) - centralValue);
-            if ( difference > 0  || syst == 6) totalSystematicsUp += difference * difference;
-            if ( difference <= 0 || syst == 6) totalSystematicsDown += difference * difference;
+            if (difference > 0) totalSystematicsUp += difference * difference;
+            if (difference <= 0) totalSystematicsDown += difference * difference;
             cout << "Name: " << systNames[syst] << " " << difference << endl; 
-            if (syst % 2 == 0 ) systUp = difference; 
-            if (syst % 2 == 1 || syst == 6) {
+            if (syst % 2 == 0) systUp = difference; 
+            if (syst % 2 == 1) {
                 systDown = difference;
                 cout << " up: " << systUp << "  down: " << systDown << endl; 
                 cout << " average: " << 0.5 * (fabs(systUp)+fabs(systDown)) << endl;
-                if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 0.5*(fabs(systUp)+fabs(systDown)) << "  "; 
-                else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << 0.5*(fabs(systUp)+fabs(systDown)) << "  "; 
+                //if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 100*0.5*(fabs(systUp) + fabs(systDown))/centralValue << "  "; 
+                //else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << 100*0.5*(fabs(systUp) + fabs(systDown))/centralValue << "  "; 
+                if (variable.find("ZNGoodJets") != string::npos && bin > 1) {
+                    myFile <<  " & " << 100*max(fabs(systUp), fabs(systDown))/centralValue << "  "; 
+                    total += pow( max(fabs(systUp), fabs(systDown)), 2);
+                }
+                else if (variable.find("ZNGoodJets") == string::npos) {
+                    myFile <<  " & " << 100*max(fabs(systUp), fabs(systDown))/centralValue << "  "; 
+                    total += pow( max(fabs(systUp), fabs(systDown)), 2);
+                }
 
             }
         } 
 
+        if (variable.find("ZNGoodJets") != string::npos && bin > 1) {
+            myFile <<  " & " << 100*diffUnfError << "  "; 
+            total += pow(diffUnfError*centralValue, 2); 
+        }
+        else if (variable.find("ZNGoodJets") == string::npos) {
+            myFile <<  " & " << 100*diffUnfError << "  "; 
+            total += pow(diffUnfError*centralValue, 2); 
+        }
 
         // compute systematics between two unfolding methods
-        double diffBayesSVD(centralValueOppAlgo - centralValue);
-        totalSystematicsUp += fabs(diffBayesSVD * diffBayesSVD);
-        totalSystematicsDown += fabs(diffBayesSVD * diffBayesSVD);
-        if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << sqrt(diffUnfError*diffUnfError + diffBayesSVD * diffBayesSVD) << "  "; 
-        else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << sqrt(diffUnfError*diffUnfError + diffBayesSVD * diffBayesSVD) << "  "; 
+        //double diffBayesSVD(centralValueOppAlgo - centralValue);
+        //totalSystematicsUp += fabs(diffBayesSVD * diffBayesSVD);
+        //totalSystematicsDown += fabs(diffBayesSVD * diffBayesSVD);
+        //if (variable.find("ZNGoodJets") != string::npos && bin > 1) {
+        //    myFile <<  " & " << 100*sqrt(diffUnfError*diffUnfError + diffBayesSVD * diffBayesSVD)/centralValue << "  "; 
+        //}
+        //else if (variable.find("ZNGoodJets") == string::npos) {
+        //    myFile <<  " & " << 100*sqrt(diffUnfError*diffUnfError + diffBayesSVD * diffBayesSVD)/centralValue << "  "; 
+        //}
 
         cout<<endl;
 
@@ -377,16 +405,22 @@ void FuncPlot(string variable, bool logZ, bool decrease)
             totalSystematicsDown = avgError;
         }
 
-        ySystDown[bin-1]   = sqrt(totalStatistics * totalStatistics + totalSystematicsDown );
-        ySystUp[bin-1]     = sqrt(totalStatistics * totalStatistics + totalSystematicsUp);
+        //ySystDown[bin-1]   = sqrt(totalStatistics * totalStatistics + totalSystematicsDown );
+        //ySystUp[bin-1]     = sqrt(totalStatistics * totalStatistics + totalSystematicsUp);
+        ySystDown[bin-1] = sqrt(total);
+        ySystUp[bin-1] = sqrt(total);
+
+
 
 
         totalSystematicsUp   = sqrt(totalSystematicsUp);
         totalSystematicsDown = sqrt(totalSystematicsDown);
 
 
-        if (variable.find("ZNGoodJet") != string::npos && bin > 1) myFile << "  & " << ySystUp[bin-1] << " \\\\" << endl;
-        else if (variable.find("ZNGoodJet") == string::npos) myFile << "  & " << ySystUp[bin-1] << " \\\\" << endl;
+        //if (variable.find("ZNGoodJet") != string::npos && bin > 1) myFile << "  & " << 100*ySystUp[bin-1]/centralValue << " \\\\" << endl;
+        //else if (variable.find("ZNGoodJet") == string::npos) myFile << "  & " << 100*ySystUp[bin-1]/centralValue << " \\\\" << endl;
+        if (variable.find("ZNGoodJet") != string::npos && bin > 1) myFile << "  & " << 100*sqrt(total)/centralValue << " \\\\" << endl;
+        else if (variable.find("ZNGoodJet") == string::npos) myFile << "  & " << 100*sqrt(total)/centralValue << " \\\\" << endl;
     }
     myFile << "\\end{tabular}}" << endl; 
     myFile << "\\label{tab:" << leptonFlavor ; 
@@ -395,7 +429,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     myFile << variable << "}"<< endl;
     myFile << "\\end{center}"  << endl;
     myFile << "\\end{table}" << endl;
-    cout << " finished error computation " << endl;
+    cout << "finished error computation " << endl;
 
 
     //////////////////////////////////////////////  NOW START PLOTTING PART  
@@ -405,13 +439,11 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     cout << " create canvas " << endl;
     TCanvas *plots = makeZJetsPlots(grCentralStat, grCentralSyst, hPDFSyst, genShe, genPow, genMad);
     plots->Print(outputFileNamePNG.c_str());
-
     myFile.close();
 
     if(f) f->Close();
     if (fPDFSyst->IsOpen()) fPDFSyst->Close(); 
-    
-    std::cout << __LINE__ << std::endl;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

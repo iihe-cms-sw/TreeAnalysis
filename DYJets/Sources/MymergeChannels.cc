@@ -38,22 +38,21 @@
 #define DEBUG              0
 using namespace std;
 
-
 //-- prototypes ---------------------------------------------------------------------------------//
 void mergeChannelsRun(string var = "ZNGoodJets_Zexc", bool logZ = 0, bool decrease = 0, int optionCorr = 0);
 void plotLepRatioComb(string variable, int optionCorr, TH1D* h_combine, TH1D* hMuon, TH1D* hEle, bool logz, bool decrease);
-void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[]);
+void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D* hCombinedTot, TH2D* allErrorsTH2[], TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[]);
 void dumpElements(TMatrixD& a);
 void dumpElements(TVectorD& a);
-void exclusifToInclusif(TH1D *h);
+void exclusifToInclusif(TH1D *h, TH2D *cov = NULL, bool overflow = false);
 //-----------------------------------------------------------------------------------------------//
 
 //-- global variables ---------------------------------------------------------------------------//
-string OUTPUTDIRECTORY = "MyPNGFiles/NiceUnfold_30_1000_Toys/";
+string OUTPUTDIRECTORY = "PNGFiles/NiceUnfold_30_1000_Toys/";
 
 int doXSec = 1;
 int doNormalize = 0;
-const double Luminosity(19575.);
+const double Luminosity(19600.);
 const bool doVarWidth = true;
 //-----------------------------------------------------------------------------------------------//
 
@@ -66,10 +65,10 @@ void MymergeChannels(int start = 0, int end = -1)
     gStyle->SetErrorX(0.5);
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
-    int kCorrMax = 6; 
+    int kCorrMax = 5; 
 
     if (end == -1) end = start + 1;
-    for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++){
+    for (int i(start); i < end; i++){
         std::cout << "Processing variable n°: " << i << "  " << VAROFINTERESTZJETS[i].name << std::endl;
         for (int k(0); k < kCorrMax; k++){
             int optionCorr = k;
@@ -92,8 +91,8 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
     TH1::SetDefaultSumw2();
 
     //-- fetch Muon and Electron files produced by FinalUnfold.cc ---------------------
-    string fileNameEl = "MyPNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
-    string fileNameMu = "MyPNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
+    string fileNameEl = "PNGFiles/FinalUnfold_30_1000_Toys/DE_"  + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
+    string fileNameMu = "PNGFiles/FinalUnfold_30_1000_Toys/DMu_" + ENERGY + "_unfolded_" + variable + "_histograms_Bayes_VarWidth.root";
 
     TFile *f[2];
     f[0] = new TFile(fileNameEl.c_str());
@@ -102,7 +101,7 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
 
     //-- Retrieve histograms from the files -------------------------------------------
     TH1D *dataReco[2], *dataCentral[2], *dataUnfWithSherpa[2], *unfErrorDistr[2], *dataCentralOppAlgo[2], *genMad[2], *genShe[2], *genPow[2];
-    TH1D *dataPUup[2], *dataPUdown[2], *dataJERup[2], *dataPU[2], *dataJER[2];
+    TH1D *dataPUup[2], *dataPUdown[2], *dataJERup[2], *dataJERdown[2], *dataPU[2], *dataJER[2];
     TH2D *myToyStatCov[2], *myToyJESCov[2], *myToyPUCov[2], *myToyXSECCov[2], *myToyJERCov[2], *myToyEFFCov[2], *myToyLUMICov[2];
 
     double luminosityErr = 0.026;
@@ -120,6 +119,7 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
         dataPUup[i]           = (TH1D*) f[i]->Get("PUup");
         dataPUdown[i]         = (TH1D*) f[i]->Get("PUdown");
         dataJERup[i]          = (TH1D*) f[i]->Get("JERup");
+        dataJERdown[i]        = (TH1D*) f[i]->Get("JERdown");
         myToyStatCov[i]       = (TH2D*) f[i]->Get("MyToyCov");
         myToyJESCov[i]        = (TH2D*) f[i]->Get("MyToyJESCov");
         myToyPUCov[i]         = (TH2D*) f[i]->Get("MyToyPU2Cov");
@@ -128,19 +128,23 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
         myToyEFFCov[i]        = (TH2D*) f[i]->Get("MyToyEFFCov");
 
         //--- call errors from unfolding with Sherpa and MadGraph ----
+        // returns histogram filled with the relative errors
         unfErrorDistr[i] = getErrors(dataCentral[i], dataUnfWithSherpa[i]);
 
         //--- compute error for PU ---
+        // returnis histogram filled with max of the |up - central| or |down - central| 
         dataPU[i] = getPUErrors(dataCentral[i], dataPUup[i], dataPUdown[i]);
 
         //--- compute error for JER ---
-        dataJER[i] = getJERErrors(dataCentral[i], dataJERup[i]);
+        // returnis histogram filled with max of the |up - central| or |down - central| 
+        dataJER[i] = getJERErrors(dataCentral[i], dataJERup[i], dataJERdown[i]);
 
         // set covariance for luminosity uncertainty --> take correlation from JES and rescale
         myToyLUMICov[i] = setCovariance(myToyJESCov[i], dataCentral[i], luminosityErr);
 
     }
     //---------------------------------------------------------------------------------
+
 
     TH1D* h_combine = (TH1D*) dataReco[0]->Clone();
     h_combine->SetDirectory(0);
@@ -345,7 +349,7 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
     //plotLepRatioComb(variable, optionCorr, (TH1D*) h_combine->Clone(), (TH1D*) dataCentral[0]->Clone(),(TH1D*) dataCentral[1]->Clone(), logz, decrease);
 
     /// PLOT FINAL PLOTS: COMBINATION VS MC
-    plotCombination(variable, optionCorr, (TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), genMad, genShe, genPow);
+    plotCombination(variable, optionCorr,(TH1D*) h_combine_stat->Clone(), (TH1D*) h_combine->Clone(), (TH2D**)allErrorsTH2, genMad, genShe, genPow);
 
     f[0]->Close();
     f[1]->Close();
@@ -353,7 +357,7 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
 
 
 //////////////////////////////////
-void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D* hCombinedTot, TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[])
+void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D* hCombinedTot, TH2D* allErrorsTH2[], TH1D* genMadTemp[], TH1D* genSheTemp[], TH1D* genPowTemp[])
 {
 
     //--- fetch the generated histograms for electrons ([0]) and muons ([1]) 
@@ -384,7 +388,7 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
     const int nBins(hCombinedStat->GetNbinsX());
     // renormalize first
     if (doXSec) {
-        for (int i(1); i <= nBins; i++) { 
+        for (int i(1); i <= nBins + 1; i++) { 
             double binW = hCombinedStat->GetBinWidth(i);
             hCombinedStat->SetBinContent(i, hCombinedStat->GetBinContent(i)*1./(Luminosity*binW));
             hCombinedTot->SetBinContent(i, hCombinedTot->GetBinContent(i)*1./(Luminosity*binW));
@@ -421,26 +425,35 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
 
 
     if (variable == "ZNGoodJets_Zexc") {
-        
+
         string variable_Zinc = "ZNGoodJets_Zinc";
+        TH1D *hCombinedStat_ZincNoCorr = (TH1D*) hCombinedStat->Clone();
         TH1D *hCombinedStat_Zinc = (TH1D*) hCombinedStat->Clone();
         hCombinedStat_Zinc->SetDirectory(0);
-        exclusifToInclusif(hCombinedStat_Zinc);
+        hCombinedStat_Zinc->SetTitle(variable_Zinc.c_str());
+        exclusifToInclusif(hCombinedStat_ZincNoCorr);
+        exclusifToInclusif(hCombinedStat_Zinc, allErrorsTH2[1]);
         TH1D *hCombinedTot_Zinc = (TH1D*) hCombinedTot->Clone();
         hCombinedTot_Zinc->SetDirectory(0);
-        exclusifToInclusif(hCombinedTot_Zinc);
+        hCombinedTot_Zinc->SetTitle(variable_Zinc.c_str());
+        exclusifToInclusif(hCombinedTot_Zinc, allErrorsTH2[0]);
         TH1D *hPDF_Zinc = (TH1D*) hPDF->Clone();
         hPDF_Zinc->SetDirectory(0);
-        exclusifToInclusif(hPDF_Zinc);
+        hPDF_Zinc->SetName(variable_Zinc.c_str());
+        //exclusifToInclusif(hPDF_Zinc);
         TH1D *genShe_Zinc = (TH1D*) genShe->Clone();
         genShe_Zinc->SetDirectory(0);
+        genShe_Zinc->SetName(variable_Zinc.c_str());
         exclusifToInclusif(genShe_Zinc);
         TH1D *genPow_Zinc = (TH1D*) genPow->Clone();
         genPow_Zinc->SetDirectory(0);
+        genPow_Zinc->SetName(variable_Zinc.c_str());
         exclusifToInclusif(genPow_Zinc);
         TH1D *genMad_Zinc = (TH1D*) genMad->Clone();
         genMad_Zinc->SetDirectory(0);
+        genMad_Zinc->SetName(variable_Zinc.c_str());
         exclusifToInclusif(genMad_Zinc);
+
 
         TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDF_Zinc, genShe_Zinc, genPow_Zinc, genMad_Zinc);
 
@@ -466,14 +479,35 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
 
 }
 
-void exclusifToInclusif(TH1D *h) {
+void exclusifToInclusif(TH1D *h, TH2D *cov, bool overflow) {
     int nBins = h->GetNbinsX();
+
+    if (cov) {
+        TCanvas *abcd = new TCanvas("abcd", "abcd", 600, 600);
+        abcd->cd();
+        cov->Draw("text");
+    }
     for (int i(1); i <= nBins; i++) {
         double sum(0);
         double error2(0);
-        for (int j(i); j <= nBins + 1; j++) {
-            sum += h->GetBinContent(j);     
-            error2 += pow(h->GetBinError(j), 2);
+        double err2(0);
+        int overflowBin = overflow ? 1 : 0;
+        for (int j(i); j <= nBins + overflowBin; j++) {
+            sum += h->GetBinContent(j);
+            if (cov == NULL) {
+                error2 += pow(h->GetBinError(j), 2);
+            }
+            else {
+                err2 += pow(h->GetBinError(j), 2);
+                for (int k(i); k <= nBins + overflowBin; k++) {
+                    error2 += cov->GetBinContent(j, k)*1./pow(19600, 2);
+                }
+            }
+        }
+        if (cov) {
+            cout << i << "  sum: " << sum << endl;
+            cout << i << "  err: " << sqrt(err2) << endl; 
+            cout << i << "  error:" << sqrt(error2) << endl;
         }
         h->SetBinContent(i, sum);
         h->SetBinError(i, sqrt(error2));
@@ -547,7 +581,7 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hE
         if ( DEBUG ) cout << " merging bin " << bin <<" of "<< nBins << "   " << centralValue  <<"   " << hEle->GetBinContent(bin) << "  "  << hMuon->GetBinContent(bin) << endl; 
 
     }
-    cout<< " things are merged lets go to the plotting"<< endl;
+    cout << "things are merged lets go to the plotting" << endl;
     TGraph *mcGraph  =  new TGraph(nBins, xCoor, yCoor);
     TGraphAsymmErrors *grCentralStat       =  new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, yStat, yStat);
     TGraphAsymmErrors *grCentralStatMuonRatio  =  new TGraphAsymmErrors(nBins, xCoor, yCoorMuonRatio, xErr, xErr, yStatMuonRatio, yStatMuonRatio);

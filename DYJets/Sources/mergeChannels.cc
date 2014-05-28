@@ -1271,7 +1271,7 @@ void returnCov(TH1D *dataCentral, TH1D* hUp, TH1D* hDown, TH2D *cov , TH1D *hErr
         hErrors->SetBinContent(bin,sigma[bin-1]);
     }
 
-    for (int bin(1); bin  <=   nBins; bin++){
+    for (int bin(1); bin  <= nBins; bin++){
 
         for (int bin1(1); bin1  <=   nBins; bin1++){
             double corr  =  1;

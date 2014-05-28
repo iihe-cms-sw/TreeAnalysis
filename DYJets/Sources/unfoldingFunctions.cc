@@ -142,7 +142,6 @@ TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBinsOrig){
     TH2D* hOut;
     TH2D* hOutTest;
     double binWidth = (hMuon->GetXaxis()->GetXmax()-hMuon->GetXaxis()->GetXmin()) / hMuon->GetXaxis()->GetNbins() ;
-    double binMax = hMuon->GetXaxis()->GetXmin() + binWidth*2 * NBins ;
     if ( !hMuon->GetXaxis()->GetXbins()->fN  ) {
         hOut = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),    NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth * NBins, NBinsOrig, (double) hMuon->GetXaxis()->GetXmin(), (double ) hMuon->GetXaxis()->GetXmin() +  binWidth * NBinsOrig  );
         hOutTest = newTH2D((string ) hMuon->GetName(), (string) hMuon->GetTitle(),  NBinsOrig, (double) hMuon->GetXaxis()->GetXmin(), (double ) hMuon->GetXaxis()->GetXmin() +  binWidth * NBinsOrig, NBins, hMuon->GetXaxis()->GetXmin(), hMuon->GetXaxis()->GetXmin() + binWidth *       NBins  );

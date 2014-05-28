@@ -134,6 +134,7 @@ void getFiles(string histoFilesDirectory, TFile *Files[], string leptonFlavor, s
         Syst.push_back("1_Up");      // 1 up: PU up
         Syst.push_back("1_Down");    // 1 down: PU down
         Syst.push_back("4_Up");      // 4 up: JER up
+        Syst.push_back("4_Down");    // 4 up: JER down
     }
     else { // for background we have
         Syst.push_back("0");         // 0: central
@@ -173,7 +174,7 @@ void closeFiles(TFile *Files[])
             nFiles = 3; 
             if (fileName.find("DE") != string::npos) nFiles = 5;
         }
-        else if (fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
+        else if (fileName.find("UNFOLDING") != string::npos) nFiles = 5; 
         else nFiles = 5;
 
         for (int i(0); i < nFiles; i++){
@@ -207,7 +208,7 @@ void getHistos(TH1D *histograms[], TFile *Files[], string variable, bool isDoubl
         nFiles = 3; 
         if (fileName.find("DE") != string::npos) nFiles = 5;
     }
-    else if (((isDoubleLep && fileName.find("DYJets") != string::npos) || (!isDoubleLep && fileName.find("WJets") != string::npos)) && fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
+    else if (((isDoubleLep && fileName.find("DYJets") != string::npos) || (!isDoubleLep && fileName.find("WJets") != string::npos)) && fileName.find("UNFOLDING") != string::npos) nFiles = 5; 
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){
@@ -233,7 +234,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], string variable)
     string fileName = Files[0]->GetName();
     int nFiles;
     if (fileName.find("Data") != string::npos) nFiles = 3; 
-    else if (fileName.find("UNFOLDING") != string::npos) nFiles = 4; 
+    else if (fileName.find("UNFOLDING") != string::npos) nFiles = 5; 
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){

@@ -27,14 +27,16 @@ using namespace std;
 ClassImp(ZJetsAndDPS);
 
 void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSign, bool doInvMassCut, 
-        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, string pdfSet, int pdfMember, int startEvent,  int skipEvent )
+        int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, 
+        string pdfSet, int pdfMember, int startEvent, int skipEvent)
 {
 
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") {
         LHAPDF::initPDFSet(1, pdfSet.c_str(), pdfMember);
-        LHAPDF::initPDFSet(2, "CT10.LHgrid");
-        const int numberPDFS(LHAPDF::numberPDF() + 1);
+        //LHAPDF::initPDFSet(1, "CT10.LHgrid");
+        LHAPDF::initPDFSet(2, "cteq6ll.LHpdf");
+        const int numberPDFS(LHAPDF::numberPDF(1) + 1);
         if (pdfMember > numberPDFS) {
             std::cout << "Warning pdfMember to high" << std::endl;
             return;
@@ -68,7 +70,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     }
     if (leptonFlavor == "TTMuE") doTT = true; 
     if (doW || doTT) doZ = false;
-    if (fileName.find("_dR_") != string::npos) doDR = true;
+    if (fileName.find("_dR") != string::npos) doDR = true;
     if (fileName.find("TopReweighting") != string::npos) { hasGenInfo = true ; doTTreweighting = true;} // we don't want to use gen plots for ttbar, we just need to load the lepton branch to read the t qurak pt 
     if ( doZ ) METcut = 0; // no need for MET cut on Z+jets analysis 
     // additional muons variables
@@ -224,7 +226,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     int countTrigSum[4] = {0};
 
     // setting weight when running on MIX of exclusive DY/WJets files to match number of parton events
-    double mixingWeightsDY[4] = {0.1926862, 0.07180968, 0.04943502, 0.03603373 }; // here we match all partons, and combine electron and muon side
+    double mixingWeightsDY[4] = {0.192686, 0.0718097, 0.04943495, 0.0360337 }; // here we match all partons, and combine electron and muon side
     //double mixingWeightsDY[4] = {  0.1927289,  0.07199641,  0.04966403,  0.03631544 }; // here we match  partons that pas gen cuts, and combine electron and muon side
     //double mixingWeightsDY_DMu[4] = {0.1925615791, 0.07927772, 0.04974768769, 0.03640484898};// OLDDDD  here we match only those partons that pass the gen cuts
     //double mixingWeightsDY_DMu[4] = { 0.192623 , 0.0719199 , 0.0495369 , 0.03617}; //  here we match only those partons that pass the gen    cuts
@@ -246,7 +248,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     Init(hasRecoInfo, hasGenInfo, hasPartonInfo);
     if (fChain == 0) return;
     Long64_t nbytes(0), nb(0);
-    Long64_t nentries = fChain->GetEntriesFast();
+    Long64_t nentries = fChain->GetEntries();
     if (nEvents_10000) {
         nentries = 10000;
         std::cout << "We plane to run on 100000 events" << std::endl;
@@ -326,21 +328,27 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (id1 == 21) id1 = 0; // 21 is Pythia convention for gluon, but needs to be 0 for LHAPDF
             if (id2 == 21) id2 = 0;
 
-            LHAPDF::usePDFMember(2, 0);
+            //cout << "id1: " << id1 << "  id2: " << id2 << "  Q: " << pdfInfo_->at(4) << endl;
+
             double pdf1 = LHAPDF::xfx(1, pdfInfo_->at(2), pdfInfo_->at(4), id1);
             double pdf2 = LHAPDF::xfx(1, pdfInfo_->at(3), pdfInfo_->at(4), id2);
+            //cout << "CT10    -> pdf1:  " << pdf1 << "  pdf2:  " << pdf2 << endl;
+
             double pdf01 = LHAPDF::xfx(2, pdfInfo_->at(2), pdfInfo_->at(4), id1);
             double pdf02 = LHAPDF::xfx(2, pdfInfo_->at(3), pdfInfo_->at(4), id2);
+            //cout << "CTEQ6L1 -> pdf01: " << pdf01 << "  pdf02: " << pdf02 << endl;
 
             if (pdfInfo_->at(2) * pdfInfo_->at(3) > 0) {
                 wPdf = pdf1 * pdf2;
                 if (pdf01*pdf02 <= 0 || pdf1*pdf2 <= 0) {
+                    cout << "Small problem" << endl;
                     wPdf = 1;
                 }
                 else {
                     wPdf /= (pdf01 * pdf02);
                 }
             }
+            //cout << "weight: " << wPdf << endl;
         }
         //==========================================================================================================//
 
@@ -1038,11 +1046,11 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             for (unsigned short i(0); i < nGoodJets; i++){
                 if (jets[i].pt >= jetPtCutMin) tmpJets.push_back(jets[i]);
             }
-            unsigned short tempnGoodJets(tmpJets.size());
+            //unsigned short tempnGoodJets(tmpJets.size());
             NZtotal++;
-            //cout << "event " << EvtInfo_RunNum << "  " << EvtInfo_EventNum << endl;
-            cout << "event " << EvtInfo_EventNum;
-            cout << "Z event #" << NZtotal << "  Zmass : " << Z.M() << "  Zpt : " << Z.Pt() << " NJets : " << tempnGoodJets <<"    " <<weight << endl;
+            cout << EvtInfo_RunNum << ":" << EvtInfo_EventNum << ":" << weight << endl;
+            //cout << "event " << EvtInfo_EventNum;
+            //cout << "Z event #" << NZtotal << "  Zmass : " << Z.M() << "  Zpt : " << Z.Pt() << " NJets : " << tempnGoodJets <<"    " <<weight << endl;
             //if (nGoodJets > 0) cout << "JETS:"<< endl;
             //for (unsigned short i(0); i < tempnGoodJets; i++) 
             //    cout << " jet #" << i + 1 << "  pt: " << tmpJets[i].pt << "  eta:"<<tmpJets[i].eta << "   " << endl;
@@ -3053,7 +3061,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
         int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetPtCutMax_, int ZPtCutMin_, int ZEtaCutMin_, int ZEtaCutMax_, int METcut_, bool nEvents_10000_, int jetEtaCutMin_, int jetEtaCutMax_): 
-    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("TestMyHistoFiles/"),
+    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFiles/"),
     fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetPtCutMax(jetPtCutMax_), jetEtaCutMin(jetEtaCutMin_), jetEtaCutMax(jetEtaCutMax_), ZPtCutMin(ZPtCutMin_), ZEtaCutMin(ZEtaCutMin_), ZEtaCutMax(ZEtaCutMax_), METcut(METcut_)
 {

@@ -27,18 +27,12 @@ TH2D* CovToCorr(const TH2D *h)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH2D* CovToCorr2(const TH2D *h, string title)
 {  
-
     int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    //   string title = h->GetTitle();
     TH2D* hCorrelation = new TH2D(title.c_str(),title.c_str(), xbin - 2 , 0.5, xbin - 1.5, xbin - 2, 0.5, xbin-1.5);
-
-    //TH2D* hCorr = (TH2D *) h ->Clone();
-    for (int i(2); i <= ybin - 1; i++){
-        for (int j(2); j <= xbin - 1; j++){
-            double temp = 0.;
-            temp = h->GetBinContent(j,i) / sqrt( h->GetBinContent(i,i ) * h->GetBinContent(j,j) );
-            hCorrelation->SetBinContent(j - 1 , i - 1 , temp );
-            //hCorr->SetBinContent(j, i, temp );
+    for (int i(2); i <= ybin - 1; i++) {
+        for (int j(2); j <= xbin - 1; j++) {
+            double temp = h->GetBinContent(j, i) / sqrt(h->GetBinContent(i, i) * h->GetBinContent(j, j));
+            hCorrelation->SetBinContent(j - 1, i - 1, temp);
         }
     }
     return hCorrelation;
@@ -110,8 +104,8 @@ TH1D* getSumBG(string histoFilesDirectory, string leptonFlavor, string energy, s
     TH1::SetDefaultSumw2();
     ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
     ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
-    TH1D* hOut;
-    for ( int i = 0 ; i < 8 ; i++){
+    TH1D* hOut = NULL;
+    for (int i(0); i < 8; i++) {
         TFile *DataFile;
         string DataHistoFilesName = DataHistoFilesNameArray[i];
         string name = histoFilesDirectory + leptonFlavor + "_"  + energy + "_" + DataHistoFilesName + syst + "_";
@@ -126,7 +120,6 @@ TH1D* getSumBG(string histoFilesDirectory, string leptonFlavor, string energy, s
         if ( i == 0 ) hOut = (TH1D*) meas->Clone();
         else hOut->Add(measClone, 1);
         std::cout << "fetched: " << variable << " from " << name << std::endl;
-
     }
 
     return hOut;
@@ -135,8 +128,9 @@ TH1D* getSumBG(string histoFilesDirectory, string leptonFlavor, string energy, s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, bool useOverFlow)
 {
+    // useOverFlow is true by default and should always be used
     if (useOverFlow) response->UseOverflow();
-    RooUnfold* RObject;
+    RooUnfold* RObject = NULL;
     TH1D * hDataClone = (TH1D*) hData->Clone();
     hDataClone->Add(hSumBG, -1);
     if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   response, hDataClone, Kterm);
@@ -151,8 +145,9 @@ TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSum
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hSumBG, int Kterm, string hOutName, bool useOverFlow)
 {
+    // useOverFlow is true by default and should always be used
     if (useOverFlow) response->UseOverflow();
-    RooUnfold* RObject;
+    RooUnfold* RObject = NULL;
     TH2D * hDataClone = (TH2D*) hData->Clone();
     hDataClone->Add(hSumBG, -1);
     if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   response, hDataClone, Kterm);
@@ -169,16 +164,20 @@ TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hS
 TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, int NToys, bool useOverFlow)
 {
 
-    if ( useOverFlow ) response->UseOverflow();
-    RooUnfold* RObject;
-    TH1D * hDataClone = (TH1D *) hData->Clone();
+    // useOverFlow is true by default and should always be used
+    if (useOverFlow) response->UseOverflow();
+    RooUnfold* RObject = NULL;
+    TH1D* hDataClone = (TH1D*) hData->Clone();
     hDataClone->Add(hSumBG, -1);
-    if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   response, hDataClone, Kterm);
-    if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, response, hDataClone, Kterm);
+    if (unfAlg == "SVD")        RObject = (RooUnfold*) RooUnfold::New(RooUnfold::kSVD, response, hDataClone, Kterm);
+    else if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New(RooUnfold::kBayes, response, hDataClone, Kterm);
     RObject->SetVerbose(0);
     RObject->SetNToys(NToys);
 
-    if (hOutName == "CentralCovToy" ) {
+    // if "Toy" appears in the hOutName, then returns Cov from Toys
+    // otherwise returns full covariance matrix (RooUnfold::kCovariance) propagated through the unfolding
+    // For Bayes it is advised to use Toys (see http://hepunx.rl.ac.uk/~adye/software/unfold/RooUnfold.html)
+    if (hOutName.find("Toy") != string::npos) {
         const TMatrixD covTemp = RObject->Ereco(RooUnfold::kCovToy); 
         TH2D* covarianceMat = new TH2D(covTemp);
         covarianceMat->SetName(hOutName.c_str());
@@ -187,7 +186,7 @@ TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* 
     else {
         const TMatrixD covTemp = RObject->Ereco(RooUnfold::kCovariance);	
         TH2D* covarianceMat = new TH2D(covTemp);
-        covarianceMat->SetName("CentralCov");
+        covarianceMat->SetName(hOutName.c_str());
         return covarianceMat;
     }
 }
@@ -202,113 +201,135 @@ void hBinCon(TH1D* hData)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* SetSystErrorsMax(TH1D* hCent, TH1D* hUp, TH1D* hDown, string name)
 {
-    TH1D *hCentClone = (TH1D*) hCent->Clone(name.c_str());
-    for(int j(0); j <= hCent->GetNbinsX() + 1 ; j++){
-        double ErrUp( fabs(hUp->GetBinContent(j) - hCent->GetBinContent(j)) );
-        double ErrDown( fabs(hCent->GetBinContent(j) - hDown->GetBinContent(j)) );
-        double ErrMax( ErrUp > ErrDown ? ErrUp : ErrDown );
+    // clone the central reco with a different name
+    TH1D* hCentClone = (TH1D*) hCent->Clone(name.c_str());
+    hCentClone->SetDirectory(0);
+    for (int j(0); j <= hCentClone->GetNbinsX() + 1; j++) {
+        double ErrUp = fabs(hUp->GetBinContent(j) - hCent->GetBinContent(j));
+        double ErrDown = fabs(hCent->GetBinContent(j) - hDown->GetBinContent(j));
+        double ErrMax = max(ErrUp, ErrDown);
+
         hCentClone->SetBinError(j, ErrMax);
     }
 
     return hCentClone;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* SetSystErrorsMean(TH1D* hCent, TH1D* hUp, TH1D* hDown, string name)
+{
+    // clone the central reco with a different name
+    TH1D *hCentClone = (TH1D*) hCent->Clone(name.c_str());
+    hCentClone->SetDirectory(0);
+    for (int j(0); j <= hCentClone->GetNbinsX() + 1; j++) {
+        double ErrUp = fabs(hUp->GetBinContent(j) - hCentClone->GetBinContent(j));
+        double ErrDown = fabs(hDown->GetBinContent(j) - hCentClone->GetBinContent(j));
+        double ErrMean = 0.5 * (ErrUp + ErrDown);
+
+        hCentClone->SetBinError(j, ErrMean);
+    }
+
+    return hCentClone;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCent, TH1D* hUp, TH1D* hDown, string name)
+{
+    // clone the data central with a different name
+    TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
+    hDataClone->SetDirectory(0);
+
+    for (int j(0); j <= hData->GetNbinsX() + 1; j++){
+        if (hCent->GetBinContent(j) <= 0 ) continue;
+        double ErrUp = fabs(hUp->GetBinContent(j) - hCent->GetBinContent(j));
+        double ErrDown = fabs(hDown->GetBinContent(j) - hCent->GetBinContent(j));
+        double ErrMean = 0.5 * (ErrUp + ErrDown);
+
+        // rescale to data value
+        if (hCent->GetBinContent(j) > 0) {
+            ErrMean *= (hData->GetBinContent(j) / hCent->GetBinContent(j));
+        }
+        hDataClone->SetBinError(j, ErrMean);
+    }
+
+    return hDataClone;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCent, TH1D* hUp, TH1D* hDown, double Error, string name)
+{
+    // clone the data central with a different name
+    TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
+    hDataClone->SetDirectory(0);
+
+    for (int j(0); j <= hData->GetNbinsX() + 1; j++) {
+        double ErrUp = fabs(hUp->GetBinContent(j) - hCent->GetBinContent(j));
+        double ErrDown = fabs(hDown->GetBinContent(j) - hCent->GetBinContent(j));
+        double ErrMean = 0.5 * (ErrUp + ErrDown);
+
+        // rescale to data value
+        if (hCent->GetBinContent(j) > 0) {
+            ErrMean *= (hData->GetBinContent(j) / hCent->GetBinContent(j));
+        }
+
+        // add additional error in quadrature
+        double ErrTot = sqrt(pow(ErrMean, 2) + pow(Error * hCent->GetBinContent(j), 2));
+        hDataClone->SetBinError(j, ErrTot);
+    }
+
+    return hDataClone;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* SetSystErrorsMean(TH1D* hData, double Error, string name)
 {
+    // clone the data central with a different name
     TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
     hDataClone->SetDirectory(0);
-    for(int j = 0 ; j != hData->GetNbinsX()+1; j++){
+
+    for (int j(0); j <= hData->GetNbinsX() + 1; j++) {
         double binCon = hData->GetBinContent(j);
-        if ( binCon  > 0 ) hDataClone->SetBinError(j, binCon * Error);
+        hDataClone->SetBinError(j, binCon * Error);
     }
 
     return hDataClone;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hUp, TH1D* hDown, string name)
+TH2D* SetResponseErrorsMax(TH2D* hCent, TH2D* hUp, TH2D* hDown)
 {
-    TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
-    hDataClone->SetDirectory(0);
-    for(int j(1); j != hData->GetNbinsX() + 1; j++) {
-        double ErrUp = hUp->GetBinContent(j)-hData->GetBinContent(j);
-        double ErrDown = hData->GetBinContent(j) - hDown->GetBinContent(j);
-        double ErrMax = ErrUp;
-        if ( ErrDown * ErrUp > 0 ) {
-            if (  ErrDown > ErrUp ) ErrMax = ErrDown ;
-        }
-        else ErrMax = ( fabs(ErrUp) + fabs(ErrDown) )/2.;
-        hDataClone->SetBinError(j,ErrMax);
-    }
+    // clone the central reco with a different name
+    TH2D * hCentClone = (TH2D *) hCent->Clone();
+    hCentClone->SetDirectory(0);
 
-    return hDataClone;
+    for(int i(0); i <= hCent->GetNbinsX() + 1; i++) {
+        for(int j(0); j <= hCent->GetNbinsY() + 1; j++) {
+            double ErrUp = fabs(hUp->GetBinContent(i, j) - hCent->GetBinContent(i, j));
+            double ErrDown = fabs(hDown->GetBinContent(i, j) - hCent->GetBinContent(i, j));
+            double ErrMax = max(ErrUp, ErrDown);
+            hCentClone->SetBinError(i, j, ErrMax);
+        }
+    }
+    return hCentClone;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, string name, int option)
+TH2D* SetResponseErrorsMean(TH2D* hCent, TH2D* hUp, TH2D* hDown)
 {
-    TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
-    hDataClone->SetDirectory(0);
-    int startBin = 0 ;
-    int NBins = hData->GetNbinsX()+1  ;
-    if ( option == 1 ){
-        startBin = 1 ;
-        NBins = hData->GetNbinsX() ;
-    }
-    for(int j = startBin ; j <= NBins  ; j++){
-        if ( hCentral->GetBinContent(j) <= 0 ) continue;
-        double ErrUp = hUp->GetBinContent(j)-hCentral->GetBinContent(j);
-        double ErrDown = hCentral->GetBinContent(j) - hDown->GetBinContent(j);
-        double ErrMax = ErrUp;
-        if ( ErrDown * ErrUp > 0 ) {
-            if (  ErrDown > ErrUp ) ErrMax = ErrDown ;
-        }
-        else ErrMax = ( fabs(ErrUp) + fabs(ErrDown) )/2.;
-        ErrMax *= ( hData->GetBinContent(j) / hCentral->GetBinContent(j) ) ;
-        hDataClone->SetBinError(j,ErrMax);
-    }
+    // clone the central reco with a different name
+    TH2D * hCentClone = (TH2D *) hCent->Clone();
+    hCentClone->SetDirectory(0);
 
-    return hDataClone;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* SetSystErrorsMean(TH1D* hData, TH1D* hCentral, TH1D* hUp, TH1D* hDown, double Error, string name)
-{
-    TH1D *hDataClone = (TH1D*) hData->Clone(name.c_str());
-    hDataClone->SetDirectory(0);
-    for(int j(0); j != hData->GetNbinsX() + 1; j++) {
-        if ( hCentral->GetBinContent(j) <= 0 ) continue;
-        double ErrUp = hUp->GetBinContent(j)-hCentral->GetBinContent(j);
-        double ErrDown = hCentral->GetBinContent(j) - hDown->GetBinContent(j);
-        double ErrMax = ErrUp;
-        if ( ErrDown * ErrUp > 0 ) {
-            if (  ErrDown > ErrUp ) ErrMax = ErrDown ;
-        }
-        else ErrMax = ( fabs(ErrUp) + fabs(ErrDown) )/2.;
-        //double ErrTot = sqrt(pow(ErrMax,2)+pow(Error * hCentral->GetBinContent(j),2));
-        ErrMax *= ( hData->GetBinContent(j) / hCentral->GetBinContent(j) ) ;
-        hDataClone->SetBinError(j, ErrMax);
-    }
-
-    return hDataClone;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH2D* SetResponseErrors(TH2D* hCen, TH2D* hUp, TH2D* hDown)
-{
-    TH2D * hCenClone = (TH2D *) hCen->Clone();
-    hCenClone->SetDirectory(0);
-    for(int i(1); i != hCen->GetNbinsX() + 1; i++) {
-        for(int j(1); j != hCen->GetNbinsY() + 1; j++) {
-            double ErrUp = fabs(hUp->GetBinContent(i,j)-hCen->GetBinContent(i,j));
-            double ErrDown = fabs(hCen->GetBinContent(i,j) - hDown->GetBinContent(i,j));
-            double ErrMax = ErrUp;
-            if ( ErrDown > ErrUp ) ErrMax = ErrDown ;
-            hCenClone->SetBinError(i,j,ErrMax);
+    for(int i(0); i <= hCent->GetNbinsX() + 1; i++) {
+        for(int j(0); j <= hCent->GetNbinsY() + 1; j++) {
+            double ErrUp = fabs(hUp->GetBinContent(i, j) - hCent->GetBinContent(i, j));
+            double ErrDown = fabs(hDown->GetBinContent(i, j) - hCent->GetBinContent(i, j));
+            double ErrMean = 0.5 * (ErrUp + ErrDown);
+            hCentClone->SetBinError(i, j, ErrMean);
         }
     }
-    return hCenClone;
+    return hCentClone;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,12 +347,9 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
     // this is not needed for global efficiencies like lepton, trigger, 
     // if we remove 0 - jet bin from unfoldong no need fot this three lines
     string hTitle = hdata->GetTitle();
-    bool isZN( hTitle.find("Counter") != std::string::npos);
-    //bool isZN( selection < 100 && hTitle.find("Counter") != std::string::npos);
-    //if (selection > 100) selection -= 100;
+    bool isZN( hTitle.find("Counter") != string::npos);
 
 
-    TH1D* hBack = (TH1D*) hBack0[0];
     //const int NBkgGroups(6);
     //Random for pseudos
     TRandom3* random = new TRandom3();
@@ -363,48 +381,46 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
     if (selection == 11) fluctBkg = true;
 
 
-    TH1D *h_bkgsub;
-    TH2D *h_response_temp;
+    TH1D *h_bkgsub = NULL;
+    TH2D *h_response_temp = NULL;
 
     TH2D *hresponse = (TH2D*) response->Hresponse();
     TH1D *hTrue     = (TH1D*) response->Htruth();
     TH1D *hMeas     = (TH1D*) response->Hmeasured();
+    TH1D *hBack     = (TH1D*) hBack0[0];
     TH1D *h_bkg     = (TH1D*) hBack->Clone();
-    TH1D *hTrue1    = (TH1D*) hTrue->Clone();
-    TH1D *h_meas    = (TH1D*) hdata->Clone();
-    TH1D *hMeas1    = (TH1D*) hMeas->Clone();
 
     // output histogram
-    const int NBins(hTrue1->GetNbinsX() + 1 );
+    const int NBins(hTrue->GetNbinsX() + 1);
     double mean[NBins], allPseudo[NBins][nPseudos];
     TH1D* hOut = (TH1D*) hTrue->Clone("MCpseudo");
 
-    int weRunOnNPS = 0;
-    for(int i(0); i < nPseudos; i++){
+    for (int i(0); i < nPseudos; i++) {
 
-        h_meas = (TH1D*) hdata->Clone("Data");
+        TH1D *h_meas = (TH1D*) hdata->Clone("Data");
         h_response_temp = (TH2D*) hresponse->Clone("Data");
-        weRunOnNPS = i ;
 
-        if(nPseudos > 1) {
-            double dataIntegral =  h_meas->Integral() ;
+        if (nPseudos > 1) {
+            double dataIntegral = h_meas->Integral(0, NBins);
             double countNJets(0.);
 
-            //Poisson fluctuate the prediction if we're doing pseudos
-            if ( selection == 1 || selection == 3 ) {
-                for (int j(0); j <= h_meas->GetNbinsX() + 1 ; j++) {
-                    double fluct(0.);
-                    double BinCount( hdata->GetBinContent(j) );
-                    double BinError( sqrt(BinCount) );
-                    if ( hdata->GetBinError(j) > 0 ) BinError = hdata->GetBinError(j);
-                    double ratio = 1. ;
-                    if ( BinCount > 0 ){
-                        ratio = (BinError * BinError )/BinCount ;
-                        if ( usePoisson ) fluct = random->Poisson(BinCount/ratio);
-                        if (!usePoisson ) {
+            // Poisson fluctuate the prediction if we're doing pseudos
+            if (selection == 1 || selection == 3) {
+                for (int j(0); j <= NBins; j++) {
+                    double fluct = 0.;
+                    double BinCount = hdata->GetBinContent(j);
+                    double BinError = hdata->GetBinError(j);
+                    double ratio = 1;
+
+                    if (BinCount > 0) {
+                        ratio = (BinError * BinError)/BinCount;
+                        if (usePoisson) {
+                            fluct = random->Poisson(BinCount/ratio);
+                        }
+                        else {
                             ratio = 1.;
                             fluct = BinCount + random->Gaus(0,BinError);
-                            if ( isZN && j > 1 ) countNJets += fluct;
+                            if (isZN && j > 1) countNJets += fluct;
                         }
                     }
                     if (fluct < 0) fluct = 0.;
@@ -412,10 +428,10 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
                     h_meas->SetBinError(j, BinError);
                     h_meas->SetBinContent(j, fluct * ratio );
                 }
-                if (!usePoisson && isZN ) {
+                if (!usePoisson && isZN) {
                     // total number fo Z bosons is fixed and indepedednt of JES... therefore we fix it and the 0 jet bin is set as Z_all - Z_(at least 1 jet)
                     h_meas->SetBinContent(1, dataIntegral - countNJets);
-                    h_meas->SetBinError(1, hdata->GetBinError(1) );
+                    h_meas->SetBinError(1, hdata->GetBinError(1));
                 }
             }
             // fluctuate data with fixed bin correlation: like JES --> all bins increase or decrease ( watch out Z+0 jets bin) ?????
@@ -426,10 +442,10 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
                 // change in JES for jets influences all the jets in the same direction (either positive or negative) but with different offset ???
                 //double fluct1dir(1.);
 
-                for (int j(0); j <= h_meas->GetNbinsX() + 1; j++) {
+                for (int j(0); j <= NBins; j++) {
 
                     // line below is need to propagate lepton efficiency uncertainty in the combined unfolding
-                    if (  selection == 20 && int(h_meas->GetNbinsX() / 2 ) == j ) { 
+                    if (selection == 20 && int((NBins - 1) / 2 ) == j ) { 
                         fluct1sig=random->Gaus(0,1); fluct1dir=fluct1sig/fabs(fluct1sig);
                     }
 
@@ -459,8 +475,8 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
             /// NOW FLUCTUATIONS OF RESPONSE MATRIX                             
             if ( ( selection == 1 || selection == 2 || selection == 4 || selection == 101 ) && fluctRMat == true){
                 //Poisson fluctuate the R Matrix
-                for (int j(1); j <= h_meas->GetNbinsX() + 1 ; j++){
-                    for (int k(1); k <= hTrue1->GetNbinsX() + 1 ; k++){
+                for (int j(1); j <= NBins; j++){
+                    for (int k(1); k <= NBins; k++){
                         double fluctR(0.);
                         double BinCount( hresponse->GetBinContent(j, k) );
                         double BinError( hresponse->GetBinError(j, k) );
@@ -479,8 +495,8 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
             if (fluctRMat == true && selection == 12) {
                 //gauss fluctuate the R Matrix when setting the PU effect
                 double fluct1sig( random->Gaus(0, 1) );	
-                for (int j(1); j <= h_meas->GetNbinsX() + 1 ; j++) {
-                    for (int k(1); k <= hTrue1->GetNbinsX() + 1 ; k++) {
+                for (int j(1); j <= NBins; j++) {
+                    for (int k(1); k <= NBins; k++) {
                         double fluctR(0.);
                         double BinCount( hresponse->GetBinContent(j, k) );
                         double BinError( hresponse->GetBinError(j, k) );
@@ -497,7 +513,7 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
 
             //bin independent Gauss and Poisson fluctuate the backgrounds
             if ( ( selection == 1 || selection == 2 || selection == 5 || selection == 101 ) && fluctBkg == true) {
-                for (int j(1); j <= h_bkg->GetNbinsX() + 1 ; j++) {
+                for (int j(1); j <= NBins ; j++) {
                     double fluctB(0), fluctE(0);
                     double BinCount( hBack->GetBinContent(j) );	
                     double BinError( hBack->GetBinError(j) );
@@ -528,7 +544,7 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
                 for (int k(0); k < NBkgGroups ; k++) { // we have 6 bkg groups: ZZ,WZ,top,TTbar,WJets(orDYJets) and WW
                     double fluct1sig( random->Gaus(0, 1) );   // fluctuate background cross section for each source
                     hBack = (TH1D*) hBack0[k]->Clone();
-                    for (int j(1); j <= h_bkg->GetNbinsX() + 1 ; j++) {
+                    for (int j(1); j <= NBins; j++) {
                         double fluctBtemp(0);
                         double BinCount( hBack->GetBinContent(j) );
                         double BinError( hBack->GetBinError(j) );
@@ -540,7 +556,7 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
                         //else fluctB[j] = 0. ;
                     }
                 }
-                for (int j(1); j <= h_bkg->GetNbinsX() + 1 ; j++) {
+                for (int j(1); j <= NBins; j++) {
                     h_bkg->SetBinError(j, sqrt(fluctB[j])); // this is ify
                     h_bkg->SetBinContent(j, fluctB[j]);
                 }
@@ -552,9 +568,9 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
         h_bkgsub = (TH1D*) h_meas->Clone();
         h_bkgsub->Add(h_bkg, -1);
 
-        RooUnfoldResponse response_temp(hMeas1, hTrue1, h_response_temp);
+        RooUnfoldResponse response_temp(hMeas, hTrue, h_response_temp);
         response_temp.UseOverflow();
-        RooUnfold* RObject;
+        RooUnfold* RObject = NULL;
         if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   &response_temp, h_bkgsub, kterm);
         if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, &response_temp, h_bkgsub, kterm);
         RObject->SetVerbose(0);

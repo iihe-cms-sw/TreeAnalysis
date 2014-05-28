@@ -16,8 +16,9 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
     }
 
-    runPlotting3RatiosCommon(0, 60);
-    //runPlotting3RatiosCommon(0, 45);
-    //runPlotting3RatiosCommon(46, 60);
+    bool doMuon = 0;
+    runPlotting3RatiosCommon(doMuon, 0, 1);
+    //runPlotting3RatiosCommon(doMuon, 0, 45);
+    //runPlotting3RatiosCommon(doMuon, 46, 60);
 
 }

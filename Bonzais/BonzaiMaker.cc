@@ -1,3 +1,4 @@
+#define BonzaiMaker_cxx
 #include "BonzaiMaker.h"
 #include <TH2.h>
 #include <TStyle.h>
@@ -15,14 +16,15 @@
 using namespace std;
 
 
-void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnfold, bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo)
+void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool doUnfold, bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo)
 {
     //--------------------------------------------------------
     //-- output file --
-    cout << " INPUT is :" << dataset_ << endl;
-    string outFileRoot = dataset_ +"/"+ fileName_ ;
-    cout << " our output is :" << outFileRoot << endl;
-    //TFile *outputFile = new TFile("Bonzai.root", "recreate");
+    cout << "Input is: " << storageElement << dataset_ << endl;
+    string command = "mkdir -p " + dataset_;
+    system(command.c_str());
+    string outFileRoot = dataset_ + "/" + fileName_ ;
+    cout << "Output is: " << outFileRoot << endl;
     TFile *outputFile = new TFile(outFileRoot.c_str(), "recreate");
 
     //-- subdirectory to match our ntuples sturcture --
@@ -40,23 +42,49 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
     //-- output tree containt --
     double mcEveWeight_;
     double mcSherpaSumWeight3_ ;
-    int doVector = 23; // 23 - Z boson, 24 - W
-    int lepID = 11; // doMuon = 0 - single electrons --> W boson; doMuon = 1 single muon --> W boson
-    if (doMuon == 22  ) {doVector = 23; lepID = 11;}
-    else if (doMuon == 26) {doVector = 23; lepID = 13;}
-    else if (doMuon == 1) {doVector = 24; lepID = 13;}
-    else if (doMuon == 24) lepID = 24 ;
-    cout << " leptons are  ... " << lepID << " doMuons " << doMuon << endl;
-    bool isMC   = false ;
-    if (dataset_.find("MC") != string::npos ) isMC   = true ;
+    // boson vector id. This is overwritten according to leptonIdSum
+    // 23: Z boson; 24: W boson
+    int doVector = 23; 
+
+    // lepton id. This is overwritten according to leptonIdSum
+    int lepID = 11; 
+
+    // leptonIdSum: lepton1 id + lepton2 id
+    // ee   => leptonIdSum = 11 + 11 = 22
+    // mumu => leptonIdSum = 13 + 13 = 26
+    // emu  => leptonIdSum = 11 + 13 = 24
+    // e    => leptonIdSum = 11 
+    // mu   => leptonIdSum = 13
+    
+    if (leptonIdSum == 22) { // double electron and thus Z boson
+        doVector = 23;
+        lepID = 11;
+    }
+    else if (leptonIdSum == 26) { // double muon and thus Z boson
+        doVector = 23; 
+        lepID = 13;
+    }
+    else if (leptonIdSum == 13) { // single muon and thus W boson
+        doVector = 24;
+        lepID = 13;
+    }
+    else if (leptonIdSum == 24) { // electron - muon
+        lepID = 24;
+    }
+
+    cout << " leptons are  ... " << lepID << " leptonIdSum " << leptonIdSum << endl;
+
+    // Here we check if it is MC or Data according to dataset_
+    bool isMC = false;
+    if (dataset_.find("MC") != string::npos) isMC = true;
 
     double PU_weight(0);
     double PU_npT(0);
     double PU_npIT(0);
 
-
     int EvtInfo_NumVtx = -111;
     int EvtInfo_RunNum = -111;
+    int EvtInfo_LumiNum = -111;
     int EvtInfo_EventNum = -111;
 
     int nup_;
@@ -133,6 +161,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
 
     outputTree->Branch("EvtInfo_NumVtx", &EvtInfo_NumVtx);
     outputTree->Branch("EvtInfo_RunNum", &EvtInfo_RunNum);
+    outputTree->Branch("EvtInfo_LumiNum", &EvtInfo_LumiNum);
     outputTree->Branch("EvtInfo_EventNum", &EvtInfo_EventNum);
     if ( isMC ) outputTree->Branch("nup_",&nup_);
     if ( hasRecoInfo && isMC ){
@@ -223,7 +252,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
     //-- start loop over the big tree --
     if (fChain == 0) return;
 
-    Long64_t nentries = fChain->GetEntriesFast();
+    Long64_t nentries = fChain->GetEntries();
 
     cout << " reco : " <<hasRecoInfo << "  Gen:  " << hasGenInfo << " entries: " << nentries << endl;
 
@@ -237,17 +266,10 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
         // if (Cut(ientry) < 0) continue;
 
         if (jentry % 10000 == 0) cout << jentry << " of " << nentries << endl; 
-        //if (  event != 2626263 && event != 42432965   ) continue ;
-        //bool skipEV(event== 22122 || event == 16516 || event == 252257 || event == 27722139 || event == 355233 || event == 271866  );
-        //#include "tomextra.h" 
-        //#include "mu_diff_events.h" 
-        //#include "last_disc.h"
-        //#include "diff_nrecojet_DE.h"
-        //            if ( ! skipEV ) continue 
-        //#include "1702_diff_Mu_DY_Zmass_all.h"
-        if ( DEBUG) cout << " event : " << event << endl;
+        if (DEBUG) cout << " event : " << event << endl;
         EvtInfo_NumVtx = -111;
         EvtInfo_RunNum = -111;
+        EvtInfo_LumiNum = -111;
         EvtInfo_EventNum = -111;
         eventMuonTrig = 0 ;
         eventElecTrig = 0 ;
@@ -257,6 +279,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
         PU_npIT = ngenITpu;
         EvtInfo_NumVtx = nvtx;
         EvtInfo_RunNum = run;
+        EvtInfo_LumiNum = lumi;
         EvtInfo_EventNum = event;
 
         if ( isMC ) 	nup_ = nup;
@@ -345,14 +368,10 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
             vector<double> genPhoPhiDupl_;
 
             //-- filling gen particles branches --
-            //		  cout << " size of gen leptons: " << mcn << endl;
-            //		  cout<<endl;
-            //		  cout<<endl;
-            for (int i(0); i < mcn; i++){
-                //	cout << " leptons and photons : " <<  endl;
+            for (int i(0); i < mcn; i++) {
                 //-- select the gen leptons only --
-                if ((abs(mc_id[i]) >= 11 &&  abs(mc_id[i]) <= 16) || ( abs(mc_id[i]) < 7  ) ){
-                    if ( doMuon != 24 && abs(mc_id[i]) == lepID && mc_status[i] == 3 ) genLep++;
+                if ((abs(mc_id[i]) >= 11 &&  abs(mc_id[i]) <= 16) || (abs(mc_id[i]) < 7)) {
+                    if (leptonIdSum != 24 && abs(mc_id[i]) == lepID && mc_status[i] == 3) genLep++;
 
                     TLorentzVector tmp;
                     tmp.SetPxPyPzE(mc_px[i], mc_py[i], mc_pz[i], mc_en[i]);
@@ -416,55 +435,34 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
 
 
         /// GO TO RECOOOOOOOOOOOOO
-        if ( hasRecoInfo ) {
-
-            //   event info
-
-            /// event triggers:
-            // std::bitset<12>   evTRIGbits(t_bits);
-            // SKIM ON TRIGS
-            //               if (!doUnfold && ( (doMuon == 24 && !(  t_bits[4] || t_bits[5] ) ||  ) ) continue ;
-
+        if (hasRecoInfo) {
 
             eventMuonTrig = 0;
-            if (doMuon == 1 && t_bits[6])   eventMuonTrig += 1 ; // single muon HLT_IsoMu24_eta2p1_v ?? 
-            if (doMuon == 26 && t_bits[3])   eventMuonTrig += 4 ; // HLT_Mu17_TkMu8_v muon ?? 
-            if (doMuon == 26 && t_bits[2])   eventMuonTrig += 8 ; // HLT_Mu17_Mu8_v muon ?? 
-            if (doMuon == 24 && t_bits[4])   eventMuonTrig += 16 ;
-            if (doMuon == 24 && t_bits[5])   eventMuonTrig += 32 ;
+            if (leptonIdSum == 13 && t_bits[6]) eventMuonTrig += 1; // single muon HLT_IsoMu24_eta2p1_v ?? 
+            if (leptonIdSum == 26 && t_bits[3]) eventMuonTrig += 4; // HLT_Mu17_TkMu8_v muon ?? 
+            if (leptonIdSum == 26 && t_bits[2]) eventMuonTrig += 8; // HLT_Mu17_Mu8_v muon ?? 
+            if (leptonIdSum == 24 && t_bits[4]) eventMuonTrig += 16;
+            if (leptonIdSum == 24 && t_bits[5]) eventMuonTrig += 32;
 
             eventElecTrig = 0 ;
-            if (doMuon == 0 && t_bits[13])   eventElecTrig += 1 ; // HLT_Ele27_WP80_v
-            if (doMuon == 22 && t_bits[0])    eventElecTrig += 2 ; // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v
-            if (doMuon == 24 && t_bits[4])   eventElecTrig += 16 ; 
-            if (doMuon == 24 && t_bits[5])   eventElecTrig += 32 ; 
+            if (leptonIdSum == 11 && t_bits[13]) eventElecTrig += 1; // HLT_Ele27_WP80_v
+            if (leptonIdSum == 22 && t_bits[0]) eventElecTrig += 2; // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v
+            if (leptonIdSum == 24 && t_bits[4]) eventElecTrig += 16; 
+            if (leptonIdSum == 24 && t_bits[5]) eventElecTrig += 32; 
 
-            // cout << " aaaa " << t_bits[6] <<"   " << t_bits[12] << "   " << t_bits[13] << endl;
-            if ( DEBUG) cout << " trigger global :  elec " << eventElecTrig << " and muon: " << eventMuonTrig <<endl;
+            if (DEBUG) cout << "trigger global: elec " << eventElecTrig << " and muon: " << eventMuonTrig << endl;
             // -- fill reco leptons ----
             int countGammas = 0 ;
-            for (int i(0); i < ln; i++){
+            for (int i(0); i < ln; i++) {
                 TLorentzVector tmp;
                 tmp.SetPxPyPzE(ln_px[i], ln_py[i], ln_pz[i], ln_en[i]);
-                std::bitset<32>   bits(ln_idbits[i]);
-                std::bitset<32>   TRIGbits(ln_Tbits[i]);
-                /*				  int lll = 1; 
-                                  for ( int k = 0 ; k < 22 ; k ++){
+                std::bitset<32> bits(ln_idbits[i]);
+                std::bitset<32> TRIGbits(ln_Tbits[i]);
 
-                                  std::bitset<24>   bitTemp(lll);
-                                  cout <<  "bits  :" <<k << "   " <<  lll << "    "  << bitTemp[k] << endl;
-                                  printf("\n Int     : %d bits\n", sizeof(int) * 8);
-                                  if ( lll == 0 ) lll = 1;
-                                  lll *= 2  ;
-                                  }
-                                  */
-
-                if ( tmp.Pt() < 5 )  continue ;
-                if ( doVector == 23 && (( !bits[5] && abs(ln_id[i]) == 11) || ( !bits[10] && abs(ln_id[i]) == 13) )) continue ;  
-                //                    if ( doVector == 23 && (( !bits[5] && abs(ln_id[i]) == 11) || ( !bits[10] && abs(ln_id[i]) == 13) )) continue ;  
-                if ( DEBUG )    cout << "print leptons " <<lepID <<"  " << ln_id[i] << "  " <<  tmp.Pt() << endl;
-                if ( (doMuon != 24 && abs(ln_id[i]) == lepID ) || ( doMuon == 24 && (abs(ln_id[i]) == 11 || abs(ln_id[i]) == 13) )) recoLep++;
-                if ( abs(ln_id[i]) == 11 ){
+                if (tmp.Pt() < 5) continue;
+                if (doVector == 23 && ((!bits[5] && abs(ln_id[i]) == 11) || (!bits[10] && abs(ln_id[i]) == 13))) continue;  
+                if ((leptonIdSum != 24 && abs(ln_id[i]) == lepID ) || ( leptonIdSum == 24 && (abs(ln_id[i]) == 11 || abs(ln_id[i]) == 13))) recoLep++;
+                if (abs(ln_id[i]) == 11) {
                     patElecPt_.push_back((double)  tmp.Pt());
                     patElecEta_.push_back((double) tmp.Eta());
                     patElecPhi_.push_back((double) tmp.Phi());
@@ -523,10 +521,10 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
                         cout << TRIGbits[4] << "   " << TRIGbits[5] << endl;
                         cout << TRIGbits[12] << "   " << TRIGbits[13] << endl;
                     }
-                    if (doMuon == 0 && TRIGbits[13])   singleElecTrig += 1 ; // HLT_Ele27_WP80_v
-                    if (doMuon == 22 && TRIGbits[0])   singleElecTrig += 2 ; // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v 
-                    if (doMuon == 24 && TRIGbits[4])   singleElecTrig += 16 ; // MuEle ?? 
-                    if (doMuon == 24 && TRIGbits[5])   singleElecTrig += 32 ; // EleMu ?? 
+                    if (leptonIdSum == 11 && TRIGbits[13])   singleElecTrig += 1 ; // HLT_Ele27_WP80_v
+                    if (leptonIdSum == 22 && TRIGbits[0])   singleElecTrig += 2 ; // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v 
+                    if (leptonIdSum == 24 && TRIGbits[4])   singleElecTrig += 16 ; // MuEle ?? 
+                    if (leptonIdSum == 24 && TRIGbits[5])   singleElecTrig += 32 ; // EleMu ?? 
                     if ( DEBUG) cout << singleElecTrig << endl;
                     patElecTrig_.push_back((double)   singleElecTrig );
                     if ( DEBUG) cout << " event infor and trig : " << EvtInfo_EventNum <<"   " <<  singleElecTrig << "   pt , eta, iso " << tmp.Pt() << "  "<< tmp.Eta()<<"  " << isoPF << " SC eta:  " <<eta <<  " ID " << elecID << endl;
@@ -559,11 +557,11 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
                         else invIsoCountMuon++;
                     }
                     double muonTrig = 0 ;
-                    if (doMuon == 1 && TRIGbits[6]) muonTrig += 1 ; // single muon HLT_IsoMu24_eta2p1_v ?? 
-                    if (doMuon == 26 && TRIGbits[3]) muonTrig += 4 ; // HLT_Mu17_TkMu8_v muon ?? 
-                    if (doMuon == 26 && TRIGbits[2]) muonTrig += 8 ; // HLT_Mu17_Mu8_v muon ?? 
-                    if (doMuon == 24 && TRIGbits[4]) muonTrig += 16 ; // MuEle ?? 
-                    if (doMuon == 24 && TRIGbits[5]) muonTrig += 32 ; // EleMu ?? 
+                    if (leptonIdSum == 13 && TRIGbits[6]) muonTrig += 1 ; // single muon HLT_IsoMu24_eta2p1_v ?? 
+                    if (leptonIdSum == 26 && TRIGbits[3]) muonTrig += 4 ; // HLT_Mu17_TkMu8_v muon ?? 
+                    if (leptonIdSum == 26 && TRIGbits[2]) muonTrig += 8 ; // HLT_Mu17_Mu8_v muon ?? 
+                    if (leptonIdSum == 24 && TRIGbits[4]) muonTrig += 16 ; // MuEle ?? 
+                    if (leptonIdSum == 24 && TRIGbits[5]) muonTrig += 32 ; // EleMu ?? 
                     patMuonTrig_.push_back(muonTrig);
                     if ( DEBUG )				  cout << EvtInfo_EventNum <<" trig:  " << ln_Tbits[i] << "   "  << muonTrig << "   " << TRIGbits[2] << "   pt, eta " << tmp.Pt()<<"  " << tmp.Eta() << endl;	
 
@@ -629,28 +627,25 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int doMuon, bool doUnf
 
         if (DEBUG) cout << "Passes  " <<  EvtInfo_EventNum << endl;
         //-- fill the output tree --
-        if (!doUnfold && doMuon == 24 &&patElecEta_.size() < 1 && patMuonEta_.size() < 1) continue;// at least one letons on RECO
-        if (!doUnfold && ((doMuon == 1 && patMuonEta_.size() < 1) || (doMuon == 0 && patElecEta_.size() < 1) || ((doMuon == 0 || doMuon == 1 ) && ( countElec + countMuon) > 1) ) )  continue ; //running on single electrons
-        if (!doUnfold && doMuon == 24 && (patElecEta_.size() < 1 || patMuonEta_.size() < 1) ) continue ;
+        if (!doUnfold && leptonIdSum == 24 &&patElecEta_.size() < 1 && patMuonEta_.size() < 1) continue;// at least one letons on RECO
+        if (!doUnfold && ((leptonIdSum == 13 && patMuonEta_.size() < 1) || (leptonIdSum == 0 && patElecEta_.size() < 1) || ((leptonIdSum == 11 || leptonIdSum == 13) && ( countElec + countMuon) > 1) ) )  continue ; //running on single electrons
+        if (!doUnfold && leptonIdSum == 24 && (patElecEta_.size() < 1 || patMuonEta_.size() < 1) ) continue ;
 
-        if ( !doUnfold && doMuon == 22 && patElecEta_.size() < 2 ) continue ;
-        if ( !doUnfold && doMuon == 26 && patMuonEta_.size() < 2 ) continue ;
+        if ( !doUnfold && leptonIdSum == 22 && patElecEta_.size() < 2 ) continue ;
+        if ( !doUnfold && leptonIdSum == 26 && patMuonEta_.size() < 2 ) continue ;
 
         if (DEBUG ) cout << "PassesAAA  " <<  EvtInfo_EventNum << "  " << recoLep << "  " << genLep << endl;
-        if ((doMuon ==  0 || doMuon ==  1) && doUnfold  && recoLep < 1 && genLep < 1) continue;
-        if ((doMuon == 22 || doMuon == 26) && doUnfold  && recoLep < 2 && genLep < 2) continue;
-        /*		  if ( !doUnfold && doMuon && patMuonEta_.size() < 1 ) continue ;
-                  if ( !doUnfold && !doMuon && patElecEta_.size() < 1 ) continue ;
-                  */
+        if ((leptonIdSum == 11 || leptonIdSum == 13) && doUnfold  && recoLep < 1 && genLep < 1) continue;
+        if ((leptonIdSum == 22 || leptonIdSum == 26) && doUnfold  && recoLep < 2 && genLep < 2) continue;
+
         outputTree->Fill();
         passedEvents++;
         if (DEBUG) cout << "Passes###  " <<  EvtInfo_EventNum << endl;
         // clear all vectors
         EvtInfo_NumVtx = -111;
         EvtInfo_RunNum = -111;
+        EvtInfo_LumiNum = -111;
         EvtInfo_EventNum = -111;
-
-
     }
     cout << " pass " << nentries<<"     " << passedEvents << endl;
     //-- save the output tree --
