@@ -42,8 +42,8 @@
     bool doDataEff(1);
     int NSystData(3);
     int NSystMC(5);
-    bool doSysRunning(1);
-    Samples DoWhat = BACKGROUND;
+    bool doSysRunning(0);
+    Samples DoWhat = DATA;
     //----------------------
 
 
@@ -89,7 +89,7 @@
         hasRecoInfo = true;
         hasGenInfo = false;
         for (unsigned int i(0); i < NSystData; i++) {
-            ZJetsAndDPS DMudata(lepSel + "_8TeV_Data_dR_5311_New", 1, 1, 1, doDataEff, dataSyst[i], dataDir[i], 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            ZJetsAndDPS DMudata(lepSel + "_8TeV_Data_dR", 1, 1, 1, doDataEff, dataSyst[i], dataDir[i], 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
             DMudata.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
         }
     }
@@ -100,42 +100,42 @@
 
         for (unsigned int i(0); i < NSystMC; i++) { 
 
-            //ZJetsAndDPS DMuZZInc(lepSel + "_8TeV_ZZ_dR_5311",              lumi*17.654        *1000/9799908.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuZZInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuWZInc(lepSel + "_8TeV_WZ_dR_5311",              lumi*33.21         *1000/10000283., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuWZInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuWWInc(lepSel + "_8TeV_WW_dR_5311",              lumi*54.838        *1000/10000431., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuWWInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuZZ(lepSel + "_8TeV_ZZJets2L2Nu_dR_5311",        lumi*17.654*0.04039 *1000/954911.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuZZ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuWW(lepSel + "_8TeV_WWJets2L2Nu_dR_5311",        lumi*54.838*0.10608 *1000/1933235., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuWW.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuZZ1(lepSel + "_8TeV_ZZJets2L2Q_dR_5311",        lumi*17.654*0.14118 *1000/1936727., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuZZ1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuZZInc(lepSel + "_8TeV_ZZ_dR_5311",              lumi*17.654        *1000/9799908.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuZZInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuWZInc(lepSel + "_8TeV_WZ_dR_5311",              lumi*33.21         *1000/10000283., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuWZInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuWWInc(lepSel + "_8TeV_WW_dR_5311",              lumi*54.838        *1000/10000431., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuWWInc.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuZZ(lepSel + "_8TeV_ZZJets2L2Nu_dR_5311",        lumi*17.654*0.04039 *1000/954911.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuZZ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuWW(lepSel + "_8TeV_WWJets2L2Nu_dR_5311",        lumi*54.838*0.10608 *1000/1933235., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuWW.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuZZ1(lepSel + "_8TeV_ZZJets2L2Q_dR_5311",        lumi*17.654*0.14118 *1000/1936727., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuZZ1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
             ZJetsAndDPS DMuZZ2(lepSel + "_8TeV_ZZJets4L_dR_5311",          lumi*17.654*0.010196*1000/4807893., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
             DMuZZ2.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuWZ(lepSel + "_8TeV_WZJets3LNu_dR_5311",         lumi*33.21 *0.032887*1000/1995334., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuWZ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuWZ1(lepSel + "_8TeV_WZJets2L2Q_dR_5311",        lumi*33.21 *0.068258*1000/3215990., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuWZ1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuT(lepSel + "_8TeV_T_s_channel_dR_5311",         lumi*3.79           *1000/259961.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuT.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuT1(lepSel + "_8TeV_T_t_channel_dR_5311",        lumi*56.4           *1000/3758227., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuT1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuT2(lepSel + "_8TeV_T_tW_channel_dR_5311",       lumi*11.1           *1000/497658.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuT2.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuTbar(lepSel + "_8TeV_Tbar_s_channel_dR_5311",   lumi*1.76           *1000/139974.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuTbar.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuTbar1(lepSel + "_8TeV_Tbar_t_channel_dR_5311",  lumi*30.7           *1000/1903681., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuTbar1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuTbar2(lepSel + "_8TeV_Tbar_tW_channel_dR_5311", lumi*11.1           *1000/493460.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuTbar2.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-            //ZJetsAndDPS DMuDY10(lepSel + "_8TeV_DYJets10to50_dR_5311",    lumi*860.5         *1000/11707222.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuDY10.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuWZ(lepSel + "_8TeV_WZJets3LNu_dR_5311",         lumi*33.21 *0.032887*1000/1995334., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuWZ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuWZ1(lepSel + "_8TeV_WZJets2L2Q_dR_5311",        lumi*33.21 *0.068258*1000/3215990., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuWZ1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuT(lepSel + "_8TeV_T_s_channel_dR_5311",         lumi*3.79           *1000/259961.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuT.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuT1(lepSel + "_8TeV_T_t_channel_dR_5311",        lumi*56.4           *1000/3758227., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuT1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuT2(lepSel + "_8TeV_T_tW_channel_dR_5311",       lumi*11.1           *1000/497658.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuT2.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuTbar(lepSel + "_8TeV_Tbar_s_channel_dR_5311",   lumi*1.76           *1000/139974.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuTbar.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuTbar1(lepSel + "_8TeV_Tbar_t_channel_dR_5311",  lumi*30.7           *1000/1903681., 1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuTbar1.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuTbar2(lepSel + "_8TeV_Tbar_tW_channel_dR_5311", lumi*11.1           *1000/493460.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuTbar2.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            ZJetsAndDPS DMuDY10(lepSel + "_8TeV_DYJets10to50_dR_5311",    lumi*860.5         *1000/11707222.,  1, 1, !doDataEff, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuDY10.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
 
-            ////--- ttbar ---
-            //ZJetsAndDPS DMuTT(lepSel + "_8TeV_TTJets_dR_5311", lumi * 245. * 1000 / 6923652., 1, 1, !doDataEff, ttSyst[i], ttDir[i], ttScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuTT.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+            //--- ttbar ---
+            ZJetsAndDPS DMuTT(lepSel + "_8TeV_TTJets_dR_5311", lumi * 245. * 1000 / 6923652., 1, 1, !doDataEff, ttSyst[i], ttDir[i], ttScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+            DMuTT.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
 
             ////--- ttbar reweigthed ---
             //ZJetsAndDPS DMuTTrew(lepSel + "_8TeV_TTJets_dR_5311_TopReweighting", lumi * 245. * 1000 / 6923652., 1, 1, !doDataEff, ttSyst[i], ttDir[i], ttScale[i], jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
@@ -167,11 +167,11 @@
         hasGenInfo = false;
         if (lepSel == "DMu" || lepSel == "DE") hasGenInfo = true;
 
-        ZJetsAndDPS DMuDY(lepSel + "_8TeV_DYJets_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1, 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-        DMuDY.Loop(hasRecoInfo, hasGenInfo,  doQCD,  doSameSign, doInvMassCut, doBJets, doPUStudy );
+        //ZJetsAndDPS DMuDY(lepSel + "_8TeV_DYJets_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1, 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+        //DMuDY.Loop(hasRecoInfo, hasGenInfo,  doQCD,  doSameSign, doInvMassCut, doBJets, doPUStudy );
 
-        //ZJetsAndDPS DMuDYMix(lepSel + "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1, 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-        //DMuDYMix.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+        ZJetsAndDPS DMuDYMix(lepSel + "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1, 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+        DMuDYMix.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
 
         // scale files
         //ZJetsAndDPS DMuDYscaleUp(lepSel + "_8TeV_DYJets_UNFOLDING_dR_5311_Inf3_scaleUp", lumi*3531.8*1000/2170270., 1, 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);

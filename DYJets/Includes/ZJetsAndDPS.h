@@ -38,6 +38,7 @@ class ZJetsAndDPS: public HistoSet {
 
         // Declaration of leaf types
         Double_t        PU_npT;
+        Double_t        PU_npIT;
         Double_t        mcEveWeight_;
         Double_t        mcSherpaSumWeight3_ ;
 
@@ -116,6 +117,7 @@ class ZJetsAndDPS: public HistoSet {
         TBranch        *b_nup_;   //!
         TBranch        *b_pdfInfo_;   //!
         TBranch        *b_PU_npT;   //!
+        TBranch        *b_PU_npIT;   //!
         TBranch        *b_EvtInfo_NumVtx;   //!
         TBranch        *b_EvtInfo_RunNum;   //!
         TBranch        *b_EvtInfo_EventNum;   //!

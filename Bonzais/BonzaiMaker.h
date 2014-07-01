@@ -443,18 +443,13 @@ BonzaiMaker::BonzaiMaker(string dataset_, string fileName_) : fChain(0)
 {
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
-    //string fullFileName ="dcap://maite.iihe.ac.be/pnfs/iihe/cms/store/user/tseva/WJetsNtuplesNew/Data8TeV_SingleMu2012A/  Events_190_2_7IU.root";
-    //string fullFileName ="dcap://maite.iihe.ac.be/pnfs/iihe/cms/store/user/tseva/WJetsNtuplesAN5S27/" + dataset_ +"/" +   fileName_ ;
-    //string fullFileName =  fileName_ ;
-    string fullFileName = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/tseva/WJetsNtuplesAN6S27_v2/" + fileName_ ;
-    //string fullFileName ="/user/tseva/DPS8/CMSSW_5_3_11/src/UserCode/llvv_fwk/test/"+fileName_ ;
 
     storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples/";
     string dirPath = "/dataAnalyzer";
     string treeName = "/data";
 
-    fullFileName = "~/VJets_March2014/CMSSW_5_3_11/src/UserCode/llvv_fwk/test/grid/multicrab_data/MC8TeV_ZZJets2L2Q/res/Events_176_1_6jp.root";
-    fullFileName = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/store/cmst3/user/psilva/tmp/MC8TeV_ZZJets4L/Events_422_1_S6f.root/dataAnalyzer/data";
+    //string fullFileName = "~/VJets_March2014/CMSSW_5_3_11/src/UserCode/llvv_fwk/test/grid/multicrab_data/MC8TeV_ZZJets2L2Q/res/Events_176_1_6jp.root";
+    string fullFileName = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/store/cmst3/user/psilva/tmp/MC8TeV_ZZJets4L/Events_422_1_S6f.root/dataAnalyzer/data";
 
 
     fChain = new TChain();

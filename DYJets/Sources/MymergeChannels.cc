@@ -35,7 +35,7 @@
 #include "makeZJetsPlots.h"
 #include "setTDRStyle.h"
 
-#define DEBUG              0
+#define DEBUG              1
 using namespace std;
 
 //-- prototypes ---------------------------------------------------------------------------------//
@@ -65,7 +65,7 @@ void MymergeChannels(int start = 0, int end = -1)
     gStyle->SetErrorX(0.5);
     gStyle->SetPadGridX(0);
     gStyle->SetPadGridY(0);
-    int kCorrMax = 5; 
+    int kCorrMax = 1; 
 
     if (end == -1) end = start + 1;
     for (int i(start); i < end; i++){
@@ -74,7 +74,7 @@ void MymergeChannels(int start = 0, int end = -1)
             int optionCorr = k;
             // 0 - simple weighted average, 
             // 1 - full cov matrix for each channel 
-            // 2 - full cov matrix for each channel and  correlation = 1 for same bins in the two channels 
+            // 2 - full cov matrix for each channel and correlation = 1 for same bins in the two channels 
             // 3 - full cov matrix for each channel is geometric average for two channels (for each bin)  
             // 4 - full cov matrix for each channel and  correlation = 1 for ALL bins between the two channels 
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease, optionCorr);
@@ -132,11 +132,11 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
         unfErrorDistr[i] = getErrors(dataCentral[i], dataUnfWithSherpa[i]);
 
         //--- compute error for PU ---
-        // returnis histogram filled with max of the |up - central| or |down - central| 
+        // returns histogram filled with max of the |up - central| or |down - central| 
         dataPU[i] = getPUErrors(dataCentral[i], dataPUup[i], dataPUdown[i]);
 
         //--- compute error for JER ---
-        // returnis histogram filled with max of the |up - central| or |down - central| 
+        // returns histogram filled with max of the |up - central| or |down - central| 
         dataJER[i] = getJERErrors(dataCentral[i], dataJERup[i], dataJERdown[i]);
 
         // set covariance for luminosity uncertainty --> take correlation from JES and rescale
@@ -144,148 +144,189 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
 
     }
     //---------------------------------------------------------------------------------
-
-
-    TH1D* h_combine = (TH1D*) dataReco[0]->Clone();
-    h_combine->SetDirectory(0);
-
-    // declare the big matrix
+    // Determine the number of bins once for all
     int nbins = dataCentral[0]->GetNbinsX();
-    const int NELE = 2 * nbins;
-    TMatrixD errorM(NELE, NELE);
+    //---------------------------------------------------------------------------------
 
-    TMatrixD U(NELE, nbins);
-    for(int irow = 0; irow < NELE; irow++) {
-        for(int icol = 0; icol < nbins; icol++) {
-            U(irow, icol) = ((irow == icol) || (irow == icol + nbins));
-        }
+    //---------------------------------------------------------------------------------
+    // For the combination we use the BLUE method. Reference may be found below:
+    // see http://www.sciencedirect.com/science/article/pii/S0168900203003292 
+    // Combining correlated measurements of several different physical quantities
+
+    //---------------------------------------------------------------------------------
+    // Declare the measurement vector. This vector contains the unfolded data for each
+    // channel, hence its size 2 * nbins. It corresponds to the y_{i} vector of the 
+    // paper mentioned above.
+    TVectorD measurement(2 * nbins);
+    for (int ibin = 0; ibin < nbins; ibin++) {
+        // electron channel
+        measurement(ibin) = dataCentral[0]->GetBinContent(ibin + 1);
+        // muon channel
+        measurement(nbins + ibin) = dataCentral[1]->GetBinContent(ibin + 1);
     }
+    //---------------------------------------------------------------------------------
 
-    // debug
-    if (DEBUG) dumpElements(U);
-
-    TMatrixD transposeU(nbins,NELE);
-    transposeU.Transpose(U);
-    if (DEBUG) dumpElements(transposeU);
-
-    TVectorD measurement(NELE);
-    // jet energy scale for electron channel
-    TVectorD jesSys_ele(nbins);
-    TVectorD jesSys_muo(nbins);
-
-    /// calculate statistical contribution to error
-    int optStat = 0 ; 
-    if (optionCorr > 0) optStat = 1;
-    TMatrixD covMatrixStat = getCovMatrixOfCombination(myToyStatCov[0], myToyStatCov[1], optStat, 1);
-    TMatrixD covMatrixJES  = getCovMatrixOfCombination(myToyJESCov[0], myToyJESCov[1], optionCorr, 1);
-    TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], dataPU[0], dataPU[1], optionCorr, 1);
-    //TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], myToyPUCov[1], optionCorr, 1);
-    TMatrixD covMatrixXSEC = getCovMatrixOfCombination(myToyXSECCov[0], myToyXSECCov[1], optionCorr, 1);
-    TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], dataJER[0], dataJER[1], optionCorr, 1);
-    //TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], myToyJERCov[1], optionCorr, 1);
-    TMatrixD covMatrixUNF  = getCovMatrixOfCombinationUNF(unfErrorDistr[0], unfErrorDistr[1], dataCentral[0], dataCentral[1], dataCentralOppAlgo[0], dataCentralOppAlgo[1], optionCorr, 1);
-
+    //-------------------------------------------------------------------------------------
+    // Now we must build up the 2n X 2n covariance matrices for each source of uncertainty.
+    // This is the trickiest part of the combination, since there is no recepy giving
+    // the rules to follow regarding what correlation to put between the different 
+    // measurements (electron - muon). That is why we have different option according to
+    // the variable optionCorr.
+    int optStat = (optionCorr > 0) ? 1 : 0; 
+    TMatrixD covMatrixStat = getCovMatrixOfCombination(myToyStatCov[0], myToyStatCov[1], optStat);
+    TMatrixD covMatrixJES  = getCovMatrixOfCombination(myToyJESCov[0], myToyJESCov[1], optionCorr);
+    TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], dataPU[0], dataPU[1], optionCorr);
+    //TMatrixD covMatrixPU   = getCovMatrixOfCombination(myToyPUCov[0], myToyPUCov[1], optionCorr);
+    TMatrixD covMatrixXSEC = getCovMatrixOfCombination(myToyXSECCov[0], myToyXSECCov[1], optionCorr);
+    TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], dataJER[0], dataJER[1], optionCorr);
+    //TMatrixD covMatrixJER  = getCovMatrixOfCombination(myToyJERCov[0], myToyJERCov[1], optionCorr);
+    TMatrixD covMatrixUNF  = getCovMatrixOfCombinationUNF(unfErrorDistr[0], unfErrorDistr[1], dataCentral[0], dataCentral[1], dataCentralOppAlgo[0], dataCentralOppAlgo[1], optionCorr);
     TMatrixD covMatrixLUMI = setCovMatrixOfCombination(luminosityErr, dataCentral[0], dataCentral[1], optionCorr);
-    TMatrixD covMatrixLEP  = getCovMatrixOfCombination(myToyEFFCov[0], myToyEFFCov[1], optStat, 1); // two  leptons are independednt
+    TMatrixD covMatrixLEP  = getCovMatrixOfCombination(myToyEFFCov[0], myToyEFFCov[1], optStat); // two  leptons are independednt
+    //-------------------------------------------------------------------------------------
+    //cout << "Study of stat covariance" << endl;
+    //TCanvas *cc = new TCanvas();
+    //cc->Divide(2);
+    //cc->cd(1);
+    //myToyStatCov[0]->DrawCopy("text");
+    //cc->cd(2);
+    //myToyStatCov[1]->DrawCopy("text");
+    //dumpElements(covMatrixStat);
+    //cout << "End of study of stat covariance" << endl;
 
-    // create total covariance matrix
-    // sum all matrices
+    //---------------------------------------------------------------------------------
+    // Declare the total covariance matrix. This corresponds to the caligraphic M_{ij}
+    // matrix of the paper mentioned above.
+    // It is obtained by summing the covariance matrices of each independent source of
+    // uncertainty that were computed above.
+    TMatrixD errorM(2*nbins, 2*nbins);
     errorM = covMatrixStat;
     errorM += covMatrixJES; 
     errorM += covMatrixPU;
     errorM += covMatrixXSEC;
     errorM += covMatrixJER;
     errorM += covMatrixLEP;
-
-    // if ( doXSec )  errorM += covMatrixLUMI ; // WE SHOULD ADD THIS AFTER COMBINATION ?
-    // there is something shity when you use full covariance (options 3, 4 ) of luminosity --> correlation of ALL bins =1 
-    // test this with  unmarking line below
-    //errorM = covMatrixLUMI ;
-
-
-    //errorM = covMatrixJES;
-    //errorM = covMatrixXSEC;
-    // now loop over bins to set the matrix content
-    double norm = 1.; // this I use to have a reasonable value for determinant ( not needed in general) -> important for inversion so that matrices don't deal with small/big numbers
-    for(int ibin = 0; ibin<nbins; ibin++){
-        // electron channel
-        double value_e = dataCentral[0]->GetBinContent(ibin+1);
-        // muon channel
-        double value_m = dataCentral[1]->GetBinContent(ibin+1);
-        measurement(ibin) = value_e / norm;
-        measurement(nbins+ibin) = value_m / norm;
-    }
-
-    // add unfolding covariance matrix
     errorM += covMatrixUNF;
+    //---------------------------------------------------------------------------------
 
-    // rescale error matrix for numerics, so the numbers are not to big (or small). should not effect resuls.
-    for(int ibin = 0; ibin < 2 * nbins; ibin++){
-        for(int jbin = 0; jbin < 2 * nbins; jbin++){
-            errorM(ibin,jbin) = errorM(ibin,jbin) /(norm * norm );
-        }
-    }
-
-
+    //---------------------------------------------------------------------------------
+    // Declare the inverse of the total covariance matrix. This corresponds to the 
+    // inverse of the caligraphic M_{ij} matrix of the paper mentioned above.
     TMatrixD errorInverse = errorM;
-    if (DEBUG) dumpElements(errorInverse);
-
     if (optionCorr == 0) {
+        // If optionCorr == 0 simply take the inverse of the diagonal since
+        // errorM is in this case diagonal
         int nrows = errorInverse.GetNrows();
         for (int i(0); i < nrows; i++) {
-            errorInverse(i, i) = 1./errorInverse(i, i);
+            errorInverse(i, i) = 1. / errorInverse(i, i);
         }
     }
     else {
-        double* det = NULL;
-        errorInverse.Invert(det);
+        // If optionCorr != 0 we call the invert method
+        errorInverse.Invert();
     }
+    //---------------------------------------------------------------------------------
 
+
+    //------------------------------------------------------------------------
+    // Declare the 2N x N unit matrix Unit_2nXn:
+    //
+    //             / 1 0 0 \  .
+    //             | 0 1 0 |
+    // Unit_2nXn = | 0 0 1 |
+    //             | 1 0 0 |
+    //             | 0 1 0 |
+    //             \ 0 0 1 /
+    //
+    // This matrix corresponds to the caligraphic U matrix of the paper
+    // mentioned above
+    TMatrixD Unit_2nXn(2*nbins, nbins);
+    for (int irow = 0; irow < 2*nbins; irow++) {
+        for (int icol = 0; icol < nbins; icol++) {
+            // 1 if irow = icol or if irow = icol + nbins 
+            Unit_2nXn(irow, icol) = ((irow == icol) || (irow == icol + nbins));
+        }
+    }
     if (DEBUG) {
-        cout << "Error inverse" << endl;
-        dumpElements(errorInverse);
+        cout << "Printing U" << endl;
+        dumpElements(Unit_2nXn);
+    }
+    //------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------
+    // Declare the N x 2N unit matrix Unit_nX2n:
+    //
+    //              / 1 0 0 1 0 0 \  .
+    //  Unit_nX2n = | 0 1 0 0 1 0 |
+    //              \ 0 0 1 0 0 1 /
+    //
+    // This matrix corresponds to the transpose of caligraphic U matrix of 
+    // the paper mentioned above, i.e. U tilda
+    TMatrixD Unit_nX2n(nbins, 2*nbins);
+    for (int irow = 0; irow < nbins; irow++) {
+        for (int icol = 0; icol < 2*nbins; icol++) {
+            // 1 if irow = icol or if irow + nbins = icol 
+            Unit_nX2n(irow, icol) = ((irow == icol) || (irow + nbins == icol));
+        }
+    }
+    if (DEBUG) {
+        cout << "Printing U tilde (transpose of U)" << endl;
+        dumpElements(Unit_nX2n);
+    }
+    //------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------
+    // Declare the N x 2N matrix lambda_nX2n and its transpose. These matrices
+    // correpond to the lambda and lambda tilda matrices of the paper mentioned
+    // above. They are use to obtained the result vector of the combination
+    // xhat_{i} of the paper, and its covariance matrix.
+    TMatrixD lambda_nX2n(nbins, 2*nbins);
+    lambda_nX2n = TMatrixD(Unit_nX2n * errorInverse * Unit_2nXn).Invert() * (Unit_nX2n * errorInverse);
+    if (DEBUG) {
+        cout << "Printing lambda" << endl;
+        dumpElements(lambda_nX2n);
     }
 
-    TMatrixD matrixRight(nbins, NELE);  
-    matrixRight = transposeU * errorInverse;
-    if (DEBUG) dumpElements(matrixRight);
-    if (DEBUG) dumpElements(transposeU);
-
-    TMatrixD matrixLeft(nbins,nbins);
-    matrixLeft = transposeU*(errorInverse*U);
-
-    if (DEBUG) dumpElements(matrixLeft);
-
-    TDecompSVD svd(matrixLeft);
-    TMatrixD matrixLeftInverse = svd.Invert();
-    if (1) {
-        cout << "Matrix Left Inverse" << endl;
-        dumpElements(matrixLeftInverse);
+    TMatrixD lambda_2nXn(2*nbins,nbins);
+    lambda_2nXn.Transpose(lambda_nX2n);
+    if (DEBUG) {
+        cout << "Printing lambda tilde (transpose of lambda)" << endl;
+        dumpElements(lambda_2nXn);
     }
+    //------------------------------------------------------------------------
 
-    TMatrixD lambda(nbins, NELE);
-    lambda = matrixLeftInverse * matrixRight;
-    if (DEBUG) dumpElements(lambda);
-
-    TMatrixD transposeLambda(NELE,nbins);
-    transposeLambda.Transpose(lambda);
-    if (DEBUG) dumpElements(transposeLambda);
-
+    //------------------------------------------------------------------------
+    // for optionCorr == 0, this is the same than simple weighted average
+    // (sum_{i=0}^{2} x_{i} sigma_{i}^{-2}) / (sum_{i=0}^{2} sigma_{i}^{-2})
+    // This vector corresponds to xhat_{i} of the paper mentioned above.
     TVectorD combined_value(nbins);
-    combined_value = lambda*measurement;
-    if (DEBUG) dumpElements(combined_value);
+    combined_value = lambda_nX2n * measurement;
+    if (DEBUG) {
+        cout << "Printing xhat_{i}" << endl;
+        dumpElements(combined_value);
+    }
+    //------------------------------------------------------------------------
 
-    TMatrixD combined_error_LUMI(nbins,nbins);
-    TMatrixD combined_error(nbins,nbins);
-    combined_error = lambda*(errorM*transposeLambda);
+    //------------------------------------------------------------------------
+    // for optionCorr == 0, this is the same than simple weighted average:
+    // 1 / ( sum_{i=1}^{2} sigma_{i}^{-2} )
+    // This matrix corresponds to the covariance matrix of the xhat_{i} vector
+    // of the paper mentioned above.
+    TMatrixD combined_error(nbins, nbins);
+    combined_error = lambda_nX2n * errorM * lambda_2nXn;
+    //------------------------------------------------------------------------
 
+    TMatrixD combined_error_LUMI(nbins, nbins);
     // after all matrix operation, now set the histogram
     // store combined result and all the individual contributions to error in vector
-    for(int i(0); i < nbins; i++) {
+    TH1D* h_combine = (TH1D*) dataReco[0]->Clone();
+    h_combine->SetDirectory(0);
 
-        h_combine->SetBinContent(i+1, combined_value(i) * norm );
-        combined_error_LUMI(i,i) = pow(luminosityErr * combined_value(i) * norm , 2 );
-        double error  =  combined_error(i,i) * norm * norm + combined_error_LUMI(i,i);
+    for (int i(0); i < nbins; i++) {
+
+        h_combine->SetBinContent(i+1, combined_value(i));
+        combined_error_LUMI(i,i) = pow(luminosityErr * combined_value(i), 2);
+        double error = combined_error(i,i) + combined_error_LUMI(i, i);
         /// add luminosity error to the combination result instead of each of channels before the combination
         //		error +=  pow(luminosityErr *  h_combine->GetBinContent(i+1),2 ) ;
         if (error > 1e-10) error = sqrt(error);
@@ -297,7 +338,8 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
     /// NOW ADD LUMI ERRORS TO COMBINATION
     combined_error += combined_error_LUMI;
 
-    /// set covariance matrices for individual errors
+    //------------------------------------------------------------------------
+    // set covariance matrices for individual errors
     TMatrixD combined_error_stat(nbins, nbins);
     TMatrixD combined_error_JES(nbins, nbins);
     TMatrixD combined_error_PU(nbins, nbins);
@@ -306,31 +348,31 @@ void mergeChannelsRun(string variable, bool logZ, bool decrease, int optionCorr)
     TMatrixD combined_error_UNF(nbins, nbins);
     TMatrixD combined_error_LEP(nbins, nbins);
 
-    combined_error_stat = lambda * (covMatrixStat * transposeLambda);
-    combined_error_JES  = lambda * (covMatrixJES * transposeLambda);
-    combined_error_PU   = lambda * (covMatrixPU * transposeLambda);
-    combined_error_XSEC = lambda * (covMatrixXSEC * transposeLambda);
-    combined_error_JER  = lambda * (covMatrixJER * transposeLambda);
-    combined_error_UNF  = lambda * (covMatrixUNF * transposeLambda);
-    combined_error_LEP  = lambda * (covMatrixLEP * transposeLambda);
-    //	combined_error_LUMI  =  lambda * (covMatrixLUMI * transposeLambda); // 
-    // 	combined_error_LUMI = setCovMatrixOfCombination(luminosityErr, (TH1D*) h_combine->Clone(), (TH1D*) h_combine->Clone() , 0);
+    combined_error_stat = lambda_nX2n * covMatrixStat * lambda_2nXn;
+    combined_error_JES  = lambda_nX2n * covMatrixJES * lambda_2nXn;
+    combined_error_PU   = lambda_nX2n * covMatrixPU * lambda_2nXn;
+    combined_error_XSEC = lambda_nX2n * covMatrixXSEC * lambda_2nXn;
+    combined_error_JER  = lambda_nX2n * covMatrixJER * lambda_2nXn;
+    combined_error_UNF  = lambda_nX2n * covMatrixUNF * lambda_2nXn;
+    combined_error_LEP  = lambda_nX2n * covMatrixLEP * lambda_2nXn;
+    //combined_error_LUMI  =  lambda_nX2n * covMatrixLUMI * lambda_2nXn; // 
+    //------------------------------------------------------------------------
 
 
     TH2D* allErrorsTH2[9];
     allErrorsTH2[0] = new TH2D(combined_error);
     allErrorsTH2[1] = new TH2D(combined_error_stat);
     allErrorsTH2[2] = new TH2D(combined_error_JES);
-    allErrorsTH2[3] = new TH2D(combined_error_PU);
-    allErrorsTH2[4] = new TH2D(combined_error_XSEC);
-    allErrorsTH2[5] = new TH2D(combined_error_JER);
+    allErrorsTH2[3] = new TH2D(combined_error_JER);
+    allErrorsTH2[4] = new TH2D(combined_error_PU);
+    allErrorsTH2[5] = new TH2D(combined_error_XSEC);
     allErrorsTH2[6] = new TH2D(combined_error_LUMI);
     allErrorsTH2[7] = new TH2D(combined_error_UNF);
     allErrorsTH2[8] = new TH2D(combined_error_LEP);
 
 
     // lets create som tables
-    ostringstream optionCorrStr; optionCorrStr << optionCorr ;
+    ostringstream optionCorrStr; optionCorrStr << optionCorr;
 
     string command = "mkdir -p " + OUTPUTDIRECTORY;
     system(command.c_str());
@@ -378,12 +420,15 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
 
     //--- load PDF systematic file ---
     string genVariable = "gen" + variable;
-    string PDFfileName = "PDFSystFiles/PDFSyst_" + genVariable + ".root";
+    //string PDFfileName = "PDFSystFiles/PDFSyst_" + genVariable + ".root";
+    string PDFfileName = "HistoFiles/CT10_PDF_Uncertainties.root";
     TFile *fPDF = new TFile(PDFfileName.c_str());
 
     // get histograms from PDF file
-    TH1D *hPDF = (TH1D*) fPDF->Get(genVariable.c_str());
-    hPDF->SetTitle("");
+    TH1D *hPDFUp = (TH1D*) fPDF->Get(string("Up_" + genVariable).c_str());
+    hPDFUp->SetTitle("");
+    TH1D *hPDFDown = (TH1D*) fPDF->Get(string("Down_" + genVariable).c_str());
+    hPDFDown->SetTitle("");
 
     const int nBins(hCombinedStat->GetNbinsX());
     // renormalize first
@@ -402,12 +447,11 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
             genShe->SetBinError(i, genShe->GetBinError(i)*1./(Luminosity*binW));
             genPow->SetBinError(i, genPow->GetBinError(i)*1./(Luminosity*binW));
 
-            if (DEBUG) cout << i << "   "  << hCombinedTot->GetBinContent(i)  << "     "   <<  hCombinedStat->GetBinError(i) << "     "  <<  hCombinedTot->GetBinError(i)   << endl;
-            if (DEBUG) cout << i << "   "  << hCombinedTot->GetBinContent(i)  << "     "   <<genPow->GetBinContent(i)  << "     "   <<  hCombinedStat->GetBinError(i) << "     "  <<  genPow->GetBinError(i)   << endl;
         }
     }
 
-    TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDF, genShe, genPow, genMad);
+    TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDFUp, hPDFDown, genShe, genMad);
+    //TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDFUp, hPDFDown, genShe, genPow, genMad);
 
     string outputFileNamePNG = OUTPUTDIRECTORY;
     if (doXSec) outputFileNamePNG += "Combination_XSec_";
@@ -427,6 +471,7 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
     if (variable == "ZNGoodJets_Zexc") {
 
         string variable_Zinc = "ZNGoodJets_Zinc";
+        string genVariable_Zinc = "genZNGoodJets_Zinc";
         TH1D *hCombinedStat_ZincNoCorr = (TH1D*) hCombinedStat->Clone();
         TH1D *hCombinedStat_Zinc = (TH1D*) hCombinedStat->Clone();
         hCombinedStat_Zinc->SetDirectory(0);
@@ -437,10 +482,14 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
         hCombinedTot_Zinc->SetDirectory(0);
         hCombinedTot_Zinc->SetTitle(variable_Zinc.c_str());
         exclusifToInclusif(hCombinedTot_Zinc, allErrorsTH2[0]);
-        TH1D *hPDF_Zinc = (TH1D*) hPDF->Clone();
-        hPDF_Zinc->SetDirectory(0);
-        hPDF_Zinc->SetName(variable_Zinc.c_str());
-        //exclusifToInclusif(hPDF_Zinc);
+        TH1D *hPDFUp_Zinc = (TH1D*) fPDF->Get(string("Up_" + genVariable_Zinc).c_str());
+        hPDFUp_Zinc->SetTitle("");
+        TH1D *hPDFDown_Zinc = (TH1D*) fPDF->Get(string("Down_" + genVariable_Zinc).c_str());
+        hPDFDown_Zinc->SetTitle("");
+        hPDFUp_Zinc->SetDirectory(0);
+        hPDFUp_Zinc->SetName(variable_Zinc.c_str());
+        hPDFDown_Zinc->SetDirectory(0);
+        hPDFDown_Zinc->SetName(variable_Zinc.c_str());
         TH1D *genShe_Zinc = (TH1D*) genShe->Clone();
         genShe_Zinc->SetDirectory(0);
         genShe_Zinc->SetName(variable_Zinc.c_str());
@@ -455,7 +504,8 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
         exclusifToInclusif(genMad_Zinc);
 
 
-        TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDF_Zinc, genShe_Zinc, genPow_Zinc, genMad_Zinc);
+        TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDFUp_Zinc, hPDFDown_Zinc, genShe_Zinc, genMad_Zinc);
+        //TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDFUp_Zinc, hPDFDown_Zinc, genShe_Zinc, genPow_Zinc, genMad_Zinc);
 
         string outputFileNamePNG_Zinc = OUTPUTDIRECTORY;
         if (doXSec) outputFileNamePNG_Zinc += "Combination_XSec_";
@@ -482,11 +532,11 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
 void exclusifToInclusif(TH1D *h, TH2D *cov, bool overflow) {
     int nBins = h->GetNbinsX();
 
-    if (cov) {
-        TCanvas *abcd = new TCanvas("abcd", "abcd", 600, 600);
-        abcd->cd();
-        cov->Draw("text");
-    }
+    //if (cov) {
+    //    TCanvas *abcd = new TCanvas("abcd", "abcd", 600, 600);
+    //    abcd->cd();
+    //    cov->Draw("text");
+    //}
     for (int i(1); i <= nBins; i++) {
         double sum(0);
         double error2(0);
@@ -503,11 +553,6 @@ void exclusifToInclusif(TH1D *h, TH2D *cov, bool overflow) {
                     error2 += cov->GetBinContent(j, k)*1./pow(19600, 2);
                 }
             }
-        }
-        if (cov) {
-            cout << i << "  sum: " << sum << endl;
-            cout << i << "  err: " << sqrt(err2) << endl; 
-            cout << i << "  error:" << sqrt(error2) << endl;
         }
         h->SetBinContent(i, sum);
         h->SetBinError(i, sqrt(error2));
@@ -529,7 +574,6 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hE
         hCombErr->SetBinContent(bin, 1 );
         double ErrCom = hCombined->GetBinError(bin) / hCombined->GetBinContent(bin);
         hCombErr->SetBinError(bin , ErrCom );
-        if (DEBUG ) cout << " Error : " << ErrCom << "  "  << hCombined->GetBinError(bin) << endl;
         double binNormWidth = 1.;
         if (doXSec) {
             binNormWidth = hCombined->GetBinWidth(bin) * Luminosity ;
@@ -577,8 +621,6 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hE
         ySystDownEleRatio[bin-1]    = 0. ;
         ySystUpEleRatio[bin-1]      = 0. ; 
         // set errors to zero
-
-        if ( DEBUG ) cout << " merging bin " << bin <<" of "<< nBins << "   " << centralValue  <<"   " << hEle->GetBinContent(bin) << "  "  << hMuon->GetBinContent(bin) << endl; 
 
     }
     cout << "things are merged lets go to the plotting" << endl;
@@ -648,7 +690,7 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hE
         string temp;
         temp = "d#sigma/dH_{T} [pb/GeV]";
         if (variable.find("Pt") != std::string::npos) temp = "d#sigma/dp_{T} [pb/GeV]";
-        if (variable.find("Eta") != std::string::npos) temp = "d#sigma/d#eta [pb]";
+        if (variable.find("Eta") != std::string::npos) temp = "d#sigma/d|#eta| [pb]";
         if (variable.find("ZNGood") != std::string::npos){
             temp = "d#sigma/dN [pb]";
 
@@ -814,21 +856,21 @@ void plotLepRatioComb(string variable, int optionCorr, TH1D* hCombined, TH1D* hE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void dumpElements(TMatrixD& a)
 {
-    cout << endl << endl;
+    cout << endl;
     const int nrows = a.GetNrows();
     const int ncols = a.GetNcols();
     if (nrows == ncols) cout << "determinant  =  " << a.Determinant() << endl;
     a.Print();
-    cout << endl << endl;
+    cout << endl;
     return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void dumpElements(TVectorD& a)
 {
-    cout << endl << endl;
+    cout << endl;
     a.Print();
-    cout << endl << endl;
+    cout << endl;
     return;
 }
 

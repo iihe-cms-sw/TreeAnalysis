@@ -78,7 +78,8 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     TFile *f = new TFile(fileName.c_str());
 
     TFile *fPDFSyst = NULL;
-    string PDFname = "PDFSystFiles/PDFSyst_gen" + variable + ".root";
+    string PDFname = "HistoFiles/CT10_PDF_Uncertainties.root";
+    //string PDFname = "PDFSystFiles/PDFSyst_gen" + variable + ".root";
     fPDFSyst = new TFile(PDFname.c_str());
 
 
@@ -99,7 +100,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     TH2D *myToyJERCov        = (TH2D*) f->Get("MyToyJER2Cov");
     TH2D *myToyEFFCov        = (TH2D*) f->Get("MyToyEFFCov");
 
-    TH1D *UnfErrors = getErrors(dataCentral, dataUnfWithSherpa);
+    TH1D *UnfErrors = getErrorsRel(dataCentral, dataUnfWithSherpa);
 
     // now get histograms for DPS if 7 TeV
     const int NAddGEN = 5;
@@ -108,21 +109,26 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     TH1D *genDYAddRatio[NAddGEN];
     string namesDYAdd[NAddGEN] = {"MadZ2MPIoff","MadZ2Star","MadZ2StarMPIoff","P84C","PowZjjMiNLO"};
 
-    TH1D *hPDFSyst = NULL;
-    hPDFSyst = (TH1D*) fPDFSyst->Get(genVariable.c_str());
-    hPDFSyst->SetTitle("");
+    TH1D *hPDFSystUp = NULL, *hPDFSystDown = NULL;
+    //hPDFSyst = (TH1D*) fPDFSyst->Get(genVariable.c_str());
+    //hPDFSyst->SetTitle("");
+    hPDFSystUp = (TH1D*) fPDFSyst->Get(string("Up_" + genVariable).c_str());
+    hPDFSystUp->SetTitle("");
+    hPDFSystDown = (TH1D*) fPDFSyst->Get(string("Down_" + genVariable).c_str());
+    hPDFSystDown->SetTitle("");
+    cout << "Ici: " << hPDFSystDown->GetBinContent(2) << endl;
 
     int nSyst(8);
     TH1D *hSyst[8];
     hSyst[0]          = (TH1D*) f->Get("JECup");
     hSyst[1]          = (TH1D*) f->Get("JECdown");
-    hSyst[2]          = (TH1D*) f->Get("PUup");
-    hSyst[3]          = (TH1D*) f->Get("PUdown");
-    hSyst[4]          = (TH1D*) f->Get("XSECup");
-    hSyst[5]          = (TH1D*) f->Get("XSECdown");
-    hSyst[6]          = (TH1D*) f->Get("JERup");
-    hSyst[7]          = (TH1D*) f->Get("JERdown");
-    string systNames[8] = {"JEC", "JEC", "PU", "PU", "XSEC", "XSEC", "JER", "JER"};
+    hSyst[2]          = (TH1D*) f->Get("JERup");
+    hSyst[3]          = (TH1D*) f->Get("JERdown");
+    hSyst[4]          = (TH1D*) f->Get("PUup");
+    hSyst[5]          = (TH1D*) f->Get("PUdown");
+    hSyst[6]          = (TH1D*) f->Get("XSECup");
+    hSyst[7]          = (TH1D*) f->Get("XSECdown");
+    string systNames[8] = {"JEC", "JEC", "JER", "JER", "PU", "PU", "XSEC", "XSEC"};
     string temp, tempTab;
     if (doXSec || doNormalize) { 
         string xtitle = genMad->GetXaxis()->GetTitle();
@@ -218,7 +224,7 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     else if (leptonFlavor == "Electrons" || leptonFlavor == "DE") myFile << " $Z\\rightarrow \\EE$: ";
     myFile << title << "} \\\\" << endl;
     myFile << xtitle << " & ";
-    myFile << sigmaTitleTab << " & stat & JES & PU & XSEC & JER & Unf. Meth. & tot \\\\ \\hline" << endl;
+    myFile << sigmaTitleTab << " & stat & JEC & JER & PU & XSEC & Unf. Meth. & tot \\\\ \\hline" << endl;
 
     const int nBins(dataCentral->GetNbinsX());
     cout << " central int:  " << variable << "   " << dataCentral->Integral(1, nBins) << " with under/over:  " << dataCentral->Integral(0, nBins+1) << endl;
@@ -437,7 +443,8 @@ void FuncPlot(string variable, bool logZ, bool decrease)
     TGraphAsymmErrors *grCentralSyst = new TGraphAsymmErrors(nBins, xCoor, yCoor, xErr, xErr, ySystDown, ySystUp);
 
     cout << " create canvas " << endl;
-    TCanvas *plots = makeZJetsPlots(grCentralStat, grCentralSyst, hPDFSyst, genShe, genPow, genMad);
+    TCanvas *plots = makeZJetsPlots(grCentralStat, grCentralSyst, hPDFSystUp, hPDFSystDown, genShe, genMad);
+    //TCanvas *plots = makeZJetsPlots(grCentralStat, grCentralSyst, hPDFSystUp, hPDFSystDown, genShe, genPow, genMad);
     plots->Print(outputFileNamePNG.c_str());
     myFile.close();
 

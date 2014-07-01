@@ -256,7 +256,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     std::cout << "We will run on " << nentries << " events" << std::endl;
     if ( startEvent != 0 || skipEvent != 1 ) cout << " it seems we will do Pulls !!! " << startEvent <<"  " << skipEvent<< endl;
     //------------------------------------
-    
+
     for (Long64_t jentry(startEvent); jentry < nentries; jentry+=skipEvent){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -2299,6 +2299,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         dRLeptons_Zinc0jet->Fill(deltaR(lepton1.phi, lepton1.eta, lepton2.phi, lepton2.eta), weight);
         SpTLeptons_Zinc0jet->Fill(SpTsub(lep1, lep2), weight);
         if (nGoodJets == 0){
+            //TruePU_0->Fill(PU_npT, weight);
+            //PU_0->Fill(PU_npIT, weight);
+            PU_0->Fill(EvtInfo_NumVtx, weight);
             nEventsExcl0Jets++;
             ZNGoodJets_Zexc_NoWeight->Fill(0.);
             ZMass_Zexc0jet->Fill(Z.M(), weight);
@@ -2371,6 +2374,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                     if (patJetPfAk05jetpuMVA_->at(jets[0].patIndex) > 0 ) hPtEtaBackJetMVA_Zexc1jet->Fill(leadJ.Pt(), leadJ.Eta(), weight);
                 }
 
+                //TruePU_1->Fill(PU_npT, weight);
+                //PU_1->Fill(PU_npIT, weight);
+                PU_1->Fill(EvtInfo_NumVtx, weight);
                 nEventsExcl1Jets++;
                 ZNGoodJets_Zexc_NoWeight->Fill(1.);
                 ZMass_Zexc1jet->Fill(Z.M(), weight);
@@ -2702,6 +2708,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             }
             if (nGoodJets == 2){
                 nEventsExcl2Jets++;
+                //TruePU_2->Fill(PU_npT, weight);
+                //PU_2->Fill(PU_npIT, weight);              
+            PU_2->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(2.);
                 ZMass_Zexc2jet->Fill(Z.M(), weight);
                 ZPt_Zexc2jet->Fill(Z.Pt(), weight);
@@ -2845,6 +2854,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             }
             if (nGoodJets == 3){
                 nEventsExcl3Jets++;
+                //TruePU_3->Fill(PU_npT, weight);
+                //PU_3->Fill(PU_npIT, weight);
+                PU_3->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(3.);
                 ZMass_Zexc3jet->Fill(Z.M(), weight);
                 ZPt_Zexc3jet->Fill(Z.Pt(), weight);
@@ -2893,6 +2905,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 AllJetPhi_Zinc4jet->Fill(jets[j].phi, weight);
             }
             if (nGoodJets == 4){
+                //TruePU_4->Fill(PU_npT, weight);
+                //PU_4->Fill(PU_npIT, weight);
+                PU_4->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(4.);
                 ZMass_Zexc4jet->Fill(Z.M(), weight);
                 ZPt_Zexc4jet->Fill(Z.Pt(), weight);
@@ -2936,6 +2951,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             FifthJetPhi_Zinc5jet->Fill(jets[4].phi, weight);        
             JetsHT_Zinc5jet->Fill(jetsHT, weight);
             if (nGoodJets == 5){
+                //TruePU_5->Fill(PU_npT, weight);
+                //PU_5->Fill(PU_npIT, weight);
+                PU_5->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(5.);
                 ZMass_Zexc5jet->Fill(Z.M(), weight);
                 ZPt_Zexc5jet->Fill(Z.Pt(), weight);
@@ -2969,6 +2987,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             SixthJetPhi_Zinc6jet->Fill(jets[5].phi, weight);        
             JetsHT_Zinc6jet->Fill(jetsHT, weight);
             if (nGoodJets == 6){
+                //TruePU_6->Fill(PU_npT, weight);
+                //PU_6->Fill(PU_npIT, weight);
+                PU_6->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(6.);
                 ZMass_Zexc6jet->Fill(Z.M(), weight);
                 ZPt_Zexc6jet->Fill(Z.Pt(), weight);
@@ -2979,6 +3000,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         if (nGoodJets >= 7){
             ZNGoodJets_Zinc->Fill(7., weight);
             if (nGoodJets == 7 ){
+                //TruePU_7->Fill(PU_npT, weight);
+                //PU_7->Fill(PU_npIT, weight);
+                PU_7->Fill(EvtInfo_NumVtx, weight);
             }
         }
         if (nGoodJets >= 8){
@@ -3061,7 +3085,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
         int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetPtCutMax_, int ZPtCutMin_, int ZEtaCutMin_, int ZEtaCutMax_, int METcut_, bool nEvents_10000_, int jetEtaCutMin_, int jetEtaCutMax_): 
-    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFiles/"),
+    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFilesJetsMass/"),
     fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetPtCutMax(jetPtCutMax_), jetEtaCutMin(jetEtaCutMin_), jetEtaCutMax(jetEtaCutMax_), ZPtCutMin(ZPtCutMin_), ZEtaCutMin(ZEtaCutMin_), ZEtaCutMax(ZEtaCutMax_), METcut(METcut_)
 {
@@ -3240,7 +3264,10 @@ void ZJetsAndDPS::Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo){
     // Set branch addresses and branch pointers
     fCurrent = -1;
     fChain->SetMakeClass(1);
-    if (fileName.find("Data") == string::npos) fChain->SetBranchAddress("PU_npT", &PU_npT, &b_PU_npT);
+    if (fileName.find("Data") == string::npos) {
+        fChain->SetBranchAddress("PU_npT", &PU_npT, &b_PU_npT);
+        fChain->SetBranchAddress("PU_npIT", &PU_npIT, &b_PU_npIT);
+    }
     if (fileName.find("UNFOLDING") != string::npos) fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
     if (hasRecoInfo){
         fChain->SetBranchAddress("EvtInfo_NumVtx", &EvtInfo_NumVtx, &b_EvtInfo_NumVtx);

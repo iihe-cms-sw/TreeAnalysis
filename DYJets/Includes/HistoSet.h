@@ -750,6 +750,23 @@ class HistoSet: public TObject{
         TH1D *deltaRjetMu;
         TH1D *deltaPtjetMu;
         TH1D *NVtx;
+        TH1D *TruePU_0;
+        TH1D *TruePU_1;
+        TH1D *TruePU_2;
+        TH1D *TruePU_3;
+        TH1D *TruePU_4;
+        TH1D *TruePU_5;
+        TH1D *TruePU_6;
+        TH1D *TruePU_7;
+
+        TH1D *PU_0;
+        TH1D *PU_1;
+        TH1D *PU_2;
+        TH1D *PU_3;
+        TH1D *PU_4;
+        TH1D *PU_5;
+        TH1D *PU_6;
+        TH1D *PU_7;
 
         TH1D *Beta;
         TH1D *BetaStar;

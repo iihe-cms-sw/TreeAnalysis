@@ -13,9 +13,9 @@
 #include <TAxis.h>
 #include <TLatex.h>
 
-TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *hPDF, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
-TCanvas* makeZJetsPlots(TGraphAsymmErrors *grStat, TGraphAsymmErrors *grSyst, TH1D *hPDF, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
-void setAndDrawTPad(TPad *plot, int plotNumber, int numbOfGenerator);
+TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *hPDFUp, TH1D *hPDFDown, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
+TCanvas* makeZJetsPlots(TGraphAsymmErrors *grStat, TGraphAsymmErrors *grSyst, TH1D *hPDFUp, TH1D *hPDFDown, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
+void setAndDrawTPad(string canvasName, TPad *plot, int plotNumber, int numbOfGenerator);
 string getYaxisTitle(const TH1D *gen1);
 void customizeLegend(TLegend *legend, int numbOfGenerator);
 void customizeLegend(TLegend *legend, int genNumb, int numbOfGenerator);
@@ -29,6 +29,6 @@ TGraphAsymmErrors* createGrFromHist(const TH1D *h);
 TGraphAsymmErrors* createRatioGraph(const TGraphAsymmErrors* grCentral);
 TGraphErrors* createRatioGraph(const TGraphErrors* grCentral);
 TGraphAsymmErrors *createGenToCentral(const TH1D *gen, const TGraphAsymmErrors *grCentral);
-TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDF, const TGraphAsymmErrors *grGenToCentral);
+TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDFUp, const TH1D *hPDFDown, const TGraphAsymmErrors *grGenToCentral);
 
 #endif

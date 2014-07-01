@@ -45,7 +45,7 @@ void FinalUnfold(int start, int end)
     // create the loop over the variables
     if (end == -1) end = start + 1;
     for (int i(start); i < end/*NVAROFINTERESTZJETS*/; i++) {
-        for (int j(0); j < 1; j++){
+        for (int j(0); j < 2; j++){
             bool isMuon = j;
             if (isMuon) FuncUnfold(isMuon, VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].MuBayeskterm, VAROFINTERESTZJETS[i].MuSVDkterm);
             else FuncUnfold(isMuon, VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].EBayeskterm, VAROFINTERESTZJETS[i].ESVDkterm);
@@ -323,7 +323,7 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     //--- now the covariance and correlation of the Opposite Algo
     TH2D* covCentralRooOpp    = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovOpp", 1);
     TH2D* covCentralRooToyOpp = CovFromRoo(oppUnfAlg, resDY[0], hData[0], hSumBG[0], oppUsedKterm, "CentralCovToyOpp", NumberOfToys);
-    outputRootFile->cd();  covCentralRooOpp->Write("CentralCovOpp");  covCentralRooToyOpp->Write("CentralCovToyOpp");
+    outputRootFile->cd();  covCentralRooOpp->Write();  covCentralRooToyOpp->Write();
     // -- create correlation matrix from covariance
     TH2D* corCentralRooOpp    = CovToCorr2((TH2D*) covCentralRooOpp->Clone("RooCorOpp"), "RooCorOpp");
     TH2D* corCentralRooToyOpp = CovToCorr2((TH2D*) covCentralRooToyOpp->Clone("RooCorToyOpp"), "RooCorToyOpp");

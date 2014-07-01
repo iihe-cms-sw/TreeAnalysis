@@ -27,7 +27,7 @@
     bool doInvMassCut = 0; 
     bool hasRecoInfo  = 1;
     bool hasGenInfo   = 1;
-    int jetPtMin      = 20;
+    int jetPtMin      = 30;
     int jetPtMax      = 0;
     int ZPtMin        = 0 ;
     int ZEtaMin       = -999999; // default value -999999       !!!!!!!  factor 100 to keep things integer ....    eta 2.4  = eta Cut 240 
@@ -88,7 +88,7 @@
     if (DoWhat == DATA || DoWhat == ALL) {
         hasRecoInfo = true;
         hasGenInfo = false;
-        for (unsigned int i(1); i < 2/*NSystData*/; i++) {
+        for (unsigned int i(0); i < NSystData; i++) {
             ZJetsAndDPS DMudata(lepSel + "_8TeV_Data_dR", 1, 1, 1, doDataEff, dataSyst[i], dataDir[i], 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
             DMudata.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
             //ZJetsAndDPS DMudataA(lepSel + "_8TeV_Data_dR_RunA", 1, 1, 1, doDataEff, dataSyst[i], dataDir[i], 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
@@ -222,9 +222,9 @@
         hasGenInfo = false;
         if (lepSel == "SE" || lepSel == "SMu") hasGenInfo = true;
 
-        ZJetsAndDPS DMuWJ(lepSel + "_8TeV_WJetsALL_UNFOLDING_dR_5311",  lumi*36703.         *1000/76102995., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-        DMuWJ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
-        ZJetsAndDPS DMuWJMix(lepSel + "_8TeV_WJetsALL_MIX_UNFOLDING_dR_5311", lumi*36703.         *1000/76102995., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+        //ZJetsAndDPS DMuWJ(lepSel + "_8TeV_WJetsALL_UNFOLDING_dR_5311",  lumi*36703.         *1000/76102995., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+        //DMuWJ.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
+        ZJetsAndDPS DMuWJMix(lepSel + "_8TeV_WJetsALL_MIX_UNFOLDING_dR", lumi*36703.         *1000/76102995., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
         DMuWJMix.Loop(hasRecoInfo, hasGenInfo, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy);
 
         if (doSysRunning){
@@ -293,9 +293,10 @@
     //}
 
     if (DoWhat == PDF) {
-        for (int pdfMember(26); pdfMember <= 30; pdfMember++) {
+        for (int pdfMember(0); pdfMember <= 0; pdfMember++) {
             ZJetsAndDPS DMuDYMixPDF(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "CT10.LHgrid", pdfMember);
+            //DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "CT10.LHgrid", pdfMember);
+            DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "MSTW2008nlo68cl.LHgrid", pdfMember);
         }
     }
 

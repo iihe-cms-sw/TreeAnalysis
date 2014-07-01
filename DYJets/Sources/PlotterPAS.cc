@@ -111,6 +111,7 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
   THStack *histSumMC[nHist];
   TLegend *legend[nHist];
   TLatex *cmsColl[nHist];
+  TLatex *cmsPrel[nHist];
   TLatex *sqrtXTeV[nHist];
   TLatex *intLumi[nHist];
   int nHistNoGen=0;
@@ -130,24 +131,33 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       histoTitle[nHistNoGen] = file[0]->GetListOfKeys()->At(i)->GetTitle();
       histSumMC[nHistNoGen] = new THStack(histoName[nHistNoGen].c_str(), histoTitle[nHistNoGen].c_str());
       //double xLowLeg(0.71), xHighLeg(1.);
-      double xLowLeg(0.79), xHighLeg(0.89);
+      double xLowLeg(0.65), xHighLeg(0.82);
       if (!decrease){
           xLowLeg = 0.125;
           xHighLeg = 0.225;
       }
-      legend[nHistNoGen] = new TLegend(xLowLeg, 0.65, xHighLeg, 0.87);
+      legend[nHistNoGen] = new TLegend(xLowLeg, 0.62, xHighLeg, 0.87);
       legend[nHistNoGen]->SetFillStyle(0);
       legend[nHistNoGen]->SetBorderSize(0);
-      legend[nHistNoGen]->SetTextSize(0.03);
+      legend[nHistNoGen]->SetTextSize(0.044);
       legend[nHistNoGen]->SetTextFont(42);
 
       cmsColl[nHistNoGen] = new TLatex();
       cmsColl[nHistNoGen]->SetTextSize(0.04);
-      cmsColl[nHistNoGen]->SetTextFont(42);
+      cmsColl[nHistNoGen]->SetTextFont(61);
       cmsColl[nHistNoGen]->SetLineWidth(2);
       cmsColl[nHistNoGen]->SetTextColor(kBlack);
       cmsColl[nHistNoGen]->SetNDC();
       cmsColl[nHistNoGen]->SetTextAlign(11);
+
+
+      cmsPrel[nHistNoGen] = new TLatex();
+      cmsPrel[nHistNoGen]->SetTextSize(0.04);
+      cmsPrel[nHistNoGen]->SetTextFont(52);
+      cmsPrel[nHistNoGen]->SetLineWidth(2);
+      cmsPrel[nHistNoGen]->SetTextColor(kBlack);
+      cmsPrel[nHistNoGen]->SetNDC();
+      cmsPrel[nHistNoGen]->SetTextAlign(11);
 
       sqrtXTeV[nHistNoGen] = new TLatex();
       sqrtXTeV[nHistNoGen]->SetTextSize(0.04);
@@ -168,7 +178,7 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       nHistNoGen++;
   } 
   nHist=nHistNoGen; 
-  //nHist=10;
+  //nHist=1;
   int Colors[] = {kBlack, kSpring+5, kOrange, kOrange-3, kRed+1, kPink-6, kViolet+5, kAzure+4, kBlue, kCyan+1, kCyan+1, kCyan+1}; 
   
   for (int j = 0; j < nHist; j++){
@@ -197,8 +207,8 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
                   if ( countVV == 0 ) histVVJets[j] = getHisto(file[i], histoName[j]);
                   else histVVJets[j]->Add(getHisto(file[i], histoName[j]));
                   countVV++;
-                  histVVJets[j]->SetFillColor(Colors[3]);
-                  histVVJets[j]->SetLineColor(Colors[3]);
+                  histVVJets[j]->SetFillColor(Colors[7]);
+                  histVVJets[j]->SetLineColor(Colors[7]);
               }
               else if (  fileNameTemp.find("Top") != string::npos ||  fileNameTemp.find("TT") != string::npos){
                   if ( countTops == 0 )  histTTJets[j] = getHisto(file[i], histoName[j]);
@@ -209,8 +219,8 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
               }
               else if ( isDoubleLep && fileNameTemp.find("DYJets") != string::npos &&  fileNameTemp.find("UNF") != string::npos && fileNameTemp.find("Tau") == string::npos){
                   histSignal[j] =  getHisto(file[i], histoName[j]);
-                  histSignal[j]->SetFillColor(Colors[7]);
-                  histSignal[j]->SetLineColor(Colors[7]);
+                  histSignal[j]->SetFillColor(Colors[3]);
+                  histSignal[j]->SetLineColor(Colors[3]);
 
               }
               else {
@@ -218,7 +228,6 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
                 else histOther[j] ->Add(getHisto(file[i], histoName[j]));
                 histOther[j] ->SetFillColor(Colors[4]);
                 histOther[j] ->SetLineColor(Colors[4]);
-                  cout << __LINE__<<endl;
               }
           }
       }
@@ -227,14 +236,15 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       histSumMC[j]->Add(histTTJets[j]);
       histSumMC[j]->Add(histVVJets[j]);
       histSumMC[j]->Add(histSignal[j]);
-    if ( isDoubleLep) legend[j]->AddEntry(histOther[j], " Tau");
-    legend[j]->AddEntry(histVVJets[j], " VV", "f");
-    legend[j]->AddEntry(histTTJets[j], " TT/T", "f");
-    if ( isDoubleLep) legend[j]->AddEntry(histSignal[j], " DYJets MD", "f");
-    else  legend[j]->AddEntry(histSignal[j], " WJets MD", "f");
+    if (isDoubleLep) legend[j]->AddEntry(histOther[j], " Z/#gamma^{*} #rightarrow #tau#tau");
+    legend[j]->AddEntry(histVVJets[j], " WW, WZ, ZZ", "f");
+    legend[j]->AddEntry(histTTJets[j], " t#bar{t} and single top", "f");
+    if (isDoubleLep) {
+        if (leptonFlavor == "Electrons") legend[j]->AddEntry(histSignal[j], " Z/#gamma^{*} #rightarrow ee", "f");
+        else if (leptonFlavor == "Muons") legend[j]->AddEntry(histSignal[j], " Z/#gamma^{*} #rightarrow #mu#mu", "f");
+    }
+    else  legend[j]->AddEntry(histSignal[j], " WJets Madgraph", "f");
   }
-
-
 
 
   for (int i = 0; i < nHist; i++) {
@@ -258,16 +268,16 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       histSumMC[i]->GetYaxis()->SetTitleSize(0.04); 
       histSumMC[i]->GetYaxis()->SetTitleOffset(1.32); 
       histSumMC[i]->SetMinimum(8);
-      histSumMC[i]->SetMaximum(2.5*histSumMC[i]->GetMaximum()); 
+      histSumMC[i]->SetMaximum(20.5*histSumMC[i]->GetMaximum()); 
       hist[0][i]->DrawCopy("E SAME");
       legend[i]->Draw();
-      cmsColl[i]->DrawLatex(0.11,0.94, "CMS Preliminary");
-      if (energy == "7TeV") sqrtXTeV[i]->DrawLatex(0.54,0.94, "#sqrt{s} = 7 TeV");
-      if (energy == "8TeV") sqrtXTeV[i]->DrawLatex(0.54,0.94, "#sqrt{s} = 8 TeV");
-      if (energy == "7TeV") intLumi[i]->DrawLatex(0.98,0.94, "#int L dt = 5.05 fb^{-1}");
-      if (energy == "8TeV") intLumi[i]->DrawLatex(0.98,0.94, "#int L dt = 19.6 fb^{-1}");
+      cmsColl[i]->DrawLatex(0.13,0.82, "CMS");
+      cmsPrel[i]->DrawLatex(0.13,0.78, "Preliminary");
+      //if (energy == "7TeV") sqrtXTeV[i]->DrawLatex(0.54,0.94, "#sqrt{s} = 7 TeV");
+      //if (energy == "8TeV") sqrtXTeV[i]->DrawLatex(0.54,0.94, "#sqrt{s} = 8 TeV");
+      if (energy == "7TeV") intLumi[i]->DrawLatex(0.98,0.9, "5.05 fb^{-1} (7 TeV)");
+      if (energy == "8TeV") intLumi[i]->DrawLatex(0.98,0.9, "19.6 fb^{-1} (8 TeV)");
       pad1[i]->Draw();
-
 
       canvas[i]->cd();
       pad2[i] = new TPad("pad2", "pad2", 0, 0, 1, 0.3);
@@ -307,12 +317,12 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       hist[0][i]->GetXaxis()->SetTickLength(0.03);
       hist[0][i]->GetXaxis()->SetTitleSize(0.1);
       hist[0][i]->GetXaxis()->SetTitleOffset(1.2);
-      hist[0][i]->GetXaxis()->SetLabelSize(0.1);
+      hist[0][i]->GetXaxis()->SetLabelSize(0.12);
       hist[0][i]->GetXaxis()->SetLabelOffset(0.018);
 
       hist[0][i]->GetYaxis()->SetRangeUser(0.51,1.49);
       hist[0][i]->GetYaxis()->SetNdivisions(5,5,0);
-      hist[0][i]->GetYaxis()->SetTitle("MC/Data");
+      hist[0][i]->GetYaxis()->SetTitle("Simulation/Data");
       hist[0][i]->GetYaxis()->SetTitleSize(0.1);
       hist[0][i]->GetYaxis()->SetTitleOffset(0.5);
       hist[0][i]->GetYaxis()->CenterTitle();
@@ -336,7 +346,7 @@ void PlotterPAS(string leptonFlavor = "Electrons", string DYSample = "MadGraph",
       outputFile->cd();
       canvas[i]->Write();
       pad1[i]->SetLogy(0);
-      histSumMC[i]->SetMaximum(1.2*histSumMC[i]->GetMaximum()); 
+      histSumMC[i]->SetMaximum(1.4*histSumMC[i]->GetMaximum()); 
       histoName[i] += "_Lin";
       canvas[i]->SetName(histoName[i].c_str());
       canvas[i]->SetTitle(histoName[i].c_str());

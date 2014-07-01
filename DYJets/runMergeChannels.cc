@@ -3,7 +3,6 @@
     vector<string> sources;
     sources.push_back("getFilesAndHistograms");
     sources.push_back("functions");
-    sources.push_back("plottingFunctions");
     sources.push_back("writeFastPlotsTex");
     sources.push_back("unfoldingFunctions");
     sources.push_back("makeZJetsPlots");

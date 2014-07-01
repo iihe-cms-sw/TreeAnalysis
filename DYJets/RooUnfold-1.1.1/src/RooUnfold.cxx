@@ -229,6 +229,7 @@ void RooUnfold::Init()
   _overflow= 0;
   _unfolded= _haveCov= _haveCovMes= _fail= _have_err_mat= _haveErrors= false;
   _NToys=50;
+  //gRandom->SetSeed(0);
   GetSettings();
 }
 

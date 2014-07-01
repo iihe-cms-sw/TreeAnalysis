@@ -17,7 +17,7 @@
     cout << " Run plotter:  " << fileBeingProcessed.str()  << endl;
     if (fileBeingProcessed.str().find("DYJets") != string::npos) {
         //Plotter("Electrons", 30);
-        //PlotterPAS("Electrons");
+        PlotterPAS("Electrons");
         //Plotter("Muons", 30);
         PlotterPAS("Muons");
 

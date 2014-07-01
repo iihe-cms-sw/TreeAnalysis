@@ -134,6 +134,7 @@ std::string pground(double& val, std::vector<double>& sys){
     double l10 = floor(log10(sys_min));
     double a = pow(10, l10-1);
 
+
     sprintf(buf, "%%.%dlf", std::max(0, (int)(1-l10)));
 
     char buf2[256];
@@ -152,6 +153,8 @@ std::string pground(double& val, std::vector<double>& sys){
     //} else{
     //    r+="$&";
     //}
+    //
+    std::cout << "1-l10: " << (int)(1-l10) << "  r: " << r << std::endl;
     return r;
 }
 
@@ -205,6 +208,7 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
     if (doXSec) {
         string xtitle = data->GetXaxis()->GetTitle();
         string shortVar = xtitle.substr(0, xtitle.find(" "));
+        if (shortVar.find("\\eta") != string::npos) xtitle = "\\vert" + xtitle + "\\vert";
         string unit = "";
         if (xtitle.find("[") != string::npos){
             size_t begin = xtitle.find("[") + 1;
@@ -234,7 +238,9 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
     myReplace(title, "1 2", "1");
     myReplace(title, "2 2", "2");
     cout << "HERE IS THE TITLE " << title << endl;
-    string xtitle = data->GetXaxis()->GetTitle(); changeToLatexFormat(xtitle);
+    string xtitle = data->GetXaxis()->GetTitle(); 
+    if (xtitle.find("#eta") != string::npos) xtitle = "\\vert" + xtitle + "\\vert";
+    changeToLatexFormat(xtitle);
     string sigmaTitle = temp; changeToLatexFormat(sigmaTitle);
     cout << "CHANGE" << endl;
     string sigmaTitleTab = tempTab;// changeToLatexFormat(sigmaTitleTab);
@@ -268,13 +274,19 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
 
     ofstream myFile(fileNameTable.c_str());
     myFile << "\\begin{table}[htb!]\\begin{center}\n";
-    myFile << "\\caption{Differential cross section in " << title << " and break down of the systematic uncertainties (in percentage) for the combination of both decay channels."; 
+    if (title.find("ounter") == string::npos) {
+        myFile << "\\caption{Differential cross section in " << title << " and break down of the systematic uncertainties (in percentage) for the combination of both decay channels."; 
+    }
+    else {
+        myFile << "\\caption{Cross section from the combination of both decay channels as the function of the exclusive jet multiplicity and break down of the uncertainties. The column denoted $\\sigma$ contains the cross section of Z boson production with exactly $N_{\\text{jets}}$ jet(s) times the branching ratio to dilepton of one flavour; the column denoted {\\em Tot. Unc.} contains the total uncertainty; the column denoted      {\\em stat} contains the statistical uncertainty; the remaining columns contain the different systematic uncertainties.";
+    }
     myFile << "}"<<endl;
     myFile << "\\scriptsize{" << endl;
     myFile << "\\begin{tabular}{c|cc|cccccccc}\n \\multicolumn{11}{c}{";
-    myFile << title << "} \\\\" << endl;
+    //myFile << title << "} \\\\" << endl;
+    myFile << "  " << "} \\\\" << endl;
     myFile << xtitle << " & ";
-    myFile << sigmaTitleTab << " & Tot. Err.  & stat & JES & PU & XSEC & JER & Lumi & Unf & Eff  \\\\ \\hline" << endl;
+    myFile << sigmaTitleTab << " & Tot. Unc. $\\left[\\%\\right]$  & stat $\\left[\\%\\right]$ & JEC $\\left[\\%\\right]$ & JER $\\left[\\%\\right]$ & PU $\\left[\\%\\right]$ & XSEC $\\left[\\%\\right]$ & Lumi $\\left[\\%\\right]$ & Unf $\\left[\\%\\right]$ & Eff $\\left[\\%\\right]$  \\\\ \\hline" << endl;
 
     int nSyst = 9;
     const int nBins(data->GetNbinsX());
@@ -299,18 +311,24 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
         myFile.precision(4);
         if (variable.find("ZNGoodJets") != string::npos && bin > 1){
             double err = sqrt(hError2D[0]->GetBinContent(bin, bin)) / Norm;
-            cout << "oooo " << pground(centralValue, err) << endl;
             myFile << pground(centralValue, err) ;
+            //myFile << fixed;
+            //myFile << setprecision(2);
             myFile.precision(2);
+            myFile << showpoint;
         }
         else if (variable.find("ZNGoodJets") == string::npos){
             double err = sqrt(hError2D[0]->GetBinContent(bin, bin)) / Norm;
-            cout << "oooo " << pground(centralValue, err) << endl;
             myFile << pground(centralValue, err) ;
+            //myFile << fixed;
+            //myFile << setprecision(2);
             myFile.precision(2);
+            myFile << showpoint;
         }
 
         for (int syst(0); syst < nSyst; syst++){
+            double error = 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm);
+            if (error > 0.01) {
             // percentage
             //if (syst == 0) {
                 if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << 100*sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (centralValue * Norm)  << "  ";
@@ -320,6 +338,11 @@ void createTexTable(string variable, string fileNameTable, const TH1D* data, TH2
             //    if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (Norm)  << "  ";
             //    else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << sqrt(hError2D[syst]->GetBinContent(bin,bin)) / (Norm) << "  ";
             //}
+            }
+            else {
+                if (variable.find("ZNGoodJets") != string::npos && bin > 1) myFile <<  " & " << "< 0.01" << "  ";
+                else if (variable.find("ZNGoodJets") == string::npos) myFile <<  " & " << "< 0.01" << "  ";
+            }
 
         }
 
@@ -386,6 +409,33 @@ TH2D* setCovariance(const TH2D *h, const TH1D* hCent, const double error)
     return hCorr;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TH1D* getErrorsRel(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
+{
+    // clone the histogram to make sure we don't mess it up
+    TH1D *UnfErrors = (TH1D*) dataCentral->Clone();
+    UnfErrors->SetDirectory(0);
+
+    // get the number of bins to run on each of them
+    int nBins = dataCentral->GetNbinsX();
+    for (int i(0); i <= nBins + 1; i++) {
+
+        // compute the absolute difference between the two generators
+        double diff = fabs(dataCentral->GetBinContent(i) - dataUnfWithSherpa->GetBinContent(i));
+
+        // make it relative to the bin content of dataCentral
+        if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
+        else diff = 0.;
+
+        // fill in the histogram with the relative error
+        UnfErrors->SetBinContent(i, diff);
+        UnfErrors->SetBinError(i, 0);
+    }
+
+    // return the histogram containing the relative error for each bin
+    return UnfErrors;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -403,8 +453,8 @@ TH1D* getErrors(const TH1D * dataCentral, const TH1D * dataUnfWithSherpa)
         double diff = fabs(dataCentral->GetBinContent(i) - dataUnfWithSherpa->GetBinContent(i));
 
         // make it relative to the bin content of dataCentral
-        if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
-        else diff = 0.;
+        //if (dataCentral->GetBinContent(i) != 0) diff /= dataCentral->GetBinContent(i);
+        //else diff = 0.;
 
         // fill in the histogram with the relative error
         UnfErrors->SetBinContent(i, diff);
@@ -512,21 +562,15 @@ TMatrixD setCovMatrixOfCombinationLep(double muonIDIsoHLTError, double electronI
 
     return errorMTemp;
 }
-TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int optionCorrTemp, double norm = 1.)
+
+TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int optionCorrTemp)
 {
     // get correlation matrix this is needed for option 3 of combination
     TH2D* hCorrEle = CovToCorr(CovEle);
     TH2D* hCorrMu = CovToCorr(CovMuon);
 
-    double correlationSameBin = 0.;
     double correlationDiffBin = 0.;
-    if (optionCorrTemp == 1) correlationSameBin = 0.;
-    if (optionCorrTemp == 2) correlationSameBin = 1.;
-    if (optionCorrTemp == 3) correlationSameBin = 1.;
-    if (optionCorrTemp >= 4) {
-        correlationSameBin = 1.;
-        correlationDiffBin = 1.;
-    }
+    if (optionCorrTemp >= 4) correlationDiffBin = 1.;
 
     // declare the big matrix
     int nbins = CovEle->GetNbinsX();
@@ -535,29 +579,84 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
 
     for (int ibin = 0; ibin < nbins; ibin++) {
 
+        //---------------------------------------------------------------------
+        // Fill in the diagonal of the 2n X 2n matrix:
+        //
+        //  / Cov E           |                \  .
+        //  |       .    0    |                |
+        //  |      0    .     |        0       |
+        //  |               . |                |
+        //  | --------------- | -------------- |
+        //  |                 | Cov M          |
+        //  |        0        |       .   0    |
+        //  |                 |     0     .    |
+        //  \                 |              . /
+        //
+        
         // first put electron error matrix component
         errorMTemp(ibin, ibin) = CovEle->GetBinContent(ibin + 1, ibin + 1);
-        // then mu
+        // then muon
         errorMTemp(nbins + ibin, nbins + ibin) = CovMuon->GetBinContent(ibin + 1, ibin + 1);
-        if (optionCorrTemp > 1) {
-            errorMTemp(ibin, nbins + ibin) = correlationSameBin * sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(ibin + 1, ibin + 1));
-            errorMTemp(ibin + nbins, ibin) = errorMTemp(ibin, nbins + ibin);
-        }
-        for (int jbin = 0; jbin < nbins; jbin++) {
-            if(optionCorrTemp > 0) {
+        //---------------------------------------------------------------------
+       
+        // stop here with the above matrix for optionCorr == 0
 
+        if (optionCorrTemp > 1) {
+
+            //---------------------------------------------------------------------
+            // Fill in same bin correlation if requested (with corr = 1 = Cov(X, Y) / (sigmaX sigmaY) )
+            //
+            //  / Cov E           | CovE*CovM      \  .
+            //  |       .    0    |       .   0    |
+            //  |     0     .     |    0      .    |
+            //  |               . |              . |
+            //  | --------------- | -------------- |
+            //  | CovE*CovM       | Cov M          |
+            //  |       .    0    |       .   0    |
+            //  |     0     .     |    0      .    |
+            //  \               . |              . /
+            //
+
+            errorMTemp(ibin, nbins + ibin) = sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(ibin + 1, ibin + 1));
+            errorMTemp(ibin + nbins, ibin) = errorMTemp(ibin, nbins + ibin);
+        } 
+
+        //---------------------------------------------------------------------
+
+
+
+        if (optionCorrTemp > 0) {
+            for (int jbin = 0; jbin < nbins; jbin++) {
+
+                //-------------------------------------------------------------------------
+                // Complete electron and muon covariance matrices
+                //
+                //  /                 | CovE*CovM      \  .
+                //  |      Cov E      |       .   0    |
+                //  |                 |    0      .    |
+                //  |                 |              . |
+                //  | --------------- | -------------- |
+                //  | CovE*CovM       |                |
+                //  |       .    0    |      Cov M     |
+                //  |     0     .     |                |
+                //  \               . |                /
+                //
                 // electron channel
                 errorMTemp(ibin, jbin) = CovEle->GetBinContent(ibin + 1, jbin + 1);
-                if (optionCorrTemp == 5) {
-                    errorMTemp(ibin, jbin) = sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovEle->GetBinContent(jbin + 1, jbin + 1));
-                }
                 // muon channel
                 errorMTemp(nbins + ibin, nbins + jbin) = CovMuon->GetBinContent(ibin + 1, jbin + 1);
+                //-------------------------------------------------------------------------
+
                 if (optionCorrTemp == 5) {
+                    //-------------------------------------------------------------------------
+                    // Replace off-diagonal of Cov E and Cov M matrices by sqrt(CovE_ii * CovE_jj)
+                    //
+                    errorMTemp(ibin, jbin) = sqrt(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovEle->GetBinContent(jbin + 1, jbin + 1));
                     errorMTemp(nbins + ibin, nbins + jbin) = sqrt(CovMuon->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(jbin + 1, jbin + 1));
+                    //-------------------------------------------------------------------------
                 }
 
-                if (ibin != jbin){
+                if (ibin != jbin) {
                     // electron-muon channel
                     if (optionCorrTemp == 3) {
                         double valueEle = hCorrEle->GetBinContent(ibin, jbin);
@@ -569,44 +668,30 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
                             else correlationDiffBin *= valueMu / fabs(valueMu);
                         } 	
                     }
+                    // muon-electron channel
                     errorMTemp(ibin, nbins + jbin) = correlationDiffBin * sqrt(fabs(CovEle->GetBinContent(ibin + 1, ibin + 1) * CovMuon->GetBinContent(jbin + 1, jbin + 1)));
 
-                    // muon-electron channel
                     errorMTemp(nbins + ibin, jbin) = correlationDiffBin * sqrt(fabs(CovMuon->GetBinContent(ibin + 1, ibin + 1) * CovEle->GetBinContent(jbin + 1, jbin + 1)));
                 }
             }      
         }      
     } // loop over the number of bins
 
-    for(int ibin = 0; ibin < 2 * nbins; ibin++){
-        for(int jbin = 0; jbin < 2 * nbins; jbin++){
-            errorMTemp(ibin, jbin) = errorMTemp(ibin, jbin) / (norm * norm);
-        }
-    }
     return errorMTemp;
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* unfErrorDistrMu, const TH1D* hEle, const TH1D* hMu, const TH1D* hEleOpp, const TH1D* hMuOpp, int optionCorrTemp, double norm = 1.)
+TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* unfErrorDistrMu, const TH1D* hEle, const TH1D* hMu, const TH1D* hEleOpp, const TH1D* hMuOpp, int optionCorrTemp)
 {
 
-    double correlationSameBin = 0.;
     double correlationDiffBin = 0.;
-    if (optionCorrTemp == 1) correlationSameBin = 0.;
-    if (optionCorrTemp == 2) correlationSameBin = 1.;
-    if (optionCorrTemp == 3) correlationSameBin = 1.;
-    if (optionCorrTemp >= 4) {
-        correlationSameBin = 1.;
-        correlationDiffBin = 1.;
-    }
+    if (optionCorrTemp >= 4) correlationDiffBin = 1.;
 
 
     // declare the big matrix
-    int nbins =  hEle->GetNbinsX();
-    //nbins =  8 ;
-    const int NELE = 2*nbins;
-    TMatrixD errorMTemp(NELE,NELE);
+    int nbins = hEle->GetNbinsX();
+    TMatrixD errorMTemp(2*nbins, 2*nbins);
     double value_e[nbins];
     double value_m[nbins];
     double err_e[nbins];
@@ -614,28 +699,25 @@ TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* 
     double err_e_algo[nbins];
     double err_m_algo[nbins];
 
-    for(int ibin = 0; ibin<nbins; ibin++){
-        //measurement(ibin)  =  value_e / norm ;
-        //measurement(nbins+ibin)  =  value_m / norm ;
-        value_e[ibin] = hEle->GetBinContent(ibin+1) / norm;
-        value_m[ibin] = hMu->GetBinContent(ibin+1) / norm;
-        err_e[ibin]   =  unfErrorDistrEle->GetBinContent(ibin+1) / norm;
-        err_m[ibin]   =  unfErrorDistrMu->GetBinContent(ibin+1) / norm;
-        err_e_algo[ibin] = fabs(value_e[ibin] - hEleOpp->GetBinContent(ibin+1)) / norm;
-        err_m_algo[ibin] = fabs(value_m[ibin] - hMuOpp->GetBinContent(ibin+1)) / norm;
+    for (int ibin = 0; ibin<nbins; ibin++) {
+        value_e[ibin]    = hEle->GetBinContent(ibin+1);
+        value_m[ibin]    = hMu->GetBinContent(ibin+1);
+        err_e[ibin]      = unfErrorDistrEle->GetBinContent(ibin+1);
+        err_m[ibin]      = unfErrorDistrMu->GetBinContent(ibin+1);
+        err_e_algo[ibin] = fabs(value_e[ibin] - hEleOpp->GetBinContent(ibin+1));
+        err_m_algo[ibin] = fabs(value_m[ibin] - hMuOpp->GetBinContent(ibin+1));
         err_e_algo[ibin] = 0.;
         err_m_algo[ibin] = 0.;
-
     }	
 
-    for(int ibin = 0; ibin<nbins; ibin++){
+    for (int ibin = 0; ibin<nbins; ibin++) {
         // electron channel
-        errorMTemp(ibin,ibin) = pow(err_e[ibin],2) + pow(err_e_algo[ibin], 2 );
+        errorMTemp(ibin,ibin) = pow(err_e[ibin],2) + pow(err_e_algo[ibin], 2);
         // muon channel
-        errorMTemp(nbins+ibin,nbins+ibin) = pow(err_m[ibin],2) + pow(err_m_algo[ibin], 2 );
+        errorMTemp(nbins+ibin,nbins+ibin) = pow(err_m[ibin],2) + pow(err_m_algo[ibin], 2);
 
         // this part is to setup correlation between same bins fo e and mu for the unfolding error
-        for(int jbin = 0; jbin<nbins; jbin++){
+        for (int jbin = 0; jbin<nbins; jbin++){
             if (jbin !=  ibin && optionCorrTemp > 0 ) {
                 errorMTemp(ibin,jbin) = err_e[ibin] * err_e[jbin] + err_e_algo[ibin] * err_e_algo[jbin] ;
                 errorMTemp(jbin,ibin) =  errorMTemp(ibin,jbin) ;
@@ -643,9 +725,9 @@ TMatrixD getCovMatrixOfCombinationUNF(const TH1D* unfErrorDistrEle, const TH1D* 
                 errorMTemp(nbins+jbin,nbins + ibin) = errorMTemp(nbins+ibin,nbins + jbin);
 
             }
-            if( optionCorrTemp > 1 ) {
-                errorMTemp(ibin,nbins+jbin) =  correlationSameBin * ( err_e[ibin] * err_m[jbin] + err_e_algo[ibin] * err_m_algo[jbin] );
-                errorMTemp(nbins+ibin,jbin) = correlationSameBin * ( err_e[jbin] * err_m[ibin] + err_e_algo[jbin] * err_m_algo[ibin] ); ;
+            if (optionCorrTemp > 1) {
+                errorMTemp(ibin,nbins+jbin) = err_e[ibin] * err_m[jbin] + err_e_algo[ibin] * err_m_algo[jbin];
+                errorMTemp(nbins+ibin,jbin) = err_e[jbin] * err_m[ibin] + err_e_algo[jbin] * err_m_algo[ibin];
             }
 
         }
@@ -700,7 +782,7 @@ TH1D* getJERErrors(const TH1D *dataCentral, const TH1D *JERup, const TH1D *JERdo
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TMatrixD getCovMatrixOfCombination(const TH2D* Cov2D, const TH1D* DiffEle, const TH1D* DiffMuon, int optionCorrTemp, double norm = 1.)
+TMatrixD getCovMatrixOfCombination(const TH2D* Cov2D, const TH1D* DiffEle, const TH1D* DiffMuon, int optionCorrTemp)
 {
     TH2D *CovEle2D = (TH2D*) Cov2D->Clone();
     CovEle2D->SetDirectory(0);
@@ -723,7 +805,7 @@ TMatrixD getCovMatrixOfCombination(const TH2D* Cov2D, const TH1D* DiffEle, const
         }
     }
 
-    TMatrixD errorMTemp = getCovMatrixOfCombination(CovEle2D, CovMuon2D, optionCorrTemp, norm);
+    TMatrixD errorMTemp = getCovMatrixOfCombination(CovEle2D, CovMuon2D, optionCorrTemp);
     return errorMTemp;
 
 }

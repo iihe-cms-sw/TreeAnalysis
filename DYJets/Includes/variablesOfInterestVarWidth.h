@@ -64,8 +64,8 @@ variableStruct VAROFINTERESTZJETS[] = {
    //{"ZMass_Zinc0jet",              0,      1,          19,             17,             7,          6 ,               7    },
 
    //-- Jets Mass distribution
-   {"JetsMass_Zexc2jet",           0,      1,           7,              5,            13,            6 ,               4    }, // 34
-   {"JetsMass_Zinc2jet",           0,      1,           9,              5,            13,            7 ,               5    }, // 35
+   {"JetsMass_Zexc2jet",           0,      1,           7,              5,            13,           11 ,               4    }, // 34
+   {"JetsMass_Zinc2jet",           0,      1,           9,              5,            13,           11 ,               5    }, // 35
 
    //-- DPS distribution
    {"SpTJets_Zexc2jet",            0,      0,           7,              4,             6,            4 ,               3    }, // 36
