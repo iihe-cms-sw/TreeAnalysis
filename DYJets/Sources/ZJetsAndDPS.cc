@@ -85,8 +85,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //         Output file name           //
     //===================================//
     string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, pdfSet, pdfMember, startEvent, skipEvent );
-    TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
-    //TFile *outputFile = new TFile("TEST.root", "RECREATE");
+    //TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
+    TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
 
     //--- weight variable ---
@@ -249,10 +249,10 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if (fChain == 0) return;
     Long64_t nbytes(0), nb(0);
     Long64_t nentries = fChain->GetEntries();
-    if (nEvents_10000) {
+    //if (nEvents_10000) {
         nentries = 10000;
         std::cout << "We plane to run on 100000 events" << std::endl;
-    }
+    //}
     std::cout << "We will run on " << nentries << " events" << std::endl;
     if ( startEvent != 0 || skipEvent != 1 ) cout << " it seems we will do Pulls !!! " << startEvent <<"  " << skipEvent<< endl;
     //------------------------------------
@@ -485,7 +485,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if ((doZ && nLeptons >= 2) || (doTT && nLeptons >= 2 && nMuons > 0 && nElectrons > 0)){
                 nEventsWithTwoGoodLeptonsNoChargeNoMass++;
                 // sort leptons by descending pt
-                //sort(leptons.begin(), leptons.end(), LepDescendingOrder);
+                sort(leptons.begin(), leptons.end(), LepDescendingOrder);
                 // select the first two leptons with opposite charge        
                 lepton1 = leptons[0]; 
                 lepton2 = leptons[1];
@@ -864,7 +864,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             nTotJets = patJetPfAk05Eta_->size();
             for (unsigned short i(0); i < nTotJets; i++) {
                 bool passBJets(0);
-                if (patJetPfAk05OCSV_->at(i) >= 0.679) passBJets = true;
+                //if (patJetPfAk05OCSV_->at(i) >= 0.679) passBJets = true;
                 jetStruct jet = {patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i), patJetPfAk05Phi_->at(i), patJetPfAk05En_->at(i), i, passBJets};
 
                 //-- apply jet energy scale uncertainty (need to change the scale when initiating the object)
@@ -3112,6 +3112,7 @@ ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, boo
     if (fileName.find("List") == string::npos){
         fullFileName += ".root";
         string treePath = fullFileName + "/tree/tree";
+        if (fileName.find("Sherpa") != string::npos) treePath = fullFileName + "/tree";
         cout << "Loading file: " << fullFileName << endl;
         chain->Add(treePath.c_str());
     }
@@ -3122,7 +3123,8 @@ ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, boo
         int countFiles(0);
         while (getline(infile, line)){
             countFiles++;
-            string treePath =  line + "/tree/tree";
+            string treePath = line + "/tree/tree";
+            if (fileName.find("Sherpa") != string::npos) treePath = line + "/tree";
             chain->Add(treePath.c_str());       
         }
     }

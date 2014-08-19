@@ -222,7 +222,7 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
                 hSumBGgroup[j][group] = (TH1D*) hBG[countFiles][j]->Clone();
             }
 
-            if ( j == 0 ) {
+            if (j == 0) {
                 sumEve += hBG[countFiles][j]->GetBinContent(1);
             }
         }
@@ -339,7 +339,7 @@ void FuncUnfold(bool isMuon, string variable, int UsedKtermBayes, int UsedKtermS
     TH1D *hDataPU = SetSystErrorsMean(hData[0], hDY[0], hDY[1], hDY[2], "PUerrors");      // PU errors
     TH1D *hDataJER = SetSystErrorsMean(hData[0], hDY[0], hDY[3], hDY[4], "JERerrors");     // JER errors
     TH2D *hResPUErrors = SetResponseErrorsMax((TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[1]->Hresponse(), (TH2D*) resDY[2]->Hresponse());	// PU effect on response 
-    TH2D *hResJERErrors = SetResponseErrorsMax((TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[4]->Hresponse());	// JER effect on response 
+    TH2D *hResJERErrors = SetResponseErrorsMax((TH2D*) resDY[0]->Hresponse(), (TH2D*) resDY[3]->Hresponse(), (TH2D*) resDY[4]->Hresponse()); // JER effect on response 
 
     // my stat variation of data, BG and response object 
     RooUnfoldResponse *responseNEW[3];

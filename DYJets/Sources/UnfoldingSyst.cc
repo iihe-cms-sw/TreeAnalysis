@@ -437,43 +437,42 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
             // fluctuate data with fixed bin correlation: like JES --> all bins increase or decrease ( watch out Z+0 jets bin) ?????
             if (( selection == 10 || selection == 20 || selection == 21 )&& fluctPData == true) {
                 // not sure if I want to have always the same gaussian
-                double fluct1sig=random->Gaus(0,1);
-                double fluct1dir=fluct1sig/fabs(fluct1sig);
+                double fluct1sig = random->Gaus(0, 1);
+                double fluct1dir = fluct1sig / fabs(fluct1sig);
                 // change in JES for jets influences all the jets in the same direction (either positive or negative) but with different offset ???
                 //double fluct1dir(1.);
 
                 for (int j(0); j <= NBins; j++) {
 
                     // line below is need to propagate lepton efficiency uncertainty in the combined unfolding
-                    if (selection == 20 && int((NBins - 1) / 2 ) == j ) { 
-                        fluct1sig=random->Gaus(0,1); fluct1dir=fluct1sig/fabs(fluct1sig);
+                    if (selection == 20 && int((NBins - 1) / 2) == j) { 
+                        fluct1sig = random->Gaus(0, 1);
+                        fluct1dir = fluct1sig / fabs(fluct1sig);
                     }
-
 
                     double fluct(0);
                     //double fluct1sig( random->Gaus(0, 1) );
-                    if (j == 2 && isZN  ) fluct1dir *= -1; /// JES:  n-jet bins always follow the same trend while 0 jet is opposite double fluct(0);
-                    double BinCount( hdata->GetBinContent(j) );
-                    double BinError( hdata->GetBinError(j) );
+                    if (j == 2 && isZN) fluct1dir *= -1; /// JES:  n-jet bins always follow the same trend while 0 jet is opposite double fluct(0);
+                    double BinCount(hdata->GetBinContent(j));
+                    double BinError(hdata->GetBinError(j));
                     //if (BinCount > 0 && !usePoisson )  fluct= BinCount  + hDirectionDataJES->GetBinContent(j)* fluct1dir * fabs(fluct1sig) * BinError ;
-                    if (BinCount > 0 && !usePoisson )  fluct = BinCount + fluct1dir * fabs(fluct1sig) * BinError ;
-                    if ( isZN && j > 1 ) countNJets += fluct;
+                    if (BinCount > 0 && !usePoisson) fluct = BinCount + fluct1dir * fabs(fluct1sig) * BinError;
+                    if (isZN && j > 1) countNJets += fluct;
                     // do I need to set this bin error ???
                     h_meas->SetBinError(j, sqrt(fluct));
                     h_meas->SetBinContent(j, fluct);
                 }
-                if (!usePoisson && isZN ) {
+
+                if (!usePoisson && isZN) {
                     // total number fo Z bosons is fixed and indepedednt of JES... therefore we fix it and the 0 jet bin is set as Z_all - Z_(at least 1 jet)
                     h_meas->SetBinContent(1, dataIntegral - countNJets);
-                    h_meas->SetBinError(1, hdata->GetBinError(1) );
-
+                    h_meas->SetBinError(1, hdata->GetBinError(1));
                 }
-
             }
 
 
             /// NOW FLUCTUATIONS OF RESPONSE MATRIX                             
-            if ( ( selection == 1 || selection == 2 || selection == 4 || selection == 101 ) && fluctRMat == true){
+            if ((selection == 1 || selection == 2 || selection == 4 || selection == 101) && fluctRMat == true){
                 //Poisson fluctuate the R Matrix
                 for (int j(1); j <= NBins; j++){
                     for (int k(1); k <= NBins; k++){
@@ -498,8 +497,8 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
                 for (int j(1); j <= NBins; j++) {
                     for (int k(1); k <= NBins; k++) {
                         double fluctR(0.);
-                        double BinCount( hresponse->GetBinContent(j, k) );
-                        double BinError( hresponse->GetBinError(j, k) );
+                        double BinCount(hresponse->GetBinContent(j, k));
+                        double BinError(hresponse->GetBinError(j, k));
                         //if (BinCount > 0 && usePoisson ) fluctR = random->Poisson(BinCount);
                         //fluctR = BinCount + hDirectionResPU->GetBinContent(j,k) * BinError * fluct1sig ;
                         fluctR = BinCount + BinError * fluct1sig ;
@@ -578,7 +577,7 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
 
 
         for (int j(0); j < NBins; j++){
-            double a( h_unfold->GetBinContent(j + 1) );
+            double a(h_unfold->GetBinContent(j + 1));
             if (i == 0) mean[j] = a;
             else mean[j] += a;
             allPseudo[j][i] = a;	

@@ -12,7 +12,7 @@ using namespace std;
 void barre_de_progression(int);
 
 struct leptonStruct{
-    double pt, eta, phi, energy, charge, iso, scEta ;
+    double pt, eta, phi, energy, charge, iso, scEta;
 };
 
 struct jetStruct{

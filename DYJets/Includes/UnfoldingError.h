@@ -625,7 +625,7 @@ TMatrixD getCovMatrixOfCombination(const TH2D* CovEle, const TH2D* CovMuon, int 
 
 
 
-        if (optionCorrTemp > 0) {
+        if (optionCorrTemp > 0 && optionCorrTemp != 6) {
             for (int jbin = 0; jbin < nbins; jbin++) {
 
                 //-------------------------------------------------------------------------

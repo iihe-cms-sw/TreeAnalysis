@@ -77,6 +77,7 @@ void MymergeChannels(int start = 0, int end = -1)
             // 2 - full cov matrix for each channel and correlation = 1 for same bins in the two channels 
             // 3 - full cov matrix for each channel is geometric average for two channels (for each bin)  
             // 4 - full cov matrix for each channel and  correlation = 1 for ALL bins between the two channels 
+            // 6 - diag for each channel plus diagonal of ele-mu cov  
             mergeChannelsRun(VAROFINTERESTZJETS[i].name, VAROFINTERESTZJETS[i].log, VAROFINTERESTZJETS[i].decrease, optionCorr);
         }
     }
@@ -453,17 +454,19 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
     TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDFUp, hPDFDown, genShe, genMad);
     //TCanvas *plots = makeZJetsPlots(hCombinedStat, hCombinedTot, hPDFUp, hPDFDown, genShe, genPow, genMad);
 
-    string outputFileNamePNG = OUTPUTDIRECTORY;
-    if (doXSec) outputFileNamePNG += "Combination_XSec_";
-    else if (doNormalize) outputFileNamePNG += "Combination_Normalized_";
+    string outputFileName = OUTPUTDIRECTORY;
+    if (doXSec) outputFileName += "Combination_XSec_";
+    else if (doNormalize) outputFileName += "Combination_Normalized_";
 
-    outputFileNamePNG += variable;
+    outputFileName += variable;
     ostringstream optionCorrStr; optionCorrStr << optionCorr;
-    outputFileNamePNG += "_CorrelationOption_" + optionCorrStr.str();
-    if (doVarWidth) outputFileNamePNG += "_VarWidth";
-    string outputFileNameROOT = outputFileNamePNG + ".root";
-    outputFileNamePNG += ".pdf";
+    outputFileName += "_CorrelationOption_" + optionCorrStr.str();
+    if (doVarWidth) outputFileName += "_VarWidth";
+    string outputFileNameROOT = outputFileName + ".root";
+    string outputFileNamePDF = outputFileName + ".pdf";
+    string outputFileNamePNG = outputFileName + ".png";
 
+    plots->Print(outputFileNamePDF.c_str());
     plots->Print(outputFileNamePNG.c_str());
     plots->SaveAs(outputFileNameROOT.c_str());
 
@@ -507,17 +510,19 @@ void plotCombination(string variable, int optionCorr, TH1D* hCombinedStat, TH1D*
         TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDFUp_Zinc, hPDFDown_Zinc, genShe_Zinc, genMad_Zinc);
         //TCanvas *plots_Zinc = makeZJetsPlots(hCombinedStat_Zinc, hCombinedTot_Zinc, hPDFUp_Zinc, hPDFDown_Zinc, genShe_Zinc, genPow_Zinc, genMad_Zinc);
 
-        string outputFileNamePNG_Zinc = OUTPUTDIRECTORY;
-        if (doXSec) outputFileNamePNG_Zinc += "Combination_XSec_";
-        else if (doNormalize) outputFileNamePNG_Zinc += "Combination_Normalized_";
+        string outputFileName_Zinc = OUTPUTDIRECTORY;
+        if (doXSec) outputFileName_Zinc += "Combination_XSec_";
+        else if (doNormalize) outputFileName_Zinc += "Combination_Normalized_";
 
-        outputFileNamePNG_Zinc += variable_Zinc;
+        outputFileName_Zinc += variable_Zinc;
         ostringstream optionCorrStr_Zinc; optionCorrStr_Zinc << optionCorr;
-        outputFileNamePNG_Zinc += "_CorrelationOption_" + optionCorrStr_Zinc.str();
-        if (doVarWidth) outputFileNamePNG_Zinc += "_VarWidth";
-        string outputFileNameROOT_Zinc = outputFileNamePNG_Zinc + ".root";
-        outputFileNamePNG_Zinc += ".pdf";
+        outputFileName_Zinc += "_CorrelationOption_" + optionCorrStr_Zinc.str();
+        if (doVarWidth) outputFileName_Zinc += "_VarWidth";
+        string outputFileNameROOT_Zinc = outputFileName_Zinc + ".root";
+        string outputFileNamePDF_Zinc = outputFileName_Zinc + ".pdf";
+        string outputFileNamePNG_Zinc = outputFileName_Zinc + ".png";
 
+        plots_Zinc->Print(outputFileNamePDF_Zinc.c_str());
         plots_Zinc->Print(outputFileNamePNG_Zinc.c_str());
         plots_Zinc->SaveAs(outputFileNameROOT_Zinc.c_str());
 

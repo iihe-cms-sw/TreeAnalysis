@@ -34,7 +34,7 @@
     int ZEtaMax       = 999999;  // default value  999999
 
     enum Samples {
-        DATA, BACKGROUND, TAU, DYJETS, WJETS, ALL, PDF, PULL
+        DATA, BACKGROUND, TAU, DYJETS, WJETS, ALL, PDF, PULL, SHERPA
     };
 
     //--- Settings ---------
@@ -254,63 +254,65 @@
         }
     }
 
-    //if (doWhat == 51) {
+    if (DoWhat == SHERPA) {
 
-    //    // this is setup for sherpa NLO 
-    //    ZJetsAndDPS DESherpaTest2NLO("DE_8TeV_DY_Sherpa_2NLO4_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //DESherpaTest2NLO.Loop(0, 1, 0, 0, 0);
+        //    // this is setup for sherpa NLO 
+        //    ZJetsAndDPS DESherpaTest2NLO("DE_8TeV_DY_Sherpa_2NLO4_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //DESherpaTest2NLO.Loop(0, 1, 0, 0, 0);
 
+        ZJetsAndDPS DESherpaTest1NLO("DMu_8TeV_Sherpa_UNFOLDING_dR",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        DESherpaTest1NLO.Loop(1, 1, 0, 0, 0); 
 
-    //    ZJetsAndDPS DESherpaTest1NLO("DE_8TeV_DY_Sherpa_1NLO4_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    DESherpaTest1NLO.Loop(0, 1, 0, 0, 0); 
+        //    ZJetsAndDPS DESherpaTest1NLO("DE_8TeV_DY_Sherpa_1NLO4_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    DESherpaTest1NLO.Loop(0, 1, 0, 0, 0); 
 
-    //    ZJetsAndDPS DESherpaTest1NLOScaleDown("DE_8TeV_DY_Sherpa_1NLO4_scaleDown_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //DESherpaTest1NLOScaleDown.Loop(0, 1, 0, 0); 
+        //    ZJetsAndDPS DESherpaTest1NLOScaleDown("DE_8TeV_DY_Sherpa_1NLO4_scaleDown_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //DESherpaTest1NLOScaleDown.Loop(0, 1, 0, 0); 
 
-    //    ZJetsAndDPS DESherpaTest1NLOScaleUp("DE_8TeV_DY_Sherpa_1NLO4_scaleUp_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //DESherpaTest1NLOScaleUp.Loop(0, 1, 0, 0); 
-
-
-
-    //    //ZJetsAndDPS DMuSherpa(lepSel+"_DYJets_Sherpa_mcEveWeight",   lumi * 3531.8           * 1000 / 30459503.,    1.,  0,  0,  0,  0,  1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //ZJetsAndDPS DESherpALL("DE_8TeV_Sherpa_HepMC_Z2jetNLO4jetLO_multithread_ALL_dR",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //DESherpALL.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy); 
+        //    ZJetsAndDPS DESherpaTest1NLOScaleUp("DE_8TeV_DY_Sherpa_1NLO4_scaleUp_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //DESherpaTest1NLOScaleUp.Loop(0, 1, 0, 0); 
 
 
-    //    ZJetsAndDPS DMuPowMiNLO("DMu_8TeV_DYJets_PowhegZ2jMiNLO_dR_GEN_Cern",                             lumi * 1.            * 1000 / 1964662.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
-    //    DMuPowMiNLO.Loop(0, 1, 0, 0, 0);
-    //    //ZJetsAndDPS DEPow("DE_8TeV_DYJets_PowhegNLO1Jet_dR_GEN",                             lumi * 334.            * 1000 / 2948078.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
-    //    //DEPow.Loop(0, 1, 0, 0);
-    //    //ZJetsAndDPS DEPowSU("DE_8TeV_DYJets_PowhegNLO1Jet_dR_ScaleUp_GEN",                             lumi * 318.4            * 1000 / 5446372.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
-    //    //DEPowSU.Loop(0, 1, 0, 0);
-    //    //ZJetsAndDPS DEPowSD("DE_8TeV_DYJets_PowhegNLO1Jet_dR_ScaleDown_GEN",                             lumi * 357.2            * 1000 / 5856584.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
-    //    //DEPowSD.Loop(0, 1, 0, 0);
 
-    //    //ZJetsAndDPS DESherpaTest("DE_8TeV_DY_Sherpa_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //ZJetsAndDPS DESherpaTest("Sherpa\/DE_8TeV_Sherpa_HepMC_num*",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
-    //    //DESherpaTest.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy); 
+        //    //ZJetsAndDPS DMuSherpa(lepSel+"_DYJets_Sherpa_mcEveWeight",   lumi * 3531.8           * 1000 / 30459503.,    1.,  0,  0,  0,  0,  1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //ZJetsAndDPS DESherpALL("DE_8TeV_Sherpa_HepMC_Z2jetNLO4jetLO_multithread_ALL_dR",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //DESherpALL.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy); 
 
-    //}
 
-    if (DoWhat == PDF) {
-        for (int pdfMember(0); pdfMember <= 0; pdfMember++) {
-            ZJetsAndDPS DMuDYMixPDF(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-            //DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "CT10.LHgrid", pdfMember);
-            DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "MSTW2008nlo68cl.LHgrid", pdfMember);
-        }
-    }
+        //    ZJetsAndDPS DMuPowMiNLO("DMu_8TeV_DYJets_PowhegZ2jMiNLO_dR_GEN_Cern",                             lumi * 1.            * 1000 / 1964662.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
+        //    DMuPowMiNLO.Loop(0, 1, 0, 0, 0);
+        //    //ZJetsAndDPS DEPow("DE_8TeV_DYJets_PowhegNLO1Jet_dR_GEN",                             lumi * 334.            * 1000 / 2948078.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
+        //    //DEPow.Loop(0, 1, 0, 0);
+        //    //ZJetsAndDPS DEPowSU("DE_8TeV_DYJets_PowhegNLO1Jet_dR_ScaleUp_GEN",                             lumi * 318.4            * 1000 / 5446372.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
+        //    //DEPowSU.Loop(0, 1, 0, 0);
+        //    //ZJetsAndDPS DEPowSD("DE_8TeV_DYJets_PowhegNLO1Jet_dR_ScaleDown_GEN",                             lumi * 357.2            * 1000 / 5856584.,    1.013,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax   ); 
+        //    //DEPowSD.Loop(0, 1, 0, 0);
 
-    // now produce files for pulls
-    if (DoWhat == PULL) {
-        int doGen = 1;
-        doDataEff = 1;
-        int NPulls = 25;
-        for (int loopPull(0); loopPull < NPulls; loopPull++) {
-            if (lepSel == "DMu" || lepSel == "DE") {
-                ZJetsAndDPS DMuDYMixPull(lepSel + "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
-                DMuDYMixPull.Loop(1, 1, 0, 0, 0, 0, -10, 0, 0, 1, 0, "", 0, loopPull, NPulls);
+        //    //ZJetsAndDPS DESherpaTest("DE_8TeV_DY_Sherpa_HepMC_dR_Full_List",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //ZJetsAndDPS DESherpaTest("Sherpa\/DE_8TeV_Sherpa_HepMC_num*",  lumi         * 1000.          , 1.,    0,   0,     0,    0,     1.,  jetPtMin,  jetPtMax, ZPtMin , ZEtaMin,    ZEtaMax );
+        //    //DESherpaTest.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy); 
+
+        //}
+
+        if (DoWhat == PDF) {
+            for (int pdfMember(0); pdfMember <= 0; pdfMember++) {
+                ZJetsAndDPS DMuDYMixPDF(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+                //DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "CT10.LHgrid", pdfMember);
+                DMuDYMixPDF.Loop(0, 1, doQCD, doSameSign, doInvMassCut, doBJets, doPUStudy, 0, 0, 1, 0, "MSTW2008nlo68cl.LHgrid", pdfMember);
             }
         }
-    }
+
+        // now produce files for pulls
+        if (DoWhat == PULL) {
+            int doGen = 1;
+            doDataEff = 1;
+            int NPulls = 25;
+            for (int loopPull(0); loopPull < NPulls; loopPull++) {
+                if (lepSel == "DMu" || lepSel == "DE") {
+                    ZJetsAndDPS DMuDYMixPull(lepSel + "_8TeV_DYJets_MIX_UNFOLDING_dR_5311_Inf3", lumi*3531.8*1000/30459503., 1., 1, !doDataEff, 0, 0, 1, jetPtMin, jetPtMax, ZPtMin, ZEtaMin, ZEtaMax);
+                    DMuDYMixPull.Loop(1, 1, 0, 0, 0, 0, -10, 0, 0, 1, 0, "", 0, loopPull, NPulls);
+                }
+            }
+        }
 
 }

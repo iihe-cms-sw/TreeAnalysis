@@ -295,7 +295,15 @@ void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
     string xtitle = gen1->GetXaxis()->GetTitle();
     if (xtitle.find("#eta") != string::npos) xtitle = "|" + xtitle + "|";
     if (xtitle.find("H_{T}") != string::npos) {
-        string njets = variable.substr(14, 1);
+        string njets;
+        if (variable.find("Zinc1jet") != string::npos) njets = "1";
+        else if (variable.find("Zinc2jet") != string::npos) njets = "2";
+        else if (variable.find("Zinc3jet") != string::npos) njets = "3";
+        else if (variable.find("Zinc4jet") != string::npos) njets = "4";
+        else if (variable.find("Zinc5jet") != string::npos) njets = "5";
+        else if (variable.find("Zinc6jet") != string::npos) njets = "6";
+        else if (variable.find("Zinc7jet") != string::npos) njets = "7";
+        else if (variable.find("Zinc8jet") != string::npos) njets = "8";
         xtitle = "H_{T}, N_{jets} #geq " + njets + " [GeV]";
     }
     grCentralSyst->GetXaxis()->SetTitle(xtitle.c_str());

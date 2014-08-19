@@ -15,6 +15,6 @@
         gROOT->ProcessLine(string(".L " + srcdir + sources[i] + ".cc+").c_str());
     }
 
-    MymergeChannels(0, 55);
+    MymergeChannels(0, 1);
 
 }

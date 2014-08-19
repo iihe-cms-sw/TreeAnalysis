@@ -120,7 +120,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     vector<double> patElecPfIsoRho_;
     vector<double> patElecScEta_;
 
-
     int eventMuonTrig;
     vector<double> patMuonPt_;
     vector<double> patMuonEta_;
@@ -129,11 +128,10 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     vector<double> patMuonEn_;
     vector<double> patMuonCharge_;
     vector<double> patMuonDxy_;
-    vector<double> patMuonCombId_;
+    vector<int> patMuonCombId_;
     vector<double> patMuonTrig_;
     vector<double> patMuonDetIsoRho_;
     vector<double> patMuonPfIsoDbeta_;
-
 
     vector<double> patJetPfAk05En_;
     vector<double> patJetPfAk05Pt_;
@@ -163,33 +161,32 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     outputTree->Branch("EvtInfo_RunNum", &EvtInfo_RunNum);
     outputTree->Branch("EvtInfo_LumiNum", &EvtInfo_LumiNum);
     outputTree->Branch("EvtInfo_EventNum", &EvtInfo_EventNum);
-    if ( isMC ) outputTree->Branch("nup_",&nup_);
-    if ( hasRecoInfo && isMC ){
+    if (isMC) outputTree->Branch("nup_", &nup_);
+    if (hasRecoInfo && isMC){
         outputTree->Branch("PU_npT", &PU_npT);
         outputTree->Branch("PU_npIT", &PU_npIT);
     }
 
-    if ( hasGenInfo ){
-        outputTree->Branch("pdfInfo_",  &pdfInfo_);
+    if (hasGenInfo){
+        outputTree->Branch("pdfInfo_", &pdfInfo_);
 
-        outputTree->Branch("genLepId_",  &genLepId_);
-        outputTree->Branch("genLepSt_",  &genLepSt_);
-        outputTree->Branch("genLepQ_",   &genLepQ_);
-        outputTree->Branch("genLepPt_",  &genLepPt_);
+        outputTree->Branch("genLepId_", &genLepId_);
+        outputTree->Branch("genLepSt_", &genLepSt_);
+        outputTree->Branch("genLepQ_", &genLepQ_);
+        outputTree->Branch("genLepPt_", &genLepPt_);
         outputTree->Branch("genLepEta_", &genLepEta_);
         outputTree->Branch("genLepPhi_", &genLepPhi_);
-        outputTree->Branch("genLepE_",   &genLepE_);
+        outputTree->Branch("genLepE_", &genLepE_);
 
-        outputTree->Branch("genPhoPt_",  &genPhoPt_);
+        outputTree->Branch("genPhoPt_", &genPhoPt_);
         outputTree->Branch("genPhoEta_", &genPhoEta_);
         outputTree->Branch("genPhoPhi_", &genPhoPhi_);
 
-        outputTree->Branch("genJetPt_",  &genJetPt_ );
+        outputTree->Branch("genJetPt_", &genJetPt_ );
         outputTree->Branch("genJetEta_", &genJetEta_);
         outputTree->Branch("genJetPhi_", &genJetPhi_);
-        outputTree->Branch("genJetE_",   &genJetE_ );
-        outputTree->Branch("genJetChF_",   &genJetChF_ );
-        //        outputTree->Branch("genJetChF_",   &genJetID_ );
+        outputTree->Branch("genJetE_", &genJetE_ );
+        outputTree->Branch("genJetChF_", &genJetChF_ );
     }
     // add reco branches
 
@@ -219,7 +216,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     outputTree->Branch("patMuonTrig_", &patMuonTrig_);
     //outputTree->Branch("patMuonDetIsoRho_", &patMuonDetIsoRho_);
     outputTree->Branch("patMuonPfIsoDbeta_", &patMuonPfIsoDbeta_);
-
 
 
     // jet
@@ -258,8 +254,8 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
 
 
     Long64_t nbytes = 0, nb = 0;
-    //  nentries = 100;
-    for (Long64_t jentry=0; jentry < nentries; jentry++) {
+    //nentries = 100;
+    for (Long64_t jentry = 0; jentry < nentries; jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -547,12 +543,12 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                     isoPF/=tmp.Pt();
                     patMuonPfIsoDbeta_.push_back(isoPF);
 
-                    double muonID = 0. ;
+                    int muonID = 0. ;
                     if (bits[10]) muonID += 1 ; // Tight ??
                     if (bits[8]) muonID += 2 ; // Loose ?
                     if (bits[11]) muonID += 4 ; // HighPt ??
                     patMuonCombId_.push_back(muonID);
-                    if (int( muonID) % 2 == 1 && tmp.Pt() > 15.){
+                    if ((muonID & 0x1)  && tmp.Pt() > 15.){
                         if (isoPF < 0.2 )  countMuon++;
                         else invIsoCountMuon++;
                     }
@@ -563,13 +559,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                     if (leptonIdSum == 24 && TRIGbits[4]) muonTrig += 16 ; // MuEle ?? 
                     if (leptonIdSum == 24 && TRIGbits[5]) muonTrig += 32 ; // EleMu ?? 
                     patMuonTrig_.push_back(muonTrig);
-                    if ( DEBUG )				  cout << EvtInfo_EventNum <<" trig:  " << ln_Tbits[i] << "   "  << muonTrig << "   " << TRIGbits[2] << "   pt, eta " << tmp.Pt()<<"  " << tmp.Eta() << endl;	
-
                     patMuonVtxZ_.push_back((double) ln_dZ[i]); 
-                    /*fChain->SetBranchAddress("patMuonDxy_", &patMuonDxy_, &b_patMuonDxy_);
-                      fChain->SetBranchAddress("patMuonDetIsoRho_", &patMuonDetIsoRho_, &b_patMuonDetIsoRho_);
-                      */
-
                 }
 
 
