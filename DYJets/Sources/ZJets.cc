@@ -65,7 +65,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     //===================================//
     string outputFileName = CreateOutputFileName(pdfSet, pdfMember);
     TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
-    //TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
 
     //--- weight variable ---
@@ -146,7 +145,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     Init(hasRecoInfo, hasGenInfo);
     if (fChain == 0) return;
     Long64_t nentries = fChain->GetEntries();
-    if (nEvents_10000) {
+    if (do10000Events) {
         nentries = 10000;
         std::cout << "We plane to run on 100000 events" << std::endl;
     }
@@ -457,7 +456,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 jet.pt *= (1 + scale * jetEnergyCorr);
                 jet.energy *= (1 + scale * jetEnergyCorr);
 
-                bool jetPassesEtaCut(fabs(jet.eta) <= 2.4); 
+                bool jetPassesEtaCut(fabs(jet.eta) <= jetEtaCutMax); 
                 bool jetPassesIdCut(patJetPfAk05LooseId_->at(i) > 0);
                 bool jetPassesMVACut(patJetPfAk05jetpuMVA_->at(i) > 0);
 
@@ -629,8 +628,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             vector<jetStruct> tmpGenJets;
             vector<jetStruct> tmpGenJets_20;
             for (unsigned short i(0); i < nGoodGenJets; i++){
-                if (genJets[i].pt >= jetPtCutMin && fabs(genJets[i].eta) <= 2.4) tmpGenJets.push_back(genJets[i]);
-                if (genJets[i].pt >= 20 && fabs(genJets[i].eta) <= 2.4) tmpGenJets_20.push_back(genJets[i]);
+                if (genJets[i].pt >= jetPtCutMin && fabs(genJets[i].eta) <= jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
+                if (genJets[i].pt >= 20 && fabs(genJets[i].eta) <= jetEtaCutMax) tmpGenJets_20.push_back(genJets[i]);
             }
             genJets.clear();
             genJets = tmpGenJets; 
@@ -1396,9 +1395,10 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                     hresponseSecondJetEta_Zinc2jet->Fill(fabs(jets[1].eta), fabs(genJets[1].eta), weight);      
                     //responseJetsHt2Jet->Fill(jetsHT, genJetsHT, weight);
                     hresponseJetsHT_Zinc2jet->Fill(jetsHT, genJetsHT, weight);
-                    //responseTwoJetsPtDiffInc->Fill(jet1Minus2.Pt(), genJet1Minus2.Pt(), genWeight);
+                    //responseTwoJetsPtDiffInc->Fill(jet1Minus2.Pt(), genJet1Minus2.Pt(), weight);
                     //responseBestTwoJetsPtDiffInc->Fill(bestJet1Minus2.Pt(), genBestJet1Minus2.Pt(), weight);
                     //responseJetsMassInc->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                    hresponseJetsMass_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                     //responseBestJetsMassInc->Fill(bestJet1Plus2.M(), genBestJet1Plus2.M(), weight);
                     //responseSpTJets_Zinc2jet->Fill(SpTsub(leadJ, secondJ), SpTsub(genLeadJ, genSecondJ), weight);
                     //responseBestSpTJets_Zinc2jet->Fill(SpTsub(bestTwoJets.first, bestTwoJets.second), SpTsub(genBestTwoJets.first, genBestTwoJets.second), weight);
@@ -1600,12 +1600,16 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 }
 
 ZJets::ZJets(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
-        int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, bool nEvents_10000_): 
-    HistoSetZJets(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFilesAugust/"),
+        int systematics_, int direction_, float xsecfactor_, float jetPtCutMin_, float jetEtaCutMax_,  bool do10000Events_, string outDir_): 
+    HistoSetZJets(fileName_.substr(0, fileName_.find("_"))), outputDirectory(outDir_),
     fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
-    systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_)
+    systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), do10000Events(do10000Events_)
 {
 
+    if (do10000Events) {
+        outputDirectory = "HistoFilesTest/";
+        cout << "Doing test for 10000 events  => output directory has been changed to HistoFilesTest/" << endl;
+    }
     string command = "mkdir -p " + outputDirectory;
     system(command.c_str());
     // if parameter tree is not specified (or zero), connect the file
@@ -1657,6 +1661,7 @@ string ZJets::CreateOutputFileName(string pdfSet, int pdfMember)
     if (direction == 1) result << "_Up";
     else if (direction == -1) result << "_Down";
     result << "_JetPtMin_" << jetPtCutMin;
+    result << "_JetEtaMax_" << jetEtaCutMax;
 
     if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
     //--- Add your test names here ---

@@ -556,6 +556,8 @@ class HistoSetZJets: public TObject{
         TH2D *hresponseFourthJetEta_Zinc4jet;
         TH2D *hresponseFifthJetEta_Zinc5jet; 
 
+        TH2D *hresponseJetsMass_Zinc2jet;
+
         
 
         //--- RooUnfoldResponses ---

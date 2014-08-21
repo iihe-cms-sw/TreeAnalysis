@@ -72,7 +72,7 @@ void Plotter(string leptonFlavor = "Muons", int JetPtMin = 30,
         string fileNameTemp =  ProcessInfo[fileSelect].filename ; 
         cout << "Is double lepton:" << isDoubleLep << "   " << leptonFlavor <<"   " << fileNameTemp << endl;
         if ((doQCD > 0 || doInvMassCut || doSSign ) && fileNameTemp.find("QCD") != string::npos) continue;
-        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign,    doInvMassCut, MET, doBJets);
+        file[countFiles] = getFile(FILESDIRECTORY, leptonFlavor, energy, fileNameTemp, JetPtMin, JetPtMax, doFlat, doVarWidth, doQCD, doSSign, doInvMassCut, MET, doBJets);
 
         if ( i == 0 ){
             if (leptonFlavor == "Electrons") legendNames[0] = " ee ";
