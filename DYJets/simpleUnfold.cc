@@ -18,9 +18,10 @@ void simpleUnfold()
     TFile *fout = new TFile("SimpleUnfold.root", "RECREATE");
 
     //string variable = "ZNGoodJets_Zexc";
-    string variable = "FirstJetPt_Zinc1jet";
+    //string variable = "FirstJetPt_Zinc1jet";
     //string variable = "SecondJetPt_2_Zinc2jet";
     //string variable = "JetsMass_Zinc2jet";
+    string variable = "tau_max_Zinc1jet_2";
     string genVariable = "gen" + variable; 
     string respVariable = "response" + variable;        
     string hrespVariable = "hresponse" + variable;        
@@ -78,13 +79,13 @@ void simpleUnfold()
     dataHist->Add(bgHist, -1);     
     cout << "OK" << endl;
 
-    RooUnfoldBayes *unfold = new RooUnfoldBayes(dyResp, dataHist, 9);
+    RooUnfoldBayes *unfold = new RooUnfoldBayes(dyResp, dataHist, 10);
     //RooUnfoldSvd *unfold = new RooUnfoldSvd(dyResp, dataHist, 6);
     //RooUnfoldInvert *unfold = new RooUnfoldInvert(dyResp, dataHist);
     //RooUnfoldBinByBin *unfold = new RooUnfoldBinByBin(dyResp, dataHist);
     cout << "OK" << endl;
     TH1D *dataUnfolded = (TH1D*) unfold->Hreco();       
-    TH1D *chi2 = (TH1D*) unfold->Chi2OfChange;
+    //TH1D *chi2 = (TH1D*) unfold->Chi2OfChange;
     //chi2->Draw();
     cout << "OK" << endl;
 
@@ -119,12 +120,19 @@ void simpleUnfold()
 
 
     dataUnfolded->Scale(1./19618.);
+    dataHist->Scale(1./19618.);
     genHist->Scale(1./19618.);
+    mcHist->Scale(1./19618.);
+    dataHist->Divide(dataUnfolded);
+    mcHist->Divide(genHist);
     //genHist->Divide(dataUnfolded);
-    //mcHist->Divide(dataHist);
     cout << "OK" << endl;
-    //dataUnfolded->Draw();    
-    //genHist->Draw();    
+    dataUnfolded->Draw("e");    
+    dataHist->SetLineStyle(kDashed);    
+    mcHist->SetLineStyle(kDashed);    
+    dataHist->Draw("esame");    
+    genHist->Draw("samehist");    
+    mcHist->Draw("samehist");
     //mcHist->Draw("same");    
 
     int nBins = dataUnfolded->GetNbinsX();

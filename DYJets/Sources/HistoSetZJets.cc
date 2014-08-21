@@ -3,6 +3,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <RooUnfoldResponse.h>
+#include <sstream>
 #include "HistoSetZJets.h"
 
 using namespace std;
@@ -878,89 +879,123 @@ HistoSetZJets::HistoSetZJets(string leptonFlavor)
     gendEtaBosonJet_Zexc1jet = newTH1D("gendEtaBosonJet_Zexc1",             "gen #Delta#eta btwn leading jet and V (N_{jets} #eq )) ",                                                   lJetdEta,           72, 0, 4.8);
     gendEtaBosonJet_Zinc1jet = newTH1D("gendEtaBosonJet_Zinc1",             "gen #Delta#eta btwn leading jet and V (N_{jets} #geq )) ",                                                   lJetdEta,           72, 0, 4.8);
 
+    trMass = newTH1D("trMass", "trMass", "tr Mass", 150, -50, 100);
+    trE = newTH1D("trE", "trE", "tr E", 150, -50, 100);
+    E = newTH1D("E", "E", "E", 150, -50, 100);
+    eta = newTH1D("eta", "eta", "eta", 50, -5, 5);
+    rapidity = newTH1D("rapidity", "rapidity", "rapidity", 50, -10, 10);
 
+    for (int i(0); i < 5; i++) {
+        stringstream i_str; 
+        i_str << "_" << i;
+        tau_sum_Zinc1jet[i]      = newTH1D(string("tau_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau", "", 100, 0, 100);
+        tau_max_Zinc1jet[i]      = newTH1D(string("tau_max_Zinc1jet" + i_str.str()).c_str(), "max#tau", "", 100, 0, 100);
+        tau_c_sum_Zinc1jet[i]    = newTH1D(string("tau_c_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}", "", 100, 0, 100);
+        tau_c_max_Zinc1jet[i]    = newTH1D(string("tau_c_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}", "", 100, 0, 100);
+        tau_cm_sum_Zinc1jet[i]   = newTH1D(string("tau_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau_{cm}", "", 100, 0, 100);
+        tau_cm_max_Zinc1jet[i]   = newTH1D(string("tau_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau_{cm}", "", 100, 0, 100);
+        tau_c_cm_sum_Zinc1jet[i] = newTH1D(string("tau_c_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}_{cm}", "", 100, 0, 100);
+        tau_c_cm_max_Zinc1jet[i] = newTH1D(string("tau_c_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}_{cm}", "", 100, 0, 100);
 
+        gentau_sum_Zinc1jet[i]      = newTH1D(string("gentau_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau", "", 100, 0, 100);
+        gentau_max_Zinc1jet[i]      = newTH1D(string("gentau_max_Zinc1jet" + i_str.str()).c_str(), "max#tau", "", 100, 0, 100);
+        gentau_c_sum_Zinc1jet[i]    = newTH1D(string("gentau_c_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}", "", 100, 0, 100);
+        gentau_c_max_Zinc1jet[i]    = newTH1D(string("gentau_c_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}", "", 100, 0, 100);
+        gentau_cm_sum_Zinc1jet[i]   = newTH1D(string("gentau_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau_{cm}", "", 100, 0, 100);
+        gentau_cm_max_Zinc1jet[i]   = newTH1D(string("gentau_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau_{cm}", "", 100, 0, 100);
+        gentau_c_cm_sum_Zinc1jet[i] = newTH1D(string("gentau_c_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}_{cm}", "", 100, 0, 100);
+        gentau_c_cm_max_Zinc1jet[i] = newTH1D(string("gentau_c_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}_{cm}", "", 100, 0, 100);
+
+        hresponsetau_sum_Zinc1jet[i]      = newTH2D(string("hresponsetau_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau", 100, 0, 100, 100, 0, 100);
+        hresponsetau_max_Zinc1jet[i]      = newTH2D(string("hresponsetau_max_Zinc1jet" + i_str.str()).c_str(), "max#tau", 100, 0, 100, 100, 0, 100);
+        hresponsetau_c_sum_Zinc1jet[i]    = newTH2D(string("hresponsetau_c_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}", 100, 0, 100, 100, 0, 100);
+        hresponsetau_c_max_Zinc1jet[i]    = newTH2D(string("hresponsetau_c_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}", 100, 0, 100, 100, 0, 100);
+        hresponsetau_cm_sum_Zinc1jet[i]   = newTH2D(string("hresponsetau_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau_{cm}", 100, 0, 100, 100, 0, 100);
+        hresponsetau_cm_max_Zinc1jet[i]   = newTH2D(string("hresponsetau_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau_{cm}", 100, 0, 100, 100, 0, 100);
+        hresponsetau_c_cm_sum_Zinc1jet[i] = newTH2D(string("hresponsetau_c_cm_sum_Zinc1jet" + i_str.str()).c_str(), "#Sigma#tau^{c}_{cm}", 100, 0, 100, 100, 0, 100);
+        hresponsetau_c_cm_max_Zinc1jet[i] = newTH2D(string("hresponsetau_c_cm_max_Zinc1jet" + i_str.str()).c_str(), "max#tau^{c}_{cm}", 100, 0, 100, 100, 0, 100);
+    }
 
 
     //--- RooUnfoldResponses ---
 
-    responseZNGoodJets_Zexc               = newResp(ZNGoodJets_Zexc,                   genZNGoodJets_Zexc);
-    responseZMass                       = newResp(ZMass_Zinc0jet,                    genZMass_Zinc0jet);
-    responseTwoJetsPtDiffExc            = newResp(TwoJetsPtDiff_Zexc2jet,            genTwoJetsPtDiff_Zexc2jet);
-    responseTwoJetsPtDiffInc            = newResp(TwoJetsPtDiff_Zinc2jet,            genTwoJetsPtDiff_Zinc2jet);
-    responseBestTwoJetsPtDiffInc        = newResp(BestTwoJetsPtDiff_Zinc2jet,        genBestTwoJetsPtDiff_Zinc2jet);
-    responseTwoJetsPtDiffLowPtExc       = newResp(TwoJetsPtDiff_LowPt_Zexc2jet,      genTwoJetsPtDiff_LowPt_Zexc2jet);
-    responseTwoJetsPtDiffLowPtInc       = newResp(TwoJetsPtDiff_LowPt_Zinc2jet,      genTwoJetsPtDiff_LowPt_Zinc2jet);
-    responseBestTwoJetsPtDiffLowPtInc   = newResp(BestTwoJetsPtDiff_LowPt_Zinc2jet,  genBestTwoJetsPtDiff_LowPt_Zinc2jet);
-    responseJetsMassExc                 = newResp(JetsMass_Zexc2jet,                 genJetsMass_Zexc2jet);
-    responseJetsMassInc                 = newResp(JetsMass_Zinc2jet,                 genJetsMass_Zinc2jet);
-    responseBestJetsMassInc             = newResp(BestJetsMass_Zinc2jet,             genBestJetsMass_Zinc2jet);
-    responseJetsMassLowPtExc            = newResp(JetsMass_LowPt_Zexc2jet,           genJetsMass_LowPt_Zexc2jet);
-    responseJetsMassLowPtInc            = newResp(JetsMass_LowPt_Zinc2jet,           genJetsMass_LowPt_Zinc2jet);
-    responseBestJetsMassLowPtInc        = newResp(BestJetsMass_LowPt_Zinc2jet,       genBestJetsMass_LowPt_Zinc2jet);
+    //responseZNGoodJets_Zexc             = newResp(ZNGoodJets_Zexc,                   genZNGoodJets_Zexc);
+    //responseZMass                       = newResp(ZMass_Zinc0jet,                    genZMass_Zinc0jet);
+    //responseTwoJetsPtDiffExc            = newResp(TwoJetsPtDiff_Zexc2jet,            genTwoJetsPtDiff_Zexc2jet);
+    //responseTwoJetsPtDiffInc            = newResp(TwoJetsPtDiff_Zinc2jet,            genTwoJetsPtDiff_Zinc2jet);
+    //responseBestTwoJetsPtDiffInc        = newResp(BestTwoJetsPtDiff_Zinc2jet,        genBestTwoJetsPtDiff_Zinc2jet);
+    //responseTwoJetsPtDiffLowPtExc       = newResp(TwoJetsPtDiff_LowPt_Zexc2jet,      genTwoJetsPtDiff_LowPt_Zexc2jet);
+    //responseTwoJetsPtDiffLowPtInc       = newResp(TwoJetsPtDiff_LowPt_Zinc2jet,      genTwoJetsPtDiff_LowPt_Zinc2jet);
+    //responseBestTwoJetsPtDiffLowPtInc   = newResp(BestTwoJetsPtDiff_LowPt_Zinc2jet,  genBestTwoJetsPtDiff_LowPt_Zinc2jet);
+    //responseJetsMassExc                 = newResp(JetsMass_Zexc2jet,                 genJetsMass_Zexc2jet);
+    //responseJetsMassInc                 = newResp(JetsMass_Zinc2jet,                 genJetsMass_Zinc2jet);
+    //responseBestJetsMassInc             = newResp(BestJetsMass_Zinc2jet,             genBestJetsMass_Zinc2jet);
+    //responseJetsMassLowPtExc            = newResp(JetsMass_LowPt_Zexc2jet,           genJetsMass_LowPt_Zexc2jet);
+    //responseJetsMassLowPtInc            = newResp(JetsMass_LowPt_Zinc2jet,           genJetsMass_LowPt_Zinc2jet);
+    //responseBestJetsMassLowPtInc        = newResp(BestJetsMass_LowPt_Zinc2jet,       genBestJetsMass_LowPt_Zinc2jet);
 
-    responseFirstJetPt                  = newResp(FirstJetPt_Zinc1jet,               genFirstJetPt_Zinc1jet);
-    responseSecondJetPt                 = newResp(SecondJetPt_Zinc2jet,              genSecondJetPt_Zinc2jet);
-    responseThirdJetPt                  = newResp(ThirdJetPt_Zinc3jet,               genThirdJetPt_Zinc3jet);
-    responseFourthJetPt                 = newResp(FourthJetPt_Zinc4jet,              genFourthJetPt_Zinc4jet);
-    responseFifthJetPt                  = newResp(FifthJetPt_Zinc5jet,               genFifthJetPt_Zinc5jet);
-    responseSixthJetPt                  = newResp(SixthJetPt_Zinc6jet,               genSixthJetPt_Zinc6jet);
+    //responseFirstJetPt                  = newResp(FirstJetPt_Zinc1jet,               genFirstJetPt_Zinc1jet);
+    //responseSecondJetPt                 = newResp(SecondJetPt_Zinc2jet,              genSecondJetPt_Zinc2jet);
+    //responseThirdJetPt                  = newResp(ThirdJetPt_Zinc3jet,               genThirdJetPt_Zinc3jet);
+    //responseFourthJetPt                 = newResp(FourthJetPt_Zinc4jet,              genFourthJetPt_Zinc4jet);
+    //responseFifthJetPt                  = newResp(FifthJetPt_Zinc5jet,               genFifthJetPt_Zinc5jet);
+    //responseSixthJetPt                  = newResp(SixthJetPt_Zinc6jet,               genSixthJetPt_Zinc6jet);
 
-    responseFirstJetEta                 = newResp(FirstJetEta_Zinc1jet,              genFirstJetEta_Zinc1jet);
-    responseSecondJetEta                = newResp(SecondJetEta_Zinc2jet,             genSecondJetEta_Zinc2jet);
-    responseThirdJetEta                 = newResp(ThirdJetEta_Zinc3jet,              genThirdJetEta_Zinc3jet);
-    responseFourthJetEta                = newResp(FourthJetEta_Zinc4jet,             genFourthJetEta_Zinc4jet);
-    responseFifthJetEta                 = newResp(FifthJetEta_Zinc5jet,              genFifthJetEta_Zinc5jet);
-    responseSixthJetEta                 = newResp(SixthJetEta_Zinc6jet,              genSixthJetEta_Zinc6jet);
+    //responseFirstJetEta                 = newResp(FirstJetEta_Zinc1jet,              genFirstJetEta_Zinc1jet);
+    //responseSecondJetEta                = newResp(SecondJetEta_Zinc2jet,             genSecondJetEta_Zinc2jet);
+    //responseThirdJetEta                 = newResp(ThirdJetEta_Zinc3jet,              genThirdJetEta_Zinc3jet);
+    //responseFourthJetEta                = newResp(FourthJetEta_Zinc4jet,             genFourthJetEta_Zinc4jet);
+    //responseFifthJetEta                 = newResp(FifthJetEta_Zinc5jet,              genFifthJetEta_Zinc5jet);
+    //responseSixthJetEta                 = newResp(SixthJetEta_Zinc6jet,              genSixthJetEta_Zinc6jet);
 
-    responseJetsHt1Jet                  = newResp(JetsHT_Zinc1jet,                   genJetsHT_Zinc1jet);
-    responseJetsHt2Jet                  = newResp(JetsHT_Zinc2jet,                   genJetsHT_Zinc2jet);
-    responseJetsHt3Jet                  = newResp(JetsHT_Zinc3jet,                   genJetsHT_Zinc3jet);
-    responseJetsHt4Jet                  = newResp(JetsHT_Zinc4jet,                   genJetsHT_Zinc4jet);
-    responseJetsHt5Jet                  = newResp(JetsHT_Zinc5jet,                   genJetsHT_Zinc5jet);
-    responseJetsHt6Jet                  = newResp(JetsHT_Zinc6jet,                   genJetsHT_Zinc6jet);
+    //responseJetsHt1Jet                  = newResp(JetsHT_Zinc1jet,                   genJetsHT_Zinc1jet);
+    //responseJetsHt2Jet                  = newResp(JetsHT_Zinc2jet,                   genJetsHT_Zinc2jet);
+    //responseJetsHt3Jet                  = newResp(JetsHT_Zinc3jet,                   genJetsHT_Zinc3jet);
+    //responseJetsHt4Jet                  = newResp(JetsHT_Zinc4jet,                   genJetsHT_Zinc4jet);
+    //responseJetsHt5Jet                  = newResp(JetsHT_Zinc5jet,                   genJetsHT_Zinc5jet);
+    //responseJetsHt6Jet                  = newResp(JetsHT_Zinc6jet,                   genJetsHT_Zinc6jet);
 
-    responseSpTJets_Zexc2jet            = newResp(SpTJets_Zexc2jet,                  genSpTJets_Zexc2jet);
-    responseSpTJets_Zinc2jet            = newResp(SpTJets_Zinc2jet,                  genSpTJets_Zinc2jet);
-    responseBestSpTJets_Zinc2jet        = newResp(BestSpTJets_Zinc2jet,              genBestSpTJets_Zinc2jet);
-    responseSpTJets_LowPt_Zexc2jet      = newResp(SpTJets_LowPt_Zexc2jet,            genSpTJets_LowPt_Zexc2jet);
-    responseSpTJets_LowPt_Zinc2jet      = newResp(SpTJets_LowPt_Zinc2jet,            genSpTJets_LowPt_Zinc2jet);
-    responseBestSpTJets_LowPt_Zinc2jet  = newResp(BestSpTJets_LowPt_Zinc2jet,        genBestSpTJets_LowPt_Zinc2jet);
-    responseSpT_Zexc2jet                = newResp(SpT_Zexc2jet,                      genSpT_Zexc2jet);
-    responseSpT_Zinc2jet                = newResp(SpT_Zinc2jet,                      genSpT_Zinc2jet);
-    responseBestSpT_Zinc2jet            = newResp(BestSpT_Zinc2jet,                  genBestSpT_Zinc2jet);
-    responseSpT_LowPt_Zexc2jet          = newResp(SpT_LowPt_Zexc2jet,                genSpT_LowPt_Zexc2jet);
-    responseSpT_LowPt_Zinc2jet          = newResp(SpT_LowPt_Zinc2jet,                genSpT_LowPt_Zinc2jet);
-    responseBestSpT_LowPt_Zinc2jet      = newResp(BestSpT_LowPt_Zinc2jet,            genBestSpT_LowPt_Zinc2jet);
-    responsedPhiJets_Zexc2jet           = newResp(dPhiJets_Zexc2jet,                 gendPhiJets_Zexc2jet);
-    responsedPhiJets_Zinc2jet           = newResp(dPhiJets_Zinc2jet,                 gendPhiJets_Zinc2jet);
-    responseBestdPhiJets_Zinc2jet       = newResp(BestdPhiJets_Zinc2jet,             genBestdPhiJets_Zinc2jet);
-    responsedPhiJets_LowPt_Zexc2jet     = newResp(dPhiJets_LowPt_Zexc2jet,           gendPhiJets_LowPt_Zexc2jet);
-    responsedPhiJets_LowPt_Zinc2jet     = newResp(dPhiJets_LowPt_Zinc2jet,           gendPhiJets_LowPt_Zinc2jet);
-    responseBestdPhiJets_LowPt_Zinc2jet = newResp(BestdPhiJets_LowPt_Zinc2jet,       genBestdPhiJets_LowPt_Zinc2jet);
-    responsePHI_Zexc2jet                = newResp(PHI_Zexc2jet,                      genPHI_Zexc2jet);
-    responsePHI_Zinc2jet                = newResp(PHI_Zinc2jet,                      genPHI_Zinc2jet);
-    responseBestPHI_Zinc2jet            = newResp(BestPHI_Zinc2jet,                  genBestPHI_Zinc2jet);
-    responsePHI_LowPt_Zexc2jet          = newResp(PHI_LowPt_Zexc2jet,                genPHI_LowPt_Zexc2jet);
-    responsePHI_LowPt_Zinc2jet          = newResp(PHI_LowPt_Zinc2jet,                genPHI_LowPt_Zinc2jet);
-    responseBestPHI_LowPt_Zinc2jet      = newResp(BestPHI_LowPt_Zinc2jet,            genBestPHI_LowPt_Zinc2jet);
-    responsePHI_T_Zexc2jet              = newResp(PHI_T_Zexc2jet,                    genPHI_T_Zexc2jet);
-    responsePHI_T_Zinc2jet              = newResp(PHI_T_Zinc2jet,                    genPHI_T_Zinc2jet);
-    responseBestPHI_T_Zinc2jet          = newResp(BestPHI_T_Zinc2jet,                genBestPHI_T_Zinc2jet);
-    responsePHI_T_LowPt_Zexc2jet        = newResp(PHI_T_LowPt_Zexc2jet,              genPHI_T_LowPt_Zexc2jet);
-    responsePHI_T_LowPt_Zinc2jet        = newResp(PHI_T_LowPt_Zinc2jet,              genPHI_T_LowPt_Zinc2jet);
-    responseBestPHI_T_LowPt_Zinc2jet    = newResp(BestPHI_T_LowPt_Zinc2jet,          genBestPHI_T_LowPt_Zinc2jet);
-    responseSPhi_Zexc2jet               = newResp(SPhi_Zexc2jet,                     genSPhi_Zexc2jet);
-    responseSPhi_Zinc2jet               = newResp(SPhi_Zinc2jet,                     genSPhi_Zinc2jet);
-    responsedEtaJets_Zexc2jet           = newResp(dEtaJets_Zexc2jet,                 gendEtaJets_Zexc2jet);
-    responsedEtaJets_Zinc2jet           = newResp(dEtaJets_Zinc2jet,                 gendEtaJets_Zinc2jet);
-    responseBestSPhi_Zinc2jet           = newResp(BestSPhi_Zinc2jet,                 genBestSPhi_Zinc2jet);
-    responseSPhi_LowPt_Zexc2jet         = newResp(SPhi_LowPt_Zexc2jet,               genSPhi_LowPt_Zexc2jet);
-    responseSPhi_LowPt_Zinc2jet         = newResp(SPhi_LowPt_Zinc2jet,               genSPhi_LowPt_Zinc2jet);
-    responseBestSPhi_LowPt_Zinc2jet     = newResp(BestSPhi_LowPt_Zinc2jet,           genBestSPhi_LowPt_Zinc2jet);
+    //responseSpTJets_Zexc2jet            = newResp(SpTJets_Zexc2jet,                  genSpTJets_Zexc2jet);
+    //responseSpTJets_Zinc2jet            = newResp(SpTJets_Zinc2jet,                  genSpTJets_Zinc2jet);
+    //responseBestSpTJets_Zinc2jet        = newResp(BestSpTJets_Zinc2jet,              genBestSpTJets_Zinc2jet);
+    //responseSpTJets_LowPt_Zexc2jet      = newResp(SpTJets_LowPt_Zexc2jet,            genSpTJets_LowPt_Zexc2jet);
+    //responseSpTJets_LowPt_Zinc2jet      = newResp(SpTJets_LowPt_Zinc2jet,            genSpTJets_LowPt_Zinc2jet);
+    //responseBestSpTJets_LowPt_Zinc2jet  = newResp(BestSpTJets_LowPt_Zinc2jet,        genBestSpTJets_LowPt_Zinc2jet);
+    //responseSpT_Zexc2jet                = newResp(SpT_Zexc2jet,                      genSpT_Zexc2jet);
+    //responseSpT_Zinc2jet                = newResp(SpT_Zinc2jet,                      genSpT_Zinc2jet);
+    //responseBestSpT_Zinc2jet            = newResp(BestSpT_Zinc2jet,                  genBestSpT_Zinc2jet);
+    //responseSpT_LowPt_Zexc2jet          = newResp(SpT_LowPt_Zexc2jet,                genSpT_LowPt_Zexc2jet);
+    //responseSpT_LowPt_Zinc2jet          = newResp(SpT_LowPt_Zinc2jet,                genSpT_LowPt_Zinc2jet);
+    //responseBestSpT_LowPt_Zinc2jet      = newResp(BestSpT_LowPt_Zinc2jet,            genBestSpT_LowPt_Zinc2jet);
+    //responsedPhiJets_Zexc2jet           = newResp(dPhiJets_Zexc2jet,                 gendPhiJets_Zexc2jet);
+    //responsedPhiJets_Zinc2jet           = newResp(dPhiJets_Zinc2jet,                 gendPhiJets_Zinc2jet);
+    //responseBestdPhiJets_Zinc2jet       = newResp(BestdPhiJets_Zinc2jet,             genBestdPhiJets_Zinc2jet);
+    //responsedPhiJets_LowPt_Zexc2jet     = newResp(dPhiJets_LowPt_Zexc2jet,           gendPhiJets_LowPt_Zexc2jet);
+    //responsedPhiJets_LowPt_Zinc2jet     = newResp(dPhiJets_LowPt_Zinc2jet,           gendPhiJets_LowPt_Zinc2jet);
+    //responseBestdPhiJets_LowPt_Zinc2jet = newResp(BestdPhiJets_LowPt_Zinc2jet,       genBestdPhiJets_LowPt_Zinc2jet);
+    //responsePHI_Zexc2jet                = newResp(PHI_Zexc2jet,                      genPHI_Zexc2jet);
+    //responsePHI_Zinc2jet                = newResp(PHI_Zinc2jet,                      genPHI_Zinc2jet);
+    //responseBestPHI_Zinc2jet            = newResp(BestPHI_Zinc2jet,                  genBestPHI_Zinc2jet);
+    //responsePHI_LowPt_Zexc2jet          = newResp(PHI_LowPt_Zexc2jet,                genPHI_LowPt_Zexc2jet);
+    //responsePHI_LowPt_Zinc2jet          = newResp(PHI_LowPt_Zinc2jet,                genPHI_LowPt_Zinc2jet);
+    //responseBestPHI_LowPt_Zinc2jet      = newResp(BestPHI_LowPt_Zinc2jet,            genBestPHI_LowPt_Zinc2jet);
+    //responsePHI_T_Zexc2jet              = newResp(PHI_T_Zexc2jet,                    genPHI_T_Zexc2jet);
+    //responsePHI_T_Zinc2jet              = newResp(PHI_T_Zinc2jet,                    genPHI_T_Zinc2jet);
+    //responseBestPHI_T_Zinc2jet          = newResp(BestPHI_T_Zinc2jet,                genBestPHI_T_Zinc2jet);
+    //responsePHI_T_LowPt_Zexc2jet        = newResp(PHI_T_LowPt_Zexc2jet,              genPHI_T_LowPt_Zexc2jet);
+    //responsePHI_T_LowPt_Zinc2jet        = newResp(PHI_T_LowPt_Zinc2jet,              genPHI_T_LowPt_Zinc2jet);
+    //responseBestPHI_T_LowPt_Zinc2jet    = newResp(BestPHI_T_LowPt_Zinc2jet,          genBestPHI_T_LowPt_Zinc2jet);
+    //responseSPhi_Zexc2jet               = newResp(SPhi_Zexc2jet,                     genSPhi_Zexc2jet);
+    //responseSPhi_Zinc2jet               = newResp(SPhi_Zinc2jet,                     genSPhi_Zinc2jet);
+    //responsedEtaJets_Zexc2jet           = newResp(dEtaJets_Zexc2jet,                 gendEtaJets_Zexc2jet);
+    //responsedEtaJets_Zinc2jet           = newResp(dEtaJets_Zinc2jet,                 gendEtaJets_Zinc2jet);
+    //responseBestSPhi_Zinc2jet           = newResp(BestSPhi_Zinc2jet,                 genBestSPhi_Zinc2jet);
+    //responseSPhi_LowPt_Zexc2jet         = newResp(SPhi_LowPt_Zexc2jet,               genSPhi_LowPt_Zexc2jet);
+    //responseSPhi_LowPt_Zinc2jet         = newResp(SPhi_LowPt_Zinc2jet,               genSPhi_LowPt_Zinc2jet);
+    //responseBestSPhi_LowPt_Zinc2jet     = newResp(BestSPhi_LowPt_Zinc2jet,           genBestSPhi_LowPt_Zinc2jet);
 
-    // vector boson and single jet
-    responsedEtaBosonJet_Zexc1          = newResp(dEtaBosonJet_Zexc1jet,            gendEtaBosonJet_Zexc1jet);
-    responsedEtaBosonJet_Zinc1          = newResp(dEtaBosonJet_Zinc1jet,            gendEtaBosonJet_Zinc1jet);
+    //// vector boson and single jet
+    //responsedEtaBosonJet_Zexc1          = newResp(dEtaBosonJet_Zexc1jet,            gendEtaBosonJet_Zexc1jet);
+    //responsedEtaBosonJet_Zinc1          = newResp(dEtaBosonJet_Zinc1jet,            gendEtaBosonJet_Zinc1jet);
 
 }

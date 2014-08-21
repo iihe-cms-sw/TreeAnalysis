@@ -501,6 +501,41 @@ class HistoSetZJets: public TObject{
         TH1D *gendEtaBosonJet_Zexc1jet;
         TH1D *gendEtaBosonJet_Zinc1jet;
 
+        TH1D *trMass;
+        TH1D *trE;
+        TH1D *E;
+        TH1D *eta;
+        TH1D *rapidity;
+
+        TH1D *tau_sum_Zinc1jet[5];
+        TH1D *tau_max_Zinc1jet[5];
+        TH1D *tau_c_sum_Zinc1jet[5];
+        TH1D *tau_c_max_Zinc1jet[5];
+        TH1D *tau_cm_sum_Zinc1jet[5];
+        TH1D *tau_cm_max_Zinc1jet[5];
+        TH1D *tau_c_cm_sum_Zinc1jet[5];
+        TH1D *tau_c_cm_max_Zinc1jet[5];
+
+        TH1D *gentau_sum_Zinc1jet[5];
+        TH1D *gentau_max_Zinc1jet[5];
+        TH1D *gentau_c_sum_Zinc1jet[5];
+        TH1D *gentau_c_max_Zinc1jet[5];
+        TH1D *gentau_cm_sum_Zinc1jet[5];
+        TH1D *gentau_cm_max_Zinc1jet[5];
+        TH1D *gentau_c_cm_sum_Zinc1jet[5];
+        TH1D *gentau_c_cm_max_Zinc1jet[5];
+
+        // TH2D for reponse objects
+
+        TH2D *hresponsetau_sum_Zinc1jet[5];
+        TH2D *hresponsetau_max_Zinc1jet[5];
+        TH2D *hresponsetau_c_sum_Zinc1jet[5];
+        TH2D *hresponsetau_c_max_Zinc1jet[5];
+        TH2D *hresponsetau_cm_sum_Zinc1jet[5];
+        TH2D *hresponsetau_cm_max_Zinc1jet[5];
+        TH2D *hresponsetau_c_cm_sum_Zinc1jet[5];
+        TH2D *hresponsetau_c_cm_max_Zinc1jet[5];
+
         TH2D *hresponseZNGoodJets_Zexc;              
 
         TH2D *hresponseFirstJetPt_Zinc1jet;              
@@ -521,85 +556,87 @@ class HistoSetZJets: public TObject{
         TH2D *hresponseFourthJetEta_Zinc4jet;
         TH2D *hresponseFifthJetEta_Zinc5jet; 
 
+        
+
         //--- RooUnfoldResponses ---
-        RooUnfoldResponse *responseZNGoodJets_Zexc;              
-        RooUnfoldResponse *responseZMass;                      
-        RooUnfoldResponse *responseTwoJetsPtDiffExc;           
-        RooUnfoldResponse *responseTwoJetsPtDiffInc;           
-        RooUnfoldResponse *responseBestTwoJetsPtDiffInc;       
-        RooUnfoldResponse *responseTwoJetsPtDiffLowPtExc;        
-        RooUnfoldResponse *responseTwoJetsPtDiffLowPtInc;      
-        RooUnfoldResponse *responseBestTwoJetsPtDiffLowPtInc;  
-        RooUnfoldResponse *responseJetsMassExc;                
-        RooUnfoldResponse *responseJetsMassInc;                
-        RooUnfoldResponse *responseBestJetsMassInc;            
-        RooUnfoldResponse *responseJetsMassLowPtExc;           
-        RooUnfoldResponse *responseJetsMassLowPtInc;           
-        RooUnfoldResponse *responseBestJetsMassLowPtInc;       
+        //RooUnfoldResponse *responseZNGoodJets_Zexc;              
+        //RooUnfoldResponse *responseZMass;                      
+        //RooUnfoldResponse *responseTwoJetsPtDiffExc;           
+        //RooUnfoldResponse *responseTwoJetsPtDiffInc;           
+        //RooUnfoldResponse *responseBestTwoJetsPtDiffInc;       
+        //RooUnfoldResponse *responseTwoJetsPtDiffLowPtExc;        
+        //RooUnfoldResponse *responseTwoJetsPtDiffLowPtInc;      
+        //RooUnfoldResponse *responseBestTwoJetsPtDiffLowPtInc;  
+        //RooUnfoldResponse *responseJetsMassExc;                
+        //RooUnfoldResponse *responseJetsMassInc;                
+        //RooUnfoldResponse *responseBestJetsMassInc;            
+        //RooUnfoldResponse *responseJetsMassLowPtExc;           
+        //RooUnfoldResponse *responseJetsMassLowPtInc;           
+        //RooUnfoldResponse *responseBestJetsMassLowPtInc;       
 
-        RooUnfoldResponse *responseFirstJetPt;                 
-        RooUnfoldResponse *responseSecondJetPt;                
-        RooUnfoldResponse *responseThirdJetPt;                 
-        RooUnfoldResponse *responseFourthJetPt;                
-        RooUnfoldResponse *responseFifthJetPt;                 
-        RooUnfoldResponse *responseSixthJetPt;                 
+        //RooUnfoldResponse *responseFirstJetPt;                 
+        //RooUnfoldResponse *responseSecondJetPt;                
+        //RooUnfoldResponse *responseThirdJetPt;                 
+        //RooUnfoldResponse *responseFourthJetPt;                
+        //RooUnfoldResponse *responseFifthJetPt;                 
+        //RooUnfoldResponse *responseSixthJetPt;                 
 
-        RooUnfoldResponse *responseFirstJetEta;                
-        RooUnfoldResponse *responseSecondJetEta;               
-        RooUnfoldResponse *responseThirdJetEta;                
-        RooUnfoldResponse *responseFourthJetEta;               
-        RooUnfoldResponse *responseFifthJetEta;                
-        RooUnfoldResponse *responseSixthJetEta;                
+        //RooUnfoldResponse *responseFirstJetEta;                
+        //RooUnfoldResponse *responseSecondJetEta;               
+        //RooUnfoldResponse *responseThirdJetEta;                
+        //RooUnfoldResponse *responseFourthJetEta;               
+        //RooUnfoldResponse *responseFifthJetEta;                
+        //RooUnfoldResponse *responseSixthJetEta;                
 
-        RooUnfoldResponse *responseJetsHt1Jet;                 
-        RooUnfoldResponse *responseJetsHt2Jet;                 
-        RooUnfoldResponse *responseJetsHt3Jet;                 
-        RooUnfoldResponse *responseJetsHt4Jet;                 
-        RooUnfoldResponse *responseJetsHt5Jet;                 
-        RooUnfoldResponse *responseJetsHt6Jet;                 
+        //RooUnfoldResponse *responseJetsHt1Jet;                 
+        //RooUnfoldResponse *responseJetsHt2Jet;                 
+        //RooUnfoldResponse *responseJetsHt3Jet;                 
+        //RooUnfoldResponse *responseJetsHt4Jet;                 
+        //RooUnfoldResponse *responseJetsHt5Jet;                 
+        //RooUnfoldResponse *responseJetsHt6Jet;                 
 
-        RooUnfoldResponse *responseSpTJets_Zexc2jet;           
-        RooUnfoldResponse *responseSpTJets_Zinc2jet;           
-        RooUnfoldResponse *responseBestSpTJets_Zinc2jet;       
-        RooUnfoldResponse *responseSpTJets_LowPt_Zexc2jet;     
-        RooUnfoldResponse *responseSpTJets_LowPt_Zinc2jet;     
-        RooUnfoldResponse *responseBestSpTJets_LowPt_Zinc2jet; 
-        RooUnfoldResponse *responseSpT_Zexc2jet;               
-        RooUnfoldResponse *responseSpT_Zinc2jet;               
-        RooUnfoldResponse *responseBestSpT_Zinc2jet;           
-        RooUnfoldResponse *responseSpT_LowPt_Zexc2jet;         
-        RooUnfoldResponse *responseSpT_LowPt_Zinc2jet;         
-        RooUnfoldResponse *responseBestSpT_LowPt_Zinc2jet;     
-        RooUnfoldResponse *responsedPhiJets_Zexc2jet;          
-        RooUnfoldResponse *responsedPhiJets_Zinc2jet;          
-        RooUnfoldResponse *responseBestdPhiJets_Zinc2jet;      
-        RooUnfoldResponse *responsedPhiJets_LowPt_Zexc2jet;    
-        RooUnfoldResponse *responsedPhiJets_LowPt_Zinc2jet;    
-        RooUnfoldResponse *responseBestdPhiJets_LowPt_Zinc2jet;
-        RooUnfoldResponse *responsePHI_Zexc2jet;               
-        RooUnfoldResponse *responsePHI_Zinc2jet;               
-        RooUnfoldResponse *responseBestPHI_Zinc2jet;           
-        RooUnfoldResponse *responsePHI_LowPt_Zexc2jet;         
-        RooUnfoldResponse *responsePHI_LowPt_Zinc2jet;         
-        RooUnfoldResponse *responseBestPHI_LowPt_Zinc2jet;     
-        RooUnfoldResponse *responsePHI_T_Zexc2jet;             
-        RooUnfoldResponse *responsePHI_T_Zinc2jet;             
-        RooUnfoldResponse *responseBestPHI_T_Zinc2jet;         
-        RooUnfoldResponse *responsePHI_T_LowPt_Zexc2jet;       
-        RooUnfoldResponse *responsePHI_T_LowPt_Zinc2jet;       
-        RooUnfoldResponse *responseBestPHI_T_LowPt_Zinc2jet;   
-        RooUnfoldResponse *responseSPhi_Zexc2jet;              
-        RooUnfoldResponse *responseSPhi_Zinc2jet;              
-        RooUnfoldResponse *responsedEtaJets_Zexc2jet;          
-        RooUnfoldResponse *responsedEtaJets_Zinc2jet;          
-        RooUnfoldResponse *responseBestSPhi_Zinc2jet;          
-        RooUnfoldResponse *responseSPhi_LowPt_Zexc2jet;        
-        RooUnfoldResponse *responseSPhi_LowPt_Zinc2jet;        
-        RooUnfoldResponse *responseBestSPhi_LowPt_Zinc2jet;    
+        //RooUnfoldResponse *responseSpTJets_Zexc2jet;           
+        //RooUnfoldResponse *responseSpTJets_Zinc2jet;           
+        //RooUnfoldResponse *responseBestSpTJets_Zinc2jet;       
+        //RooUnfoldResponse *responseSpTJets_LowPt_Zexc2jet;     
+        //RooUnfoldResponse *responseSpTJets_LowPt_Zinc2jet;     
+        //RooUnfoldResponse *responseBestSpTJets_LowPt_Zinc2jet; 
+        //RooUnfoldResponse *responseSpT_Zexc2jet;               
+        //RooUnfoldResponse *responseSpT_Zinc2jet;               
+        //RooUnfoldResponse *responseBestSpT_Zinc2jet;           
+        //RooUnfoldResponse *responseSpT_LowPt_Zexc2jet;         
+        //RooUnfoldResponse *responseSpT_LowPt_Zinc2jet;         
+        //RooUnfoldResponse *responseBestSpT_LowPt_Zinc2jet;     
+        //RooUnfoldResponse *responsedPhiJets_Zexc2jet;          
+        //RooUnfoldResponse *responsedPhiJets_Zinc2jet;          
+        //RooUnfoldResponse *responseBestdPhiJets_Zinc2jet;      
+        //RooUnfoldResponse *responsedPhiJets_LowPt_Zexc2jet;    
+        //RooUnfoldResponse *responsedPhiJets_LowPt_Zinc2jet;    
+        //RooUnfoldResponse *responseBestdPhiJets_LowPt_Zinc2jet;
+        //RooUnfoldResponse *responsePHI_Zexc2jet;               
+        //RooUnfoldResponse *responsePHI_Zinc2jet;               
+        //RooUnfoldResponse *responseBestPHI_Zinc2jet;           
+        //RooUnfoldResponse *responsePHI_LowPt_Zexc2jet;         
+        //RooUnfoldResponse *responsePHI_LowPt_Zinc2jet;         
+        //RooUnfoldResponse *responseBestPHI_LowPt_Zinc2jet;     
+        //RooUnfoldResponse *responsePHI_T_Zexc2jet;             
+        //RooUnfoldResponse *responsePHI_T_Zinc2jet;             
+        //RooUnfoldResponse *responseBestPHI_T_Zinc2jet;         
+        //RooUnfoldResponse *responsePHI_T_LowPt_Zexc2jet;       
+        //RooUnfoldResponse *responsePHI_T_LowPt_Zinc2jet;       
+        //RooUnfoldResponse *responseBestPHI_T_LowPt_Zinc2jet;   
+        //RooUnfoldResponse *responseSPhi_Zexc2jet;              
+        //RooUnfoldResponse *responseSPhi_Zinc2jet;              
+        //RooUnfoldResponse *responsedEtaJets_Zexc2jet;          
+        //RooUnfoldResponse *responsedEtaJets_Zinc2jet;          
+        //RooUnfoldResponse *responseBestSPhi_Zinc2jet;          
+        //RooUnfoldResponse *responseSPhi_LowPt_Zexc2jet;        
+        //RooUnfoldResponse *responseSPhi_LowPt_Zinc2jet;        
+        //RooUnfoldResponse *responseBestSPhi_LowPt_Zinc2jet;    
 
-        // vector boson and single jet 
-        RooUnfoldResponse *responsedEtaBosonJet_Zexc1;
-        RooUnfoldResponse *responsedEtaBosonJet_Zinc1;
+        //// vector boson and single jet 
+        //RooUnfoldResponse *responsedEtaBosonJet_Zexc1;
+        //RooUnfoldResponse *responsedEtaBosonJet_Zinc1;
 
         ClassDef(HistoSetZJets,10);
 };
