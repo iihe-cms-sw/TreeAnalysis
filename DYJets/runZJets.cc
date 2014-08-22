@@ -17,7 +17,7 @@
 
     unsigned int nSources = sources.size();
     for (unsigned int i(0); i < nSources; i++){
-        std::cout << "Compiling or loading " << srcDir + sources[i] << std::endl;
+        std::cout << "Compiling or loading " << sources[i] << std::endl;
         gROOT->ProcessLine(".L " + sources[i]);
     }
     //----------------------------------------------------------------------------------
@@ -25,7 +25,7 @@
     //--- Settings ---------------------------------------------------------------------
     // doWhat = "DATA", "BACKGROUND", "TAU", "DYJETS", "WJETS", "ALL", "PDF", "SHERPA"
 
-    TString outDir     = cfg.getS("outDir", "HistoFilesAugust/");
+    TString outDir     = cfg.getS("outDir", "HistoFilesAugust");
     TString lepSel     = cfg.getS("lepSel", "DMu");
     TString doWhat     = cfg.getS("doWhat", "DYJETS");
     float jetPtMin     = cfg.getF("jetPtMin", 30);
@@ -40,7 +40,9 @@
 
 
     //--- Internal configuration -------------------------------------------------------
+    if (!outDir.EndsWith("/")) outDir += "/";
     doWhat.ToUpper();
+
     double lumi; 
     if      (lepSel == "DE")  lumi = 19.618;
     else if (lepSel == "DMu") lumi = 19.584;
