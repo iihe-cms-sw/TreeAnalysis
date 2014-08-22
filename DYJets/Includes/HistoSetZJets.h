@@ -18,7 +18,7 @@ class HistoSetZJets: public TObject{
 
         vector<TH1*> listOfHistograms;
         vector<RooUnfoldResponse*> listOfResponses;
-        HistoSetZJets(string leptonFlavor = "DMu");
+        HistoSetZJets(TString leptonFlavor = "DMu");
         ~HistoSetZJets();
 
         vector<double> makeVector(int num, ...);

@@ -1,23 +1,22 @@
 {
   cout << "\nI'm executing rootlogon.C\n" << endl;
-  string currentFile =  __FILE__;
-  string currentWorkingDir = currentFile.substr(0, currentFile.find("./rootlogon.C"));
-  cout << "The Working Direcotry is:\n\t" << currentWorkingDir << "\n"<< endl;
+  TString currentFile_ =  __FILE__;
+  TString currentWorkingDir_ = currentFile_(0, currentFile_.Index("./rootlogon.C"));
+  cout << "The Working Direcotry is:\n\t" << currentWorkingDir_ << "\n"<< endl;
   gErrorIgnoreLevel = kError;
-  string srcdir = currentWorkingDir + "Sources/";
-  string incdir = currentWorkingDir + "Includes/";
-  string lhapdfdir = "/user/aleonard/lhapdf-5.9.1/include/";
-  string roounfolddir = currentWorkingDir + "RooUnfold-1.1.1/";
+  TString incdir_ = currentWorkingDir_ + "Includes/";
+  TString lhapdfdir_ = "/user/aleonard/lhapdf-5.9.1/include/";
+  TString roounfolddir_ = currentWorkingDir_ + "RooUnfold-1.1.1/";
 
   cout << "--------------------------------------------------------------------------------\n" << endl; 
-  cout << "Adding " << incdir << " to includes directories..." << endl;
-  gSystem->AddIncludePath(string("-I" + incdir).c_str());
-  cout << "Adding " << lhapdfdir << " to includes directories..." << endl;
-  gSystem->AddIncludePath(string("-I" + lhapdfdir).c_str());
-  cout << "Adding " << roounfolddir << "src" << " to includes directories..." << endl;
-  gSystem->AddIncludePath(string("-I" + roounfolddir + "src").c_str());
+  cout << "Adding " << incdir_ << " to includes directories..." << endl;
+  gSystem->AddIncludePath("-I" + incdir_);
+  cout << "Adding " << lhapdfdir_ << " to includes directories..." << endl;
+  gSystem->AddIncludePath("-I" + lhapdfdir_);
+  cout << "Adding " << roounfolddir_ << "src" << " to includes directories..." << endl;
+  gSystem->AddIncludePath("-I" + roounfolddir_ + "src");
   cout << "Loading RooUnfold libraries..." << endl;
-  gSystem->Load(string(roounfolddir + "libRooUnfold").c_str());
+  gSystem->Load(roounfolddir_ + "libRooUnfold");
   cout << "\n";
   cout << "--------------------------------------------------------------------------------\n" << endl; 
 }

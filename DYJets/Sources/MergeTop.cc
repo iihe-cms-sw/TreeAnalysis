@@ -57,13 +57,13 @@ void runMergeTop(string lepSelection, int systematics, float jetPtCutMin, float 
     else if (systematics == 3) syst = "Syst_3_Up_"; 
     else if (systematics == -3) syst = "Syst_3_Down_"; 
 
-    string str1 = outDir + lepSelection +  "_8TeV_T_s_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string str2 = outDir + lepSelection +  "_8TeV_T_t_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string str3 = outDir + lepSelection +  "_8TeV_T_tW_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string str4 = outDir + lepSelection +  "_8TeV_Tbar_s_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string str5 = outDir + lepSelection +  "_8TeV_Tbar_t_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string str6 = outDir + lepSelection +  "_8TeV_Tbar_tW_channel_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
-    string strf = outDir + lepSelection +  "_8TeV_Top_dR_EffiCorr_1_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str1 = outDir + lepSelection +  "_8TeV_T_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str2 = outDir + lepSelection +  "_8TeV_T_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str3 = outDir + lepSelection +  "_8TeV_T_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str4 = outDir + lepSelection +  "_8TeV_Tbar_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str5 = outDir + lepSelection +  "_8TeV_Tbar_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string str6 = outDir + lepSelection +  "_8TeV_Tbar_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    string strf = outDir + lepSelection +  "_8TeV_Top_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
     cout << strf << endl;
 
     TFile *f1 = new TFile(str1.c_str());

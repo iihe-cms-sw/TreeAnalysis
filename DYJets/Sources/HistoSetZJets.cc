@@ -114,7 +114,7 @@ RooUnfoldResponse* HistoSetZJets::newResp(TH2D* reco, TH2D* gen)
     return response;
 }
 
-HistoSetZJets::HistoSetZJets(string leptonFlavor)
+HistoSetZJets::HistoSetZJets(TString leptonFlavor)
 {
     TH1::SetDefaultSumw2();
     TH2::SetDefaultSumw2();

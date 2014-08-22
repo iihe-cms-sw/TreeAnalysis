@@ -39,14 +39,11 @@ class ZJets: public HistoSetZJets {
         // Declaration of leaf types
         Double_t        PU_npT;
         Double_t        PU_npIT;
-        Double_t        mcEveWeight_;
-        Double_t        mcSherpaSumWeight3_ ;
 
         Int_t           EvtInfo_NumVtx;
         Int_t           EvtInfo_RunNum;
         Int_t           EvtInfo_EventNum;
-        Int_t	          nup_;
-        vector<double>  *mcSherpaWeights_;
+        Int_t	        nup_;
         vector<double>  *pdfInfo_;
         vector<double>  *genLepPt_;
         vector<double>  *genLepEta_;
@@ -62,17 +59,7 @@ class ZJets: public HistoSetZJets {
         vector<double>  *genJetEta_;
         vector<double>  *genJetPhi_;
         vector<double>  *genJetE_;
-        vector<double>  *dpsParton_Pt;
-        vector<double>  *dpsParton_Eta;
-        vector<double>  *dpsParton_Phi;
-        vector<double>  *dpsParton_E;
-        vector<int>     *genMatchDPSpar;
-        vector<double>  *dpsParton_dR;
 
-        vector<double>  *gsfElecPt_;
-        vector<double>  *gsfElecEta_;
-        vector<double>  *gsfElecPhi_;
-        vector<double>  *gsfElecEnergy_;
         vector<double>  *patElecPt_;
         vector<double>  *patElecEta_;
         vector<double>  *patElecPhi_;
@@ -80,35 +67,25 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patElecCharge_;
         vector<double>  *patElecID_;
         vector<double>  *patElecTrig_;
-        vector<double>  *patElecDetIso_;
         vector<double>  *patElecPfIsoRho_;
         vector<double>  *patElecScEta_;
-        vector<double>  *patElecIsPF_;
 
         vector<double>  *patMuonPt_;
         vector<double>  *patMuonEta_;
         vector<double>  *patMuonPhi_;
-        vector<double>  *patMuonVtxZ_;
         vector<double>  *patMuonEn_;
         vector<double>  *patMuonCharge_;
-        vector<double>  *patMuonDxy_;
         vector<double>  *patMuonCombId_;
         vector<double>  *patMuonTrig_;
         vector<double>  *patMuonPfIsoDbeta_;
+
         // -- JET ---
         vector<double>  *patJetPfAk05En_;
         vector<double>  *patJetPfAk05Pt_;
         vector<double>  *patJetPfAk05Eta_;
         vector<double>  *patJetPfAk05Phi_;
         vector<double>  *patJetPfAk05LooseId_;
-        vector<double>  *patJetPfAk05jetBSZ_;
-        vector<double>  *patJetPfAk05jetBZ_;
         vector<double>  *patJetPfAk05jetpuMVA_;
-        vector<double>  *patJetPfAk05OCSV_;
-        // -- MET ---
-        vector<double>  *patMetPt_;
-        vector<double>  *patMetPhi_;
-        vector<double>  *patMetSig_;
 
         // List of branches
         TBranch        *b_mcEveWeight_;   //!
@@ -179,13 +156,9 @@ class ZJets: public HistoSetZJets {
         TBranch        *b_patJetPfAk05jetpuMVA_;   //!
         TBranch        *b_patJetPfAk05OCSV_;   //!
 
-        TBranch        *b_patMetPt_;   //!
-        TBranch        *b_patMetPhi_;   //!
-        TBranch        *b_patMetSig_;   //!
 
 
-
-        ZJets(string fileName_, float lumiScale_ = 1., float puScale_ = 1., bool useTriggerCorrection_ = 0, bool useEfficiencyCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., float jetPtCutMin_ = 30, float jetEtaCutMax_ = 2.4, bool do10000Events_ = 0, string outDir_ = "TEST"); 
+        ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., float jetPtCutMin_ = 30, float jetEtaCutMax_ = 2.4, bool do10000Events_ = 0, TString outDir_ = "TEST"); 
         ~ZJets();
         string   CreateOutputFileName(string pdfSet = "", int pdfMember = -1);
         Int_t    Cut(Long64_t entry);
@@ -199,9 +172,7 @@ class ZJets: public HistoSetZJets {
         string outputDirectory;
         string fileName; 
         float lumiScale;
-        float puScale;
         bool useTriggerCorrection;
-        bool useEfficiencyCorrection; 
         bool isData;
         int systematics;
         int direction;

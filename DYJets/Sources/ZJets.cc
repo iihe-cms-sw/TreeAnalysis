@@ -56,9 +56,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     // additional variables
     double ZptRange[6] = {0, 40, 80, 120, 160, 1000};
     int LeptonID(11);
-    if (leptonFlavor == "Muons"){
-        LeptonID = 13;
-    }
+    if (leptonFlavor == "Muons") LeptonID = 13;
+    
 
     //==========================================================================================================//
     //         Output file name           //
@@ -129,11 +128,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 
 
     // setting weight when running on MIX of exclusive DY/WJets files to match number of parton events
-    double mixingWeightsDY[4] = {0.192686, 0.0718097, 0.04943495, 0.0360337 }; // here we match all partons, and combine electron and muon side
-    double mixingWeightsWJ_SMu[4] ={0.366713,  0.1119323,  0.07641136,  0.03803325};
-    double mixingWeightsWJ_SE[4] ={0.3667127984048746, 0.111932213229137, 0.076411344088767, 0.0380331330318}; // this need to be updated
-    // Bugras weights: The weights: {2.4630522,0.473822,1.091304,0.121762,0.092715}
-    //                  Events:      9566350,  2820770 ,969224   ,307529  ,133303
+    double mixingWeightsDY[4] = {0.192686, 0.0718097, 0.04943495, 0.0360337}; // here we match all partons, and combine electron and muon side
 
     //==========================================================================================================//
     // Start looping over all the events //
@@ -145,10 +140,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     Init(hasRecoInfo, hasGenInfo);
     if (fChain == 0) return;
     Long64_t nentries = fChain->GetEntries();
-    if (do10000Events) {
-        nentries = 10000;
-        std::cout << "We plane to run on 100000 events" << std::endl;
-    }
+    if (do10000Events) nentries = 10000;
+    
     std::cout << "We will run on " << nentries << " events" << std::endl;
     //------------------------------------
 
@@ -177,20 +170,16 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         weight = 1.;
         // for data PU_npT == -2
         // line below is to see distributions as provided with default MC PU distribution
-        double reweighting(1);
-        if (hasRecoInfo && PU_npT > 0) { // = if is MC
-            weight *= puWeight.weight(int(PU_npT));
-        }
+        if (hasRecoInfo && PU_npT > 0) weight *= puWeight.weight(int(PU_npT));
 
-        if (weight > 10000 || weight < 0) weight = 1;
+        if (weight > 10000 || weight < 0) {
+            cout << "Oopss such a big weight " << weight << endl;
+            weight = 1;
+        }
         weight *= lumiScale * xsec;
 
-        if (fileName.find("MIX") != string::npos && nup_ > 5) {
-            if (fileName.find("DYJets") != string::npos) weight *= mixingWeightsDY[nup_ - 6]; 
-            else if (fileName.find("WJets") != string::npos && fileName.find("SMu_") != string::npos) weight *= mixingWeightsWJ_SMu[nup_ - 6]; 
-            else if (fileName.find("WJets") != string::npos && fileName.find("SE_") != string::npos) weight *= mixingWeightsWJ_SE[nup_ - 6]; 
-            else weight *= mixingWeightsDY[nup_ - 6];
-        }
+        if (fileName.find("DYJets") != string::npos && fileName.find("MIX") != string::npos && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6]; 
+        
 
         //==========================================================================================================//
         // Compute the weight for PDF syst   //
@@ -303,9 +292,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 // apply charge, mass and eta cut
                 if (leptons[0].charge * leptons[1].charge < 0 && Z.M() > ZMCutLow && Z.M() < ZMCutHigh) passesLeptonCut = 1;
 
-                // correct for identification and isolation efficiencies if required by useEfficiencyCorrection
                 // apply only scale factors.
-                if (useEfficiencyCorrection) {
+                if (!isData) {
                     double effWeight = 1.;
                     if (leptonFlavor == "Muons") {
                         effWeight *= LeptID.getEfficiency(leptons[0].pt, fabs(leptons[0].eta));
@@ -336,8 +324,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                             effWeight *= LeptID.getEfficiencyHigh(leptons[1].pt, fabs(leptons[1].scEta)); 
                         }
                     }
-                    if (isData) weight /= effWeight;
-                    else weight *= effWeight;
+                    weight *= effWeight;
                 }
 
             } // end if nLeptons>=2
@@ -355,6 +342,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         vector<int> usedGenPho;
         TLorentzVector genLep1, genLep2, genZ;
         int countTauS3 = 0;
+        int nTauWithStatus3 = 0;
 
         if (hasGenInfo) {
             if (hasRecoInfo) countTauS3 = 2;
@@ -366,12 +354,15 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) != LeptonID && (abs(genLepId_->at(i)) == 15 || abs(genLepId_->at(i)) == 13 || abs(genLepId_->at(i)) == 11)) countTauS3++;
                 if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) == LeptonID) countTauS3--;
 
+                if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) == 15) nTauWithStatus3++;
+
                 if (abs(genLepId_->at(i)) != LeptonID) continue;
+
                 leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), genLepQ_->at(i), 0., 0.};
                 leptonStruct genLepNoFSR = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), genLepQ_->at(i), 0., 0.};
 
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
-                if (genLepSt_->at(i) == 1 &&  abs(genLepId_->at(i)) == LeptonID){
+                if (genLepSt_->at(i) == 1 &&  abs(genLepId_->at(i)) == LeptonID) {
                     TLorentzVector tmpGenLep;
                     tmpGenLep.SetPtEtaPhiE(genLep.pt, genLep.eta, genLep.phi, genLep.energy);
                     for (unsigned short j(0); j < nTotGenPhotons; j++){
@@ -397,12 +388,12 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
             nGenLeptons = genLeptons.size();
 
-            if (countTauS3 == 0 && fileName.find("UNFOLDING") != string::npos){
+            if (countTauS3 == 0 && fileName.find("UNFOLDING") != string::npos) {
                 partonsN->Fill(nup_-5);
                 partonsNWeighted->Fill(nup_-5, genWeight);
             }
-            /// reco comparison is done with SF corrections on MC and we want to get the tau contribution here separately therefore
-            if (useEfficiencyCorrection && countTauS3 > 0 && fileName.find("Tau") == string::npos) passesLeptonCut = 0; 
+
+            if (countTauS3 > 0 && fileName.find("Tau") == string::npos) passesLeptonCut = 0; 
 
             //-- determine if the event passes the leptons requirements
             if (nGenLeptons >= 2){
@@ -423,6 +414,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 if (countTauS3 > 0) passesGenLeptonCut = 0;
             }
         }
+
         if (passesGenLeptonCut) {
             TotalGenWeightPassGEN += genWeightBackup; 
             TotalGenWeightPassGENPU += weight;
@@ -954,16 +946,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             TotalGenWeightPassRECO+=genWeightBackup;
             NVtx->Fill(EvtInfo_NumVtx, weight);
 
-            //NVtx->Fill(EvtInfo_NumVtx + 1000 , weight);
-            if (fileName.find("Sherpa") != string::npos && fileName.find("UNFOL") == string::npos ) PUWeight->Fill(puWeight.weight(int(PU_npT)) * reweighting * mcEveWeight_, 1);
-            else PUWeight->Fill(puWeight.weight(int(PU_npT)) * reweighting, 1);
-            if (nGoodJets == 0){
-                PUWeight0->Fill(puWeight.weight(int(PU_npT)) * reweighting, 1);
-            }
-            else {
-                PUWeight1->Fill(puWeight.weight(int(PU_npT)) * reweighting, 1);
-            }
-
             nEventsIncl0Jets++;
             ZNGoodJetsNVtx_Zexc->Fill(nGoodJets, EvtInfo_NumVtx  , weight);
             ZNGoodJets_Zinc->Fill(0., weight);
@@ -1341,8 +1323,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         if (hasRecoInfo && hasGenInfo) {
 
             //-- Z Mass and jet multiplicity
-            if (passesGenLeptonCut){
-                if (passesLeptonCut){
+            if (passesGenLeptonCut) {
+                if (passesLeptonCut) {
                     nEventsUNFOLDIncl0Jets++;
                     //responseZMass->Fill(Z.M(), genZ.M(), weight);
                     //responseZNGoodJets_Zexc->Fill(nGoodJets, nGoodGenJets, weight);
@@ -1351,8 +1333,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
 
             //-- First Jet Pt 
-            if (nGoodGenJets >= 1 && passesGenLeptonCut){
-                if (nGoodJets >= 1 && passesLeptonCut){
+            if (nGoodGenJets >= 1 && passesGenLeptonCut) {
+                if (nGoodJets >= 1 && passesLeptonCut) {
                     //responseFirstJetEta->Fill(fabs(jets[0].eta), fabs(genJets[0].eta), weight);      
                     hresponseFirstJetEta_Zinc1jet->Fill(fabs(jets[0].eta), fabs(genJets[0].eta), weight);      
                     //responseJetsHt1Jet->Fill(jetsHT, genJetsHT, weight);
@@ -1374,23 +1356,15 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 }
             } 
 
-            if (nGoodGenJets_20 >= 1 && passesGenLeptonCut){
-                if (nGoodJets_20 >= 1 && passesLeptonCut){
-                    //responseFirstJetPt->Fill(jets_20[0].pt, genJets_20[0].pt, weight);      
+            if (nGoodGenJets_20 >= 1 && passesGenLeptonCut) {
+                if (nGoodJets_20 >= 1 && passesLeptonCut) {
                     hresponseFirstJetPt_Zinc1jet->Fill(jets_20[0].pt, genJets_20[0].pt, weight);      
                 }
             } 
 
-            //-- First Jet exclusive 
-            if (nGoodGenJets == 1 && passesGenLeptonCut){
-                if (nGoodJets == 1 && passesLeptonCut){
-                    //responsedEtaBosonJet_Zexc1->Fill(fabs(jets[0].eta-Z.Eta()), fabs(genJets[0].eta - genZ.Eta()), weight);
-                }
-            }
-
             //-- Second Jet Pt inclusive 
-            if (nGoodGenJets >= 2 && passesGenLeptonCut){
-                if (nGoodJets >= 2 && passesLeptonCut){
+            if (nGoodGenJets >= 2 && passesGenLeptonCut) {
+                if (nGoodJets >= 2 && passesLeptonCut) {
                     //responseSecondJetEta->Fill(fabs(jets[1].eta), fabs(genJets[1].eta), weight);      
                     hresponseSecondJetEta_Zinc2jet->Fill(fabs(jets[1].eta), fabs(genJets[1].eta), weight);      
                     //responseJetsHt2Jet->Fill(jetsHT, genJetsHT, weight);
@@ -1438,16 +1412,16 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
 
 
-            if (nGoodGenJets_20 >= 2 && passesGenLeptonCut){
-                if (nGoodJets_20 >= 2 && passesLeptonCut){
+            if (nGoodGenJets_20 >= 2 && passesGenLeptonCut) {
+                if (nGoodJets_20 >= 2 && passesLeptonCut) {
                     //responseSecondJetPt->Fill(jets_20[1].pt, genJets_20[1].pt, weight);      
                     hresponseSecondJetPt_Zinc2jet->Fill(jets_20[1].pt, genJets_20[1].pt, weight);      
                 }
             }
 
             //-- Second Jet Pt exclusive
-            if (nGoodGenJets == 2 && passesGenLeptonCut){
-                if (nGoodJets == 2 && passesLeptonCut){
+            if (nGoodGenJets == 2 && passesGenLeptonCut) {
+                if (nGoodJets == 2 && passesLeptonCut) {
                     //responseTwoJetsPtDiffExc->Fill(jet1Minus2.Pt(), genJet1Minus2.Pt(), weight);
                     //responseJetsMassExc->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                     //responseSpTJets_Zexc2jet->Fill(SpTsub(leadJ, secondJ), SpTsub(genLeadJ, genSecondJ), weight);
@@ -1472,8 +1446,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
 
             //-- Third Jet Pt  
-            if (nGoodGenJets >= 3 && passesGenLeptonCut){
-                if (nGoodJets >= 3 && passesLeptonCut){
+            if (nGoodGenJets >= 3 && passesGenLeptonCut) {
+                if (nGoodJets >= 3 && passesLeptonCut) {
                     //responseThirdJetEta->Fill(fabs(jets[2].eta), fabs(genJets[2].eta), weight);      
                     hresponseThirdJetEta_Zinc3jet->Fill(fabs(jets[2].eta), fabs(genJets[2].eta), weight);      
                     //responseJetsHt3Jet->Fill(jetsHT, genJetsHT, weight);
@@ -1481,8 +1455,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 }
             } 
 
-            if (nGoodGenJets_20 >= 3 && passesGenLeptonCut){
-                if (nGoodJets_20 >= 3 && passesLeptonCut){
+            if (nGoodGenJets_20 >= 3 && passesGenLeptonCut) {
+                if (nGoodJets_20 >= 3 && passesLeptonCut) {
                     //responseThirdJetPt->Fill(jets_20[2].pt, genJets_20[2].pt, weight);      
                     hresponseThirdJetPt_Zinc3jet->Fill(jets_20[2].pt, genJets_20[2].pt, weight);      
                 }
@@ -1535,6 +1509,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             if (nGoodGenJets_20 >= 6 && passesGenLeptonCut){
                 if (nGoodJets_20 >= 6 && passesLeptonCut){
                     //responseSixthJetPt->Fill(jets_20[5].pt, genJets_20[5].pt, weight);      
+                    //hresponseSixthJetPt_Zinc6jet->Fill(jets_20[5].pt, genJets_20[5].pt, weight);      
                 }
             } 
         }
@@ -1599,31 +1574,30 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
 }
 
-ZJets::ZJets(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
-        int systematics_, int direction_, float xsecfactor_, float jetPtCutMin_, float jetEtaCutMax_,  bool do10000Events_, string outDir_): 
-    HistoSetZJets(fileName_.substr(0, fileName_.find("_"))), outputDirectory(outDir_),
-    fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
+ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
+        int systematics_, int direction_, float xsecfactor_, float jetPtCutMin_, float jetEtaCutMax_,  bool do10000Events_, TString outDir_): 
+    HistoSetZJets(fileName_(0, fileName_.Index("_"))), outputDirectory(outDir_),
+    fileName(fileName_), lumiScale(lumiScale_), useTriggerCorrection(useTriggerCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), do10000Events(do10000Events_)
 {
 
+    //--- Create output directory if necessary ---
     if (do10000Events) {
         outputDirectory = "HistoFilesTest/";
         cout << "Doing test for 10000 events  => output directory has been changed to HistoFilesTest/" << endl;
     }
     string command = "mkdir -p " + outputDirectory;
     system(command.c_str());
-    // if parameter tree is not specified (or zero), connect the file
-    // used to generate this class and read the Tree.
+    //--------------------------------------------
+
     TChain *chain = new TChain("", "");
 
-    isData = false;
-    //string fullFileName =  "../Data_Z_5311_New/" + fileName;
-    string fullFileName =  "/user/aleonard/ZJetsFiles/" + fileName;
+    isData = (fileName.find("Data") != string::npos); 
+    string fullFileName = "/user/aleonard/ZJetsFiles/" + fileName;
 
 
     if (fileName.find("DMu_") == 0) leptonFlavor = "Muons";
     else if (fileName.find("DE_") == 0)  leptonFlavor = "Electrons"; 
-    if (fileName.find("Data") != string::npos ) isData = true; 
     if (fileName.find("List") == string::npos){
         fullFileName += ".root";
         string treePath = fullFileName + "/tree/tree";
@@ -1655,7 +1629,6 @@ string ZJets::CreateOutputFileName(string pdfSet, int pdfMember)
 {
     ostringstream result;
     result << outputDirectory << fileName;
-    result << "_EffiCorr_" << useEfficiencyCorrection;
     result << "_TrigCorr_" << useTriggerCorrection;
     result << "_Syst_" << systematics;
     if (direction == 1) result << "_Up";
@@ -1698,7 +1671,6 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     // (once per file to be processed).
 
     // Set object pointer
-    mcSherpaWeights_ = 0 ;
     pdfInfo_ = 0;
     genLepPt_ = 0;
     genLepEta_ = 0;
@@ -1714,17 +1686,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     genJetEta_ = 0;
     genJetPhi_ = 0;
     genJetE_ = 0;
-    dpsParton_Pt = 0;
-    dpsParton_Eta = 0;
-    dpsParton_Phi = 0;
-    dpsParton_E = 0;
-    genMatchDPSpar = 0;
-    dpsParton_dR = 0;
 
-    gsfElecPt_ = 0;
-    gsfElecEta_ = 0;
-    gsfElecPhi_ = 0;
-    gsfElecEnergy_ = 0;
     patElecPt_ = 0;
     patElecEta_ = 0;
     patElecPhi_ = 0;
@@ -1732,18 +1694,14 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     patElecCharge_ = 0;
     patElecID_ = 0;
     patElecTrig_ = 0;
-    patElecDetIso_ = 0;
     patElecPfIsoRho_ = 0;
     patElecScEta_ = 0;
-    patElecIsPF_ = 0;
 
     patMuonPt_ = 0;
     patMuonEta_ = 0;
     patMuonPhi_ = 0;
-    patMuonVtxZ_ = 0;
     patMuonEn_ = 0;
     patMuonCharge_ = 0;
-    patMuonDxy_ = 0;
     patMuonCombId_ = 0;
     patMuonTrig_ = 0;
     patMuonPfIsoDbeta_ = 0;
@@ -1753,13 +1711,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     patJetPfAk05Eta_ = 0;
     patJetPfAk05Phi_ = 0;
     patJetPfAk05LooseId_ = 0;
-    patJetPfAk05jetBSZ_ = 0;
-    patJetPfAk05jetBZ_ = 0;
     patJetPfAk05jetpuMVA_ = 0;
-    patJetPfAk05OCSV_ = 0 ;
-    patMetPt_ = 0 ;
-    patMetPhi_= 0 ;
-    patMetSig_= 0 ;
 
     // Set branch addresses and branch pointers
     fCurrent = -1;
@@ -1768,7 +1720,6 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("PU_npT", &PU_npT, &b_PU_npT);
         fChain->SetBranchAddress("PU_npIT", &PU_npIT, &b_PU_npIT);
     }
-    if (fileName.find("UNFOLDING") != string::npos) fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
     if (hasRecoInfo){
         fChain->SetBranchAddress("EvtInfo_NumVtx", &EvtInfo_NumVtx, &b_EvtInfo_NumVtx);
         fChain->SetBranchAddress("EvtInfo_RunNum", &EvtInfo_RunNum, &b_EvtInfo_RunNum); 
@@ -1778,10 +1729,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("patJetPfAk05Eta_", &patJetPfAk05Eta_, &b_patJetPfAk05Eta_);
         fChain->SetBranchAddress("patJetPfAk05Phi_", &patJetPfAk05Phi_, &b_patJetPfAk05Phi_);
         fChain->SetBranchAddress("patJetPfAk05LooseId_", &patJetPfAk05LooseId_, &b_patJetPfAk05LooseId_);
-        fChain->SetBranchAddress("patJetPfAk05jetBSZ_", &patJetPfAk05jetBSZ_, &b_patJetPfAk05jetBSZ_);
-        fChain->SetBranchAddress("patJetPfAk05jetBZ_", &patJetPfAk05jetBZ_, &b_patJetPfAk05jetBZ_);
         fChain->SetBranchAddress("patJetPfAk05jetpuMVA_", &patJetPfAk05jetpuMVA_, &b_patJetPfAk05jetpuMVA_);
-        fChain->SetBranchAddress("patJetPfAk05OCSV_", &patJetPfAk05OCSV_, &b_patJetPfAk05OCSV_);
 
         if (leptonFlavor != "Muons"){
             fChain->SetBranchAddress("patElecPt_", &patElecPt_, &b_patElecPt_);
@@ -1791,20 +1739,15 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
             fChain->SetBranchAddress("patElecCharge_", &patElecCharge_, &b_patElecCharge_);
             fChain->SetBranchAddress("patElecID_", &patElecID_, &b_patElecID_);
             fChain->SetBranchAddress("patElecTrig_", &patElecTrig_, &b_patElecTrig_);
-            //fChain->SetBranchAddress("patElecDetIso_", &patElecDetIso_, &b_patElecDetIso_); // not used
             fChain->SetBranchAddress("patElecPfIsoRho_", &patElecPfIsoRho_, &b_patElecPfIsoRho_); 
             fChain->SetBranchAddress("patElecScEta_", &patElecScEta_, &b_patElecScEta_);
-            //fChain->SetBranchAddress("patElecIsPF_", &patElecIsPF_, &b_patElecIsPF_); // not used
-
         }
         if (leptonFlavor != "Electrons"){
             fChain->SetBranchAddress("patMuonPt_", &patMuonPt_, &b_patMuonPt_);
             fChain->SetBranchAddress("patMuonEta_", &patMuonEta_, &b_patMuonEta_);
             fChain->SetBranchAddress("patMuonPhi_", &patMuonPhi_, &b_patMuonPhi_);
-            //fChain->SetBranchAddress("patMuonVtxZ_", &patMuonVtxZ_, &b_patMuonVtxZ_); // not used
             fChain->SetBranchAddress("patMuonEn_", &patMuonEn_, &b_patMuonEn_);
             fChain->SetBranchAddress("patMuonCharge_", &patMuonCharge_, &b_patMuonCharge_);
-            fChain->SetBranchAddress("patMuonDxy_", &patMuonDxy_, &b_patMuonDxy_);
             fChain->SetBranchAddress("patMuonCombId_", &patMuonCombId_, &b_patMuonCombId_);
             fChain->SetBranchAddress("patMuonTrig_", &patMuonTrig_, &b_patMuonTrig_);
             fChain->SetBranchAddress("patMuonPfIsoDbeta_", &patMuonPfIsoDbeta_, &b_patMuonPfIsoDbeta_);
@@ -1816,20 +1759,17 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("genLepPhi_", &genLepPhi_, &b_genLepPhi_);
         fChain->SetBranchAddress("genLepE_", &genLepE_, &b_genLepE_);
         fChain->SetBranchAddress("genLepQ_", &genLepQ_, &b_genLepQ_);
+        fChain->SetBranchAddress("genLepId_", &genLepId_, &b_genLepId_);
+        fChain->SetBranchAddress("genLepSt_", &genLepSt_, &b_genLepSt_);
         fChain->SetBranchAddress("genJetPt_", &genJetPt_, &b_genJetPt_);
         fChain->SetBranchAddress("genJetEta_", &genJetEta_, &b_genJetEta_);
         fChain->SetBranchAddress("genJetPhi_", &genJetPhi_, &b_genJetPhi_);
         fChain->SetBranchAddress("genJetE_", &genJetE_, &b_genJetE_);
-
-        if (fileName.find("Sherpa") != string::npos || fileName.find("UNFOLDING") != string::npos || fileName.find("Powheg") != string::npos) {
-
-            fChain->SetBranchAddress("pdfInfo_", &pdfInfo_, &b_pdfInfo_);
-            fChain->SetBranchAddress("genLepId_", &genLepId_, &b_genLepId_);
-            fChain->SetBranchAddress("genLepSt_", &genLepSt_, &b_genLepSt_);
-            fChain->SetBranchAddress("genPhoPt_", &genPhoPt_, &b_genPhoPt_);
-            fChain->SetBranchAddress("genPhoEta_", &genPhoEta_, &b_genPhoEta_);
-            fChain->SetBranchAddress("genPhoPhi_", &genPhoPhi_, &b_genPhoPhi_);
-        }
+        fChain->SetBranchAddress("genPhoPt_", &genPhoPt_, &b_genPhoPt_);
+        fChain->SetBranchAddress("genPhoEta_", &genPhoEta_, &b_genPhoEta_);
+        fChain->SetBranchAddress("genPhoPhi_", &genPhoPhi_, &b_genPhoPhi_);
+        fChain->SetBranchAddress("pdfInfo_", &pdfInfo_, &b_pdfInfo_);
+        fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
     }
     Notify();
     cout << "Branches are properly initialized." << endl;
