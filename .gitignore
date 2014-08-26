@@ -1,6 +1,7 @@
 # git will ignore the executable files:
 runZJets
 runFinalUnfold
+runUnfoldingZJets
 
 # git will not consider the following files:
 *.root
