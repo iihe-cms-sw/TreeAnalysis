@@ -1,29 +1,18 @@
+#include <iostream>
+#include <TString.h>
+#include "ConfigVJets.h"
+#include "MergeTop.h"
+#include "ZJets.h"
+
+int main(int argc, char **argv)
 {
-    TString srcDir = "Sources/";
+    //--- Load configuration ---
+    ConfigVJets cfg;
+    //-----------------------------------------------------------------------
 
-    //--- Loads configuration ---------------------------------------------------------
-    gROOT->ProcessLine(".L " + srcDir + "Config.cc++");
-    Config cfg;
-    //----------------------------------------------------------------------------------
-
-    //--- Load shared libraries -------------------------------------------------------
-    vector<TString> sources;
-    sources.push_back(cfg.getS("LHAlib", "/user/aleonard/LHAPDF/lib/libLHAPDF.so"));
-    sources.push_back(srcDir + "getFilesAndHistograms.cc+");
-    sources.push_back(srcDir + "functions.cc+");
-    sources.push_back(srcDir + "HistoSetZJets.cc+");
-    sources.push_back(srcDir + "MergeTop.cc+");
-    sources.push_back(srcDir + "ZJets.cc+");
-
-    unsigned int nSources = sources.size();
-    for (unsigned int i(0); i < nSources; i++){
-        std::cout << "Compiling or loading " << sources[i] << std::endl;
-        gROOT->ProcessLine(".L " + sources[i]);
-    }
-    //----------------------------------------------------------------------------------
-
-    //--- Settings ---------------------------------------------------------------------
-    // doWhat = "DATA", "BACKGROUND", "TAU", "DYJETS", "WJETS", "ALL", "PDF", "SHERPA"
+    //--- Settings ---
+    // doWhat = "DATA", "BACKGROUND", "TAU", "DYJETS", 
+    //          "WJETS", "ALL", "PDF", "SHERPA"
 
     TString outDir     = cfg.getS("outDir", "HistoFilesAugust");
     TString lepSel     = cfg.getS("lepSel", "DMu");
@@ -35,11 +24,11 @@
     bool do10000Events = cfg.getB("do10000Events", 1);
 
     //--- save config to .vjets.cfg ---
-    cfg.writeConfig(".vjets.cfg");
-    //----------------------------------------------------------------------------------
+    cfg.writeConfigVJets(".vjets.cfg");
+    //----------------------------------------------------------------------
 
 
-    //--- Internal configuration -------------------------------------------------------
+    //--- Internal configuration ---
     if (!outDir.EndsWith("/")) outDir += "/";
     doWhat.ToUpper();
 
@@ -79,10 +68,10 @@
         NSystData = 1; 
         NSystMC = 1;
     }
-    //----------------------------------------------------------------------------------
+    //----------------------------------------------------------------------
    
 
-    //--- starting the real processing -------------------------------------------------
+    //--- starting the real processing -------------------------------------
     cout << __DATE__ << " at " << __TIME__ << endl;
 
     if (doWhat == "DATA" || doWhat == "ALL") {
@@ -184,6 +173,7 @@
     }
 
     cout << __DATE__ << " at " << __TIME__ << endl;
-    //----------------------------------------------------------------------------------
+    //---------------------------------------------------------------------
     
+    return 0;
 }

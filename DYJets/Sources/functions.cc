@@ -308,20 +308,6 @@ double SmearJetPt(double recoPt, double genPt, double eta, int smearJet){
 
 }
 
-void normalizeTH2D(TH2D *h)
-{
-    int xbin(h->GetNbinsX()), ybin(h->GetNbinsY());
-    for (int i(1); i <= ybin; i++){
-        double sum(0.);
-        for (int j(1); j <= xbin; j++){
-            sum += h->GetBinContent(j,i);
-        }
-        for (int j(1); j <= xbin; j++){
-            if (sum > 0) h->SetBinContent(j, i, h->GetBinContent(j, i) / sum );
-        }
-    }
-}
-
 
 void bestTwoJetsCandidatesPt(vector<jetStruct> jets, pair<TLorentzVector, TLorentzVector>& bestTwoJets)
 {

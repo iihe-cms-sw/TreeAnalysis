@@ -20,14 +20,11 @@
 
 // Header file for the classes stored in the TTree if any.
 #include "functions.h"
-#include "getFilesAndHistograms.h"
-#include "standalone_LumiReWeighting.h"
-//#include "Myrochcor2012.h"
+#include "getFilesAndHistogramsZJets.h"
 #include "HistoSetZJets.h"
 
 using namespace std;
 
-ClassImp(HistoSetZJets);
 
 class ZJets: public HistoSetZJets {
     public :
@@ -182,7 +179,6 @@ class ZJets: public HistoSetZJets {
         bool do10000Events;
         string leptonFlavor;
 
-        ClassDef(ZJets, 3)
 };
 #endif
 

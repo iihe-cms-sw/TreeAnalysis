@@ -4,7 +4,6 @@
 #include <TFile.h>
 #include <TString.h>
 #include <algorithm>
-#include "fileNames.h"
 #include "getFilesAndHistogramsZJets.h"
 using namespace std;
 
@@ -37,6 +36,7 @@ TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, i
 {
     
     TString fileName = histoDir; // TString to contain the name of the file
+    if (!fileName.EndsWith("/")) fileName += "/";
 
     //--- make sure lepSel is short version ---
     if (lepSel == "Muons" || lepSel == "DMu_") lepSel = "DMu";
@@ -113,6 +113,26 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
     //----------------------------------------------------------
 }
 
+void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetEtaMax, TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
+{
+    //--- Open data files ---------------------------------------------------------------------- 
+    //TFile *fData[3] = {NULL}; // 0 - central, 1 - JES up, 2 - JES down
+    getFiles(histoDir, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax); 
+    //------------------------------------------------------------------------------------------ 
+
+    //--- Open DYJets files --------------------------------------------------------------------
+    //TFile *fDYJets[5] = {NULL}; // 0 - central, 1 - PU up, 2 - PU down, 3 - JER up, 4 - JER down 
+    getFiles(histoDir, fDYJets, lepSel, energy, Samples[DYJETS].name, jetPtMin, jetEtaMax); 
+    //------------------------------------------------------------------------------------------ 
+
+    //--- Open Bg files ------------------------------------------------------------------------
+    //TFile *fBg[NFILESDYJETS-2][5] = {{NULL}};
+    for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
+        getFiles(histoDir, fBg[iBg], lepSel, energy, Samples[iBg+1].name, jetPtMin, jetEtaMax);
+    }
+    //------------------------------------------------------------------------------------------ 
+}
+
 //------------------------------------------------------------
 // Close the file if open and delete the pointer
 //------------------------------------------------------------
@@ -149,6 +169,22 @@ void closeFiles(TFile *Files[], int nFiles)
     }
 }
 
+void closeAllFiles(TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
+{
+    //--- Close data files ---------------------------------------------------------------------
+    closeFiles(fData);
+    //------------------------------------------------------------------------------------------ 
+
+    //--- Close DYJets files -------------------------------------------------------------------
+    closeFiles(fDYJets);
+    //------------------------------------------------------------------------------------------ 
+
+    //--- Close Bg files -----------------------------------------------------------------------
+    for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
+        closeFiles(fBg[iBg]);
+    }
+    //------------------------------------------------------------------------------------------ 
+}
 
 TH1D* getHisto(TFile *File, const TString variable)
 {
@@ -229,7 +265,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
         TFile *fData;
         int sel = FilesDYJets[i];
 
-        fData = getFile(FILESDIRECTORY,  lepSel, energy, ProcessInfo[sel].filename, jetPtMin, jetEtaMax);
+        fData = getFile(FILESDIRECTORY,  lepSel, energy, Samples[sel].name, jetPtMin, jetEtaMax);
         TH1D *hTemp = getHisto(fData, variable);
 
         for (int j = 1 ; j < NBins + 1 ; j++ ){
@@ -255,7 +291,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
     for (int i=1; i< usedFiles + 1 ; i++){
         int sel = FilesDYJets[i];
 
-        if (i < usedFiles) fprintf(outFile, " %s        & ", ProcessInfo[sel].legend.c_str());
+        if (i < usedFiles) fprintf(outFile, " %s        & ", Samples[sel].legend.Data());
         else {
             fprintf( outFile, "\\hline \n");
             fprintf( outFile, " TOTAL & ");

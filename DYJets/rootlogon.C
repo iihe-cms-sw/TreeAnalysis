@@ -6,6 +6,7 @@
   gErrorIgnoreLevel = kError;
   TString incdir_ = currentWorkingDir_ + "Includes/";
   TString lhapdfdir_ = "/user/aleonard/lhapdf-5.9.1/include/";
+  //TString lhapdfdir = "/usr/local/include/";
   TString roounfolddir_ = currentWorkingDir_ + "RooUnfold-1.1.1/";
 
   cout << "--------------------------------------------------------------------------------\n" << endl; 

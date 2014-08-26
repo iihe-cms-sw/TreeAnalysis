@@ -1,4 +1,4 @@
-#include "unfoldingFunctions.h"
+#include "unfoldingFunctionsZJets.h"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -214,8 +214,8 @@ TH2D* combineTH2DRes(TH2D* hMuon, TH2D* hEle, int NBinsOrig){
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-TCanvas * createCanvas(TH1D* h2Dtemp11 , string name ){
-    TCanvas *canA = new TCanvas(name.c_str(),name.c_str(),700,700);
+TCanvas * createCanvas(TH1D* h2Dtemp11 , TString name){
+    TCanvas *canA = new TCanvas(name, name,700,700);
     canA->cd();h2Dtemp11->Draw("TEXT");
     return canA;
 }
@@ -310,7 +310,7 @@ void plotDVector(TH1D *hmodD_, int kterm, TH2D *hNormResp, string leptonFlavor, 
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string modDTitle = "Rotated measured vector for " + niceTitle;
     if (closureTest) modDTitle += " C.T.";
-    string canNameD = leptonFlavor + energy + "_" + variable + "_D";
+    TString canNameD = leptonFlavor + energy + "_" + variable + "_D";
     if (closureTest) canNameD += "_CT";
 
     hmodD->SetTitle(modDTitle.c_str());
@@ -325,7 +325,7 @@ void plotDVector(TH1D *hmodD_, int kterm, TH2D *hNormResp, string leptonFlavor, 
     hmodD->GetXaxis()->SetLabelSize(0.1/sqrt(NBins));
     hmodD->GetXaxis()->SetNdivisions(NBins, 0, 0);
     hmodD->GetYaxis()->SetTitle("|d|");
-    TCanvas *canD = new TCanvas(canNameD.c_str(), canNameD.c_str(), 700, 700);
+    TCanvas *canD = new TCanvas(canNameD, canNameD, 700, 700);
     canD->cd();
     canD->SetLeftMargin(0.1);
     canD->SetRightMargin(0.05);
@@ -334,9 +334,9 @@ void plotDVector(TH1D *hmodD_, int kterm, TH2D *hNormResp, string leptonFlavor, 
     canD->SetTicks();
     hmodD->DrawCopy("TEXT60");
     arrow->Draw();
-    string outputFileNamePNG = outputDirectory + canNameD + ".pdf";
+    TString outputFileNamePNG = outputDirectory + canNameD + ".pdf";
     if (save){
-        canD->Print(outputFileNamePNG.c_str());
+        canD->Print(outputFileNamePNG);
         outputRootFile->cd();
         canD->Write();
     }
@@ -359,7 +359,7 @@ void plotSVVector(TH1D *hSV_, TH2D *hNormResp, string leptonFlavor, string varia
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string SVTitle = "Singular Values of AC^{-1} for " + niceTitle;
     if (closureTest) SVTitle += " C.T.";
-    string canNameSV = leptonFlavor + energy + "_" + variable + "_SV";
+    TString canNameSV = leptonFlavor + energy + "_" + variable + "_SV";
     if (closureTest) canNameSV += "_CT"; 
 
     hSV->SetTitle(SVTitle.c_str());
@@ -375,7 +375,7 @@ void plotSVVector(TH1D *hSV_, TH2D *hNormResp, string leptonFlavor, string varia
     hSV->GetXaxis()->SetLabelSize(0.1/sqrt(NBins));
     hSV->GetXaxis()->SetNdivisions(NBins,0,0);
     hSV->GetYaxis()->SetTitle("SV");
-    TCanvas *canSV = new TCanvas(canNameSV.c_str(), canNameSV.c_str(), 700, 700);
+    TCanvas *canSV = new TCanvas(canNameSV, canNameSV, 700, 700);
     canSV->cd();
     canSV->SetLeftMargin(0.1);
     canSV->SetRightMargin(0.05);
@@ -383,9 +383,9 @@ void plotSVVector(TH1D *hSV_, TH2D *hNormResp, string leptonFlavor, string varia
     canSV->SetGrid();
     canSV->SetTicks();
     hSV->DrawCopy("TEXT60");
-    string outputFileNamePNG = outputDirectory + canNameSV + ".pdf";
+    TString outputFileNamePNG = outputDirectory + canNameSV + ".pdf";
     if (save){
-        canSV->Print(outputFileNamePNG.c_str());
+        canSV->Print(outputFileNamePNG);
         outputRootFile->cd();
         canSV->Write();
     }
@@ -407,7 +407,7 @@ void plotSVDUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D *h
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string title = "Unfolded Distributions for " + niceTitle + " vs. kTerm (SVD)";
     if (closureTest) title += " C.T.";
-    string name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distributions_SVD";
+    TString name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distributions_SVD";
     if (closureTest) name += "_CT";
 
 
@@ -431,7 +431,7 @@ void plotSVDUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D *h
         }
     }
 
-    TCanvas *canUnfoldedDistributions = new TCanvas(name.c_str(), name.c_str(), 700, 700);
+    TCanvas *canUnfoldedDistributions = new TCanvas(name, name, 700, 700);
     canUnfoldedDistributions->cd();
     canUnfoldedDistributions->SetLeftMargin(0.12);
     canUnfoldedDistributions->SetRightMargin(0.04);
@@ -451,9 +451,9 @@ void plotSVDUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D *h
     unfoldedDistributions->GetXaxis()->SetTitleOffset(1.5);
     unfoldedDistributions->GetXaxis()->SetLabelSize(0.025);
     unfoldedDistributions->DrawCopy("lego2");
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".pdf";
+    TString outputFileNamePNG = outputDirectory + name + ".pdf";
     if (save){
-        canUnfoldedDistributions->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistributions->Print(outputFileNamePNG);
         outputRootFile->cd();
         canUnfoldedDistributions->Write();
     }
@@ -544,7 +544,7 @@ void plotBayesUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D 
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string title = "Unfolded Distributions for " + niceTitle + " vs. kTerm (Bayes)";
     if (closureTest) title += " C.T.";
-    string name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distributions_Bayes";
+    TString name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distributions_Bayes";
     if (closureTest) name += "_CT";
 
 
@@ -569,7 +569,7 @@ void plotBayesUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D 
         }
     }
 
-    TCanvas *canUnfoldedDistributions = new TCanvas(name.c_str(), name.c_str(), 700, 700);
+    TCanvas *canUnfoldedDistributions = new TCanvas(name, name, 700, 700);
     canUnfoldedDistributions->cd();
     canUnfoldedDistributions->SetLeftMargin(0.12);
     canUnfoldedDistributions->SetRightMargin(0.04);
@@ -589,9 +589,9 @@ void plotBayesUnfoldedHistograms(RooUnfoldResponse *response, TH1D *hData, TH1D 
     unfoldedDistributions->GetXaxis()->SetTitleOffset(1.5);
     unfoldedDistributions->GetXaxis()->SetLabelSize(0.025);
     unfoldedDistributions->DrawCopy("lego2");
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".pdf";
+    TString outputFileNamePNG = outputDirectory + name + ".pdf";
     if (save){
-        canUnfoldedDistributions->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistributions->Print(outputFileNamePNG);
         outputRootFile->cd();
         canUnfoldedDistributions->Write();
     }
@@ -604,7 +604,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
     else if (leptonFlavor == "Electron" || leptonFlavor == "SMu") leptonFlavor = "SMu_";
 
-    string energy = getEnergy();
+    TString energy = getEnergy();
     if (kterm < 1) kterm = 2;
     ostringstream ktermStr; ktermStr << kterm;
     TH2D *hResponse = (TH2D*) response->Hresponse();
@@ -617,7 +617,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string title = method + " Unfolded Distributions for " + niceTitle + " (kTerm = " + ktermStr.str() + " #pm 1)";
     if (closureTest) title += " C.T.";
-    string name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distribution_" + method;
+    TString name = leptonFlavor + energy + "_" + variable + "_Unfolded_Distribution_" + method;
     if (closureTest) name += "_CT";
 
     TH1D *hMeas = (TH1D*) hData->Clone();
@@ -691,7 +691,7 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     intLumi->SetTextAlign(31);
 
 
-    TCanvas *canUnfoldedDistribution = new TCanvas(name.c_str(), name.c_str(), 700, 900);
+    TCanvas *canUnfoldedDistribution = new TCanvas(name, name, 700, 900);
     canUnfoldedDistribution->cd();
     TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1);
     pad1->SetTopMargin(0.11);
@@ -808,9 +808,9 @@ void plotSelectedMethod(string method, RooUnfoldResponse *response, TH1D *genMad
     if (kterm < nBins) hUnfoldedU->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".pdf";
+    TString outputFileNamePNG = outputDirectory + name + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileNamePNG);
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }
@@ -823,7 +823,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
     else if (leptonFlavor == "Electron" || leptonFlavor == "SMu") leptonFlavor = "SMu_";
 
-    string energy = getEnergy();
+    TString energy = getEnergy();
     ostringstream ktermStr; ktermStr << kterm;
     TH2D *hResponse = (TH2D*) response->Hresponse();
     TH1D *MCreco    = (TH1D*) response->Hmeasured();
@@ -834,7 +834,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string title = method + " Comparison Mad, Pow, She for " + niceTitle + " (kTerm = " + ktermStr.str() + ")";
     if (closureTest) title += " C.T.";
-    string name = leptonFlavor + energy + "_" + variable + "_Comparison_Mad_Pow_She_" + method;
+    TString name = leptonFlavor + energy + "_" + variable + "_Comparison_Mad_Pow_She_" + method;
     if (closureTest) name += "_CT";
 
 
@@ -910,7 +910,7 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     intLumi->SetNDC();
     intLumi->SetTextAlign(31);
 
-    TCanvas *canUnfoldedDistribution = new TCanvas(name.c_str(), name.c_str(), 700, 900);
+    TCanvas *canUnfoldedDistribution = new TCanvas(name, name, 700, 900);
     canUnfoldedDistribution->cd();
     TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1);
     pad1->SetTopMargin(0.11);
@@ -1011,9 +1011,9 @@ void plotComparisonMadPowShe(string method, TH2D *hRespPow, TH2D *hRespShe, RooU
     hUnfoldedShe->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".pdf";
+    TString outputFileNamePNG = outputDirectory + name + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileNamePNG);
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }
@@ -1029,7 +1029,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     else if (leptonFlavor == "Muon" || leptonFlavor == "SE") leptonFlavor = "SE_";
     else if (leptonFlavor == "Electron" || leptonFlavor == "SMu") leptonFlavor = "SMu_";
 
-    string energy = getEnergy();
+    TString energy = getEnergy();
     if (SVDkterm   < 1) SVDkterm = 2;
     if (Bayeskterm < 1) Bayeskterm = 2;
     ostringstream SVDktermStr; SVDktermStr << SVDkterm;
@@ -1044,7 +1044,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     if (niceTitle.find("gen") != string::npos) niceTitle = niceTitle.substr(niceTitle.find("gen")+4);
     string title = "Unfolding Comparison for " + niceTitle;
     if (closureTest) title += " C.T.";
-    string name = leptonFlavor + energy + "_" + variable + "_Unfolding_Comparison";
+    TString name = leptonFlavor + energy + "_" + variable + "_Unfolding_Comparison";
     if (closureTest) name += "_CT";
 
     TH1D *hMeas = (TH1D*) hData->Clone();
@@ -1097,7 +1097,7 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     intLumi->SetNDC();
     intLumi->SetTextAlign(31);
 
-    TCanvas *canUnfoldedDistribution = new TCanvas(name.c_str(), name.c_str(), 700, 900);
+    TCanvas *canUnfoldedDistribution = new TCanvas(name, name, 700, 900);
     canUnfoldedDistribution->cd();
     TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1);
     pad1->SetTopMargin(0.11);
@@ -1223,9 +1223,9 @@ void plotSVDvsBayesvsBBB(RooUnfoldResponse *response, TH1D *genMad, int SVDkterm
     hUnfoldedSVD->DrawCopy("E1same");
     pad2->Draw();
 
-    string outputFileNamePNG = outputDirectory + name.c_str() + ".pdf";
+    TString outputFileNamePNG = outputDirectory + name + ".pdf";
     if (save){
-        canUnfoldedDistribution->Print(outputFileNamePNG.c_str());
+        canUnfoldedDistribution->Print(outputFileNamePNG);
         outputRootFile->cd();
         canUnfoldedDistribution->Write();
     }

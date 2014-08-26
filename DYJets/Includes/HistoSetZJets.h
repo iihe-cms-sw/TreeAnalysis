@@ -2,7 +2,6 @@
 #define _HistoSetZJets_h_
 
 #include <iostream>
-#include <TObject.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <RooUnfoldResponse.h>
@@ -13,7 +12,7 @@
 
 using namespace std;
 
-class HistoSetZJets: public TObject{
+class HistoSetZJets {
     public:
 
         vector<TH1*> listOfHistograms;
@@ -40,12 +39,8 @@ class HistoSetZJets: public TObject{
         RooUnfoldResponse* newResp(TH1D*, TH1D*);
         RooUnfoldResponse* newResp(TH2D*, TH2D*);
 
-
-
         TH1D *NumberPFcandidates;
         TH1D *ZMass_lowDeltaR;
-
-
         TH1D *ZMass_Zinc0jet;
         TH1D *genZMass_Zinc0jet;
         TH1D *ZPt_Zinc0jet;
@@ -640,7 +635,6 @@ class HistoSetZJets: public TObject{
         //RooUnfoldResponse *responsedEtaBosonJet_Zexc1;
         //RooUnfoldResponse *responsedEtaBosonJet_Zinc1;
 
-        ClassDef(HistoSetZJets,10);
 };
 
 #endif

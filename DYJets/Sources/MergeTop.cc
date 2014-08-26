@@ -4,8 +4,9 @@
 #include <TFile.h>
 #include <sstream>
 #include <RooUnfoldResponse.h>
+#include "MergeTop.h"
 
-void runMergeTop(TString lepSelection = "DE", int systematics = 0, float jetPtCutMin = 30, float jetEtaCutMax = 2.4, bool do10000Events = 0, TString outDir = "TEST");
+using namespace std;
 
 void MergeTop(){
     // DMu 20 GeV

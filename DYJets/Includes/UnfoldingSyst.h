@@ -6,6 +6,8 @@
 #include <string>
 #include <RooUnfoldResponse.h>
 
+using namespace std;
+
 TH2D* CovToCorr(const TH2D *h);
 TH2D* CovToCorr2(const TH2D *h, string title);
 TH2D* setCovariance(const TH2D *h, const TH1D *hCent, double error);

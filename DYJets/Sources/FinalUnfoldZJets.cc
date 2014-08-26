@@ -59,7 +59,7 @@ void FuncUnfold(bool isMuon, TString variable, int UsedKterm, int jetPtMin, int 
     //-- fetch the data files and histograms -----------------------------------------------------------------------
     TFile *fData[5] = {NULL}; // 0 = central, 1 = JES Up, 2 = JES Down , 3 - SF Up , 4 - SF down
     TH1D *hData[5] = {NULL};  
-    getFiles(FILESDIRECTORY, fData, lepSel, energy, ProcessInfo[DATAFILENAME].filename, jetPtMin, jetEtaMax);
+    getFiles(FILESDIRECTORY, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax);
     getHistos(hData, fData, variable);
     //--------------------------------------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ void FuncUnfold(bool isMuon, TString variable, int UsedKterm, int jetPtMin, int 
     TFile *fDYMadGraph[5] = {NULL}; // 0 = central, 1 = PU Up, 2 = PU Down, 3 = JER Up, 4 = JER Down
     TFile *fDYSherpa = NULL; // only central value for Sherpa and Powheg            
     TFile *fDYPowheg = NULL; 
-    getFiles(FILESDIRECTORY, fDYMadGraph, lepSel, energy, ProcessInfo[DYMADGRAPHFILENAME].filename, jetPtMin, jetEtaMax);
+    getFiles(FILESDIRECTORY, fDYMadGraph, lepSel, energy, Samples[DYJETS].name, jetPtMin, jetEtaMax);
     fDYSherpa = getFile(FILESDIRECTORY, lepSel, energy, DYSHERPAFILENAME, jetPtMin, jetEtaMax);
     fDYPowheg = getFile(FILESDIRECTORY, lepSel, energy, DYPOWHEGFILENAME, jetPtMin, jetEtaMax);
     //TFile *fDYPowhegUp = NULL, *fDYPowhegDown = NULL;
@@ -128,7 +128,7 @@ void FuncUnfold(bool isMuon, TString variable, int UsedKterm, int jetPtMin, int 
     int group = -1;
     int countBGp[2] = {-1,-1};
     for (int i(0); i < NFILESDYJETS - 2; i++){ // ends at NFILESDYJETS-2 to skip data and DY signal (have to add 1 in below line)
-        TString fileNameTemp = ProcessInfo[i+1].filename;
+        TString fileNameTemp = Samples[i+1].name;
 
         //--- fetch the current BG files and histos ---
         getFiles(FILESDIRECTORY, fBG[i], lepSel, energy, fileNameTemp, jetPtMin, jetEtaMax);

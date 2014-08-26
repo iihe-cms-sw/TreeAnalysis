@@ -15,15 +15,12 @@
 #include <sstream>
 #include "LHAPDF/LHAPDF.h"
 #include "functions.h"
-#include "getFilesAndHistograms.h"
 #include "standalone_LumiReWeighting.h"
 #include "HistoSetZJets.h"
 #include "ZJets.h"
 
 
 using namespace std;
-
-ClassImp(ZJets);
 
 void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember)
 {
@@ -115,11 +112,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     if ((systematics == 3 || systematics == 6) && direction ==  1) xsec = 1. + xsecfactor;
     if ((systematics == 3 || systematics == 6) && direction == -1) xsec = 1. - xsecfactor;
 
-    bool smearJet(0);
+    int smearJet(0);
     if ((systematics == 4 || systematics == 6) && direction ==  1) smearJet =  1; 
     if ((systematics == 4 || systematics == 6) && direction == -1) smearJet = -1; 
 
-    bool smearLepSF(0);
+    int smearLepSF(0);
     if ((systematics == 5 || systematics == 6) && direction ==  1) smearLepSF = 1;
     if ((systematics == 5 || systematics == 6) && direction == -1) smearLepSF = -1;
 
@@ -1595,7 +1592,7 @@ ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
     TChain *chain = new TChain("", "");
 
     isData = (fileName.find("Data") != string::npos); 
-    string fullFileName = "/user/aleonard/ZJetsFiles/" + fileName;
+    string fullFileName = "~/ZJetsFiles/" + fileName;
 
 
     if (fileName.find("DMu_") == 0) leptonFlavor = "Muons";

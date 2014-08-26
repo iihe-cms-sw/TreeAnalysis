@@ -2,6 +2,7 @@
 #include <TFile.h>
 #include <sstream>
 #include <iostream>
+#include <math.h>
 #include <RooUnfold.h>
 #include <RooUnfoldResponse.h>
 #include <TRandom3.h>
