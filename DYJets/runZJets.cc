@@ -28,8 +28,8 @@
     TString outDir     = cfg.getS("outDir", "HistoFilesAugust");
     TString lepSel     = cfg.getS("lepSel", "DMu");
     TString doWhat     = cfg.getS("doWhat", "DYJETS");
-    float jetPtMin     = cfg.getF("jetPtMin", 30);
-    float jetEtaMax    = cfg.getF("jetEtaMax", 2.4);
+    int jetPtMin       = cfg.getF("jetPtMin", 30);
+    int jetEtaMax      = cfg.getF("jetEtaMax", 24);
     bool doSysRunning  = cfg.getB("doSysRunning", 0);
     bool doCentral     = cfg.getB("doCentral", 1);
     bool do10000Events = cfg.getB("do10000Events", 1);
@@ -142,7 +142,7 @@
 
     if (doWhat == "TAU" || doWhat == "ALL") {
         hasRecoInfo = true; 
-        hasGenInfo = false;
+        hasGenInfo = true;
 
         for (unsigned int i(0); i < NSystMC; i++) { 
             if (i == 0 && !doCentral) continue;

@@ -13,6 +13,8 @@ copyToPNFS.sh
 
 # git will ignore the nohup output files
 .nfs*
+# git will ignore the config files
+*.cfg
 
 # git will not consider the following directory:
 

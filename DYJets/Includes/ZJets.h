@@ -158,7 +158,7 @@ class ZJets: public HistoSetZJets {
 
 
 
-        ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., float jetPtCutMin_ = 30, float jetEtaCutMax_ = 2.4, bool do10000Events_ = 0, TString outDir_ = "TEST"); 
+        ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., int jetPtCutMin_ = 30, int jetEtaCutMax_ = 24, bool do10000Events_ = 0, TString outDir_ = "TEST"); 
         ~ZJets();
         string   CreateOutputFileName(string pdfSet = "", int pdfMember = -1);
         Int_t    Cut(Long64_t entry);
@@ -177,8 +177,8 @@ class ZJets: public HistoSetZJets {
         int systematics;
         int direction;
         float xsecfactor;
-        float jetPtCutMin;
-        float jetEtaCutMax;
+        int jetPtCutMin;
+        int jetEtaCutMax;
         bool do10000Events;
         string leptonFlavor;
 

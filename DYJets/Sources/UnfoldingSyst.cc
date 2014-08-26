@@ -1,4 +1,3 @@
-//#include "getFilesAndHistograms.h"
 #include "UnfoldingSyst.h"
 #include <TFile.h>
 #include <sstream>
@@ -55,49 +54,6 @@ TH2D* setCovariance(const TH2D *h, const TH1D *hCent, double error)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* getHisto(string histoFilesDirectory,string leptonFlavor, string energy, string DataHistoFilesName, string syst, string direction, int JetPtMin, int JetPtMax, string variable)
-{
-    //-- get histogram ----------------------------------------------------------
-    TFile *DataFile;
-    ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
-    ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
-
-    string name = histoFilesDirectory + leptonFlavor + "_"  + energy + "_" + DataHistoFilesName + syst + "_"; 
-    if (syst !="0") name += direction+"_";
-    name += "JetPtMin_"+JetPtMinStr.str();
-    if (JetPtMax != 0 && JetPtMax > JetPtMin) name += "_JetPtMax_" + JetPtMaxStr.str();
-    name += ".root";
-    std::cout << "opening :" << name << std::endl;
-    DataFile = new TFile(name.c_str(), "READ");
-    TH1D *meas = (TH1D*) DataFile->Get(variable.c_str());
-    TH1D *measClone = (TH1D*) meas->Clone();
-
-    return measClone;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-RooUnfoldResponse* getResponse(string histoFilesDirectory, string leptonFlavor, string energy, string DataHistoFilesName, string syst, string direction, int JetPtMin, int JetPtMax, string variable)
-{
-    //-- get histogram ----------------------------------------------------------
-    TFile *DataFile;
-    ostringstream JetPtMinStr;  JetPtMinStr << JetPtMin;
-    ostringstream JetPtMaxStr;  JetPtMaxStr << JetPtMax;
-
-    string name = histoFilesDirectory + leptonFlavor + "_"  + energy + "_" + DataHistoFilesName + syst + "_";
-    if (syst !="0") name += direction+"_";
-    name += "JetPtMin_"+JetPtMinStr.str();
-    if (JetPtMax != 0 && JetPtMax > JetPtMin) name += "_JetPtMax_" + JetPtMaxStr.str();
-    name += ".root";
-    std::cout << "opening :" << name << std::endl;
-    DataFile = new TFile(name.c_str(), "READ");
-    string respName = "response" + variable;
-    RooUnfoldResponse *responseGet = (RooUnfoldResponse*) DataFile->Get(respName.c_str());
-    RooUnfoldResponse *response = (RooUnfoldResponse*) responseGet->Clone();
-
-    return response;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TH1D* getSumBG(string histoFilesDirectory, string leptonFlavor, string energy, string* DataHistoFilesNameArray, string syst, string direction, int JetPtMin, int JetPtMax, string variable)
 {
     //-- get histogram ----------------------------------------------------------
@@ -126,24 +82,24 @@ TH1D* getSumBG(string histoFilesDirectory, string leptonFlavor, string energy, s
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH1D* Unfold(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, bool useOverFlow)
+TH1D* Unfold(TString unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, TString hOutName, bool useOverFlow)
 {
     // useOverFlow is true by default and should always be used
     if (useOverFlow) response->UseOverflow();
     RooUnfold* RObject = NULL;
     TH1D * hDataClone = (TH1D*) hData->Clone();
     hDataClone->Add(hSumBG, -1);
-    if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   response, hDataClone, Kterm);
-    if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, response, hDataClone, Kterm);
+    if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD, response, hDataClone, Kterm);
+    else if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, response, hDataClone, Kterm);
     RObject->SetVerbose(0);
     TH1D* hCorrected = (TH1D*) RObject->Hreco();
-    hCorrected->SetName(hOutName.c_str());
+    hCorrected->SetName(hOutName);
 
     return hCorrected;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hSumBG, int Kterm, string hOutName, bool useOverFlow)
+TH2D* Unfold2D(TString unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hSumBG, int Kterm, TString hOutName, bool useOverFlow)
 {
     // useOverFlow is true by default and should always be used
     if (useOverFlow) response->UseOverflow();
@@ -151,17 +107,17 @@ TH2D* Unfold2D(string unfAlg, RooUnfoldResponse* response, TH2D* hData, TH2D* hS
     TH2D * hDataClone = (TH2D*) hData->Clone();
     hDataClone->Add(hSumBG, -1);
     if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   response, hDataClone, Kterm);
-    if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, response, hDataClone, Kterm);
+    else if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, response, hDataClone, Kterm);
     RObject->SetVerbose(0);
     TH2D* hCorrected = (TH2D*) RObject->Hreco();
-    hCorrected->SetName(hOutName.c_str());
+    hCorrected->SetName(hOutName);
 
     return hCorrected;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, string hOutName, int NToys, bool useOverFlow)
+TH2D* CovFromRoo(TString unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* hSumBG, int Kterm, TString hOutName, int NToys, bool useOverFlow)
 {
 
     // useOverFlow is true by default and should always be used
@@ -177,16 +133,16 @@ TH2D* CovFromRoo(string unfAlg, RooUnfoldResponse* response, TH1D* hData, TH1D* 
     // if "Toy" appears in the hOutName, then returns Cov from Toys
     // otherwise returns full covariance matrix (RooUnfold::kCovariance) propagated through the unfolding
     // For Bayes it is advised to use Toys (see http://hepunx.rl.ac.uk/~adye/software/unfold/RooUnfold.html)
-    if (hOutName.find("Toy") != string::npos) {
+    if (hOutName.Index("Toy") >= 0) {
         const TMatrixD covTemp = RObject->Ereco(RooUnfold::kCovToy); 
         TH2D* covarianceMat = new TH2D(covTemp);
-        covarianceMat->SetName(hOutName.c_str());
+        covarianceMat->SetName(hOutName);
         return covarianceMat;
     }
     else {
         const TMatrixD covTemp = RObject->Ereco(RooUnfold::kCovariance);	
         TH2D* covarianceMat = new TH2D(covTemp);
-        covarianceMat->SetName(hOutName.c_str());
+        covarianceMat->SetName(hOutName);
         return covarianceMat;
     }
 }
@@ -334,7 +290,7 @@ TH2D* SetResponseErrorsMean(TH2D* hCent, TH2D* hUp, TH2D* hDown)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // this is stil messy, stil thinking what is the best thing to do. until then ...
-TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos, int selection, bool useOverFlow, int NBkgGroups)
+TH1D *ToyMCErrorsStat(TString unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldResponse *response, int kterm, TH2D *hCovariance, TH2D *hCorrelation, int nPseudos, int selection, bool useOverFlow, int NBkgGroups)
 {
 
 
@@ -350,7 +306,6 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
     bool isZN( hTitle.find("Counter") != string::npos);
 
 
-    //const int NBkgGroups(6);
     //Random for pseudos
     TRandom3* random = new TRandom3();
     random->SetSeed(0);
@@ -571,7 +526,7 @@ TH1D *ToyMCErrorsStat(string unfAlg, TH1D *hdata, TH1D* hBack0[], RooUnfoldRespo
         response_temp.UseOverflow();
         RooUnfold* RObject = NULL;
         if (unfAlg == "SVD")   RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kSVD,   &response_temp, h_bkgsub, kterm);
-        if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, &response_temp, h_bkgsub, kterm);
+        else if (unfAlg == "Bayes") RObject = (RooUnfold*) RooUnfold::New( RooUnfold::kBayes, &response_temp, h_bkgsub, kterm);
         RObject->SetVerbose(0);
         TH1D* h_unfold = (TH1D*) RObject->Hreco();
 

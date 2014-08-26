@@ -2,7 +2,7 @@
 #define __fileNames__
 
 //-- directory of input root files --------------------
-const string FILESDIRECTORY("HistoFiles/");
+const string FILESDIRECTORY("HistoFilesAugust/");
 //---------- lets add basic information on samples inot common struct -------------------------------------------
 struct processInfoStruct{
     string filename;
@@ -18,14 +18,12 @@ const processInfoStruct ProcessInfo[] = {
     {"ZZ_dR",	                          9799908.,   17.654,  1,         0.04,          kOrange,     " ZZ"},    
     {"WZ_dR",	                          10000283.,  33.21,   1,         0.05,          kRed+1,      " WZ"},	
     {"WW_dR",	                          10000431.,  54.838,  1,         0.05,          kViolet+5,   " WW"},
-
     {"T_s_channel_dR",	                  259961.,    3.79,    1,         0.10,          kMagenta,    " Ts"},
     {"T_t_channel_dR",	                  3758227.,   56.4,    1,         0.10,          kMagenta,    " Tt"},
     {"T_tW_channel_dR",	                  497658.,    11.1,    1,         0.10,          kMagenta,    " Ttw"},
     {"Tbar_s_channel_dR",                 139974.,    1.76,    1,         0.10,          kMagenta,    " Tbars"},
     {"Tbar_t_channel_dR",                 1903681.,   30.7,    1,         0.10,          kMagenta,    " Tbart"},
     {"Tbar_tW_channel_dR",                493460.,    11.1,    1,         0.10,          kMagenta,    " TbartW"},
-
     {"TTJets_dR",		                  6923652.,   234.,    1,         0.10,          kBlue,       " TTJets"},  
     {"DYJets10to50_dR",	                  11707222.,  860.5,   1,         0.04,          kAzure-4,    " DY"},
     {"DYJetsToLL_MIX_50toInf_UNFOLDING_dR",      30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
@@ -36,14 +34,13 @@ const processInfoStruct ProcessInfo[] = {
     {"WZJets2L2Q_dR",		              3215990.,   33.21,   0.068258,  0.04,          kPink-6,     " WZJets2L2Q"},
     {"WWJets2L2Nu_dR",		              1933235.,   54.838,  0.10608 ,  0.04,          kViolet+5,   " WWJets2L2Nu"},
     {"Top_dR",		                      1.,         1,       1,         0.04,          kMagenta,    " Single Top"},
-
     {"DYJetsToLL_FromTau_50toInf_UNFOLDING_dR",   30459503.,  3531.8,  1,         0.033,         kAzure+4,    " DYtautau"},
     {"DYJets10toInf3_dR",	              1.,         1,       1,         0.04,          kAzure+10,   " DY"},
     {"DataQCD_dR",	                      1.,         1,       1,         0.04,          kYellow,     " QCD"},
     {"WJetsALL_MIX_UNFOLDING_dR",         76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
     {"WJetsALL_MIX_dR",                   76102995.,  36864.,  1,         0.03,          kPink,       " WJets"}, // relative weight for mixed DY and WJ files are set inthe code
     {"WJetsALL_dR",                       76102995.,  36864.,  1,         0.03,          kPink,       " WJets"},
-    {"DYJetsToLL_50toInf_UNFOLDING_dR",  30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
+    {"DYJetsToLL_50toInf_UNFOLDING_dR",   30459503.,  3531.8,  1,         0.04,          kAzure+10,   " DYJets"}, /// up to this line files are set for W+jet s and TTbar
 };
 
 //--- first element must point to the data

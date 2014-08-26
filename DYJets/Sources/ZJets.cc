@@ -393,6 +393,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 partonsNWeighted->Fill(nup_-5, genWeight);
             }
 
+            //--- if there are taus, but we do not run on the Tau file, thus we run on the DYJets file, 
+            //    then we don't count the event at reco.
             if (countTauS3 > 0 && fileName.find("Tau") == string::npos) passesLeptonCut = 0; 
 
             //-- determine if the event passes the leptons requirements
@@ -410,7 +412,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 if (genLeptons[0].charge * genLeptons[1].charge < 0 && genZ.M() > ZMCutLow && genZ.M() < ZMCutHigh) {
                     passesGenLeptonCut = 1;
                 }
-                // line below is to remove contribution form GEN Tau
+                //--- if there are taus we don't want the gen level
                 if (countTauS3 > 0) passesGenLeptonCut = 0;
             }
         }
@@ -448,7 +450,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 jet.pt *= (1 + scale * jetEnergyCorr);
                 jet.energy *= (1 + scale * jetEnergyCorr);
 
-                bool jetPassesEtaCut(fabs(jet.eta) <= jetEtaCutMax); 
+                bool jetPassesEtaCut(fabs(jet.eta) <= 0.1*jetEtaCutMax); 
                 bool jetPassesIdCut(patJetPfAk05LooseId_->at(i) > 0);
                 bool jetPassesMVACut(patJetPfAk05jetpuMVA_->at(i) > 0);
 
@@ -620,8 +622,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             vector<jetStruct> tmpGenJets;
             vector<jetStruct> tmpGenJets_20;
             for (unsigned short i(0); i < nGoodGenJets; i++){
-                if (genJets[i].pt >= jetPtCutMin && fabs(genJets[i].eta) <= jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
-                if (genJets[i].pt >= 20 && fabs(genJets[i].eta) <= jetEtaCutMax) tmpGenJets_20.push_back(genJets[i]);
+                if (genJets[i].pt >= jetPtCutMin && fabs(genJets[i].eta) <= 0.1*jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
+                if (genJets[i].pt >= 20 && fabs(genJets[i].eta) <= 0.1*jetEtaCutMax) tmpGenJets_20.push_back(genJets[i]);
             }
             genJets.clear();
             genJets = tmpGenJets; 
@@ -1575,7 +1577,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 }
 
 ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
-        int systematics_, int direction_, float xsecfactor_, float jetPtCutMin_, float jetEtaCutMax_,  bool do10000Events_, TString outDir_): 
+        int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetEtaCutMax_,  bool do10000Events_, TString outDir_): 
     HistoSetZJets(fileName_(0, fileName_.Index("_"))), outputDirectory(outDir_),
     fileName(fileName_), lumiScale(lumiScale_), useTriggerCorrection(useTriggerCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), do10000Events(do10000Events_)
@@ -1586,8 +1588,8 @@ ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
         outputDirectory = "HistoFilesTest/";
         cout << "Doing test for 10000 events  => output directory has been changed to HistoFilesTest/" << endl;
     }
-    string command = "mkdir -p " + outputDirectory;
-    system(command.c_str());
+    TString command = "mkdir -p " + outputDirectory;
+    system(command);
     //--------------------------------------------
 
     TChain *chain = new TChain("", "");
@@ -1598,6 +1600,7 @@ ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
 
     if (fileName.find("DMu_") == 0) leptonFlavor = "Muons";
     else if (fileName.find("DE_") == 0)  leptonFlavor = "Electrons"; 
+
     if (fileName.find("List") == string::npos){
         fullFileName += ".root";
         string treePath = fullFileName + "/tree/tree";
