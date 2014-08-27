@@ -329,7 +329,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
     for (int i=1; i< usedFiles + 1 ; i++){
         int sel = FilesDYJets[i];
 
-        if (i < usedFiles) fprintf(outFile, " %s        & ", Samples[sel].legend.Data());
+        if (i < usedFiles) fprintf(outFile, " %s        & ", Samples[sel].legendAN.Data());
         else {
             fprintf( outFile, "\\hline \n");
             fprintf( outFile, " TOTAL & ");
