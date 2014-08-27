@@ -9,27 +9,23 @@ ROOUNFLIB     = -lRooUnfold
 LIB = RooUnfold LHAPDF
 LIBLIST = $(addprefix -l, $(LIB))
 
-LIBDIR = RooUnfold-1.1.1 /user/aleonard/LHAPDF/lib
+#LIBDIR = RooUnfold-1.1.1 /user/aleonard/LHAPDF/lib
+LIBDIR = RooUnfold-1.1.1 /usr/local/lib
 #LHAPDFLIBDIR  = $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib
 LIBDIRLIST = $(addprefix -L, $(LIBDIR))
 RTL = -Wl,-rpath,
 LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 
-
-
-ROOUNFINCDIR  = RooUnfold-1.1.1/src
-
 SRCDIR = Sources/
-INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/user/aleonard/lhapdf-5.9.1/include
+INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/usr/local/include
 
 CXX           = clang++ -std=c++0x 
 CXXFLAGS      = -g -Wall -fPIC   	
 CXXFLAGS      += $(ROOTCFLAGS) 
-SOFLAGS       = -shared 
 
 SOURCES = getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
-SOURCES += FinalUnfoldZJets.cc UnfoldingSyst.cc writeFastPlotsTex.cc unfoldingFunctionsZJets.cc
-#SOURCES = UnfoldingZJets.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc
+SOURCES += FinalUnfoldZJets.cc UnfoldingSyst.cc writeFastPlotsTex.cc unfoldingFunctionsZJets.cc UnfoldingZJets.cc RecoComparison.cc
+
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)
 
@@ -42,6 +38,18 @@ runZJets: $(OBJLIST) runZJets.o
 
 runZJets.o: runZJets.cc
 	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR) 
+
+runRecoComparison: $(OBJLIST) runRecoComparison.o
+	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runRecoComparison $(ROOTGLIBS) $(LIBLIST)
+
+runRecoComparison.o: runRecoComparison.cc
+	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+
+runUnfoldingZJets: $(OBJLIST) runUnfoldingZJets.o
+	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runUnfoldingZJets $(ROOTGLIBS) $(LIBLIST)
+
+runUnfoldingZJets.o: runUnfoldingZJets.cc
+	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 runFinalUnfold: $(OBJLIST) runFinalUnfold.o
 	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runFinalUnfold $(ROOTGLIBS) $(LIBLIST)

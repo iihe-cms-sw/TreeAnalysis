@@ -6,9 +6,10 @@
 
 using namespace std;
 
-int main(int argc, char **argv)
+void UnfoldingZJets(int* argc, char **argv)
 {
-    TApplication* rootapp = new TApplication("rootapp", &argc, argv);
+    TApplication* rootapp = new TApplication("rootapp", argc, argv);
+    TCanvas::Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
     TString histoDir = "HistoFilesAugust";
     TString variable = "ZNGoodJets_Zexc";
     TString lepSel = "DMu";
@@ -24,30 +25,51 @@ int main(int argc, char **argv)
 
     //--- Open all files ---------------------------------------------------------------------- 
     getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetEtaMax, fData, fDYJets, fBg, NBGDYJETS);
+    //----------------------------------------------------------------------------------------- 
+
+    //--- Now run on the different variables --------------------------------------------------
+    
+            
+
+    //--- rec Data histograms ---
+    TH1D *hRecData[3] = {NULL};
+    //--- rec DYJets histograms ---
+    TH1D *hRecDYJets[5] = {NULL};
+    //--- gen DYJets histograms ---
+    TH1D *hGenDYJets[5] = {NULL};
+    //--- res DYJets histograms ---
+    TH2D *hResDYJets[5] = {NULL};
+    //--- response DYJets objects ---
+    RooUnfoldResponse *respDYJets[5] = {NULL};
+    //--- rec Bg histograms ---
+    TH1D *hRecBg[NBGDYJETS][5] = {{NULL}};
+    //--- rec Sum Bg histograms ---
+    TH1D *hRecSumBg[5] = {NULL};
+
+    //--- Get all histograms ------------------------------------------------------------------
+    getAllHistos(variable, hRecData, fData, 
+            hRecDYJets, hGenDYJets, hResDYJets, respDYJets, fDYJets,
+            hRecBg, hRecSumBg, fBg, NBGDYJETS);
+    //----------------------------------------------------------------------------------------- 
+    
+
+
+
+    TCanvas *can1 = new TCanvas("can1", "can1", 900, 600);
+    can1->cd();
+    hRecData[0]->DrawCopy();
+    hRecData[1]->SetLineColor(kGreen);
+    hRecData[1]->DrawCopy("same");
+    hRecData[2]->SetLineColor(kRed);
+    hRecData[2]->DrawCopy("same");
+    can1->Update();
     //------------------------------------------------------------------------------------------ 
 
-    //--- Now run on the different variables ---------------------------------------------------
-    
-    TCanvas *can = new TCanvas("can", "can", 900, 600);
-    can->Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
-    can->cd();
-    TH1D *hData[3] = {NULL};
-    getHistos(hData, fData, variable);
-    hData[0]->DrawCopy();
-    hData[1]->SetLineColor(kGreen);
-    hData[1]->DrawCopy("same");
-    cout << "say my name" << fData[1]->GetName() << endl;
-    hData[2]->SetLineColor(kRed);
-    hData[2]->DrawCopy("same");
-    can->Update();
-    //------------------------------------------------------------------------------------------ 
 
     rootapp->Run(kTRUE);
 
     //--- Close all files ----------------------------------------------------------------------
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
     //------------------------------------------------------------------------------------------ 
-
-    return 0;
 
 }

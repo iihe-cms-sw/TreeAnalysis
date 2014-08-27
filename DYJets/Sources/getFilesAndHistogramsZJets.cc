@@ -3,6 +3,7 @@
 #include <RooUnfoldResponse.h>
 #include <TFile.h>
 #include <TString.h>
+#include <TSystem.h>
 #include <algorithm>
 #include "getFilesAndHistogramsZJets.h"
 using namespace std;
@@ -16,10 +17,10 @@ TString getEnergy()
 {
     TString energy = "";
     TString fileBeingProcessed = __FILE__;
-    if (fileBeingProcessed.Index("Analysis2012") >= 0) {
+    if (fileBeingProcessed.Index("2012") >= 0) {
         energy = "8TeV";
     }
-    else if (fileBeingProcessed.Index("Analysis2011") >= 0) {
+    else if (fileBeingProcessed.Index("2011") >= 0) {
         energy = "7TeV";
     }
     else 
@@ -116,21 +117,48 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
 void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetEtaMax, TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
 {
     //--- Open data files ---------------------------------------------------------------------- 
-    //TFile *fData[3] = {NULL}; // 0 - central, 1 - JES up, 2 - JES down
     getFiles(histoDir, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax); 
     //------------------------------------------------------------------------------------------ 
 
     //--- Open DYJets files --------------------------------------------------------------------
-    //TFile *fDYJets[5] = {NULL}; // 0 - central, 1 - PU up, 2 - PU down, 3 - JER up, 4 - JER down 
     getFiles(histoDir, fDYJets, lepSel, energy, Samples[DYJETS].name, jetPtMin, jetEtaMax); 
     //------------------------------------------------------------------------------------------ 
 
     //--- Open Bg files ------------------------------------------------------------------------
-    //TFile *fBg[NFILESDYJETS-2][5] = {{NULL}};
     for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
         getFiles(histoDir, fBg[iBg], lepSel, energy, Samples[iBg+1].name, jetPtMin, jetEtaMax);
     }
     //------------------------------------------------------------------------------------------ 
+}
+
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[5], TH1D *hGenDYJets[5], TH2D *hResDYJets[5], RooUnfoldResponse *respDYJets[5], TFile *fDYJets[5], TH1D *hRecBg[][5], TH1D *hRecSumBg[5], TFile *fBg[][5], int nBg)
+{
+
+    //--- get rec Data histograms ---
+    getHistos(hRecData, fData, variable);
+
+    //--- get rec DYJets histograms ---
+    getHistos(hRecDYJets, fDYJets, variable);
+
+    //--- get gen DYJets histograms ---
+    getHistos(hGenDYJets, fDYJets, "gen" + variable);
+
+    //--- get res DYJets histograms ---
+    getHistos(hResDYJets, fDYJets, "hresponse" + variable);
+
+    //--- get response DYJets objects ---
+    getResps(respDYJets, fDYJets, variable);
+
+    //--- get rec Bg histograms ---
+    for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
+        getHistos(hRecBg[iBg], fBg[iBg], variable);
+        for (unsigned short iSyst = 0; iSyst < 5; ++iSyst) { 
+            if (iSyst == 0) hRecSumBg[iSyst] = (TH1D*) hRecBg[iBg][iSyst]->Clone();
+            else hRecSumBg[iSyst]->Add(hRecBg[iBg][iSyst]);
+        }
+    }
+
+
 }
 
 //------------------------------------------------------------
@@ -197,13 +225,23 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
     int nFiles;
-    if (fileName.Index("Data") >= 0) {
-        nFiles = 3; 
-    }
+    if (fileName.Index("Data") >= 0) nFiles = 3; 
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){
         histograms[i] = (TH1D*) Files[i]->Get(variable);
+    } 
+}
+
+void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
+{
+    TString fileName = Files[0]->GetName();
+    int nFiles;
+    if (fileName.Index("Data") >= 0) nFiles = 3; 
+    else nFiles = 5;
+
+    for (int i(0); i < nFiles; i++){
+        histograms[i] = (TH2D*) Files[i]->Get(variable);
     } 
 }
 

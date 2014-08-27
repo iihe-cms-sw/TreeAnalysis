@@ -56,12 +56,12 @@ void FuncUnfold(bool isMuon, TString variable, int UsedKterm, int jetPtMin, int 
     double EffError = muonIDIsoHLTError;
     if (!isMuon) EffError = electronIDIsoHLTError;
 
-    //-- fetch the data files and histograms -----------------------------------------------------------------------
+    //-- fetch the data files and histograms -------------------------------------------------
     TFile *fData[5] = {NULL}; // 0 = central, 1 = JES Up, 2 = JES Down , 3 - SF Up , 4 - SF down
     TH1D *hData[5] = {NULL};  
     getFiles(FILESDIRECTORY, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax);
     getHistos(hData, fData, variable);
-    //--------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
 
     //-- fetch the DY files and histograms ----------------
     TFile *fDYMadGraph[5] = {NULL}; // 0 = central, 1 = PU Up, 2 = PU Down, 3 = JER Up, 4 = JER Down

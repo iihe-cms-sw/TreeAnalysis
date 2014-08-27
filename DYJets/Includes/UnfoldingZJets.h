@@ -2,6 +2,6 @@
 #define _UNFOLDINGZJETS_h_
 
 
-void UnfoldingZJets();
+void UnfoldingZJets(int* argc, char **argv);
 
 #endif
