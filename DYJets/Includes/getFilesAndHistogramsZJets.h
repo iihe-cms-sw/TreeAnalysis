@@ -26,7 +26,8 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString);
 void getResp(RooUnfoldResponse*, TFile*, TString);
 RooUnfoldResponse* getResp(TFile*, TString);
 void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString);
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[5], TH1D *hGenDYJets[5], TH2D *hResDYJets[5], RooUnfoldResponse *respDYJets[5], TFile *fDYJets[5], TH1D *hRecBg[][5], TH1D *hRecSumBg[5], TFile *fBg[][5], int nBg);
+void getResps(RooUnfoldResponse *responses[13], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9]);
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[13]);
 void getStatistics(TString lepSel = "DMu",  int jetPtMin = 30, int jetEtaMax = 24);
 #endif
 

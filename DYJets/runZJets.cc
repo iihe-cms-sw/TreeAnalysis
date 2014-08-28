@@ -42,27 +42,27 @@ int main(int argc, char **argv)
     int NSystData(3);
     int NSystMC(5);
 
-    short dataSyst[5] = {0, 2, 2, 5, 5};
-    short dataDir[5]  = {0,-1, 1,-1, 1};
+    short dataSyst[3] = {0, 2, 2};
+    short dataDir[3]  = {0,-1, 1};
 
-    short ttSyst[5]  = {0, 1, 1, 3, 3};
-    short ttDir[5]   = {0,-1, 1,-1, 1};
-    float ttScale[5] = {1, 1, 1, 0.10, 0.10};
+    short ttSyst[5]   = {0, 1, 1,    3,    3};
+    short ttDir[5]    = {0,-1, 1,   -1,    1};
+    float ttScale[5]  = {1, 1, 1, 0.10, 0.10};
 
-    short tauSyst[5]  = {0, 1, 1, 3, 3};
-    short tauDir[5]   = {0,-1, 1,-1, 1};
+    short tauSyst[5]  = {0, 1, 1,    3,    3};
+    short tauDir[5]   = {0,-1, 1,   -1,    1};
     float tauScale[5] = {1, 1, 1, 0.05, 0.05};
 
-    short wjSyst[5]  = {0, 1, 1, 3, 3};
-    short wjDir[5]   = {0,-1, 1,-1, 1};
-    float wjScale[5] = {1, 1, 1, 0.04, 0.04};
+    short wjSyst[5]   = {0, 1, 1,    3,    3};
+    short wjDir[5]    = {0,-1, 1,   -1,    1};
+    float wjScale[5]  = {1, 1, 1, 0.04, 0.04};
 
-    short bgSyst[5]  = {0, 1, 1, 3, 3};
-    short bgDir[5]   = {0,-1, 1,-1, 1};
-    float bgScale[5] = {1, 1, 1, 0.15, 0.15};
+    short bgSyst[5]   = {0, 1, 1,    3,    3};
+    short bgDir[5]    = {0,-1, 1,   -1,    1};
+    float bgScale[5]  = {1, 1, 1, 0.15, 0.15};
 
-    short dySyst[5]  = {0, 1, 1, 4, 4};
-    short dyDir[5]   = {0,-1, 1,-1, 1};
+    short dySyst[5]   = {0, 1, 1, 4, 4};
+    short dyDir[5]    = {0,-1, 1,-1, 1};
 
     if (!doSysRunning) {
         NSystData = 1; 

@@ -34,8 +34,8 @@ void simpleUnfold()
     TH1D *mcHist = (TH1D*) dyFile->Get(variable.c_str());           
     TH2D *hresp = (TH2D*) dyFile->Get(hrespVariable.c_str());
     //RooUnfoldResponse *dyResp = (RooUnfoldResponse*) dyFile->Get(respVariable.c_str());
-    RooUnfoldResponse *dyResp = new RooUnfoldResponse(mcHist, genHist, hresp);
-    dyResp->UseOverflow();
+    //RooUnfoldResponse *dyResp = new RooUnfoldResponse(mcHist, genHist, hresp);
+    //dyResp->UseOverflow();
 
     vector<string> bg;                                                                                                                  
     bg.push_back("HistoFilesAugust/DMu_8TeV_ZZJets2L2Nu_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
@@ -69,11 +69,16 @@ void simpleUnfold()
         bgFile->Close();                                                                                                                
     }
 
+    TH1D *hRecDYPlusBg = (TH1D*) bgHist->Clone();
+    hRecDYPlusBg->Add(mcHist);
+    RooUnfoldResponse *dyResp = new RooUnfoldResponse(hRecDYPlusBg, genHist, hresp);
+    dyResp->UseOverflow();
+
     //bgHist->Draw("text");
     //dataHist->DrawCopy("text");     
-    dataHist->Add(bgHist, -1);     
+    //dataHist->Add(bgHist, -1);     
 
-    RooUnfoldBayes *unfold = new RooUnfoldBayes(dyResp, dataHist, 3);
+    RooUnfoldBayes *unfold = new RooUnfoldBayes(dyResp, dataHist, 4);
     //RooUnfoldSvd *unfold = new RooUnfoldSvd(dyResp, dataHist, 6);
     //RooUnfoldInvert *unfold = new RooUnfoldInvert(dyResp, dataHist);
     //RooUnfoldBinByBin *unfold = new RooUnfoldBinByBin(dyResp, dataHist);
@@ -81,7 +86,7 @@ void simpleUnfold()
     //TH1D *chi2 = (TH1D*) unfold->Chi2OfChange;
     //chi2->Draw();
 
-
+    cout << dataUnfolded->GetBinContent(2)/19584. << endl;
     dataUnfolded->Scale(1./19584);
     dataHist->Scale(1./19584.);
     genHist->Scale(1./19584.);

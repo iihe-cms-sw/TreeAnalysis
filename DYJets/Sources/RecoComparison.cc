@@ -40,6 +40,7 @@ void Plotter(int* argc, char **argv,  bool doPASPlots, TString lepSel, int jetPt
     for (unsigned short iSample = 0; iSample < NFILESDYJETS; ++iSample){
         //--- get the file ---
         fSamples[iSample] = getFile(histoDir, lepSel, energy, Samples[iSample].name, jetPtMin, jetEtaMax);
+        if (!fSamples[iSample]) return;
         //-- set the legend name for the current file ---
         if (iSample == 0) 
             legendNames[iSample] = (lepSel == "DMu") ? " #mu#mu Data" : " ee Data";

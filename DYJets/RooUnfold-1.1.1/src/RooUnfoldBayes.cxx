@@ -177,7 +177,7 @@ void RooUnfoldBayes::train()
   // _smoothit = smooth the matrix in between iterations (default false).
    
   
-  Chi2OfChange = new TH1D("Chi2OfChange", "Chi^2 of Change", _niter, 1, _niter + 1 );
+  Chi2OfChange = new TH1D("Chi2OfChange", "Chi^2 of Change", _niter, 1, _niter + 1);
   Double_t ntrue = _nCi.Sum();
   // Initial distribution
   TVectorD P0C(_nCi);

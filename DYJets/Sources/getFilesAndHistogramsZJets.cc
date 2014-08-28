@@ -72,7 +72,12 @@ TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, i
     fileName += ".root";
     TFile *File = new TFile(fileName, "READ");
     std::cout << "Opening: " << fileName << "   --->   Opened ? " << File->IsOpen() << std::endl;
-    return File;
+    if (!File->IsOpen()) {
+        std::cerr << "Please check that you produced the following file. I was not able to open it." << std::endl;
+        std::cerr << "\t\033[031m " << fileName << "\033[0m " << std::endl;
+        return NULL;
+    }
+    else return File;
     //----------------------------------------------------------------
 }
 
@@ -131,7 +136,7 @@ void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin,
     //------------------------------------------------------------------------------------------ 
 }
 
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[5], TH1D *hGenDYJets[5], TH2D *hResDYJets[5], RooUnfoldResponse *respDYJets[5], TFile *fDYJets[5], TH1D *hRecBg[][5], TH1D *hRecSumBg[5], TFile *fBg[][5], int nBg)
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[13])
 {
 
     //--- get rec Data histograms ---
@@ -146,19 +151,17 @@ void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hR
     //--- get res DYJets histograms ---
     getHistos(hResDYJets, fDYJets, "hresponse" + variable);
 
-    //--- get response DYJets objects ---
-    getResps(respDYJets, fDYJets, variable);
-
     //--- get rec Bg histograms ---
     for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
         getHistos(hRecBg[iBg], fBg[iBg], variable);
-        for (unsigned short iSyst = 0; iSyst < 5; ++iSyst) { 
-            if (iSyst == 0) hRecSumBg[iSyst] = (TH1D*) hRecBg[iBg][iSyst]->Clone();
+        for (unsigned short iSyst = 0; iSyst < 9; ++iSyst) { 
+            if (iBg == 0) hRecSumBg[iSyst] = (TH1D*) hRecBg[0][iSyst]->Clone();
             else hRecSumBg[iSyst]->Add(hRecBg[iBg][iSyst]);
         }
     }
 
-
+    //--- get response DYJets objects ---
+    getResps(respDYJets, hRecDYJets, hRecSumBg, hGenDYJets, hResDYJets);
 }
 
 //------------------------------------------------------------
@@ -183,6 +186,7 @@ void closeFiles(TFile *Files[])
         else nFiles = 5; 
 
         for (int i(0); i < nFiles; i++){
+            Files[i]->cd();
             closeFile(Files[i]);
         }
     }
@@ -192,6 +196,7 @@ void closeFiles(TFile *Files[], int nFiles)
 {
     TString fileName = Files[0]->GetName();
     for (int i(0); i < nFiles; i++){
+        Files[i]->cd();
         closeFile(Files[i]);
         cout << "Closing file: " << Files[i]->GetName() << "   --->   Closed ? " << (!(Files[i]->IsOpen())) << endl;
     }
@@ -224,26 +229,102 @@ TH1D* getHisto(TFile *File, const TString variable)
 void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
-    int nFiles;
-    if (fileName.Index("Data") >= 0) nFiles = 3; 
-    else nFiles = 5;
+
+    bool isData = (fileName.Index("Data") >= 0);
+    int nFiles = isData ? 3 : 5;
 
     for (int i(0); i < nFiles; i++){
+        Files[i]->cd();
         histograms[i] = (TH1D*) Files[i]->Get(variable);
     } 
+
+    if (!isData) {
+        //--- From central histograms, we simulate the histograms
+        //    for lumi up and down systematics. It is just a rescaliing
+        //    since it is a global effect. The error is estimated to
+        //    2.6%
+
+        double lumiErr = 0.026;
+        //--- lumi scale up ---
+        histograms[5] = (TH1D*) histograms[0]->Clone();
+        histograms[5]->Scale(1. + lumiErr);
+
+        //--- lumi scale down ---
+        histograms[6] = (TH1D*) histograms[0]->Clone();
+        histograms[6]->Scale(1. - lumiErr);
+
+
+        //--- From central histograms, we simulate the histograms
+        //    for scale factors up and down systematics. It is just 
+        //    a rescaliinga since the errors are global. The error 
+        //    is different for the two channels and are estimated to
+        //    2.5% for muons and 0.5% for electron.
+        //    This should not be applied to gen histograms however.
+        //    That is why errSF = 0 when variable contains "gen"
+        TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
+        double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        if (variable.Index("gen") < 0) {
+
+            //--- SF up ---
+            histograms[7] = (TH1D*) histograms[0]->Clone();
+            histograms[7]->Scale(1. + errSF);
+
+            //--- SF down ---
+            histograms[8] = (TH1D*) histograms[0]->Clone();
+            histograms[8]->Scale(1. - errSF);
+        }
+    }
 }
+
 
 void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
-    int nFiles;
-    if (fileName.Index("Data") >= 0) nFiles = 3; 
-    else nFiles = 5;
+    bool isData = (fileName.Index("Data") >= 0);
+    int nFiles = isData ? 3 : 5;
 
-    for (int i(0); i < nFiles; i++){
+    for (unsigned short i = 0; i < nFiles; i++){
+        Files[i]->cd();
         histograms[i] = (TH2D*) Files[i]->Get(variable);
     } 
+
+    if (!isData) {
+        //--- From central histograms, we simulate the histograms
+        //    for lumi up and down systematics. It is just a rescaliing
+        //    since it is a global effect. The error is estimated to
+        //    2.6%
+
+        double lumiErr = 0.026;
+        //--- lumi scale up ---
+        histograms[5] = (TH2D*) histograms[0]->Clone();
+        histograms[5]->Scale(1. + lumiErr);
+
+        //--- lumi scale down ---
+        histograms[6] = (TH2D*) histograms[0]->Clone();
+        histograms[6]->Scale(1. - lumiErr);
+
+
+        //--- From central histograms, we simulate the histograms
+        //    for scale factors up and down systematics. It is just 
+        //    a rescaliinga since the errors are global. The error 
+        //    is different for the two channels and are estimated to
+        //    2.5% for muons and 0.5% for electron.
+        //    This should not be applied to gen histograms however.
+        TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
+        double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        if (variable.Index("gen") < 0) {
+
+            //--- SF up ---
+            histograms[7] = (TH2D*) histograms[0]->Clone();
+            histograms[7]->Scale(1. + errSF);
+
+            //--- SF down ---
+            histograms[8] = (TH2D*) histograms[0]->Clone();
+            histograms[8]->Scale(1. - errSF);
+        }
+    }
 }
+
 
 void getResp(RooUnfoldResponse *response, TFile *File, TString variable)
 {
@@ -273,12 +354,83 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
     else nFiles = 5;
 
     for (int i(0); i < nFiles; i++){
+        Files[i]->cd();
         responses[i] = new RooUnfoldResponse(
                 (TH1D*) Files[i]->Get(variable), 
                 (TH1D*) Files[i]->Get("gen" + variable), 
                 (TH2D*) Files[i]->Get("hresponse" + variable)
                 ); 
     } 
+}
+
+void getResps(RooUnfoldResponse *responses[13], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
+{
+    TH1D *hRecDYJetsPlusSumBg = NULL;
+    //--- build response object for central ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
+    responses[0] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+
+    //--- build response object for JES up (same as central because JES is done on data) ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
+    responses[1] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+
+    //--- build response object for JES down (same as central because JES is done on data) ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
+    responses[2] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+
+    //--- build response object for PU up ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[1]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[1]);
+    responses[3] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[1], hResDYJets[1]); 
+
+    //--- build response object for PU down ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[2]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[2]);
+    responses[4] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[2], hResDYJets[2]); 
+
+    //--- build response object for JER up ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[3]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
+    responses[5] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[3], hResDYJets[3]); 
+
+    //--- build response object for JER down ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[4]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
+    responses[6] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[4], hResDYJets[4]); 
+
+    //--- build response object for XSec up ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[3]);
+    responses[7] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+
+    //--- build response object for XSec down ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[4]);
+    responses[8] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+
+    //--- build response object for Lumi up ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[5]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[5]);
+    responses[9] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[5], hResDYJets[5]); 
+
+    //--- build response object for Lumi down ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[6]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[6]);
+    responses[10] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[6], hResDYJets[6]); 
+
+    //--- build response object for SF up ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[7]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[7]);
+    responses[11] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[7]); 
+
+    //--- build response object for SF down ---
+    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[8]->Clone();
+    hRecDYJetsPlusSumBg->Add(hRecSumBg[8]);
+    responses[12] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[8]); 
+
 }
 
 
@@ -329,7 +481,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
     for (int i=1; i< usedFiles + 1 ; i++){
         int sel = FilesDYJets[i];
 
-        if (i < usedFiles) fprintf(outFile, " %s        & ", Samples[sel].legend.Data());
+        if (i < usedFiles) fprintf(outFile, " %s        & ", Samples[sel].legendAN.Data());
         else {
             fprintf( outFile, "\\hline \n");
             fprintf( outFile, " TOTAL & ");

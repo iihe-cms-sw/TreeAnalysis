@@ -101,24 +101,26 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     standalone_LumiReWeighting puWeight(leptonFlavor, puYear), puUp(leptonFlavor, puYear, 1), puDown(leptonFlavor, puYear, -1);
     cout << "systematics: " << systematics << "  direction: " << direction << endl;
 
-    if ((systematics == 1 || systematics == 6) && direction ==  1) puWeight = puUp;
-    if ((systematics == 1 || systematics == 6) && direction == -1) puWeight = puDown;
+    if (systematics == 1 && direction ==  1) puWeight = puUp;
+    if (systematics == 1 && direction == -1) puWeight = puDown;
 
     int scale(0); //0,+1,-1; (keep 0 for noJEC shift study)
-    if ((systematics == 2 || systematics == 6) && direction ==  1) scale =  1;
-    if ((systematics == 2 || systematics == 6) && direction == -1) scale = -1;
+    if (systematics == 2 && direction ==  1) scale =  1;
+    if (systematics == 2 && direction == -1) scale = -1;
 
     double xsec(1.);
-    if ((systematics == 3 || systematics == 6) && direction ==  1) xsec = 1. + xsecfactor;
-    if ((systematics == 3 || systematics == 6) && direction == -1) xsec = 1. - xsecfactor;
+    if (systematics == 3 && direction ==  1) xsec = 1. + xsecfactor;
+    if (systematics == 3 && direction == -1) xsec = 1. - xsecfactor;
 
     int smearJet(0);
-    if ((systematics == 4 || systematics == 6) && direction ==  1) smearJet =  1; 
-    if ((systematics == 4 || systematics == 6) && direction == -1) smearJet = -1; 
+    if (systematics == 4 && direction ==  1) smearJet =  1; 
+    if (systematics == 4 && direction == -1) smearJet = -1; 
 
     int smearLepSF(0);
-    if ((systematics == 5 || systematics == 6) && direction ==  1) smearLepSF = 1;
-    if ((systematics == 5 || systematics == 6) && direction == -1) smearLepSF = -1;
+    if (systematics == 5 && direction ==  1) smearLepSF = 1;
+    if (systematics == 5 && direction == -1) smearLepSF = -1;
+
+
 
     //==========================================================================================================//
 

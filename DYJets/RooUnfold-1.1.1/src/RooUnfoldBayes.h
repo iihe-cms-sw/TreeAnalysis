@@ -25,8 +25,8 @@ class RooUnfoldBayes : public RooUnfold {
 
 public:
 
-  // Standard methods
   TH1D *Chi2OfChange;    // Chi2 of change
+  // Standard methods
   RooUnfoldBayes(); // default constructor
   RooUnfoldBayes (const char*    name, const char*    title); // named constructor
   RooUnfoldBayes (const TString& name, const TString& title); // named constructor
@@ -90,6 +90,7 @@ protected:
   TMatrixD _Vij;          // covariance matrix
   TMatrixD _VnEstij;      // covariance matrix of effects
   TMatrixD _dnCidnEj;     // error propagation matrix
+
 
 public:
   ClassDef (RooUnfoldBayes, 1) // Bayesian Unfolding
