@@ -331,7 +331,7 @@ void getResp(RooUnfoldResponse *response, TFile *File, TString variable)
     response = new RooUnfoldResponse(
             (TH1D*) File->Get(variable), 
             (TH1D*) File->Get("gen" + variable), 
-            (TH2D*) File->Get("hresponse" + variable)
+            (TH2D*) File->Get("hresponse" + variable), true
             ); 
     if (!response) std::cout << "Couldn't load response" << std::endl;
 }
@@ -341,7 +341,7 @@ RooUnfoldResponse* getResp(TFile *File, TString variable)
     RooUnfoldResponse *response = new RooUnfoldResponse(
             (TH1D*) File->Get(variable), 
             (TH1D*) File->Get("gen" + variable), 
-            (TH2D*) File->Get("hresponse" + variable)
+            (TH2D*) File->Get("hresponse" + variable), true
             ); 
     return response;
 }
@@ -358,7 +358,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
         responses[i] = new RooUnfoldResponse(
                 (TH1D*) Files[i]->Get(variable), 
                 (TH1D*) Files[i]->Get("gen" + variable), 
-                (TH2D*) Files[i]->Get("hresponse" + variable)
+                (TH2D*) Files[i]->Get("hresponse" + variable), true
                 ); 
     } 
 }
@@ -369,67 +369,67 @@ void getResps(RooUnfoldResponse *responses[13], TH1D *hRecDYJets[9], TH1D *hRecS
     //--- build response object for central ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[0] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[0] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0], true); 
 
     //--- build response object for JES up (same as central because JES is done on data) ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[1] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[1] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0], true); 
 
     //--- build response object for JES down (same as central because JES is done on data) ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[2] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[2] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0], true); 
 
     //--- build response object for PU up ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[1]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[1]);
-    responses[3] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[1], hResDYJets[1]); 
+    responses[3] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[1], hResDYJets[1], true); 
 
     //--- build response object for PU down ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[2]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[2]);
-    responses[4] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[2], hResDYJets[2]); 
+    responses[4] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[2], hResDYJets[2], true); 
 
     //--- build response object for JER up ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[3]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[5] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[3], hResDYJets[3]); 
+    responses[5] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[3], hResDYJets[3], true); 
 
     //--- build response object for JER down ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[4]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[6] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[4], hResDYJets[4]); 
+    responses[6] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[4], hResDYJets[4], true); 
 
     //--- build response object for XSec up ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[3]);
-    responses[7] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[7] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0], true); 
 
     //--- build response object for XSec down ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[4]);
-    responses[8] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[8] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0], true); 
 
     //--- build response object for Lumi up ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[5]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[5]);
-    responses[9] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[5], hResDYJets[5]); 
+    responses[9] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[5], hResDYJets[5], true); 
 
     //--- build response object for Lumi down ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[6]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[6]);
-    responses[10] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[6], hResDYJets[6]); 
+    responses[10] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[6], hResDYJets[6], true); 
 
     //--- build response object for SF up ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[7]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[7]);
-    responses[11] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[7]); 
+    responses[11] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[7], true); 
 
     //--- build response object for SF down ---
     hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[8]->Clone();
     hRecDYJetsPlusSumBg->Add(hRecSumBg[8]);
-    responses[12] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[8]); 
+    responses[12] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[8], true); 
 
 }
 

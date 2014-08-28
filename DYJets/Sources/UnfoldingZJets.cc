@@ -73,6 +73,7 @@ void UnfoldingZJets(int* argc, char **argv)
     // 7 - XSEC up, 8 - XSEC down
     // 9 - Lumi up, 10 - Lumi down
     // 11 - SF up, 12 - SF down
+    TString name[] = {"CEntral", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown"};
     TH1D *hUnfData[13] = {NULL};
 
     int nIter = 4;
@@ -80,7 +81,7 @@ void UnfoldingZJets(int* argc, char **argv)
     for (unsigned short iSyst = 0; iSyst < 13; ++iSyst) {
         //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
         unsigned short iData = (iSyst < 3) ? iSyst : 0;
-        hUnfData[iSyst] = UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter);
+        hUnfData[iSyst] = UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter, name[iSyst]);
     }
     //----------------------------------------------------------------------------------------- 
 
@@ -89,11 +90,11 @@ void UnfoldingZJets(int* argc, char **argv)
     outputRootFileName += "_unfolded_" + variable + "_" + algo;
     outputRootFileName += ".root";
     TFile *outputRootFile = new TFile(outputRootFileName, "RECREATE");
-    hRecData[0]->Write("hRecDataCentral");
-    hRecSumBg[0]->Write("hRecSumBgCentral");
-    hRecDYJets[0]->Write("hRecDYJetsCentral");
-    hGenDYJets[0]->Write("hGenDYJetsCentral");
-    respDYJets[0]->Write("respDYJetsCentral");
+    //hRecData[0]->Write("hRecDataCentral");
+    //hRecSumBg[0]->Write("hRecSumBgCentral");
+    //hRecDYJets[0]->Write("hRecDYJetsCentral");
+    //hGenDYJets[0]->Write("hGenDYJetsCentral");
+    //respDYJets[0]->Write("respDYJetsCentral");
 
     outputRootFile->Close();
     //----------------------------------------------------------------------------------------- 
@@ -118,11 +119,10 @@ void UnfoldingZJets(int* argc, char **argv)
 
 
 
-TH1D* UnfoldData(TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int nIter)
+TH1D* UnfoldData(TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int nIter, TString name)
 {
-    ////--- first subtract background from data ---
-    //TH1D *hRecDataMinusBg = (TH1D*) hRecData->Clone();
-    //hRecDataMinusBg->Add(hRecSumBg, -1);
+    //--- first rename the data hist ---
+    TH1D *hRecDataTmp = (TH1D*) hRecData->Clone(name);
 
     //--- use OverFlow ---
     resp->UseOverflow();
@@ -132,11 +132,13 @@ TH1D* UnfoldData(TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int nIte
     if (algo == "SVD") alg = RooUnfold::kSVD;
 
     //--- Unfold data minus background ---
-    RooUnfold *RObject = RooUnfold::New(alg, resp, hRecData, nIter);
+    RooUnfold *RObject = RooUnfold::New(alg, resp, hRecDataTmp, nIter);
     RObject->SetVerbose(0);
 
     //--- get the unfolded result ---
     TH1D* hUnfData = (TH1D*) RObject->Hreco();
+
+    delete RObject;
     return hUnfData;
 }
 

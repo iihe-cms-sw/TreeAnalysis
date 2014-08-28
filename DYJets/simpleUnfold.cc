@@ -17,8 +17,9 @@ void simpleUnfold()
     cout << " in simpleUnfold " << endl;                                                                                                
     TFile *fout = new TFile("SimpleUnfold.root", "RECREATE");
 
-    string variable = "ZNGoodJets_Zexc";
+    //string variable = "ZNGoodJets_Zexc";
     //string variable = "FirstJetPt_Zinc1jet";
+    string variable = "FirstJetEta_Zinc1jet";
     //string variable = "SecondJetPt_2_Zinc2jet";
     //string variable = "JetsMass_Zinc2jet";
     //string variable = "tau_max_Zinc1jet_2";
@@ -71,8 +72,8 @@ void simpleUnfold()
 
     TH1D *hRecDYPlusBg = (TH1D*) bgHist->Clone();
     hRecDYPlusBg->Add(mcHist);
-    RooUnfoldResponse *dyResp = new RooUnfoldResponse(hRecDYPlusBg, genHist, hresp);
-    dyResp->UseOverflow();
+    RooUnfoldResponse *dyResp = new RooUnfoldResponse(hRecDYPlusBg, genHist, hresp, true);
+    //dyResp->UseOverflow();
 
     //bgHist->Draw("text");
     //dataHist->DrawCopy("text");     

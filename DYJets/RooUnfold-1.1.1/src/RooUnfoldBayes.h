@@ -12,6 +12,7 @@
 #ifndef ROOUNFOLDBAYES_HH
 #define ROOUNFOLDBAYES_HH
 
+#include <iostream>
 #include "RooUnfold.h"
 
 #include "TVectorD.h"
@@ -27,6 +28,7 @@ public:
 
   TH1D *Chi2OfChange;    // Chi2 of change
   // Standard methods
+  ~RooUnfoldBayes() {delete Chi2OfChange;};
   RooUnfoldBayes(); // default constructor
   RooUnfoldBayes (const char*    name, const char*    title); // named constructor
   RooUnfoldBayes (const TString& name, const TString& title); // named constructor

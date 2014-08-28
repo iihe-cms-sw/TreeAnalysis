@@ -70,7 +70,7 @@ RooUnfoldResponse::RooUnfoldResponse (Int_t nm, Double_t mlo, Double_t mhi, Int_
 }
 
 RooUnfoldResponse::RooUnfoldResponse (const TH1* measured, const TH1* truth, const TH2* response,
-                                      const char* name, const char* title)
+                                      const bool useOverflow, const char* name, const char* title)
   : TNamed (name, title)
 {
   // RooUnfoldResponse constructor - create from already-filled histograms
@@ -81,7 +81,7 @@ RooUnfoldResponse::RooUnfoldResponse (const TH1* measured, const TH1* truth, con
   // "measured" and/or "truth" can be specified as 0 (1D case only) or an empty histograms (no entries) as a shortcut
   // to indicate, respectively, no fakes and/or no inefficiency.
   Init();
-  Setup (measured, truth, response);
+  Setup (measured, truth, response, useOverflow);
 }
 
 RooUnfoldResponse::RooUnfoldResponse (const TH1* measured, const TH1* truth,
@@ -221,7 +221,7 @@ RooUnfoldResponse::Setup (const TH1* measured, const TH1* truth)
 }
 
 RooUnfoldResponse&
-RooUnfoldResponse::Setup (const TH1* measured, const TH1* truth, const TH2* response)
+RooUnfoldResponse::Setup (const TH1* measured, const TH1* truth, const TH2* response, const bool useOverflow)
 {
   // Set up from already-filled histograms.
   // "response" gives the response matrix, measured X truth.
@@ -231,6 +231,7 @@ RooUnfoldResponse::Setup (const TH1* measured, const TH1* truth, const TH2* resp
   // "measured" and/or "truth" can be specified as 0 (1D case only) or an empty histograms (no entries) as a shortcut
   // to indicate, respectively, no fakes and/or no inefficiency.
   Reset();
+  _overflow=useOverflow;
   Bool_t oldstat= TH1::AddDirectoryStatus();
   TH1::AddDirectory (kFALSE);
   _res= (TH2*) response->Clone();
