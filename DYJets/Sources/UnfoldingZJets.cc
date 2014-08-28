@@ -103,10 +103,9 @@ void UnfoldingZJets(int* argc, char **argv)
     can1->cd();
     hUnfData[0]->SetLineColor(kRed);
     hUnfData[0]->DrawCopy();
-    for (unsigned short i = 1; i < 2; ++i) {
+    for (unsigned short i = 1; i < 13; ++i) {
         hUnfData[i]->DrawCopy("samehist");
     }
-    cout << hUnfData[0]->GetBinContent(2)*1./hUnfData[9]->GetBinContent(2) << endl;
     can1->Update();
     //------------------------------------------------------------------------------------------ 
 
