@@ -343,6 +343,20 @@ void RooUnfold::GetErrors()
     _haveErrors= true;
 }
 
+TMatrixD RooUnfold::GetDataStatCov()
+{
+    //Dummy routine to get covariance matrix. It should be overridden by derived classes.
+  TMatrixD dummy_m(_nt, _nt);
+  return dummy_m;
+}
+
+TMatrixD RooUnfold::GetMCStatCov()
+{
+    //Dummy routine to get covariance matrix. It should be overridden by derived classes.
+  TMatrixD dummy_m(_nt, _nt);
+  return dummy_m;
+}
+
 void RooUnfold::GetCov()
 {
     //Dummy routine to get covariance matrix. It should be overridden by derived classes.
@@ -960,6 +974,16 @@ TMatrixD& RooUnfold::ABAT (const TMatrixD& a, const TMatrixD& b, TMatrixD& c)
 {
   // Fills C such that C = A * B * A^T. Note that C cannot be the same object as A.
   TMatrixD d (b, TMatrixD::kMultTranspose, a);
+  c.Mult (a, d);
+  return c;
+}
+
+TMatrixD& RooUnfold::ABAT (const TMatrixD& a, const TVectorD& b, TMatrixD& c)
+{
+  // Fills C such that C = A * B * A^T, where B is a diagonal matrix specified by the vector.
+  // Note that C cannot be the same object as A.
+  TMatrixD d (TMatrixD::kTransposed, a);
+  d.NormByColumn (b, "M");
   c.Mult (a, d);
   return c;
 }

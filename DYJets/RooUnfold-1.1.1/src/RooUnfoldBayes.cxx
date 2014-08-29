@@ -110,6 +110,25 @@ void RooUnfoldBayes::Unfold()
   _haveCov=  false;
 }
 
+TMatrixD RooUnfoldBayes::GetDataStatCov()
+{
+  std::cout << "Only data variation" << std::endl;  
+  TMatrixD DataStatCov_m(_nt, _nt);
+  if (!_haveCov) GetCov();
+  DataStatCov_m =_cov;
+  return DataStatCov_m;
+}
+
+TMatrixD RooUnfoldBayes::GetMCStatCov()
+{
+  std::cout << "Only MC variation" << std::endl;  
+  TMatrixD MCStatCov_m(_nt, _nt);
+  getCovariance(kTRUE);
+  _covres.ResizeTo(_nt, _nt);  // drop fakes in final bin
+  MCStatCov_m = _covres;
+  return MCStatCov_m;
+}
+
 void RooUnfoldBayes::GetCov()
 {
   getCovariance();
@@ -167,6 +186,7 @@ void RooUnfoldBayes::setup()
   _efficiencyCi.ResizeTo(_nc);
   _Mij.ResizeTo(_nc,_ne);
   _dnCidnEj.ResizeTo(_nc,_ne);
+  _dnCidPjk.ResizeTo(_nc,_ne*_nc);
 }
 
 //-------------------------------------------------------------------------
@@ -250,6 +270,38 @@ void RooUnfoldBayes::train()
       }
     }
 #endif
+    // my add
+    if (kiter > 0) {
+      TVectorD mbyu(_ne);
+      for (Int_t j = 0 ; j < _ne ; j++) {
+        mbyu[j]= UjInv[j]*_nEstj[j]/ntrue;
+      }
+      TMatrixD A= _Mij;
+      A.NormByRow (mbyu, "M");
+      TMatrixD B(A, TMatrixD::kMult, PEjCi);
+      TMatrixD dnCidPjkUpd (B, TMatrixD::kMult, _dnCidPjk);
+      Int_t nec= _ne*_nc;
+      for (Int_t i = 0 ; i < _nc ; i++) {
+        if (P0C[i]<=0.0) continue;  // skip loop: dnCidPjkUpd(i,jk) will also be 0 because _Mij(i,j) will be 0
+        Double_t r= PbarCi[i]/P0C[i];
+        for (Int_t jk= 0; jk<nec; jk++)
+          _dnCidPjk(i,jk)= r*_dnCidPjk(i,jk) - dnCidPjkUpd(i,jk);
+      }
+    }
+
+    for (Int_t j = 0 ; j < _ne ; j++) {
+      if (UjInv[j]==0.0) continue;
+      Double_t mbyu= UjInv[j]*_nEstj[j];
+      Int_t j0= j*_nc;
+      for (Int_t i = 0 ; i < _nc ; i++) {
+        Double_t b= -mbyu * _Mij(i,j);
+        for (Int_t k = 0 ; k < _nc ; k++) _dnCidPjk(i,j0+k) += b*P0C[k];
+        if (_efficiencyCi[i]!=0.0)
+          _dnCidPjk(i,j0+i) += (P0C[i]*mbyu - _nbarCi[i]) / _efficiencyCi[i];
+      }
+    }
+
+    //end my add
 
     // no need to smooth the last iteraction
     if (_smoothit && kiter < (_niter-1)) smooth(PbarCi);
@@ -270,21 +322,42 @@ void RooUnfoldBayes::train()
 //-------------------------------------------------------------------------
 void RooUnfoldBayes::getCovariance(Bool_t doUnfoldSystematic)
 {
-  if (verbose()>=1) cout << "Calculating covariances due to number of measured events" << endl;
+  if (!doUnfoldSystematic){
+    if (verbose()>=1) cout << "Calculating covariances due to number of measured events" << endl;
 
-  // Create the covariance matrix of result from that of the measured distribution
-  _cov.ResizeTo (_nc, _nc);
+    // Create the covariance matrix of result from that of the measured distribution
+    _cov.ResizeTo (_nc, _nc);
 #ifdef OLDERRS
-  ABAT (_Mij,      GetMeasuredCov(), _cov);
+    ABAT (_Mij,      GetMeasuredCov(), _cov);
 #else
-  ABAT (_dnCidnEj, GetMeasuredCov(), _cov);
+    ABAT (_dnCidnEj, GetMeasuredCov(), _cov);
 #endif
 
-  // error due to uncertainty on unfolding matrix M
-  // This is disabled by default: I'm not sure it is correct, it is very slow, and
-  // the effect should be small with good MC statistics.
-  if (!doUnfoldSystematic) return;
+    // error due to uncertainty on unfolding matrix M
+    // This is disabled by default: I'm not sure it is correct, it is very slow, and
+    // the effect should be small with good MC statistics.
+    if (!doUnfoldSystematic) return;
+  }
+  else {
 
+    if (verbose()>=1) cout << "Calculating covariance due to unfolding matrix..." << endl;
+
+    const TMatrixD& Eres= _res->Eresponse();
+    TVectorD Vjk(_ne*_nc);           // vec(Var(j,k))
+    for (Int_t j = 0 ; j < _ne ; j++) {
+      Int_t j0= j*_nc;
+      for (Int_t i = 0 ; i < _nc-1 ; i++) {
+        Double_t e= Eres(j,i);
+        Vjk[j0+i]= e*e;
+      }
+    }
+
+    _covres.ResizeTo(_nc,_nc);
+    ABAT (_dnCidPjk, Vjk, _covres);
+    return;
+  }
+
+  /*
   if (verbose()>=0 && _nc*_ne >= 50625)
     cout << "getCovariance (this takes some time with " << _nc << " x " << _ne << " bins)." << endl;
 
@@ -302,8 +375,9 @@ void RooUnfoldBayes::getCovariance(Bool_t doUnfoldSystematic)
       if (pec !=0) {inv_npec(k,i) = temp; }
     }
   }
+  if (verbose()>=1) cout << "Ici..." << __LINE__ << endl;
   //
-  TMatrixD M_tmp(_nc,_ne);  // automatically zeroed
+  TMatrixD M_tmp(fmax(_nc,_ne), fmax(_nc, _ne));  // automatically zeroed
   for (Int_t i = 0 ; i < _ne ; i++) {
     Double_t temp = 0.0;
     // diagonal element
@@ -312,6 +386,7 @@ void RooUnfoldBayes::getCovariance(Bool_t doUnfoldSystematic)
         * (inv_npec(u,i) - inv_nCi[u]);
       M_tmp(i, i) += temp;
     }
+  if (verbose()>=1) cout << "Ici..." << __LINE__ << endl;
 
     // off-diagonal element
     for (Int_t j = i+1 ; j < _ne ; j++) {
@@ -322,6 +397,7 @@ void RooUnfoldBayes::getCovariance(Bool_t doUnfoldSystematic)
       }
       M_tmp(i, j) =  M_tmp(j, i); // symmetric matrix
     }
+  if (verbose()>=1) cout << "Ici..." << __LINE__ << endl;
   }
 
   // now calculate covariance
@@ -355,6 +431,7 @@ void RooUnfoldBayes::getCovariance(Bool_t doUnfoldSystematic)
     // to get complete covariance add together
   Vc1 *= 1.0/(_nbartrue*_nbartrue);  // divide by _nbartrue*_nbartrue to get probability covariance matrix
   _cov += Vc1;
+  */
 
 }
 

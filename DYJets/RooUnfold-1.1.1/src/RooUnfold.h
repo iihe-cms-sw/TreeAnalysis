@@ -79,6 +79,8 @@ public:
   const    TMatrixD& GetMeasuredCov() const;   // Measured distribution covariance matrix
 
   virtual TVectorD&  Vreco();
+  virtual TMatrixD   GetDataStatCov();
+  virtual TMatrixD   GetMCStatCov(); 
   virtual TMatrixD   Ereco  (ErrorTreatment witherror=kCovariance);
   virtual TVectorD   ErecoV (ErrorTreatment witherror=kErrors);
 
@@ -111,6 +113,8 @@ protected:
   static TMatrixD CutZeros     (const TMatrixD& ereco);
   static TH1D*    HistNoOverflow (const TH1* h, Bool_t overflow);
   static TMatrixD& ABAT (const TMatrixD& a, const TMatrixD& b, TMatrixD& c);
+  static TMatrixD& ABAT (const TMatrixD& a, const TVectorD& b, TMatrixD& c);
+
   static TH1*     Resize (TH1* h, Int_t nx, Int_t ny=-1, Int_t nz=-1);
 
 private:
@@ -140,6 +144,7 @@ protected:
   TH1*     _measmine;      // Owned measured histogram
   TVectorD _rec;           // Reconstructed distribution
   TMatrixD _cov;           // Reconstructed distribution covariance
+  TMatrixD _covres;           // Reconstructed distribution covariance
   TVectorD _variances;     // Error matrix diagonals
   TMatrixD _err_mat;       // Error matrix from toys
   mutable TVectorD* _vMes; //! Cached measured vector

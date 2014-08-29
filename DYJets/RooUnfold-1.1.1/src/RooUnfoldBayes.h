@@ -53,6 +53,8 @@ public:
   virtual void Print (Option_t* option= "") const;
 
   static TMatrixD& H2M (const TH2* h, TMatrixD& m, Bool_t overflow);
+  TMatrixD GetDataStatCov();
+  TMatrixD GetMCStatCov();
 
 protected:
   void Assign (const RooUnfoldBayes& rhs); // implementation of assignment operator
@@ -92,6 +94,8 @@ protected:
   TMatrixD _Vij;          // covariance matrix
   TMatrixD _VnEstij;      // covariance matrix of effects
   TMatrixD _dnCidnEj;     // error propagation matrix
+  TMatrixD _dnCidPjk;     // response error propagation matrix (stack j,k into each column)
+
 
 
 public:
