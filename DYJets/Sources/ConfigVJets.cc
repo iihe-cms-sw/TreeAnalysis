@@ -35,7 +35,8 @@ bool ConfigVJets::readConfigVJets(const char* filename){
         return false;
     }
 
-    std::cout << "Reading configuration from file " << filename << "\n";
+    std::cout << "\n\tReading configuration from file " << filename << "\n";
+    std::cout << "--------------------------------------------------\n";
 
     std::string line;
     while(getline(f, line).good()){
@@ -47,9 +48,11 @@ bool ConfigVJets::readConfigVJets(const char* filename){
         pos = 0;
         value = tokenize(value, "#", pos); //drop comments at end of the line.
         value = trim(value, " \t=");
-        std::cerr << key << ": " << value << std::endl;
+        std::cerr.width(16);
+        std::cerr << std::left << key + ": " << value << std::endl;
         table_[key] = value;
     }
+    std::cout << "--------------------------------------------------\n" << std::endl;
     return true;
 }
 

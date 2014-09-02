@@ -23,7 +23,7 @@ CXX           = clang++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
 CXXFLAGS      += $(ROOTCFLAGS) 
 
-SOURCES = getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
+SOURCES = ArgParser.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
 SOURCES += FinalUnfoldZJets.cc UnfoldingSyst.cc writeFastPlotsTex.cc unfoldingFunctionsZJets.cc UnfoldingZJets.cc RecoComparison.cc
 SOURCES += PlotSettings.cc
 

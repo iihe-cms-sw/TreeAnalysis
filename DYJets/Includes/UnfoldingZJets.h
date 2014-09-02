@@ -3,8 +3,10 @@
 
 #include <tuple>
 #include <RooUnfold.h>
+#include <TCanvas.h>
 
-void UnfoldingZJets(int* argc, char **argv);
+void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
+        int jetPtMin, int jetEtaMax, int *argc, char **argv);
 void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int nIter, TH1D* &hUnfData, TH2D* &hUnfDataStatCov, TH2D* &hUnfMCStatCov, TString name, double integratedLumi);
 TH2D* M2H(TMatrixD m);
 TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, const TH1D* hUnfDataDown, TString name);
