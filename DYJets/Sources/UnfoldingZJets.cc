@@ -3,6 +3,7 @@
 #include <TApplication.h>
 #include <TCanvas.h>
 #include <RooUnfoldBayes.h>
+#include <TParameter.h>
 #include "fileNamesZJets.h"
 #include "getFilesAndHistogramsZJets.h"
 #include "UnfoldingZJets.h"
@@ -10,29 +11,16 @@
 
 using namespace std;
 
-extern int ZJetsFillColor[3];
-extern int ZJetsPdfFillColor[3];
-extern int ZJetsLineColor[3];
-extern int ZJetsMarkerColor[3];
-extern int ZJetsMarkerStyle[3];
-extern int ZJetsFillStyle;
-
-void UnfoldingZJets(int* argc, char **argv)
+void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
+        int jetPtMin, int jetEtaMax, int* argc, char **argv)
 {
     // The TApplication is necessary only if we want to use TCanvas
     TApplication* rootapp = new TApplication("rootapp", argc, argv);
     // We connect the TCanvas close to the terminate of the TApplication
     TCanvas::Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
 
-    TString histoDir = "HistoFilesAugust";
     //TString variable = "FourthJetEta_Zinc4jet";
     TString variable = "ZNGoodJets_Zexc";
-    TString lepSel = "DMu";
-    TString algo = "Bayes";
-    TString outDir = "PNGFilesAugust/FinalUnfoldZJets/";
-    TString energy = "8TeV"; 
-    int jetPtMin = 30;
-    int jetEtaMax = 24;
 
     double integratedLumi = (lepSel == "DMu") ? 19584 : 19618;
     // Here we declare the different arrays of TFiles. 
@@ -53,8 +41,13 @@ void UnfoldingZJets(int* argc, char **argv)
     //----------------------------------------------------------------------------------------- 
     //--- Now run on the different variables ---
     
-    TString outputRootFileName = outDir + lepSel + "_" + energy; 
+    system("mkdir -p " + unfoldDir);
+    TString outputRootFileName = unfoldDir + lepSel; 
     outputRootFileName += "_unfolded_" + variable + "_" + algo;
+    outputRootFileName += "_jetPtMin_";
+    outputRootFileName += jetPtMin;
+    outputRootFileName += "_jetEtaMax_";
+    outputRootFileName += jetEtaMax;
     outputRootFileName += ".root";
     TFile *outputRootFile = new TFile(outputRootFileName, "RECREATE");
             
@@ -99,11 +92,16 @@ void UnfoldingZJets(int* argc, char **argv)
     int nIter = 4;
     //--- Unfold the Data histograms for each systematic ---
     for (unsigned short iSyst = 0; iSyst < 13; ++iSyst) {
+
         //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
-        unsigned short iData = (iSyst < 3) ? iSyst : 0;
+        unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
+
         UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter, hUnfData[iSyst], 
                 hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
-        outputRootFile->cd(); hUnfData[iSyst]->Write();
+
+        //--- save the unfolded histograms ---
+        outputRootFile->cd(); 
+        hUnfData[iSyst]->Write();
     }
     //----------------------------------------------------------------------------------------- 
 
@@ -121,52 +119,39 @@ void UnfoldingZJets(int* argc, char **argv)
     hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
     for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
 
-    
     TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection); 
     crossSectionPlot->Draw();
    
-    ////--- print out break down of errors ---
-    //for (int i = 2; i < 8; ++i) {
-    //    cout << hUnfData[0]->GetBinContent(i);
-    //    for (int j = 0; j < 8; ++j) {
-    //        cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
-    //    }
-    //    cout << endl;
-    //}
-    ////--------------------------------------
+    //--- print out break down of errors ---
+    for (int i = 2; i < 8; ++i) {
+        cout << hUnfData[0]->GetBinContent(i);
+        for (int j = 0; j < 8; ++j) {
+            cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
+        }
+        cout << endl;
+    }
+    //--------------------------------------
 
 
 
+    //--- Save other things --- 
     outputRootFile->cd();
     hRecData[0]->Write("hRecDataCentral");
     hRecSumBg[0]->Write("hRecSumBgCentral");
     hRecDYJets[0]->Write("hRecDYJetsCentral");
     hGenDYJets[0]->Write("hGenDYJetsCentral");
     respDYJets[0]->Write("respDYJetsCentral");
+    for (int i = 0; i < 9; ++i) {
+        hCov[i]->Write();
+    }
+    TParameter<double> pIntegratedLumi("integratedLumi", integratedLumi);
+    pIntegratedLumi.Write();
+    TParameter<int> pNIter("nIter", nIter);
+    pNIter.Write();
     //----------------------------------------------------------------------------------------- 
 
-
-    //TCanvas *can1 = new TCanvas("can1", "can1", 900, 600);
-    //can1->cd();
-    //hUnfData[0]->SetLineColor(kRed);
-    //hUnfData[0]->DrawCopy();
-    //for (unsigned short i = 5; i < 7; ++i) {
-    //    hUnfData[i]->DrawCopy("samehist");
-    //}
-    //can1->Update();
-
-    //TCanvas *can2 = new TCanvas("can2", "can2", 700, 700);
-    //can2->cd();
-    //hUnfDataStatCov[0]->Draw("text");
-    //can2->Update();
-
-    //TCanvas *can3 = new TCanvas("can3", "can3", 700, 700);
-    //can3->cd();
-    //hUnfMCStatCov[0]->Draw("text");
-    //can3->Update();
-    //------------------------------------------------------------------------------------------ 
-
     rootapp->Run(kTRUE);
+
     //--- Close all files ----------------------------------------------------------------------
     outputRootFile->Close();
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
@@ -183,8 +168,18 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
     resp->UseOverflow();
 
     //--- Set the required unfolding algorithm ---
-    RooUnfold::Algorithm alg = RooUnfold::kBayes;
-    if (algo == "SVD") alg = RooUnfold::kSVD;
+    RooUnfold::Algorithm alg;
+    if (algo == "Bayes") {
+        alg = RooUnfold::kBayes;
+    }
+    else if (algo == "SVD") {
+        alg = RooUnfold::kSVD;
+    }
+    else {
+        cerr << "Error: the specified algo: " << algo << " is not implemented!" << endl;
+        cerr << "       I will proceed with kBayes algo" << endl;
+        alg = RooUnfold::kBayes;
+    }
 
     //--- Unfold data minus background ---
     RooUnfold *RObject = RooUnfold::New(alg, resp, hRecData, nIter);

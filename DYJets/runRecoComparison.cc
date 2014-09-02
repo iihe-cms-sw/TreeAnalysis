@@ -1,29 +1,72 @@
 #include <iostream>
 #include <TROOT.h>
 #include <TString.h>
+#include "ArgParser.h"
 #include "ConfigVJets.h"
 #include "getFilesAndHistogramsZJets.h"
 #include "RecoComparison.h"
 
 int main(int argc, char **argv)
 {
-    //--- Loads configuration -----------------------------------------------------
-    ConfigVJets cfg;
-    //-----------------------------------------------------------------------------
-    
     gROOT->SetBatch();
     gErrorIgnoreLevel = kError;
 
-    bool doPASPlots = false;
+    //--- Loads configuration -----------------------------------------------------
+    ConfigVJets cfg;
 
-    if (argc == 2) {
-        TString argPAS = argv[1];
-        if (argPAS == "PAS") doPASPlots = true;
+    TString histoDir    = cfg.getS("histoDir");
+    TString recoCompDir = cfg.getS("recoCompDir");
+    TString lepSel      = cfg.getS("lepSel");
+    int jetPtMin        = cfg.getI("jetPtMin");
+    int jetEtaMax       = cfg.getI("jetEtaMax");
+    bool doPASPlots     = cfg.getB("doPASPlots");
+    
+    //-----------------------------------------------------------------------------
+
+    //--- Parse the arguments -----------------------------------------------------
+    if (argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            TString currentArg = argv[i];
+            //--- possible options ---
+            if (currentArg.BeginsWith("histoDir=")) {
+                getArg(currentArg, histoDir);
+            }
+            else if (currentArg.BeginsWith("recoCompDir=")) {
+                getArg(currentArg, recoCompDir);
+            }
+            else if (currentArg.BeginsWith("lepSel=")) {
+                getArg(currentArg, lepSel);
+            }
+            else if (currentArg.BeginsWith("jetPtMin=")) {
+                getArg(currentArg, jetPtMin);
+            }
+            else if (currentArg.BeginsWith("jetEtaMax=")) {
+                getArg(currentArg, jetEtaMax);
+            }
+            else if (currentArg.BeginsWith("doPASPlots=")) {
+                getArg(currentArg, doPASPlots);
+            }
+            //--- asking for help ---
+            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+                std::cout << "\nUsage: \n\t./runRecoComparison [lepSel=(DMu, DE)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [recoCompDir=(path)] [doPASPlots=(0,1)] [--help]" << std::endl;
+                std::cout << "\neg: ./runRecoComparison lepSel=DMu jetEtaMax=24" << std::endl;
+                std::cout << "\nunspecified options will be read from vjets.cfg\n" << std::endl;
+                return 0;
+            }
+            //--- bad option ---
+            else {
+                std::cerr << "Warning: unknown option \"" << currentArg << "\"" << std::endl;
+                std::cerr << "Please issue ./runRecoComparison --help for more information on possible options" << std::endl;
+                return 0;
+            }
+        }
     }
-    //Plotter("Electrons", 30);
-    //PlotterPAS("Electrons");
-    Plotter(&argc, argv, doPASPlots, "DMu", 30);
-    //PlotterPAS("Muons");
+    std::cout << "\n";
+    
+    if (!histoDir.EndsWith("/")) histoDir += "/";
+    if (!recoCompDir.EndsWith("/")) recoCompDir += "/";
+
+    RecoComparison(doPASPlots, lepSel, histoDir, recoCompDir, jetPtMin, jetEtaMax);
 
     //getStatistics("Electrons", 30);
     //getStatistics("Muons", 30);

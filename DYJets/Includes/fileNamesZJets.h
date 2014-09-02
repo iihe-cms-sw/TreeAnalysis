@@ -18,8 +18,8 @@ const int DYJETS(11); // Exclusive files
 const processInfoStruct Samples[] = {
     //--  Name  ------------------------------- #events -- xsec - branch - xsec error (%) - colorAN - colorPAS - name on legend
     {"Data_dR",                                  1,          1.,      1,         1,             kBlack,    kBlack,    " Data", " Data"},
-    {"DYJetsToLL_FromTau_50toInf_UNFOLDING_dR",  30459503.,  3531.8,  1,         0.033,         kRed+1,    kRed+1,    " DYtautau", " Z/#gamma^{*} #rightarrow #tau#tau"},
-    {"WJetsALL_MIX_UNFOLDING_dR",                76102995.,  36864.,  1,         0.03,          kGreen+3,  kGreen+3,  " WJets", ""},
+    {"DYJetsToLL_FromTau_50toInf_UNFOLDING_dR",  30459503.,  3531.8,  1,         0.033,         kRed+1,    kRed+1,    " DYtautau", " Z/#gamma^{*} #rightarrow #tau#tau and W"},
+    {"WJetsALL_MIX_UNFOLDING_dR",                76102995.,  36864.,  1,         0.03,          kGreen+3,  kRed+1,    " WJets", ""},
     {"TTJets_dR",		                         6923652.,   234.,    1,         0.10,          kPink-6,   kPink-6,   " TTJets", " t#bar{t} and single top"},  
     {"Top_dR",		                             1.,         1,       1,         0.04,          kPink-3,   kPink-6,   " Single Top", ""},
     {"ZZJets2L2Nu_dR",		                     954911.,    17.654,  0.04039,   0.04,          kAzure+4,  kAzure+4,  " ZZJets2L2Nu", " WW, WZ, ZZ"},

@@ -3,6 +3,6 @@
 
 #include <TString.h>
 
-void Plotter(int* argc, char **argv, bool doPASPlots = false, TString lepSel = "DMu", int jetPtMin = 30, int jetEtaMax = 24);
+void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString recoCompDir, int jetPtMin = 30, int jetEtaMax = 24);
 
 #endif

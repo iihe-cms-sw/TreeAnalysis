@@ -19,7 +19,7 @@
 
 using namespace std;
 
-void Plotter(int* argc, char **argv,  bool doPASPlots, TString lepSel, int jetPtMin, int jetEtaMax)
+void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString recoCompDir, int jetPtMin, int jetEtaMax)
 {
     //--- make sure lepSel is short version ---
     if (lepSel == "Muons" || lepSel == "DMu_") lepSel = "DMu";
@@ -30,7 +30,6 @@ void Plotter(int* argc, char **argv,  bool doPASPlots, TString lepSel, int jetPt
     gStyle->SetOptStat(0);
 
     TString energy = "8TeV";
-    TString histoDir = "HistoFilesAugust";
 
     int Colors[NFILESDYJETS];
     TString legendNames[NFILESDYJETS];
@@ -53,7 +52,8 @@ void Plotter(int* argc, char **argv,  bool doPASPlots, TString lepSel, int jetPt
     }
     //-----------------------------------------------------------------------------------------------------
 
-    TString outputFileName = "PNGFilesAugust/";
+    TString outputFileName = recoCompDir;
+    system("mkdir -p " + recoCompDir);
     if (doPASPlots) outputFileName += "PAS_";
     outputFileName += "Comparison_" + lepSel + "_" + energy + "_Data_All_MC";
     outputFileName += "_JetPtMin_";
@@ -154,7 +154,7 @@ void Plotter(int* argc, char **argv,  bool doPASPlots, TString lepSel, int jetPt
                     legend[j]->SetTextSize(0.032);
                 }
                 else {
-                    legend[j] = new TLegend(0.65, 0.60, 0.83, 0.87);
+                    legend[j] = new TLegend(0.63, 0.60, 0.81, 0.87);
                     legend[j]->SetTextSize(0.042);
                 }
                 legend[j]->SetFillStyle(0);

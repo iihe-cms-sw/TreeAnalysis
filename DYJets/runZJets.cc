@@ -33,14 +33,30 @@ int main(int argc, char **argv)
         for (int i = 1; i < argc; ++i) {
             TString currentArg = argv[i];
             //--- possible options ---
-            if (currentArg.BeginsWith("histoDir="))           getArg(currentArg, histoDir);
-            else if (currentArg.BeginsWith("lepSel="))        getArg(currentArg, lepSel);
-            else if (currentArg.BeginsWith("doWhat="))        getArg(currentArg, doWhat);
-            else if (currentArg.BeginsWith("jetPtMin="))      getArg(currentArg, jetPtMin);
-            else if (currentArg.BeginsWith("jetEtaMax="))     getArg(currentArg, jetEtaMax);
-            else if (currentArg.BeginsWith("doSysRunning="))  getArg(currentArg, doSysRunning);
-            else if (currentArg.BeginsWith("doCentral="))     getArg(currentArg, doCentral);
-            else if (currentArg.BeginsWith("do10000Events=")) getArg(currentArg, do10000Events);
+            if (currentArg.BeginsWith("histoDir=")) {
+                getArg(currentArg, histoDir);
+            }
+            else if (currentArg.BeginsWith("lepSel=")) {
+                getArg(currentArg, lepSel);
+            }
+            else if (currentArg.BeginsWith("doWhat=")) {
+                getArg(currentArg, doWhat);
+            }
+            else if (currentArg.BeginsWith("jetPtMin=")) {
+                getArg(currentArg, jetPtMin);
+            }
+            else if (currentArg.BeginsWith("jetEtaMax=")) {
+                getArg(currentArg, jetEtaMax);
+            }
+            else if (currentArg.BeginsWith("doSysRunning=")) {
+                getArg(currentArg, doSysRunning);
+            }
+            else if (currentArg.BeginsWith("doCentral=")) {
+                getArg(currentArg, doCentral);
+            }
+            else if (currentArg.BeginsWith("do10000Events=")) {
+                getArg(currentArg, do10000Events);
+            }
             //--- asking for help ---
             else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: ./runZJets [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
