@@ -3,12 +3,34 @@
 #include <sstream>
 
 
-int fillColor[3] = {kBlue-10, kOrange-2, kGreen-8};
-int pdfFillColor[3] = {kBlue-6, kOrange-5, kGreen-2};
-int lineColor[3] = {kBlue, kOrange+10, kGreen+3};;
-int markerColor[3] = {lineColor[0], lineColor[1], lineColor[2]};
-int markerStyle[3] = {24, 25, 26};
-int fillStyle = 1001;
+int ZJetsFillColor[3] = {kBlue-10, kOrange-2, kGreen-8};
+int ZJetsPdfFillColor[3] = {kBlue-6, kOrange-5, kGreen-2};
+int ZJetsLineColor[3] = {kBlue, kOrange+10, kGreen+3};;
+int ZJetsMarkerColor[3] = {ZJetsLineColor[0], ZJetsLineColor[1], ZJetsLineColor[2]};
+int ZJetsMarkerStyle[3] = {24, 25, 26};
+int ZJetsFillStyle = 1001;
+
+TCanvas* makeZJetsPlots(TH1D *hStat, TH2D *hCovSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
+{
+    TH1D *hSyst = (TH1D*) hStat->Clone();
+    int nBins = hSyst->GetNbinsX();
+
+    for (int i = 1; i <= nBins; ++i) {
+        hSyst->SetBinError(i, sqrt(pow(hStat->GetBinError(i), 2) + hCovSyst->GetBinContent(i, i)));
+    }
+
+    TH1D *hPDFUp = (TH1D*) hStat->Clone();
+    hPDFUp->Scale(1.10);
+    TH1D *hPDFDown = (TH1D*) hStat->Clone();
+    hPDFDown->Scale(0.75);
+
+    TCanvas *can = makeZJetsPlots(hStat, hSyst, hPDFUp, hPDFDown, gen1);
+    can->Update();
+
+    return can;
+
+
+}
 
 TCanvas* makeZJetsPlots(TH1D *hStat, TH1D *hSyst, TH1D *hPDFUp, TH1D *hPDFDown, TH1D *gen1, TH1D *gen2, TH1D *gen3)
 {
@@ -51,11 +73,11 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     //---------------------------------------------
 
     //--- Main Canvas ---
-    string variable = gen1->GetName();
+    std::string variable = gen1->GetName();
     double maximum = gen1->GetMaximum();
     variable = variable.substr(3);
-    string canvasName = "plots_" + variable;
-    TCanvas *plots = new TCanvas(canvasName.c_str(), canvasName.c_str(), 600, 800);
+    TString canvasName = "plots_" + variable;
+    TCanvas *plots = new TCanvas(canvasName, canvasName, 600, 800);
     //-------------------
 
     //--- First Pad ---
@@ -87,7 +109,7 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     configYaxis(grCentralSyst, gen1, gen2, gen3);
     configXaxis(grCentralSyst, gen1);
     grCentralStat->Draw("p");
-    if (canvasName.find("Eta") != string::npos) {
+    if (canvasName.Index("Eta") >= 0) {
         grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
     legend->Draw("same");
@@ -122,11 +144,11 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     ytitle->SetNDC();
     ytitle->SetTextAlign(33);
     ytitle->SetTextAngle(90);
-    string strYtitle = getYaxisTitle(gen1);
-    if (strYtitle.find("eta") != string::npos) {
+    std::string strYtitle = getYaxisTitle(gen1);
+    if (strYtitle.find("eta") != std::string::npos) {
         size_t first = strYtitle.find("#eta");
-        string tmp1 = strYtitle.substr(0, first);
-        string tmp2 = strYtitle.substr(first);
+        std::string tmp1 = strYtitle.substr(0, first);
+        std::string tmp2 = strYtitle.substr(first);
         strYtitle = tmp1 + "|" + tmp2;
         size_t second = strYtitle.find(")");
         tmp1 = strYtitle.substr(0, second+1);
@@ -148,8 +170,8 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     customizeLegend(legend2, 1, numbOfGenerator);
     customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, "Sherpa2/Data", numbOfGenerator, legend2);
     configXaxis(grGen1ToCentral, gen1);
-    grGen1PDFSyst->SetFillStyle(fillStyle);
-    grGen1PDFSyst->SetFillColor(pdfFillColor[0]);
+    grGen1PDFSyst->SetFillStyle(ZJetsFillStyle);
+    grGen1PDFSyst->SetFillColor(ZJetsPdfFillColor[0]);
     grGen1ToCentral->Draw("a2");
     //grGen1PDFSyst->Draw("2");
     grGen1ToCentral->Draw("2");
@@ -172,8 +194,8 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
         customizeLegend(legend3, 2, numbOfGenerator);
         customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, "MadGraph/Data", numbOfGenerator, legend3);
         configXaxis(grGen2ToCentral, gen2);
-        grGen2PDFSyst->SetFillStyle(fillStyle);
-        grGen2PDFSyst->SetFillColor(pdfFillColor[2]);
+        grGen2PDFSyst->SetFillStyle(ZJetsFillStyle);
+        grGen2PDFSyst->SetFillColor(ZJetsPdfFillColor[2]);
         grGen2ToCentral->Draw("a2");
         //grGen2PDFSyst->Draw("2");
         grGen2ToCentral->Draw("2");
@@ -196,8 +218,8 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
         customizeLegend(legend4, 3, numbOfGenerator);
         customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, "Powheg/Data", numbOfGenerator, legend4);
         configXaxis(grGen3ToCentral, gen3);
-        grGen3PDFSyst->SetFillStyle(fillStyle);
-        grGen3PDFSyst->SetFillColor(pdfFillColor[1]);
+        grGen3PDFSyst->SetFillStyle(ZJetsFillStyle);
+        grGen3PDFSyst->SetFillColor(ZJetsPdfFillColor[1]);
         grGen3ToCentral->Draw("a2");
         //grGen3PDFSyst->Draw("2");
         grGen3ToCentral->Draw("2");
@@ -212,18 +234,18 @@ TCanvas* makeZJetsPlots(TGraphAsymmErrors *grCentralStat, TGraphAsymmErrors *grC
     return plots;
 }
 
-string getYaxisTitle(const TH1D *gen1)
+std::string getYaxisTitle(const TH1D *gen1)
 {
-    string title = "";
+    std::string title = "";
     int doXSec = 1, doNormalize = 0;
     if (doXSec || doNormalize) {
-        string xtitle = gen1->GetXaxis()->GetTitle();
-        string shortVar = xtitle.substr(0, xtitle.find(" "));
-        string unit = "";
-        if (xtitle.find("#eta") != string::npos) {
+        std::string xtitle = gen1->GetXaxis()->GetTitle();
+        std::string shortVar = xtitle.substr(0, xtitle.find(" "));
+        std::string unit = "";
+        if (xtitle.find("#eta") != std::string::npos) {
             xtitle = "|" + xtitle + "|";
         }
-        if (xtitle.find("[") != string::npos){
+        if (xtitle.find("[") != std::string::npos){
             size_t begin = xtitle.find("[") + 1;
             unit = xtitle.substr(begin);
             unit = unit.substr(0, unit.find("]"));
@@ -261,13 +283,13 @@ void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
     double minX, tmp;
     double maxX;
     int firstBin = 0;
-    string variable = gen1->GetName();
-    if (variable.find("ZNGoodJets") != string::npos) firstBin = 1;
+    TString variable = gen1->GetName();
+    if (variable.Index("ZNGoodJets") >= 0) firstBin = 1;
     grCentralSyst->GetPoint(firstBin, minX, tmp);
     grCentralSyst->GetPoint(grCentralSyst->GetN()-1, maxX, tmp);
     minX -= grCentralSyst->GetErrorXlow(firstBin); 
     maxX += grCentralSyst->GetErrorXhigh(grCentralSyst->GetN()-1);
-    if (variable.find("ZNGoodJets_Zexc") != string::npos) {
+    if (variable.Index("ZNGoodJets_Zexc") >= 0) {
         grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
         grCentralSyst->GetXaxis()->SetBinLabel(1, "= 1");
         grCentralSyst->GetXaxis()->SetBinLabel(2, "= 2");
@@ -279,7 +301,7 @@ void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
         grCentralSyst->GetXaxis()->SetLabelSize(0.15);
         grCentralSyst->GetXaxis()->SetLabelOffset(0.02);
     }
-    else if (variable.find("ZNGoodJets_Zinc") != string::npos) {
+    else if (variable.Index("ZNGoodJets_Zinc") >= 0) {
         grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
         grCentralSyst->GetXaxis()->SetBinLabel(1, "#geq 1");
         grCentralSyst->GetXaxis()->SetBinLabel(2, "#geq 2");
@@ -292,33 +314,32 @@ void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
         grCentralSyst->GetXaxis()->SetLabelOffset(0.02);
     }
     grCentralSyst->GetXaxis()->SetRangeUser(minX, maxX);
-    string xtitle = gen1->GetXaxis()->GetTitle();
-    if (xtitle.find("#eta") != string::npos) xtitle = "|" + xtitle + "|";
-    if (xtitle.find("H_{T}") != string::npos) {
-        string njets;
-        if (variable.find("Zinc1jet") != string::npos) njets = "1";
-        else if (variable.find("Zinc2jet") != string::npos) njets = "2";
-        else if (variable.find("Zinc3jet") != string::npos) njets = "3";
-        else if (variable.find("Zinc4jet") != string::npos) njets = "4";
-        else if (variable.find("Zinc5jet") != string::npos) njets = "5";
-        else if (variable.find("Zinc6jet") != string::npos) njets = "6";
-        else if (variable.find("Zinc7jet") != string::npos) njets = "7";
-        else if (variable.find("Zinc8jet") != string::npos) njets = "8";
+    TString xtitle = gen1->GetXaxis()->GetTitle();
+    if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
+    if (xtitle.Index("H_{T}") >= 0) {
+        TString njets;
+        if (variable.Index("Zinc1jet") >= 0) njets = "1";
+        else if (variable.Index("Zinc2jet") >= 0) njets = "2";
+        else if (variable.Index("Zinc3jet") >= 0) njets = "3";
+        else if (variable.Index("Zinc4jet") >= 0) njets = "4";
+        else if (variable.Index("Zinc5jet") >= 0) njets = "5";
+        else if (variable.Index("Zinc6jet") >= 0) njets = "6";
+        else if (variable.Index("Zinc7jet") >= 0) njets = "7";
+        else if (variable.Index("Zinc8jet") >= 0) njets = "8";
         xtitle = "H_{T}, N_{jets} #geq " + njets + " [GeV]";
     }
-    grCentralSyst->GetXaxis()->SetTitle(xtitle.c_str());
+    grCentralSyst->GetXaxis()->SetTitle(xtitle);
     //-----------------------------------------
 
 }
 
-void setAndDrawTPad(string canvasName, TPad *plot, int plotNumber, int numbOfGenerator)
+void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGenerator)
 {
     if (numbOfGenerator == 1) {
         if (plotNumber == 1) {
             plot->SetPad(0.01, 0.35, 0.99, 0.99);
             plot->SetTopMargin(0.11);
             plot->SetBottomMargin(0.005);
-            if (canvasName.find("Eta") == string::npos) plot->SetLogy();
         }
         else if (plotNumber == 2) {
             plot->SetPad(0.01, 0.01, 0.99, 0.35);
@@ -331,7 +352,6 @@ void setAndDrawTPad(string canvasName, TPad *plot, int plotNumber, int numbOfGen
             plot->SetPad(0.01, 0.45, 0.99, 0.99);
             plot->SetTopMargin(0.11);
             plot->SetBottomMargin(0.005);
-            if (canvasName.find("Eta") == string::npos) plot->SetLogy();
         }
         else if (plotNumber == 2) {
             plot->SetPad(0.01, 0.27, 0.99, 0.45);
@@ -350,7 +370,6 @@ void setAndDrawTPad(string canvasName, TPad *plot, int plotNumber, int numbOfGen
             plot->SetPad(0.01, 0.55, 0.99, 0.99);
             plot->SetTopMargin(0.11);
             plot->SetBottomMargin(0.005);
-            if (canvasName.find("Eta") == string::npos) plot->SetLogy();
         }
         else if (plotNumber == 2) {
             plot->SetPad(0.01, 0.39, 0.99, 0.55);
@@ -368,6 +387,9 @@ void setAndDrawTPad(string canvasName, TPad *plot, int plotNumber, int numbOfGen
             plot->SetBottomMargin(0.3);
         }
     }
+
+
+    if (plotNumber == 1 && canvasName.Index("Eta") < 0) plot->SetLogy();
     plot->SetRightMargin(0.1);
     plot->SetFillStyle(0);
     plot->Draw();
@@ -403,7 +425,7 @@ void customizeLegend(TLegend *legend, int numbOfGenerator)
 void customizeLegend(TLegend *legend, int genNumb, int numbOfGenerator)
 {
     legend->SetFillColor(0);
-    legend->SetFillStyle(fillStyle);
+    legend->SetFillStyle(ZJetsFillStyle);
     legend->SetBorderSize(0);
     //legend->SetTextSize(.075);
     legend->SetTextSize(.12);
@@ -424,7 +446,7 @@ void customizeCentral(TGraphAsymmErrors *grCentral, bool ratio)
     if (ratio) grCentral->SetMarkerSize(0);
 }
 
-void customizeCentral(TGraphAsymmErrors *grCentral, TLegend *legend, string legText)
+void customizeCentral(TGraphAsymmErrors *grCentral, TLegend *legend, TString legText)
 {
     grCentral->SetLineColor(kBlack);
     grCentral->SetLineWidth(2);
@@ -435,58 +457,58 @@ void customizeCentral(TGraphAsymmErrors *grCentral, TLegend *legend, string legT
     grCentral->SetFillStyle(3354);
     grCentral->SetMarkerColor(kBlack);
 
-    grCentral->GetXaxis()->SetTitleOffset(1.1);
+    grCentral->GetXaxis()->SetTitleOffset(1.0);
     grCentral->GetXaxis()->SetTitleSize(0.05);
     grCentral->GetXaxis()->SetLabelSize(0.0);
     grCentral->GetXaxis()->SetLabelFont(42);
     grCentral->GetXaxis()->SetTitleFont(42);
 
-    grCentral->GetYaxis()->SetTitleOffset(1.);
+    grCentral->GetYaxis()->SetTitleOffset(1.1);
     grCentral->GetYaxis()->SetTitleSize(0.07);
-    grCentral->GetYaxis()->SetLabelSize(0.06);
+    grCentral->GetYaxis()->SetLabelSize(0.04);
     grCentral->GetYaxis()->SetLabelFont(42);
     grCentral->GetYaxis()->SetTitleFont(42);
 
     grCentral->SetTitle();
     grCentral->GetXaxis()->SetTitle();
-    if (legend) legend->AddEntry(grCentral, legText.c_str(), "PLEF");
+    if (legend) legend->AddEntry(grCentral, legText, "PLEF");
 
 }
 
-void customizeGenHist(TH1D *gen, int genNumb, TLegend *legend, string legText)
+void customizeGenHist(TH1D *gen, int genNumb, TLegend *legend, TString legText)
 {
 
     //--- Customize gen Sherpa ---
-    gen->SetFillColor(fillColor[genNumb-1]);
-    gen->SetFillStyle(fillStyle);
-    gen->SetLineColor(lineColor[genNumb-1]);
+    gen->SetFillColor(ZJetsFillColor[genNumb-1]);
+    gen->SetFillStyle(ZJetsFillStyle);
+    gen->SetLineColor(ZJetsLineColor[genNumb-1]);
     gen->SetLineWidth(2);
-    gen->SetMarkerColor(markerColor[genNumb-1]);
-    gen->SetMarkerStyle(markerStyle[genNumb-1]);
-    TLegendEntry *le = legend->AddEntry(gen, legText.c_str(), "pefl");
-    le->SetFillColor(fillColor[genNumb-1]);
-    le->SetFillStyle(fillStyle);
-    le->SetLineColor(lineColor[genNumb-1]);
-    le->SetMarkerColor(markerColor[genNumb-1]);
-    le->SetMarkerStyle(markerStyle[genNumb-1]);
+    gen->SetMarkerColor(ZJetsMarkerColor[genNumb-1]);
+    gen->SetMarkerStyle(ZJetsMarkerStyle[genNumb-1]);
+    TLegendEntry *le = legend->AddEntry(gen, legText, "pefl");
+    le->SetFillColor(ZJetsFillColor[genNumb-1]);
+    le->SetFillStyle(ZJetsFillStyle);
+    le->SetLineColor(ZJetsLineColor[genNumb-1]);
+    le->SetMarkerColor(ZJetsMarkerColor[genNumb-1]);
+    le->SetMarkerStyle(ZJetsMarkerStyle[genNumb-1]);
 }
 
-void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, string yTitle, int numbOfGenerator, TLegend *legend)
+void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, TString yTitle, int numbOfGenerator, TLegend *legend)
 {
     gen->GetYaxis()->SetRangeUser(0.2, 1.8);
     gen->GetYaxis()->SetNdivisions(507);
     gen->GetYaxis()->SetLabelSize(0.15);
-    gen->GetYaxis()->SetTitle(yTitle.c_str());
+    gen->GetYaxis()->SetTitle(yTitle);
     gen->GetYaxis()->SetTitleSize(0.14);
-    gen->GetYaxis()->SetTitleOffset(0.5);
+    gen->GetYaxis()->SetTitleOffset(0.45);
     gen->GetYaxis()->CenterTitle();
     gen->SetTitle();
-    gen->SetFillColor(fillColor[genNum-1]);
-    gen->SetFillStyle(fillStyle);
-    gen->SetLineColor(lineColor[genNum-1]);
+    gen->SetFillColor(ZJetsFillColor[genNum-1]);
+    gen->SetFillStyle(ZJetsFillStyle);
+    gen->SetLineColor(ZJetsLineColor[genNum-1]);
     gen->SetLineWidth(2);
-    gen->SetMarkerColor(lineColor[genNum-1]);
-    gen->SetMarkerStyle(markerStyle[genNum-1]);
+    gen->SetMarkerColor(ZJetsLineColor[genNum-1]);
+    gen->SetMarkerStyle(ZJetsMarkerStyle[genNum-1]);
 
     if (genNum == numbOfGenerator) {
         gen->GetYaxis()->SetLabelSize(0.09);
@@ -495,7 +517,7 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
         gen->GetYaxis()->SetTitleSize(0.08);
         if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleSize(0.09);
         if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.1);
-        gen->GetYaxis()->SetTitleOffset(0.8);
+        gen->GetYaxis()->SetTitleOffset(0.63);
         if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleOffset(0.75);
         if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.7);
         gen->GetXaxis()->SetLabelSize(0.10);
@@ -508,12 +530,12 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
 
     if (legend) {
         TLegendEntry *leEntry = legend->AddEntry(gen, "Stat. unc. (gen)", "f");
-        leEntry->SetFillColor(fillColor[genNum-1]);
-        leEntry->SetFillStyle(fillStyle);
+        leEntry->SetFillColor(ZJetsFillColor[genNum-1]);
+        leEntry->SetFillStyle(ZJetsFillStyle);
         //if (yTitle.find("MadGraph") == string::npos) {
         //    TLegendEntry *leEntry2 = legend->AddEntry(gPDF, "Tot. unc. (gen)", "f");
-        //    leEntry2->SetFillColor(pdfFillColor[genNum-1]);
-        //    leEntry2->SetFillStyle(fillStyle);
+        //    leEntry2->SetFillColor(ZJetsPdfFillColor[genNum-1]);
+        //    leEntry2->SetFillStyle(ZJetsFillStyle);
         //}
     }
 

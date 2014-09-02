@@ -412,7 +412,7 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genFirstJetPt_Zexc1jet              = newTH1D("genFirstJetPt_Zexc1jet",              "gen 1st jet p_{T} (N_{jets} = 1)",            "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet);
     genSecondJetPt_Zexc2jet             = newTH1D("genSecondJetPt_Zexc2jet",             "gen 2nd jet p_{T} (N_{jets} = 2)",            "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet);
 
-    ZNGoodJets_Zexc = newTH1D("ZNGoodJets_Zexc","Jet Counter (excl.)", "N_{jets}", 8, -0.5, 7.5);
+    ZNGoodJets_Zexc = newTH1D("ZNGoodJets_Zexc","Jet Multiplicity (excl.)", "N_{jets}", 8, -0.5, 7.5);
     ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(1, "= 0");
     ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(2, "= 1");
     ZNGoodJets_Zexc->GetXaxis()->SetBinLabel(3, "= 2");

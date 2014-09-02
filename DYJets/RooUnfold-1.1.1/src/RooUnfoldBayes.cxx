@@ -112,7 +112,7 @@ void RooUnfoldBayes::Unfold()
 
 TMatrixD RooUnfoldBayes::GetDataStatCov()
 {
-  std::cout << "Only data variation" << std::endl;  
+  if (verbose() >= 1) cout << "Only data variation" << endl;  
   TMatrixD DataStatCov_m(_nt, _nt);
   if (!_haveCov) GetCov();
   DataStatCov_m =_cov;
@@ -121,7 +121,7 @@ TMatrixD RooUnfoldBayes::GetDataStatCov()
 
 TMatrixD RooUnfoldBayes::GetMCStatCov()
 {
-  std::cout << "Only MC variation" << std::endl;  
+  if (verbose() >= 1) cout << "Only MC variation" << endl;  
   TMatrixD MCStatCov_m(_nt, _nt);
   getCovariance(kTRUE);
   _covres.ResizeTo(_nt, _nt);  // drop fakes in final bin
