@@ -316,19 +316,19 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     SixthJetEtaFull_Zinc6jet                = newTH1D("SixthJetEtaFull_Zinc6jet",                "#geq 6th jets #eta (N_{jets} #geq 6)",        "#eta(j_{6})",   4,-2.4, 2.4);
 
 
-    FirstJetEta_Zinc1jet                = newTH1D("FirstJetEta_Zinc1jet",                "1st jet #eta (N_{jets} #geq 1)",              "#eta(j_{1})",  32, 0., 2.4);  
-    SecondJetEta_Zinc2jet               = newTH1D("SecondJetEta_Zinc2jet",               "2nd jet #eta (N_{jets} #geq 2)",              "#eta(j_{2})",  32, 0., 2.4);  
-    ThirdJetEta_Zinc3jet                = newTH1D("ThirdJetEta_Zinc3jet",                "3rd jet #eta (N_{jets} #geq 3)",              "#eta(j_{3})",  24, 0., 2.4);  
-    FourthJetEta_Zinc4jet               = newTH1D("FourthJetEta_Zinc4jet",               "4th jet #eta (N_{jets} #geq 4)",              "#eta(j_{4})",  12, 0., 2.4);  
-    FifthJetEta_Zinc5jet                = newTH1D("FifthJetEta_Zinc5jet",                "5th jet #eta (N_{jets} #geq 5)",              "#eta(j_{5})",   6, 0., 2.4);  
-    SixthJetEta_Zinc6jet                = newTH1D("SixthJetEta_Zinc6jet",                "6th jet #eta (N_{jets} #geq 6)",              "#eta(j_{6})",   6, 0., 2.4);  
+    FirstJetEta_Zinc1jet                = newTH1D("FirstJetEta_Zinc1jet",                "1st jet #eta (N_{jets} #geq 1)",              "|#eta(j_{1})|",  32, 0., 2.4);  
+    SecondJetEta_Zinc2jet               = newTH1D("SecondJetEta_Zinc2jet",               "2nd jet #eta (N_{jets} #geq 2)",              "|#eta(j_{2})|",  32, 0., 2.4);  
+    ThirdJetEta_Zinc3jet                = newTH1D("ThirdJetEta_Zinc3jet",                "3rd jet #eta (N_{jets} #geq 3)",              "|#eta(j_{3})|",  24, 0., 2.4);  
+    FourthJetEta_Zinc4jet               = newTH1D("FourthJetEta_Zinc4jet",               "4th jet #eta (N_{jets} #geq 4)",              "|#eta(j_{4})|",  12, 0., 2.4);  
+    FifthJetEta_Zinc5jet                = newTH1D("FifthJetEta_Zinc5jet",                "5th jet #eta (N_{jets} #geq 5)",              "|#eta(j_{5})|",   6, 0., 2.4);  
+    SixthJetEta_Zinc6jet                = newTH1D("SixthJetEta_Zinc6jet",                "6th jet #eta (N_{jets} #geq 6)",              "|#eta(j_{6})|",   6, 0., 2.4);  
 
-    genFirstJetEta_Zinc1jet             = newTH1D("genFirstJetEta_Zinc1jet",             "gen 1st jet #eta (N_{jets} #geq 1)",          "#eta(j_{1})",  32, 0., 2.4);
-    genSecondJetEta_Zinc2jet            = newTH1D("genSecondJetEta_Zinc2jet",            "gen 2nd jet #eta (N_{jets} #geq 2)",          "#eta(j_{2})",  32, 0., 2.4);
-    genThirdJetEta_Zinc3jet             = newTH1D("genThirdJetEta_Zinc3jet",             "gen 3rd jet #eta (N_{jets} #geq 3)",          "#eta(j_{3})",  24, 0., 2.4);
-    genFourthJetEta_Zinc4jet            = newTH1D("genFourthJetEta_Zinc4jet",            "gen 4th jet #eta (N_{jets} #geq 4)",          "#eta(j_{4})",  12, 0., 2.4);
-    genFifthJetEta_Zinc5jet             = newTH1D("genFifthJetEta_Zinc5jet",             "gen 5th jet #eta (N_{jets} #geq 5)",          "#eta(j_{5})",   6, 0., 2.4);
-    genSixthJetEta_Zinc6jet             = newTH1D("genSixthJetEta_Zinc6jet",             "gen 6th jet #eta (N_{jets} #geq 6)",          "#eta(j_{6})",   6, 0., 2.4);
+    genFirstJetEta_Zinc1jet             = newTH1D("genFirstJetEta_Zinc1jet",             "gen 1st jet #eta (N_{jets} #geq 1)",          "|#eta(j_{1})|",  32, 0., 2.4);
+    genSecondJetEta_Zinc2jet            = newTH1D("genSecondJetEta_Zinc2jet",            "gen 2nd jet #eta (N_{jets} #geq 2)",          "|#eta(j_{2})|",  32, 0., 2.4);
+    genThirdJetEta_Zinc3jet             = newTH1D("genThirdJetEta_Zinc3jet",             "gen 3rd jet #eta (N_{jets} #geq 3)",          "|#eta(j_{3})|",  24, 0., 2.4);
+    genFourthJetEta_Zinc4jet            = newTH1D("genFourthJetEta_Zinc4jet",            "gen 4th jet #eta (N_{jets} #geq 4)",          "|#eta(j_{4})|",  12, 0., 2.4);
+    genFifthJetEta_Zinc5jet             = newTH1D("genFifthJetEta_Zinc5jet",             "gen 5th jet #eta (N_{jets} #geq 5)",          "|#eta(j_{5})|",   6, 0., 2.4);
+    genSixthJetEta_Zinc6jet             = newTH1D("genSixthJetEta_Zinc6jet",             "gen 6th jet #eta (N_{jets} #geq 6)",          "|#eta(j_{6})|",   6, 0., 2.4);
 
 
     FirstJetEta_Zexc1jet                = newTH1D("FirstJetEta_Zexc1jet",                "1st jet #eta (N_{jets} = 1)",                 "#eta(j_{1})",  47,-4.7, 4.7);  

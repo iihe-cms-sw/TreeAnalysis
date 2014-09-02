@@ -25,7 +25,7 @@ CXXFLAGS      += $(ROOTCFLAGS)
 
 SOURCES = getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
 SOURCES += FinalUnfoldZJets.cc UnfoldingSyst.cc writeFastPlotsTex.cc unfoldingFunctionsZJets.cc UnfoldingZJets.cc RecoComparison.cc
-SOURCES += makeZJetsPlots.cc
+SOURCES += PlotSettings.cc
 
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)

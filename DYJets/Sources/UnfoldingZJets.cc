@@ -6,7 +6,7 @@
 #include "fileNamesZJets.h"
 #include "getFilesAndHistogramsZJets.h"
 #include "UnfoldingZJets.h"
-#include "makeZJetsPlots.h"
+#include "PlotSettings.h"
 
 using namespace std;
 
@@ -323,7 +323,9 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
     }
 
     TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
+    grCentralStat->SetName("gr" + variable + "CentralStatError"); 
     TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
+    grCentralSyst->SetName("gr" + variable + "CentralTotError"); 
     TGraphAsymmErrors *grCentralStatRatio = createRatioGraph(grCentralStat);
     TGraphAsymmErrors *grCentralSystRatio = createRatioGraph(grCentralSyst);
     TGraphAsymmErrors *grGen1ToCentral = createGenToCentral(hGen, grCentralStat);
@@ -385,8 +387,6 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
         strYtitle = tmp1 + "|" + tmp2;
     }
     ytitle->DrawLatex(0.008,0.91,strYtitle.c_str());
-    //-----------------------
-
     //--- End Of first Pad ---
     
     //--- Second Pad ---
@@ -403,7 +403,6 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
     grGen1PDFSyst->SetFillStyle(1001);
     grGen1PDFSyst->SetFillColor(kBlue-6);
     grGen1ToCentral->Draw("a2");
-    //grGen1PDFSyst->Draw("2");
     grGen1ToCentral->Draw("2");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
