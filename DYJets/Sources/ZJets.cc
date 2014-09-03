@@ -1534,23 +1534,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         listOfHistograms[i]->Write();        
     }
 
-    //--- Save all the RooUnfoldResponses ---
-    //if (hasGenInfo && hasRecoInfo){
-    //    unsigned short numbOfResponses = listOfResponses.size();
-    //    for (unsigned short i(0); i < numbOfResponses; i++){
-    //        string currentName = listOfResponses[i]->GetName();
-    //        currentName = currentName.substr(0, currentName.find("_gen"));
-    //        string savingName = "response" + currentName;
-    //        outputFile->WriteTObject(listOfResponses[i], savingName.c_str());
-    //    }
-    //}
     outputFile->Write();
     outputFile->Close();
 
-    // let's delete all histograms, just to be safe
-    for (unsigned short i(0); i < numbOfHistograms; i++){
-        delete listOfHistograms[i];
-    }
     //==========================================================================================================//
 
 

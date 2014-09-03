@@ -4,7 +4,6 @@
 #include <iostream>
 #include <TH1.h>
 #include <TH2.h>
-#include <RooUnfoldResponse.h>
 #include "TAxis.h" 
 #include <TArray.h>
 #include <vector>
@@ -16,7 +15,6 @@ class HistoSetZJets {
     public:
 
         vector<TH1*> listOfHistograms;
-        vector<RooUnfoldResponse*> listOfResponses;
         HistoSetZJets(TString leptonFlavor = "DMu");
         ~HistoSetZJets();
 
@@ -29,15 +27,6 @@ class HistoSetZJets {
         TH2D* newTH2D(string, string, int, double*, int, double, double);
         TH2D* newTH2D(string, string, int, double, double, int, double*);
         TH2D* newTH2D(string, string, int, double, double, int, double, double);
-        int NbinsEta2Dtest; 
-        static const int NbinsEta2D = 9 ;
-        double j_pT_range[NbinsEta2D];
-        double j_Y_range[NbinsEta2D];
-
-
-        //    const int NbinsEta2D(9) ;
-        RooUnfoldResponse* newResp(TH1D*, TH1D*);
-        RooUnfoldResponse* newResp(TH2D*, TH2D*);
 
         TH1D *NumberPFcandidates;
         TH1D *ZMass_lowDeltaR;
@@ -552,88 +541,6 @@ class HistoSetZJets {
         TH2D *hresponseFifthJetEta_Zinc5jet; 
 
         TH2D *hresponseJetsMass_Zinc2jet;
-
-        
-
-        //--- RooUnfoldResponses ---
-        //RooUnfoldResponse *responseZNGoodJets_Zexc;              
-        //RooUnfoldResponse *responseZMass;                      
-        //RooUnfoldResponse *responseTwoJetsPtDiffExc;           
-        //RooUnfoldResponse *responseTwoJetsPtDiffInc;           
-        //RooUnfoldResponse *responseBestTwoJetsPtDiffInc;       
-        //RooUnfoldResponse *responseTwoJetsPtDiffLowPtExc;        
-        //RooUnfoldResponse *responseTwoJetsPtDiffLowPtInc;      
-        //RooUnfoldResponse *responseBestTwoJetsPtDiffLowPtInc;  
-        //RooUnfoldResponse *responseJetsMassExc;                
-        //RooUnfoldResponse *responseJetsMassInc;                
-        //RooUnfoldResponse *responseBestJetsMassInc;            
-        //RooUnfoldResponse *responseJetsMassLowPtExc;           
-        //RooUnfoldResponse *responseJetsMassLowPtInc;           
-        //RooUnfoldResponse *responseBestJetsMassLowPtInc;       
-
-        //RooUnfoldResponse *responseFirstJetPt;                 
-        //RooUnfoldResponse *responseSecondJetPt;                
-        //RooUnfoldResponse *responseThirdJetPt;                 
-        //RooUnfoldResponse *responseFourthJetPt;                
-        //RooUnfoldResponse *responseFifthJetPt;                 
-        //RooUnfoldResponse *responseSixthJetPt;                 
-
-        //RooUnfoldResponse *responseFirstJetEta;                
-        //RooUnfoldResponse *responseSecondJetEta;               
-        //RooUnfoldResponse *responseThirdJetEta;                
-        //RooUnfoldResponse *responseFourthJetEta;               
-        //RooUnfoldResponse *responseFifthJetEta;                
-        //RooUnfoldResponse *responseSixthJetEta;                
-
-        //RooUnfoldResponse *responseJetsHt1Jet;                 
-        //RooUnfoldResponse *responseJetsHt2Jet;                 
-        //RooUnfoldResponse *responseJetsHt3Jet;                 
-        //RooUnfoldResponse *responseJetsHt4Jet;                 
-        //RooUnfoldResponse *responseJetsHt5Jet;                 
-        //RooUnfoldResponse *responseJetsHt6Jet;                 
-
-        //RooUnfoldResponse *responseSpTJets_Zexc2jet;           
-        //RooUnfoldResponse *responseSpTJets_Zinc2jet;           
-        //RooUnfoldResponse *responseBestSpTJets_Zinc2jet;       
-        //RooUnfoldResponse *responseSpTJets_LowPt_Zexc2jet;     
-        //RooUnfoldResponse *responseSpTJets_LowPt_Zinc2jet;     
-        //RooUnfoldResponse *responseBestSpTJets_LowPt_Zinc2jet; 
-        //RooUnfoldResponse *responseSpT_Zexc2jet;               
-        //RooUnfoldResponse *responseSpT_Zinc2jet;               
-        //RooUnfoldResponse *responseBestSpT_Zinc2jet;           
-        //RooUnfoldResponse *responseSpT_LowPt_Zexc2jet;         
-        //RooUnfoldResponse *responseSpT_LowPt_Zinc2jet;         
-        //RooUnfoldResponse *responseBestSpT_LowPt_Zinc2jet;     
-        //RooUnfoldResponse *responsedPhiJets_Zexc2jet;          
-        //RooUnfoldResponse *responsedPhiJets_Zinc2jet;          
-        //RooUnfoldResponse *responseBestdPhiJets_Zinc2jet;      
-        //RooUnfoldResponse *responsedPhiJets_LowPt_Zexc2jet;    
-        //RooUnfoldResponse *responsedPhiJets_LowPt_Zinc2jet;    
-        //RooUnfoldResponse *responseBestdPhiJets_LowPt_Zinc2jet;
-        //RooUnfoldResponse *responsePHI_Zexc2jet;               
-        //RooUnfoldResponse *responsePHI_Zinc2jet;               
-        //RooUnfoldResponse *responseBestPHI_Zinc2jet;           
-        //RooUnfoldResponse *responsePHI_LowPt_Zexc2jet;         
-        //RooUnfoldResponse *responsePHI_LowPt_Zinc2jet;         
-        //RooUnfoldResponse *responseBestPHI_LowPt_Zinc2jet;     
-        //RooUnfoldResponse *responsePHI_T_Zexc2jet;             
-        //RooUnfoldResponse *responsePHI_T_Zinc2jet;             
-        //RooUnfoldResponse *responseBestPHI_T_Zinc2jet;         
-        //RooUnfoldResponse *responsePHI_T_LowPt_Zexc2jet;       
-        //RooUnfoldResponse *responsePHI_T_LowPt_Zinc2jet;       
-        //RooUnfoldResponse *responseBestPHI_T_LowPt_Zinc2jet;   
-        //RooUnfoldResponse *responseSPhi_Zexc2jet;              
-        //RooUnfoldResponse *responseSPhi_Zinc2jet;              
-        //RooUnfoldResponse *responsedEtaJets_Zexc2jet;          
-        //RooUnfoldResponse *responsedEtaJets_Zinc2jet;          
-        //RooUnfoldResponse *responseBestSPhi_Zinc2jet;          
-        //RooUnfoldResponse *responseSPhi_LowPt_Zexc2jet;        
-        //RooUnfoldResponse *responseSPhi_LowPt_Zinc2jet;        
-        //RooUnfoldResponse *responseBestSPhi_LowPt_Zinc2jet;    
-
-        //// vector boson and single jet 
-        //RooUnfoldResponse *responsedEtaBosonJet_Zexc1;
-        //RooUnfoldResponse *responsedEtaBosonJet_Zinc1;
 
 };
 
