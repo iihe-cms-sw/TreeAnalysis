@@ -1534,6 +1534,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         listOfHistograms[i]->Write();        
     }
 
+    //--- let's delete all histograms --- 
+    for (unsigned short i(0); i < numbOfHistograms; i++){
+        delete listOfHistograms[i];
+    }
+
     outputFile->Write();
     outputFile->Close();
 

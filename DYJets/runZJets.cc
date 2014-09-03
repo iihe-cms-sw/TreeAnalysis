@@ -133,7 +133,6 @@ int main(int argc, char **argv)
 
 
     //--- starting the real processing -------------------------------------
-    cout << __DATE__ << " at " << __TIME__ << endl;
 
     if (doWhat == "DATA" || doWhat == "ALL") {
         hasRecoInfo = true;
@@ -233,7 +232,6 @@ int main(int argc, char **argv)
         }
     }
 
-    cout << __DATE__ << " at " << __TIME__ << endl;
     //---------------------------------------------------------------------
 
     return 0;

@@ -34,9 +34,9 @@ const processInfoStruct Samples[] = {
 
 //--- first element must point to the data
 //--- last element must point to the MC Signal
-const int NFILESDYJETS(12);
-const int NBGDYJETS(NFILESDYJETS-2);
-const int FilesDYJets[NFILESDYJETS] = {0, 1, 10, 4, 9, 3, 5, 8, 7, 6, 2, 11};
+const unsigned int NFILESDYJETS(12);
+const unsigned int NBGDYJETS(NFILESDYJETS-2);
+const unsigned int FilesDYJets[NFILESDYJETS] = {0, 1, 10, 4, 9, 3, 5, 8, 7, 6, 2, 11};
 
 const TString DYPOWHEGFILENAME("DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ");
 const TString DYSHERPAFILENAME("DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL");

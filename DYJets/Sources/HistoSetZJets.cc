@@ -10,11 +10,6 @@ using namespace std;
 
 HistoSetZJets::~HistoSetZJets()
 {
-    //--- let's delete all histograms --- 
-    unsigned int numbOfHistograms = listOfHistograms.size();
-    for (unsigned short i(0); i < numbOfHistograms; i++){
-        delete listOfHistograms[i];
-    }
 }
 
 vector<double> HistoSetZJets::makeVector(int num, ...)
