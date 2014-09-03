@@ -19,7 +19,7 @@ LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 SRCDIR = Sources/
 INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/usr/local/include
 
-CXX           = clang++ -std=c++0x 
+CXX           = g++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
 CXXFLAGS      += $(ROOTCFLAGS) 
 
@@ -32,34 +32,34 @@ OBJLIST = $(SRCLIST:.cc=.o)
 
 # ===========================================================================
 runZJets: $(OBJLIST) runZJets.o
-	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
 
 .cc.o:
-	clang++ -std=c++0x -c $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -c $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 runZJets.o: runZJets.cc
-	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR) 
+	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR) 
 
 runRecoComparison: $(OBJLIST) runRecoComparison.o
-	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runRecoComparison $(ROOTGLIBS) $(LIBLIST)
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runRecoComparison $(ROOTGLIBS) $(LIBLIST)
 
 runRecoComparison.o: runRecoComparison.cc
-	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 runUnfoldingZJets: $(OBJLIST) runUnfoldingZJets.o
-	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runUnfoldingZJets $(ROOTGLIBS) $(LIBLIST)
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runUnfoldingZJets $(ROOTGLIBS) $(LIBLIST)
 
 runUnfoldingZJets.o: runUnfoldingZJets.cc
-	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 runFinalUnfold: $(OBJLIST) runFinalUnfold.o
-	clang++ -std=c++0x $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runFinalUnfold $(ROOTGLIBS) $(LIBLIST)
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runFinalUnfold $(ROOTGLIBS) $(LIBLIST)
 
 runFinalUnfold.o: runFinalUnfold.cc
-	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 dispatcher: runZJets dispatcher.cc
-	g++ -std=c++0x -pthread dispatcher.cc -o dispatcher
+	$(CXX) -pthread dispatcher.cc -o dispatcher
 
 # =========================================================================== 
 clean: 
