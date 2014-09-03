@@ -11,7 +11,7 @@ void runZJets(std::string option)
 int main(int argc, char **argv)
 {
 
-    std::thread t[3];
+    std::thread t[5];
 
 
     auto start = std::chrono::system_clock::now();
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     std::cout << "Syst up submitted" << std::endl;
 
     //Join the threads with the main thread
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 5; ++i) {
         t[i].join();
     }
     std::cout << "All jobs done" << std::endl;

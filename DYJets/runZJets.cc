@@ -93,8 +93,8 @@ int main(int argc, char **argv)
     bool hasRecoInfo(true);
     bool hasGenInfo(true);
 
-    int NSystData(3);
-    int NSystMC(5);
+    unsigned int NSystData(3);
+    unsigned int NSystMC(5);
 
     short dataSyst[3] = {0, 2, 2};
     short dataDir[3]  = {0,-1, 1};
@@ -122,15 +122,12 @@ int main(int argc, char **argv)
         NSystData = 1; 
         NSystMC = 1;
     }
-    int start = 0;
+    unsigned int start = 0;
     if (whichSyst >= 0) {
-        start = whichSyst;
-        if (whichSyst < NSystData) {
-            NSystData = whichSyst + 1;
-        }
-        if (whichSyst < NSystMC){
-            NSystMC = whichSyst + 1;
-        }
+        //--- limit the loop to the selected systematic ---
+        start = whichSyst; 
+        NSystData = whichSyst + 1;
+        NSystMC = whichSyst + 1;
     }
     //----------------------------------------------------------------------
 
