@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <TString.h>
 #include "ArgParser.h"
 #include "ConfigVJets.h"
@@ -18,8 +19,9 @@ int main(int argc, char **argv)
     TString histoDir   = cfg.getS("histoDir", "HistoFilesAugust");
     TString lepSel     = cfg.getS("lepSel", "DMu");
     TString doWhat     = cfg.getS("doWhat", "DYJETS");
-    int jetPtMin       = cfg.getF("jetPtMin", 30);
-    int jetEtaMax      = cfg.getF("jetEtaMax", 24);
+    int jetPtMin       = cfg.getI("jetPtMin", 30);
+    int jetEtaMax      = cfg.getI("jetEtaMax", 24);
+    int whichSyst      = cfg.getI("whichSyst", -1);
     bool doSysRunning  = cfg.getB("doSysRunning", 0);
     bool doCentral     = cfg.getB("doCentral", 1);
     bool do10000Events = cfg.getB("do10000Events", 1);
@@ -41,6 +43,9 @@ int main(int argc, char **argv)
             }
             else if (currentArg.BeginsWith("doWhat=")) {
                 getArg(currentArg, doWhat);
+            }
+            else if (currentArg.BeginsWith("whichSyst=")) {
+                getArg(currentArg, whichSyst);
             }
             else if (currentArg.BeginsWith("jetPtMin=")) {
                 getArg(currentArg, jetPtMin);
@@ -113,12 +118,22 @@ int main(int argc, char **argv)
     short dySyst[5]   = {0, 1, 1, 4, 4};
     short dyDir[5]    = {0,-1, 1,-1, 1};
 
-    if (!doSysRunning) {
+    if (!doSysRunning && whichSyst < 0) {
         NSystData = 1; 
         NSystMC = 1;
     }
+    int start = 0;
+    if (whichSyst >= 0) {
+        start = whichSyst;
+        if (whichSyst < NSystData) {
+            NSystData = whichSyst + 1;
+        }
+        if (whichSyst < NSystMC){
+            NSystMC = whichSyst + 1;
+        }
+    }
     //----------------------------------------------------------------------
-   
+
 
     //--- starting the real processing -------------------------------------
     cout << __DATE__ << " at " << __TIME__ << endl;
@@ -126,8 +141,8 @@ int main(int argc, char **argv)
     if (doWhat == "DATA" || doWhat == "ALL") {
         hasRecoInfo = true;
         hasGenInfo = false;
-        for (unsigned int i(0); i < NSystData; i++) {
-            if (i == 0 && !doCentral) continue;
+        for (unsigned int i(start); i < NSystData; i++) {
+            if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets DMudata(lepSel + "_8TeV_Data_dR", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
             DMudata.Loop(hasRecoInfo, hasGenInfo);
         }
@@ -137,8 +152,8 @@ int main(int argc, char **argv)
         hasRecoInfo = true;
         hasGenInfo = false;
 
-        for (unsigned int i(0); i < NSystMC; i++) { 
-            if (i == 0 && !doCentral) continue;
+        for (unsigned int i(start); i < NSystMC; i++) { 
+            if (i == 0 && !doCentral && whichSyst < 0) continue;
 
             ZJets ZZInc(lepSel + "_8TeV_ZZ_dR",              lumi*17.654        *1000/9799908.,  1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
             ZZInc.Loop(hasRecoInfo, hasGenInfo);
@@ -182,8 +197,8 @@ int main(int argc, char **argv)
         hasRecoInfo = true; 
         hasGenInfo = true;
 
-        for (unsigned int i(0); i < NSystMC; i++) { 
-            if (i == 0 && !doCentral) continue;
+        for (unsigned int i(start); i < NSystMC; i++) { 
+            if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets DYTau(lepSel + "_8TeV_DYJetsToLL_FromTau_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, tauSyst[i], tauDir[i], tauScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
             DYTau.Loop(hasRecoInfo, hasGenInfo);
         }
@@ -193,8 +208,8 @@ int main(int argc, char **argv)
         hasRecoInfo = true; 
         hasGenInfo = true;
 
-        for (unsigned int i(0); i < NSystMC; i++) { 
-            if (i == 0 && !doCentral) continue;
+        for (unsigned int i(start); i < NSystMC; i++) { 
+            if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets DYMix(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, dySyst[i], dyDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
             DYMix.Loop(hasRecoInfo, hasGenInfo);
             //ZJets DY(lepSel + "_8TeV_DYJetsToLL_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, dySyst[i], dyDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
@@ -206,8 +221,8 @@ int main(int argc, char **argv)
         hasRecoInfo = true; 
         hasGenInfo = false;
 
-        for (unsigned int i(0); i < NSystMC; i++) { 
-            if (i == 0 && !doCentral) continue;
+        for (unsigned int i(start); i < NSystMC; i++) { 
+            if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets WJMix(lepSel + "_8TeV_WJetsALL_MIX_UNFOLDING_dR", lumi*36703.         *1000/76102995., 1, wjSyst[i], wjDir[i], wjScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
             WJMix.Loop(hasRecoInfo, hasGenInfo);
         }
@@ -223,6 +238,6 @@ int main(int argc, char **argv)
 
     cout << __DATE__ << " at " << __TIME__ << endl;
     //---------------------------------------------------------------------
-    
+
     return 0;
 }
