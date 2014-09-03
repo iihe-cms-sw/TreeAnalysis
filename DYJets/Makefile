@@ -58,6 +58,9 @@ runFinalUnfold: $(OBJLIST) runFinalUnfold.o
 runFinalUnfold.o: runFinalUnfold.cc
 	clang++ -std=c++0x -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
+dispatcher: runZJets dispatcher.cc
+	g++ -std=c++0x -pthread dispatcher.cc -o dispatcher
+
 # =========================================================================== 
 clean: 
 	rm -f *.o Sources/*.o 

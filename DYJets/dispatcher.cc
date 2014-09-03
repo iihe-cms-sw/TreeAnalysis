@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <unistd.h>
 
 void runZJets(std::string option) 
 {
@@ -12,24 +11,25 @@ void runZJets(std::string option)
 int main(int argc, char **argv)
 {
 
+    std::thread t[3];
+
+
     auto start = std::chrono::system_clock::now();
     std::cout << "Starting to dispatch" << std::endl;
-    std::thread central(runZJets, "doCentral=1 doSysRunning=0");
+    t[0] = std::thread(runZJets, "whichSyst=0");
     //runZJets("doCentral=1 doSysRunning=0");
     std::cout << "Central submitted" << std::endl;
-    //sleep(5);
-    //std::thread systDown(runZJets, "whichSyst=1");
+    t[1] = std::thread(runZJets, "whichSyst=1");
     //runZJets("whichSyst=1");
     std::cout << "Syst down submitted" << std::endl;
-    //sleep(5);
-    //std::thread systUp(runZJets, "whichSyst=2");
+    t[2] = std::thread(runZJets, "whichSyst=2");
     //runZJets("whichSyst=2");
     std::cout << "Syst up submitted" << std::endl;
 
-    central.join();
-    //systDown.join();
-    //systUp.join();
-
+    //Join the threads with the main thread
+    for (int i = 0; i < 3; ++i) {
+        t[i].join();
+    }
     std::cout << "All jobs done" << std::endl;
 
 
