@@ -151,12 +151,6 @@ int main(int argc, char **argv)
         for (unsigned int i(start); i < NSystMC; i++) { 
             if (i == 0 && !doCentral && whichSyst < 0) continue;
 
-            ZJets ZZInc(lepSel + "_8TeV_ZZ_dR",              lumi*17.654        *1000/9799908.,  1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
-            ZZInc.Loop(hasRecoInfo, hasGenInfo);
-            ZJets WZInc(lepSel + "_8TeV_WZ_dR",              lumi*33.21         *1000/10000283., 1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
-            WZInc.Loop(hasRecoInfo, hasGenInfo);
-            ZJets WWInc(lepSel + "_8TeV_WW_dR",              lumi*54.838        *1000/10000431., 1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
-            WWInc.Loop(hasRecoInfo, hasGenInfo);
             ZJets ZZ(lepSel + "_8TeV_ZZJets2L2Nu_dR",        lumi*17.654*0.04039 *1000/954911.,  1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
             ZZ.Loop(hasRecoInfo, hasGenInfo);
             ZJets WW(lepSel + "_8TeV_WWJets2L2Nu_dR",        lumi*54.838*0.10608 *1000/1933235., 1, bgSyst[i], bgDir[i], bgScale[i], jetPtMin, jetEtaMax, do10000Events, histoDir);
