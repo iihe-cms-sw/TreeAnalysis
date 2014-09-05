@@ -16,6 +16,8 @@ int main(int argc, char **argv)
     int jetPtMin      = cfg.getI("jetPtMin");
     int jetEtaMax     = cfg.getI("jetEtaMax");
 
+    TString variable = "";
+
     //-----------------------------------------------------------------------------
     
     //--- Parse the arguments -----------------------------------------------------
@@ -41,6 +43,9 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("jetEtaMax=")) {
                 getArg(currentArg, jetEtaMax);
             }
+            else if (currentArg.BeginsWith("variable=")) {
+                getArg(currentArg, variable);
+            }
             //--- asking for help ---
             else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: \n\t./runUnfolding [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [unfoldDir=(path)] [--help]" << std::endl;
@@ -63,7 +68,7 @@ int main(int argc, char **argv)
     std::cout << "\n executing UnfoldingZJets(\"" << lepSel << "\", \"" <<  algo << "\", \"" << histoDir << "\", \"" << unfoldDir << "\", " << jetPtMin << ", " << jetEtaMax << ", &argc, argv);" << std::endl;
     //-----------------------------------------------------------------------------
     
-    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, &argc, argv);
+    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, variable);
 
     return 0;
 }

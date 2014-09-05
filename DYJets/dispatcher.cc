@@ -42,7 +42,7 @@ int main(int argc, char **argv)
             }
             //--- asking for help ---
             else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
-                std::cout << "\nUsage: ./dispatcher [doHisto=(1,0)] [doRecoComp=(1, 0)] [doUnfold=(1, 0)] [doCopyToMac=(0, 1)] ";
+                std::cout << "\nUsage: ./dispatcher [doHisto=(1,0)] [doRecoComp=(1, 0)] [doUnfold=(1, 0)] [doCombination=(1, 0)] [doCopyToMac=(0, 1)] ";
                 std::cout << "[--help]" << std::endl;
                 std::cout << "eg: ./dispatcher doHisto=0" << std::endl;
                 std::cout << "unspecified options will be read from vjets.cfg\n" << std::endl;
@@ -136,11 +136,22 @@ int main(int argc, char **argv)
     }
 
     if (doUnfold) {
+        //--- Now proceed to reco comparison ---
+        std::thread unfolding[2];
+        for (int i = 0; i < 2; ++i) {
+            std::string lep = "DE";
+            if (i == 1) lep = "DMu";
+            unfolding[i] = std::thread(executeInThread, "./runUnfoldingZJets", "lepSel=" + lep, "");
+        }
 
+        //Join the reco threads with the main thread
+        for (int i = 0; i < 2; ++i) {
+            unfolding[i].join();
+        }
     }
 
     if (doCombination) {
-
+        executeInThread("./runCombination", "", "");
     }
 
     if (doCopyToMac) {

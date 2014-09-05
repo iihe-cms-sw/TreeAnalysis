@@ -23,8 +23,8 @@ CXX           = g++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
 CXXFLAGS      += $(ROOTCFLAGS) 
 
-SOURCES = ArgParser.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
-SOURCES += UnfoldingZJets.cc RecoComparison.cc
+SOURCES = ArgParser.cc variablesOfInterestZJets.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc
+SOURCES += MergeTop.cc standalone_LumiReWeighting.cc UnfoldingZJets.cc RecoComparison.cc
 SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc
 
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))

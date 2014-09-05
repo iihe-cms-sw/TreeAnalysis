@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
-#include <TApplication.h>
 #include <TCanvas.h>
 #include <RooUnfoldBayes.h>
 #include <TParameter.h>
@@ -14,17 +13,28 @@
 using namespace std;
 
 void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
-        int jetPtMin, int jetEtaMax, int* argc, char **argv)
+        int jetPtMin, int jetEtaMax, TString variable)
 {
-    // The TApplication is necessary only if we want to use TCanvas
-    bool batchMode = true;
-    TApplication* rootapp = NULL;
-    if (!batchMode) {
-        rootapp = new TApplication("rootapp", argc, argv);
-        // We connect the TCanvas close to the terminate of the TApplication
-        TCanvas::Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
-    }
+    //--- create output directory if does not exist ---
+    system("mkdir -p " + unfoldDir);
 
+    int start = 0;
+    int end = NVAROFINTERESTZJETS;
+
+    if (variable != "") {
+        start = findVariable(variable);
+        if (start >= 0) {
+            end = start + 1;
+        }
+        else {
+            cerr << "\nError: variable " << variable << " is not interesting." << endl;
+            cerr << "See below the list of interesting variables:" << endl;
+            for (unsigned int i = 0; i < NVAROFINTERESTZJETS; ++i) {
+                cerr << "\t" << i << ": " << VAROFINTERESTZJETS[i].name << "\n" << endl;
+            }
+            return;
+        }
+    }
 
     double integratedLumi = (lepSel == "DMu") ? 19584 : 19618;
     // Here we declare the different arrays of TFiles. 
@@ -44,17 +54,16 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     //----------------------------------------------------------------------------------------- 
     //--- Now run on the different variables ---
-    system("mkdir -p " + unfoldDir);
-    for (unsigned int i = 0; i < 1/*NVAROFINTERESTZJETS*/; ++i) {
-        TString variable = VAROFINTERESTZJETS[i].name;
-        TString outputRootFileName = unfoldDir + lepSel; 
-        outputRootFileName += "_unfolded_" + variable + "_" + algo;
-        outputRootFileName += "_jetPtMin_";
-        outputRootFileName += jetPtMin;
-        outputRootFileName += "_jetEtaMax_";
-        outputRootFileName += jetEtaMax;
-        outputRootFileName += ".root";
-        TFile *outputRootFile = new TFile(outputRootFileName, "RECREATE");
+    for (int i = start; i < end; ++i) {
+        variable = VAROFINTERESTZJETS[i].name;
+
+        TString outputFileName = unfoldDir + lepSel; 
+        outputFileName += "_unfolded_" + variable + "_" + algo;
+        outputFileName += "_jetPtMin_";
+        outputFileName += jetPtMin;
+        outputFileName += "_jetEtaMax_";
+        outputFileName += jetEtaMax;
+        TFile *outputRootFile = new TFile(outputFileName + ".root", "RECREATE");
 
 
         //--- rec Data histograms ---
@@ -137,8 +146,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
         for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection, lepSel); 
         crossSectionPlot->Draw();
+        crossSectionPlot->SaveAs(outputFileName + ".png");
+        crossSectionPlot->SaveAs(outputFileName + ".pdf");
+        crossSectionPlot->SaveAs(outputFileName + ".ps");
+        crossSectionPlot->SaveAs(outputFileName + ".C");
 
         //--- print out break down of errors ---
         for (int i = 2; i <= 8; ++i) {
@@ -150,14 +163,13 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         }
         //--------------------------------------
 
-
-
         //--- Save other things --- 
         outputRootFile->cd();
         hRecData[0]->Write("hRecDataCentral");
         hRecSumBg[0]->Write("hRecSumBgCentral");
         hRecDYJets[0]->Write("hRecDYJetsCentral");
         hGenDYJets[0]->Write("hGenDYJetsCentral");
+        hGenCrossSection->Write("hGenDYJetsCrossSection");
         respDYJets[0]->Write("respDYJetsCentral");
         for (int i = 0; i < 9; ++i) {
             hCov[i]->Write();
@@ -166,10 +178,13 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         pIntegratedLumi.Write();
         TParameter<int> pNIter("nIter", nIter);
         pNIter.Write();
+        crossSectionPlot->Write();
         //----------------------------------------------------------------------------------------- 
 
-        if (!batchMode) rootapp->Run(kTRUE);
         outputRootFile->Close();
+
+        if (end == start + 1) system("display " + outputFileName + ".png &");
+        
     }
 
     //--- Close all files ----------------------------------------------------------------------
@@ -306,7 +321,7 @@ TH1D* makeCrossSectionHist(TH1D* hGenDYJets, double integratedLumi)
     return hGenCrossSection;
 }
 
-TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen)
+TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen, TString lepSel)
 {
 
     double maximum = hGen->GetMaximum();
@@ -378,7 +393,9 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
     latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
     latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
     latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
-    latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
+    if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
+    else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
+    else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
     latexLabel->Draw("same");
 
     TLatex *ytitle = new TLatex();

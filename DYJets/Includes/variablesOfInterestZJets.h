@@ -1,5 +1,5 @@
-#ifndef __variablesOfInterest__
-#define __variablesOfInterest__
+#ifndef __VARIABLESOFINTERESTZJETS_H_
+#define __VARIABLESOFINTERESTZJETS_H_
 
 #include <TObject.h>
 #include <TObjString.h>
@@ -44,14 +44,6 @@ const variableStruct VAROFINTERESTZJETS[] = {
 
 }; 
 
-//TList *LISTOFVAROFINTERESTZJETS = new TList();
-//
-//void makeLISTOFVAROFINTERESTZJETS(){
-//    for (unsigned int i(0); i < NVAROFINTERESTZJETS; i++){
-//        TObjString *name = new TObjString(VAROFINTERESTZJETS[i].name);
-//        LISTOFVAROFINTERESTZJETS->Add(name);
-//    }
-//}
-
+int findVariable(const TString &variable);
 #endif
 
