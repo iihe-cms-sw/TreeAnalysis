@@ -6,15 +6,15 @@
 #include <TList.h>
 
 struct variableStruct{
-   string name;
+   TString name;
    bool log, decrease;  
    int MuSVDkterm, MuBayeskterm, ESVDkterm, EBayeskterm, BayesktermCombine;
 };
 
 //--- Z Jets ------------------------------------
 
-const int NVAROFINTERESTZJETS(17);
-variableStruct VAROFINTERESTZJETS[] = {
+const unsigned int NVAROFINTERESTZJETS(17);
+const variableStruct VAROFINTERESTZJETS[] = {
    //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm  - E Bayes kterm COMBINE
    {"ZNGoodJets_Zexc",             1,      1,           6,              4,             3,            3 ,               3    }, // 0
 
@@ -44,14 +44,14 @@ variableStruct VAROFINTERESTZJETS[] = {
 
 }; 
 
-TList *LISTOFVAROFINTERESTZJETS = new TList();
-
-void makeLISTOFVAROFINTERESTZJETS(){
-    for (int i(0); i < NVAROFINTERESTZJETS; i++){
-        TObjString *name = new TObjString(VAROFINTERESTZJETS[i].name.c_str());
-        LISTOFVAROFINTERESTZJETS->Add(name);
-    }
-}
+//TList *LISTOFVAROFINTERESTZJETS = new TList();
+//
+//void makeLISTOFVAROFINTERESTZJETS(){
+//    for (unsigned int i(0); i < NVAROFINTERESTZJETS; i++){
+//        TObjString *name = new TObjString(VAROFINTERESTZJETS[i].name);
+//        LISTOFVAROFINTERESTZJETS->Add(name);
+//    }
+//}
 
 #endif
 

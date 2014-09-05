@@ -24,8 +24,8 @@ CXXFLAGS      = -g -Wall -fPIC
 CXXFLAGS      += $(ROOTCFLAGS) 
 
 SOURCES = ArgParser.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc MergeTop.cc standalone_LumiReWeighting.cc
-SOURCES += FinalUnfoldZJets.cc UnfoldingSyst.cc writeFastPlotsTex.cc unfoldingFunctionsZJets.cc UnfoldingZJets.cc RecoComparison.cc
-SOURCES += PlotSettings.cc
+SOURCES += UnfoldingZJets.cc RecoComparison.cc
+SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc
 
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)
@@ -52,14 +52,18 @@ runUnfoldingZJets: $(OBJLIST) runUnfoldingZJets.o
 runUnfoldingZJets.o: runUnfoldingZJets.cc
 	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
-runFinalUnfold: $(OBJLIST) runFinalUnfold.o
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runFinalUnfold $(ROOTGLIBS) $(LIBLIST)
+runCombination: $(OBJLIST) runCombination.o
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runCombination $(ROOTGLIBS) $(LIBLIST)
 
-runFinalUnfold.o: runFinalUnfold.cc
+runCombination.o: runCombination.cc
 	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
 
-dispatcher: runZJets dispatcher.cc
-	$(CXX) -pthread dispatcher.cc -o dispatcher
+dispatcher: $(OBJLIST) dispatcher.o 
+	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o dispatcher $(ROOTGLIBS) $(LIBLIST)
+
+dispatcher.o: dispatcher.cc
+	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+
 
 # =========================================================================== 
 clean: 

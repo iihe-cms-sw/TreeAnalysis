@@ -3,6 +3,7 @@ runZJets
 runRecoComparison
 runFinalUnfold
 runUnfoldingZJets
+runCombination
 dispatcher
 
 # git will not consider the following files:

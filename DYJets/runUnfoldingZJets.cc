@@ -63,9 +63,7 @@ int main(int argc, char **argv)
     std::cout << "\n executing UnfoldingZJets(\"" << lepSel << "\", \"" <<  algo << "\", \"" << histoDir << "\", \"" << unfoldDir << "\", " << jetPtMin << ", " << jetEtaMax << ", &argc, argv);" << std::endl;
     //-----------------------------------------------------------------------------
     
-    std::cout << __DATE__ << " at " << __TIME__ << std::endl;
     UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, &argc, argv);
-    std::cout << "\n" << __DATE__ << " at " << __TIME__ << std::endl;
 
     return 0;
 }

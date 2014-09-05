@@ -239,6 +239,7 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
     } 
 
     if (!isData) {
+        Files[0]->cd();
         //--- From central histograms, we simulate the histograms
         //    for lumi up and down systematics. It is just a rescaliing
         //    since it is a global effect. The error is estimated to
@@ -246,11 +247,11 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
 
         double lumiErr = 0.026;
         //--- lumi scale up ---
-        histograms[5] = (TH1D*) histograms[0]->Clone();
+        histograms[5] = (TH1D*) Files[0]->Get(variable);
         histograms[5]->Scale(1. + lumiErr);
 
         //--- lumi scale down ---
-        histograms[6] = (TH1D*) histograms[0]->Clone();
+        histograms[6] = (TH1D*) Files[0]->Get(variable);
         histograms[6]->Scale(1. - lumiErr);
 
 
@@ -266,11 +267,11 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
         if (variable.Index("gen") < 0) {
 
             //--- SF up ---
-            histograms[7] = (TH1D*) histograms[0]->Clone();
+            histograms[7] = (TH1D*) Files[0]->Get(variable);
             histograms[7]->Scale(1. + errSF);
 
             //--- SF down ---
-            histograms[8] = (TH1D*) histograms[0]->Clone();
+            histograms[8] = (TH1D*) Files[0]->Get(variable);
             histograms[8]->Scale(1. - errSF);
         }
     }

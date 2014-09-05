@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <math.h>
 #include <TApplication.h>
 #include <TCanvas.h>
@@ -6,6 +7,7 @@
 #include <TParameter.h>
 #include "fileNamesZJets.h"
 #include "getFilesAndHistogramsZJets.h"
+#include "variablesOfInterestZJets.h"
 #include "UnfoldingZJets.h"
 #include "PlotSettings.h"
 
@@ -15,12 +17,14 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         int jetPtMin, int jetEtaMax, int* argc, char **argv)
 {
     // The TApplication is necessary only if we want to use TCanvas
-    TApplication* rootapp = new TApplication("rootapp", argc, argv);
-    // We connect the TCanvas close to the terminate of the TApplication
-    TCanvas::Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
+    bool batchMode = true;
+    TApplication* rootapp = NULL;
+    if (!batchMode) {
+        rootapp = new TApplication("rootapp", argc, argv);
+        // We connect the TCanvas close to the terminate of the TApplication
+        TCanvas::Connect("TCanvas", "Closed()", "TApplication", gApplication, "Terminate()");
+    }
 
-    //TString variable = "FourthJetEta_Zinc4jet";
-    TString variable = "ZNGoodJets_Zexc";
 
     double integratedLumi = (lepSel == "DMu") ? 19584 : 19618;
     // Here we declare the different arrays of TFiles. 
@@ -40,120 +44,135 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     //----------------------------------------------------------------------------------------- 
     //--- Now run on the different variables ---
-    
     system("mkdir -p " + unfoldDir);
-    TString outputRootFileName = unfoldDir + lepSel; 
-    outputRootFileName += "_unfolded_" + variable + "_" + algo;
-    outputRootFileName += "_jetPtMin_";
-    outputRootFileName += jetPtMin;
-    outputRootFileName += "_jetEtaMax_";
-    outputRootFileName += jetEtaMax;
-    outputRootFileName += ".root";
-    TFile *outputRootFile = new TFile(outputRootFileName, "RECREATE");
-            
+    for (unsigned int i = 0; i < 1/*NVAROFINTERESTZJETS*/; ++i) {
+        TString variable = VAROFINTERESTZJETS[i].name;
+        TString outputRootFileName = unfoldDir + lepSel; 
+        outputRootFileName += "_unfolded_" + variable + "_" + algo;
+        outputRootFileName += "_jetPtMin_";
+        outputRootFileName += jetPtMin;
+        outputRootFileName += "_jetEtaMax_";
+        outputRootFileName += jetEtaMax;
+        outputRootFileName += ".root";
+        TFile *outputRootFile = new TFile(outputRootFileName, "RECREATE");
 
-    //--- rec Data histograms ---
-    TH1D *hRecData[3] = {NULL};
-    //--- rec DYJets histograms ---
-    TH1D *hRecDYJets[9] = {NULL};
-    //--- gen DYJets histograms ---
-    TH1D *hGenDYJets[7] = {NULL};
-    //--- res DYJets histograms ---
-    TH2D *hResDYJets[9] = {NULL};
-    //--- rec Bg histograms ---
-    TH1D *hRecBg[NBGDYJETS][9] = {{NULL}};
-    //--- rec Sum Bg histograms ---
-    TH1D *hRecSumBg[9] = {NULL};
-    //--- response DYJets objects ---
-    RooUnfoldResponse *respDYJets[13] = {NULL};
 
-    //--- Get all histograms ---
-    getAllHistos(variable, hRecData, fData, 
-            hRecDYJets, hGenDYJets, hResDYJets, fDYJets,
-            hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets);
-    //----------------------------------------------------------------------------------------- 
+        //--- rec Data histograms ---
+        TH1D *hRecData[3] = {NULL};
+        //--- rec DYJets histograms ---
+        TH1D *hRecDYJets[9] = {NULL};
+        //--- gen DYJets histograms ---
+        TH1D *hGenDYJets[7] = {NULL};
+        //--- res DYJets histograms ---
+        TH2D *hResDYJets[9] = {NULL};
+        //--- rec Bg histograms ---
+        TH1D *hRecBg[NBGDYJETS][9] = {{NULL}};
+        //--- rec Sum Bg histograms ---
+        TH1D *hRecSumBg[9] = {NULL};
+        //--- response DYJets objects ---
+        RooUnfoldResponse *respDYJets[13] = {NULL};
 
-    TH1D *hGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
-    
-    // Here is an array of TH1D to store the various unfolded data:
-    // 0 - Central, 
-    // 1 - JES up, 2 - JES down, 
-    // 3 - PU up, 4 - PU down, 
-    // 5 - JER up, 6 - JER down, 
-    // 7 - XSEC up, 8 - XSEC down
-    // 9 - Lumi up, 10 - Lumi down
-    // 11 - SF up, 12 - SF down
-    TString name[] = {"Central", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", 
-        "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown"};
-    TH1D *hUnfData[13] = {NULL};
-    TH2D *hUnfDataStatCov[13] = {NULL};
-    TH2D *hUnfMCStatCov[13] = {NULL};
+        //--- Get all histograms ---
+        getAllHistos(variable, hRecData, fData, 
+                hRecDYJets, hGenDYJets, hResDYJets, fDYJets,
+                hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets);
+        //----------------------------------------------------------------------------------------- 
 
-    int nIter = 4;
-    //--- Unfold the Data histograms for each systematic ---
-    for (unsigned short iSyst = 0; iSyst < 13; ++iSyst) {
+        TH1D *hGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
 
-        //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
-        unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
+        // Here is an array of TH1D to store the various unfolded data:
+        // 0 - Central, 
+        // 1 - JES up, 2 - JES down, 
+        // 3 - PU up, 4 - PU down, 
+        // 5 - JER up, 6 - JER down, 
+        // 7 - XSEC up, 8 - XSEC down
+        // 9 - Lumi up, 10 - Lumi down
+        // 11 - SF up, 12 - SF down
+        TString name[] = {"Central", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", 
+            "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown"};
+        TH1D *hUnfData[13] = {NULL};
+        TH2D *hUnfDataStatCov[13] = {NULL};
+        TH2D *hUnfMCStatCov[13] = {NULL};
 
-        UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter, hUnfData[iSyst], 
-                hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
-
-        //--- save the unfolded histograms ---
-        outputRootFile->cd(); 
-        hUnfData[iSyst]->Write();
-    }
-    //----------------------------------------------------------------------------------------- 
-
-    //--- Now create the covariance matrices ---
-    TH2D *hCov[9] = {NULL};
-    hCov[0] = (TH2D*) hUnfDataStatCov[0]->Clone("CovDataStat");
-    hCov[1] = (TH2D*) hUnfMCStatCov[0]->Clone("CovMCStat");
-    hCov[2] = makeCovFromUpAndDown(hUnfData[0], hUnfData[1], hUnfData[2], "CovJES");
-    hCov[3] = makeCovFromUpAndDown(hUnfData[0], hUnfData[3], hUnfData[4], "CovPU");
-    hCov[4] = makeCovFromUpAndDown(hUnfData[0], hUnfData[5], hUnfData[6], "CovJER");
-    hCov[5] = makeCovFromUpAndDown(hUnfData[0], hUnfData[7], hUnfData[8], "CovXSec");
-    hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLumi");
-    hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovSF");
-
-    hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
-    for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
-
-    TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection); 
-    crossSectionPlot->Draw();
-   
-    //--- print out break down of errors ---
-    for (int i = 2; i < 8; ++i) {
-        cout << hUnfData[0]->GetBinContent(i);
-        for (int j = 0; j < 8; ++j) {
-            cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
+        int nIter; 
+        if (algo == "Bayes" && lepSel == "DMu")     
+            nIter = VAROFINTERESTZJETS[i].MuBayeskterm;
+        else if (algo == "Bayes" && lepSel == "DE") 
+            nIter = VAROFINTERESTZJETS[i].EBayeskterm;
+        else if (algo == "SVD" && lepSel == "DMu")  
+            nIter = VAROFINTERESTZJETS[i].MuSVDkterm;
+        else if (algo == "SVD" && lepSel == "DE")   
+            nIter = VAROFINTERESTZJETS[i].ESVDkterm;
+        else {
+            cerr << "Error: algo " << algo << " or lepSel " << lepSel << "invalid\n"; 
+            cerr << "Aborting...\n";
+            return;
         }
-        cout << endl;
+        //--- Unfold the Data histograms for each systematic ---
+        for (unsigned short iSyst = 0; iSyst < 13; ++iSyst) {
+
+            //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
+            unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
+
+            UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter, hUnfData[iSyst], 
+                    hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
+
+            //--- save the unfolded histograms ---
+            outputRootFile->cd(); 
+            hUnfData[iSyst]->Write();
+        }
+        //----------------------------------------------------------------------------------------- 
+
+        //--- Now create the covariance matrices ---
+        TH2D *hCov[9] = {NULL};
+        hCov[0] = (TH2D*) hUnfDataStatCov[0]->Clone("CovDataStat");
+        hCov[1] = (TH2D*) hUnfMCStatCov[0]->Clone("CovMCStat");
+        hCov[2] = makeCovFromUpAndDown(hUnfData[0], hUnfData[1], hUnfData[2], "CovJES");
+        hCov[3] = makeCovFromUpAndDown(hUnfData[0], hUnfData[3], hUnfData[4], "CovPU");
+        hCov[4] = makeCovFromUpAndDown(hUnfData[0], hUnfData[5], hUnfData[6], "CovJER");
+        hCov[5] = makeCovFromUpAndDown(hUnfData[0], hUnfData[7], hUnfData[8], "CovXSec");
+        hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLumi");
+        hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovSF");
+
+        hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
+        for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
+
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection); 
+        crossSectionPlot->Draw();
+
+        //--- print out break down of errors ---
+        for (int i = 2; i <= 8; ++i) {
+            cout << hUnfData[0]->GetBinContent(i);
+            for (int j = 0; j <= 8; ++j) {
+                cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
+            }
+            cout << endl;
+        }
+        //--------------------------------------
+
+
+
+        //--- Save other things --- 
+        outputRootFile->cd();
+        hRecData[0]->Write("hRecDataCentral");
+        hRecSumBg[0]->Write("hRecSumBgCentral");
+        hRecDYJets[0]->Write("hRecDYJetsCentral");
+        hGenDYJets[0]->Write("hGenDYJetsCentral");
+        respDYJets[0]->Write("respDYJetsCentral");
+        for (int i = 0; i < 9; ++i) {
+            hCov[i]->Write();
+        }
+        TParameter<double> pIntegratedLumi("integratedLumi", integratedLumi);
+        pIntegratedLumi.Write();
+        TParameter<int> pNIter("nIter", nIter);
+        pNIter.Write();
+        //----------------------------------------------------------------------------------------- 
+
+        if (!batchMode) rootapp->Run(kTRUE);
+        outputRootFile->Close();
     }
-    //--------------------------------------
-
-
-
-    //--- Save other things --- 
-    outputRootFile->cd();
-    hRecData[0]->Write("hRecDataCentral");
-    hRecSumBg[0]->Write("hRecSumBgCentral");
-    hRecDYJets[0]->Write("hRecDYJetsCentral");
-    hGenDYJets[0]->Write("hGenDYJetsCentral");
-    respDYJets[0]->Write("respDYJetsCentral");
-    for (int i = 0; i < 9; ++i) {
-        hCov[i]->Write();
-    }
-    TParameter<double> pIntegratedLumi("integratedLumi", integratedLumi);
-    pIntegratedLumi.Write();
-    TParameter<int> pNIter("nIter", nIter);
-    pNIter.Write();
-    //----------------------------------------------------------------------------------------- 
-
-    rootapp->Run(kTRUE);
 
     //--- Close all files ----------------------------------------------------------------------
-    outputRootFile->Close();
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
     //------------------------------------------------------------------------------------------ 
 
@@ -183,7 +202,7 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
 
     //--- Unfold data minus background ---
     RooUnfold *RObject = RooUnfold::New(alg, resp, hRecData, nIter);
-    RObject->SetVerbose(0);
+    //RObject->SetVerbose(0);
 
     //--- get the unfolded result ---
     hUnfData = (TH1D*) RObject->Hreco(RooUnfold::kCovariance);
@@ -235,6 +254,7 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
 }
 
 
+//--- This is needed because we use overflow and the matrices have 2 additional bins ---
 TH2D* M2H(const TMatrixD m) 
 {
     int nBinsY = m.GetNrows();
@@ -255,11 +275,11 @@ TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, 
     int nBins = hUnfDataCentral->GetNbinsX();
     TH2D* h = new TH2D(name, name, nBins, 0, nBins, nBins, 0, nBins);
 
-    for (int i = 1; i < nBins; ++i) {
+    for (int i = 1; i <= nBins; ++i) {
         double sigmaMeani = 0.5*fabs(hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i)); 
         int signi = (hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i) < 0) ? -1 : 1;
 
-        for (int j = 1; j < nBins; ++j) {
+        for (int j = 1; j <= nBins; ++j) {
             double sigmaMeanj = 0.5*fabs(hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j)); 
             int signj = (hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j) < 0) ? -1 : 1;
 
@@ -309,7 +329,7 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
     TLegend *legend = new TLegend(0.47, 0.74, 0.99, 0.98);
     customizeLegend(legend, 1);
     //------------------
-   
+
     TH1D *hSyst = (TH1D*) hStat->Clone();
     int nBins = hSyst->GetNbinsX();
 
@@ -383,7 +403,7 @@ TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1
     }
     ytitle->DrawLatex(0.008,0.91,strYtitle.c_str());
     //--- End Of first Pad ---
-    
+
     //--- Second Pad ---
     plots->cd();
     TPad *plot2 = new TPad("plot2", "plot2", 0., 0., 0., 0.);

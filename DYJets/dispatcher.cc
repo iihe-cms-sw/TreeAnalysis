@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include "ArgParser.h"
 
 void executeInThread(std::string executable, std::string option, std::string machine) 
 {
@@ -13,78 +14,137 @@ void executeInThread(std::string executable, std::string option, std::string mac
 int main(int argc, char **argv)
 {
 
-    //--- Generate the histofiles ---
-    std::thread DataThread[6];
-    std::thread DYJetsThread[10];
-    std::thread BGThread[10];
-    std::thread TAUThread[10];
-    std::thread WJETSThread[10];
+    bool doHisto = true;
+    bool doRecoComp = true;
+    bool doUnfold = true;
+    bool doCombination = true;
+    bool doCopyToMac = false;
 
+    //--- Parse the arguments -----------------------------------------------------
+    if (argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            TString currentArg = argv[i];
+            //--- possible options ---
+            if (currentArg.BeginsWith("doHisto=")) {
+                getArg(currentArg, doHisto);
+            }
+            else if (currentArg.BeginsWith("doRecoComp=")) {
+                getArg(currentArg, doRecoComp);
+            }
+            else if (currentArg.BeginsWith("doUnfold=")) {
+                getArg(currentArg, doUnfold);
+            }
+            else if (currentArg.BeginsWith("doCombination=")) {
+                getArg(currentArg, doCombination);
+            }
+            else if (currentArg.BeginsWith("doCopyToMac=")) {
+                getArg(currentArg, doCopyToMac);
+            }
+            //--- asking for help ---
+            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+                std::cout << "\nUsage: ./dispatcher [doHisto=(1,0)] [doRecoComp=(1, 0)] [doUnfold=(1, 0)] [doCopyToMac=(0, 1)] ";
+                std::cout << "[--help]" << std::endl;
+                std::cout << "eg: ./dispatcher doHisto=0" << std::endl;
+                std::cout << "unspecified options will be read from vjets.cfg\n" << std::endl;
+                return 0;
+            }
+            //--- bad option ---
+            else {
+                std::cerr << "Warning: unknown option \"" << currentArg << "\"" << std::endl;
+                std::cerr << "Please issue ./dispatcher --help for more information on possible options" << std::endl;
+                return 0;
+            }
+        }
+    }
 
     auto start = std::chrono::system_clock::now();
     std::cout << "Starting to dispatch" << std::endl;
 
-    //--- first execute the DYJets ---
-    for (int i = 0; i < 2; ++i) {
-        std::string lep = "DE";
-        if (i == 1) lep = "DMu";
+    if (doHisto) {
+        //--- Generate the histofiles ---
+        std::thread DataThread[6];
+        std::thread DYJetsThread[10];
+        std::thread BGThread[10];
+        std::thread TAUThread[10];
+        std::thread WJETSThread[10];
 
-        DataThread[i*3 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=0", "m5");
-        DataThread[i*3 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=1", "m6");
-        DataThread[i*3 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=2", "m7");
+        //--- first execute the DYJets ---
+        for (int i = 0; i < 2; ++i) {
+            std::string lep = "DE";
+            if (i == 1) lep = "DMu";
 
-        DYJetsThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=0", "m5");
-        DYJetsThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=1", "m6");
-        DYJetsThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=2", "m7");
-        DYJetsThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=3", "m8");
-        DYJetsThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=4", "m9");
+            DataThread[i*3 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=0", "m5");
+            DataThread[i*3 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=1", "m6");
+            DataThread[i*3 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=2", "m7");
 
-        BGThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=0", "m5");
-        BGThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=1", "m6");
-        BGThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=2", "m7");
-        BGThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=3", "m8");
-        BGThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=4", "m9");
+            DYJetsThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=0", "m5");
+            DYJetsThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=1", "m6");
+            DYJetsThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=2", "m7");
+            DYJetsThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=3", "m8");
+            DYJetsThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=4", "m9");
 
-        TAUThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=0", "m5");
-        TAUThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=1", "m6");
-        TAUThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=2", "m7");
-        TAUThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=3", "m8");
-        TAUThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=4", "m9");
+            BGThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=0", "m5");
+            BGThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=1", "m6");
+            BGThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=2", "m7");
+            BGThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=3", "m8");
+            BGThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=4", "m9");
 
-        WJETSThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=0", "m5");
-        WJETSThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=1", "m6");
-        WJETSThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=2", "m7");
-        WJETSThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=3", "m8");
-        WJETSThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=4", "m9");
+            TAUThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=0", "m5");
+            TAUThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=1", "m6");
+            TAUThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=2", "m7");
+            TAUThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=3", "m8");
+            TAUThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=4", "m9");
+
+            WJETSThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=0", "m5");
+            WJETSThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=1", "m6");
+            WJETSThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=2", "m7");
+            WJETSThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=3", "m8");
+            WJETSThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=4", "m9");
+        }
+
+        //Join the data threads with the main thread
+        for (int i = 0; i < 6; ++i) {
+            DataThread[i].join();
+        }
+
+        //Join the threads with the main thread
+        for (int i = 0; i < 10; ++i) {
+            DYJetsThread[i].join();
+            BGThread[i].join();
+            TAUThread[i].join();
+            WJETSThread[i].join();
+        }
+
+        std::cout << "All jobs done" << std::endl;
     }
 
-    //Join the data threads with the main thread
-    for (int i = 0; i < 6; ++i) {
-        DataThread[i].join();
+    if (doRecoComp) {
+
+        //--- Now proceed to reco comparison ---
+        std::thread recoComp[4];
+        for (int i = 0; i < 2; ++i) {
+            std::string lep = "DE";
+            if (i == 1) lep = "DMu";
+            recoComp[2*i + 0] = std::thread(executeInThread, "./runRecoComparison", "doPASPlots=1 lepSel=" + lep, "");
+            recoComp[2*i + 1] = std::thread(executeInThread, "./runRecoComparison", "doPASPlots=0 lepSel=" + lep, "");
+        }
+
+        //Join the reco threads with the main thread
+        for (int i = 0; i < 4; ++i) {
+            recoComp[i].join();
+        }
     }
 
-    //Join the threads with the main thread
-    for (int i = 0; i < 10; ++i) {
-        DYJetsThread[i].join();
-        BGThread[i].join();
-        TAUThread[i].join();
-        WJETSThread[i].join();
+    if (doUnfold) {
+
     }
 
-    std::cout << "All jobs done" << std::endl;
+    if (doCombination) {
 
-    //--- Now proceed to reco comparison ---
-    std::thread recoComp[4];
-    for (int i = 0; i < 2; ++i) {
-        std::string lep = "DE";
-        if (i == 1) lep = "DMu";
-        recoComp[2*i + 0] = std::thread(executeInThread, "./runRecoComparison", "doPASPlots=1 lepSel=" + lep, "m5");
-        recoComp[2*i + 1] = std::thread(executeInThread, "./runRecoComparison", "doPASPlots=0 lepSel=" + lep, "m6");
     }
 
-    //Join the reco threads with the main thread
-    for (int i = 0; i < 4; ++i) {
-        recoComp[i].join();
+    if (doCopyToMac) {
+
     }
 
     auto end = std::chrono::system_clock::now();
