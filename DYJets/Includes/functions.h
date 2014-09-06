@@ -26,16 +26,6 @@ bool JetDescendingOrder(jetStruct, jetStruct);
 
 vector<double> makeVector(int num, ...);
 void insertVector(vector<double>& veca, int num, ...);
-TH1D* newTH1D(string, string, string, int, double*);
-TH1D* newTH1D(string, string, string, int, double, double);
-TH1D* newTH1D(string, string, string, vector<double>&);
-TH2D* newTH2D(string, string, int, double*, int, double*);
-TH2D* newTH2D(string, string, int, double*, int, double, double);
-TH2D* newTH2D(string, string, int, double, double, int, double*);
-TH2D* newTH2D(string, string, int, double, double, int, double, double);
-
-RooUnfoldResponse* newResp(TH1D*, TH1D*);
-RooUnfoldResponse* newResp(TH2D*, TH2D*);
 
 double phi0to2pi(double);
 
