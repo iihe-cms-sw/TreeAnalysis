@@ -24,7 +24,6 @@
 
 using namespace std;
 
-TRandom3* RandGen = new TRandom3();
 
 ClassImp(ZJetsAndDPS);
 
@@ -32,6 +31,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
         int doBJets, int doPUStudy, bool doFlat, bool useRoch, bool doVarWidth,  bool hasPartonInfo, 
         string pdfSet, int pdfMember, int startEvent, int skipEvent)
 {
+    TRandom3* RandGen = new TRandom3();
 
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") {

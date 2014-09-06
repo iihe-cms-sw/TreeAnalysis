@@ -63,5 +63,6 @@ class table{
 double SmearJetPt(double, double, double, int);
 void bestTwoJetsCandidatesPt(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);
 void bestTwoJetsCandidatesPhi(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);
+void BTagModification(double randNumber, double pt, double eta, int jetFlavour, bool &passBJets);
 
 #endif
