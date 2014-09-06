@@ -57,7 +57,6 @@ void insertVector(vector<double>& veca, int num, ...)
     veca.insert(veca.end(), vecb.begin(), vecb.end());
 }
 
-
 double phi0to2pi(double phi){
     double pi = 3.141592653589793238;
     while (phi >= 2.*pi) phi -= 2.*pi;
