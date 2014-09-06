@@ -57,71 +57,6 @@ void insertVector(vector<double>& veca, int num, ...)
     veca.insert(veca.end(), vecb.begin(), vecb.end());
 }
 
-TH1D* newTH1D(string name, string title, string xTitle, int nBins, double *xBins)
-{
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
-    hist->GetXaxis()->SetTitle(xTitle.c_str());
-    hist->GetYaxis()->SetTitle("# Events");
-    return hist;
-}
-
-TH1D* newTH1D(string name, string title, string xTitle, vector<double>& xBinsVect)
-{
-    int nBins = xBinsVect.size()-1;
-    double *xBins = new double[xBinsVect.size()];
-    std::copy(xBinsVect.begin(), xBinsVect.end(), xBins);
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
-    hist->GetXaxis()->SetTitle(xTitle.c_str());
-    hist->GetYaxis()->SetTitle("# Events");
-    delete [] xBins;
-    return hist;
-}
-
-
-TH1D* newTH1D(string name, string title, string xTitle, int nBins, double xLow, double xUp){
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xLow, xUp);
-    hist->GetXaxis()->SetTitle(xTitle.c_str());
-    hist->GetYaxis()->SetTitle("# Events");
-    hist->SetOption("HIST");
-    return hist;
-}
-
-TH2D* newTH2D(string name, string title, int nBinsX, double *xBins, int nBinsY, double *yBinsY){
-    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xBins, nBinsY, yBinsY);
-    hist->GetZaxis()->SetTitle("# Events");
-    return hist;
-}
-
-TH2D* newTH2D(string name, string title, int nBinsX, double *xBins, int nBinsY, double yLow, double yUp){
-    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xBins, nBinsY, yLow, yUp);
-    hist->GetZaxis()->SetTitle("# Events");
-    return hist;
-}
-
-TH2D* newTH2D(string name, string title, int nBinsX, double xLow, double xUp, int nBinsY, double *yBins){
-    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xLow, xUp, nBinsY, yBins);
-    hist->GetZaxis()->SetTitle("# Events");
-    return hist;
-}
-
-TH2D* newTH2D(string name, string title, int nBinsX, double xLow, double xUp, int nBinsY, double yLow, double yUp){
-    TH2D* hist = new TH2D(name.c_str(), title.c_str(), nBinsX, xLow, xUp, nBinsY, yLow, yUp);
-    hist->GetZaxis()->SetTitle("# Events");
-    hist->SetOption("HIST");
-    return hist;
-}
-
-RooUnfoldResponse* newResp(TH1D* reco, TH1D* gen)
-{
-    RooUnfoldResponse *response = new RooUnfoldResponse(reco, gen);
-    return response;
-}
-
-RooUnfoldResponse* newResp(TH2D* reco, TH2D* gen)
-{
-    RooUnfoldResponse *response = new RooUnfoldResponse(reco, gen);
-    return response;
-}
 
 double phi0to2pi(double phi){
     double pi = 3.141592653589793238;
@@ -353,4 +288,178 @@ void bestTwoJetsCandidatesPhi(vector<jetStruct> jets, pair<TLorentzVector, TLore
             }
         } 
     }
+}
+
+void BTagModification(double randNumber, double pt, double eta, int jetFlavour, bool &passBJets)
+{
+    double x = 0.679;     ///discrim_cut;
+    if (abs(jetFlavour) == 5) {
+
+        float effb = -1.73338329789*x*x*x*x +  1.26161794785*x*x*x +  0.784721653518*x*x +  -1.03328577451*x +  1.04305075822;
+        float SFb = (0.938887+(0.00017124*pt))+(-2.76366e-07*(pt*pt));
+
+        float SFb_error;
+
+        if      (pt >= 20  && pt < 30)  SFb_error = 0.0415707;
+        else if (pt >= 30  && pt < 40)  SFb_error = 0.0204209;
+        else if (pt >= 40  && pt < 50)  SFb_error = 0.0223227;
+        else if (pt >= 50  && pt < 60)  SFb_error = 0.0206655;
+        else if (pt >= 60  && pt < 70)  SFb_error = 0.0199325;
+        else if (pt >= 70  && pt < 80)  SFb_error = 0.0174121;
+        else if (pt >= 80  && pt < 100) SFb_error = 0.0202332;
+        else if (pt >= 100 && pt < 120) SFb_error = 0.0182446;
+        else if (pt >= 120 && pt < 160) SFb_error = 0.0159777;
+        else if (pt >= 160 && pt < 210) SFb_error = 0.0218531;
+        else if (pt >= 210 && pt < 260) SFb_error = 0.0204688;
+        else if (pt >= 260 && pt < 320) SFb_error = 0.0265191;
+        else if (pt >= 320 && pt < 400) SFb_error = 0.0313175;
+        else if (pt >= 400 && pt < 500) SFb_error = 0.0415417;
+        else if (pt >= 500 && pt < 600) SFb_error = 0.0740446;
+        else if (pt >= 600 && pt < 800) SFb_error = 0.0596716;
+
+        float SFb_up = SFb + SFb_error;
+        float SFb_down = SFb - SFb_error;
+
+        // F values for rand comparison
+        float f = 0.0;
+        float f_up = 0.0;
+        float f_down = 0.0;
+
+        if (SFb <1.0) f = (1.0 - SFb);
+        if (SFb_up <1.0) f_up = (1.0 - SFb_up);
+        if (SFb_down <1.0) f_down = (1.0 - SFb_down);
+
+        if (SFb > 1.0) f = (1.0 - SFb)/(1.0 - 1.0/effb);
+        if (SFb_up > 1.0) f_up = (1.0 - SFb_up)/(1.0 - 1.0/effb);
+        if (SFb_down > 1.0) f_down = (1.0 - SFb_down)/(1.0 - 1.0/effb);
+
+        bool passBJets_SFB_sys_up = passBJets;   // Initialize the systematic_up as the central value
+        bool passBJets_SFB_sys_down = passBJets; // Initialize the systematic_down as the central value
+
+        // Untag a tagged jet
+
+        if (passBJets && SFb<1.0 && randNumber<f) passBJets = false; // for central value
+        if (passBJets_SFB_sys_up && SFb<1.0 && randNumber<f_up) passBJets_SFB_sys_up = false; // for systematic_up
+        if (passBJets_SFB_sys_down && SFb<1.0 && randNumber<f_down) passBJets_SFB_sys_down = false; // for sytematic_down
+
+
+        // Tag an untagged jet
+        if (!passBJets && SFb>1.0 && randNumber<f) passBJets = true; // for central value
+        if (!passBJets_SFB_sys_up && SFb>1.0 && randNumber<f_up) passBJets_SFB_sys_up = true; // for systematic_up
+        if (!passBJets_SFB_sys_down && SFb>1.0 && randNumber<f_down) passBJets_SFB_sys_down = true; // for sytematic_down
+
+    }
+    // ---------------- For Real C-jets--------------- //
+    else if (abs(jetFlavour) == 4) {
+
+        float effc = -1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724;
+        float SFc = (0.938887+(0.00017124*pt))+(-2.76366e-07*(pt*pt));
+
+        float SFc_error;
+
+        if      (pt >= 20  && pt < 30)  SFc_error = 0.0415707;
+        else if (pt >= 30  && pt < 40)  SFc_error = 0.0204209;
+        else if (pt >= 40  && pt < 50)  SFc_error = 0.0223227;
+        else if (pt >= 50  && pt < 60)  SFc_error = 0.0206655;
+        else if (pt >= 60  && pt < 70)  SFc_error = 0.0199325;
+        else if (pt >= 70  && pt < 80)  SFc_error = 0.0174121;
+        else if (pt >= 80  && pt < 100) SFc_error = 0.0202332;
+        else if (pt >= 100 && pt < 120) SFc_error = 0.0182446;
+        else if (pt >= 120 && pt < 160) SFc_error = 0.0159777;
+        else if (pt >= 160 && pt < 210) SFc_error = 0.0218531;
+        else if (pt >= 210 && pt < 260) SFc_error = 0.0204688;
+        else if (pt >= 260 && pt < 320) SFc_error = 0.0265191;
+        else if (pt >= 320 && pt < 400) SFc_error = 0.0313175;
+        else if (pt >= 400 && pt < 500) SFc_error = 0.0415417;
+        else if (pt >= 500 && pt < 600) SFc_error = 0.0740446;
+        else if (pt >= 600 && pt < 800) SFc_error = 0.0596716;
+
+        float SFc_up = SFc + 2*SFc_error;
+        float SFc_down = SFc - 2*SFc_error;
+
+        // F values for rand comparison
+        float f = 0.0;
+        float f_up = 0.0;
+        float f_down = 0.0;
+
+        if (SFc <1.0) f = (1.0 - SFc);
+        if (SFc_up <1.0) f_up = (1.0 - SFc_up);
+        if (SFc_down <1.0) f_down = (1.0 - SFc_down);
+
+        if (SFc > 1.0) f = (1.0 - SFc)/(1.0 - 1.0/effc);
+        if (SFc_up > 1.0) f_up = (1.0 - SFc_up)/(1.0 - 1.0/effc);
+        if (SFc_down > 1.0) f_down = (1.0 - SFc_down)/(1.0 - 1.0/effc);
+
+        bool passBJets_SFB_sys_up = passBJets;     // Initialize the systematic_up as the central value
+        bool passBJets_SFB_sys_down = passBJets; // Initialize the systematic_down as the central value
+
+        // Untag a tagged jet
+
+        if (passBJets && SFc<1.0 && randNumber<f) passBJets = false; // for central value
+        if (passBJets_SFB_sys_up && SFc<1.0 && randNumber<f_up) passBJets_SFB_sys_up = false; // for systematic_up
+        if (passBJets_SFB_sys_down && SFc<1.0 && randNumber<f_down) passBJets_SFB_sys_down = false; // for sytematic_down
+
+
+        // Tag an untagged jet
+        if (!passBJets && SFc>1.0 && randNumber<f) passBJets = true; // for central value
+        if (!passBJets_SFB_sys_up && SFc>1.0 && randNumber<f_up) passBJets_SFB_sys_up = true; // for systematic_up
+        if (!passBJets_SFB_sys_down && SFc>1.0 && randNumber < f_down) passBJets_SFB_sys_down = true; // for sytematic_down
+
+    }
+    // ---------------- For REAL Light-jets --------------- //
+    else if (abs(jetFlavour) < 4) {
+
+        float SFlight=1.0;
+        float SFlight_up=1.0;
+        float SFlight_down=1.0;
+        float eff_l = 0.0;
+
+        if (fabs(eta) <= 0.8) {
+            SFlight = (((1.07541+(0.00231827*pt))+(-4.74249e-06*(pt*pt)))+(2.70862e-09*(pt*(pt*pt))));
+            SFlight_up = (((1.18638+(0.00314148*pt))+(-6.68993e-06*(pt*pt)))+(3.89288e-09*(pt*(pt*pt))));
+            SFlight_down = (((0.964527+(0.00149055*pt))+(-2.78338e-06*(pt*pt)))+(1.51771e-09*(pt*(pt*pt))));
+            eff_l = ((0.00967751+(2.54564e-05*pt))+(-6.92256e-10*(pt*pt)));
+        }
+        else if (fabs(eta) <= 1.6) {
+            SFlight = (((1.05613+(0.00114031*pt))+(-2.56066e-06*(pt*pt)))+(1.67792e-09*(pt*(pt*pt))));
+            SFlight_up = (((1.16624+(0.00151884*pt))+(-3.59041e-06*(pt*pt)))+(2.38681e-09*(pt*(pt*pt))));
+            SFlight_down = (((0.946051+(0.000759584*pt))+(-1.52491e-06*(pt*pt)))+(9.65822e-10*(pt*(pt*pt))));
+            eff_l = ((0.00974141+(5.09503e-05*pt))+(2.0641e-08*(pt*pt)));
+        }
+        else if (fabs(eta) <= 2.4) {
+            SFlight = (((1.05625+(0.000487231*pt))+(-2.22792e-06*(pt*pt)))+(1.70262e-09*(pt*(pt*pt))));
+            SFlight_up = (((1.15575+(0.000693344*pt))+(-3.02661e-06*(pt*pt)))+(2.39752e-09*(pt*(pt*pt))));
+            SFlight_down = (((0.956736+(0.000280197*pt))+(-1.42739e-06*(pt*pt)))+(1.0085e-09*(pt*(pt*pt))));
+            eff_l = ((0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt)));
+        }
+
+        // F values for rand comparison
+        float f = 0.0;
+        float f_up = 0.0;
+        float f_down = 0.0;
+
+        if (SFlight <1.0) f = (1.0 - SFlight);
+        if (SFlight_up <1.0) f_up = (1.0 - SFlight_up);
+        if (SFlight_down <1.0) f_down = (1.0 - SFlight_down);
+
+        if (SFlight > 1.0) f = (1.0 - SFlight)/(1.0 - 1.0/eff_l);
+        if (SFlight_up > 1.0) f_up = (1.0 - SFlight_up)/(1.0 - 1.0/eff_l);
+        if (SFlight_down > 1.0) f_down = (1.0 - SFlight_down)/(1.0 - 1.0/eff_l);
+
+        bool passBJets_SFB_sys_up = passBJets;     // Initialize the systematic_up as the central value
+        bool passBJets_SFB_sys_down = passBJets; // Initialize the systematic_down as the central value
+
+        // Untag a tagged jet
+
+        if (passBJets && SFlight<1.0 && randNumber<f) passBJets = false; // for central value
+        if (passBJets_SFB_sys_up && SFlight<1.0 && randNumber<f_up) passBJets_SFB_sys_up = false; // for systematic_up
+        if (passBJets_SFB_sys_down && SFlight<1.0 && randNumber<f_down) passBJets_SFB_sys_down = false; // for sytematic_down
+
+
+        // Tag an untagged jet
+        if (!passBJets && SFlight>1.0 && randNumber<f) passBJets = true; // for central value
+        if (!passBJets_SFB_sys_up && SFlight>1.0 && randNumber<f_up) passBJets_SFB_sys_up = true; // for systematic_up
+        if (!passBJets_SFB_sys_down && SFlight>1.0 && randNumber<f_down) passBJets_SFB_sys_down = true; // for sytematic_down
+
+    }   ////////flavour lop                     
 }

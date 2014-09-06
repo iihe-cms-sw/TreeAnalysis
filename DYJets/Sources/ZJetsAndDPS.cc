@@ -24,6 +24,8 @@
 
 using namespace std;
 
+TRandom3* RandGen = new TRandom3();
+
 ClassImp(ZJetsAndDPS);
 
 void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSign, bool doInvMassCut, 
@@ -34,9 +36,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") {
         LHAPDF::initPDFSet(1, pdfSet.c_str(), pdfMember);
-        //LHAPDF::initPDFSet(1, "CT10.LHgrid");
-        LHAPDF::initPDFSet(2, "cteq6ll.LHpdf");
-        const int numberPDFS(LHAPDF::numberPDF(1) + 1);
+        LHAPDF::initPDFSet(2, "CT10.LHgrid");
+        const int numberPDFS(LHAPDF::numberPDF() + 1);
         if (pdfMember > numberPDFS) {
             std::cout << "Warning pdfMember to high" << std::endl;
             return;
@@ -60,8 +61,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
 
     //==========================================================================================================//
-    double MTCut(50.);
+    double METCut(0.), MTCut(50.);
     double ZMCutLow(71), ZMCutHigh(111);
+    METcut = METCut;
     cout << " begin: "<< hasRecoInfo <<"  " << hasGenInfo <<"  " << doQCD<<"  " << doSSign<<"  " << doInvMassCut << "  " << METcut << "  " <<doBJets <<"  " <<doPUStudy << endl;
     bool doZ(true), doW(false), doTT(false), doDR(false), doTTreweighting(false);
     if (leptonFlavor == "SingleElectron" || leptonFlavor == "SingleMuon"){
@@ -84,9 +86,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     //==========================================================================================================//
     //         Output file name           //
     //===================================//
-    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, pdfSet, pdfMember, startEvent, skipEvent );
-    //TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
-    TFile *outputFile = new TFile("TEST.root", "RECREATE");
+    string outputFileName = CreateOutputFileName(useRoch, doFlat, doPUStudy, doVarWidth, doBJets, doQCD, doSSign , doInvMassCut, pdfSet, pdfMember, startEvent, skipEvent);
+    TFile *outputFile = new TFile(outputFileName.c_str(), "RECREATE");
+    //TFile *outputFile = new TFile("TEST.root", "RECREATE");
     //==========================================================================================================//
 
     //--- weight variable ---
@@ -188,7 +190,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if ((systematics == 3 || systematics == 6) && direction ==  1) xsec = 1. + xsecfactor;
     if ((systematics == 3 || systematics == 6) && direction == -1) xsec = 1. - xsecfactor;
 
-    bool smearJet(0);
+    int smearJet(0);
     if ((systematics == 4 || systematics == 6) && direction ==  1) smearJet =  1; 
     if ((systematics == 4 || systematics == 6) && direction == -1) smearJet = -1; 
 
@@ -220,6 +222,21 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     int NZtotal = 0 ;
 
     double sumSherpaW = 0. ;
+    /*
+       if (fileName.find("Sherpa") != string::npos && fileName.find("HepMC") != string::npos){
+       cout << "I m computing sherpa weight, entries:" <<  nentries << endl;
+       sumSherpaW = 4.56486e+09 ;
+    //
+    //for (Long64_t jentry(0); jentry<nentries;jentry++) {
+    //Long64_t ientry = LoadTree(jentry);
+    //if (ientry < 0) break;
+    //nb = fChain->GetEntry(jentry);   nbytes += nb;
+    //nEvents++;
+    //sumSherpaW += mcSherpaSumWeight3_ ;
+    //}
+    //  
+    }
+    */
     cout << " Sherpa initial weight :  " << sumSherpaW <<endl;
 
     double sumTrig[4] = {0};
@@ -249,19 +266,15 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
     if (fChain == 0) return;
     Long64_t nbytes(0), nb(0);
     Long64_t nentries = fChain->GetEntries();
-    //if (nEvents_10000) {
-        nentries = 10000;
-        std::cout << "We plane to run on 100000 events" << std::endl;
-    //}
-    std::cout << "We will run on " << nentries << " events" << std::endl;
-    if ( startEvent != 0 || skipEvent != 1 ) cout << " it seems we will do Pulls !!! " << startEvent <<"  " << skipEvent<< endl;
+    if (nEvents_10000) nentries = 10000;
+    if (nEvents_10000) cout << " We plane to run on 100000 events " << endl;
     //------------------------------------
 
-    for (Long64_t jentry(startEvent); jentry < nentries; jentry+=skipEvent){
+    for (Long64_t jentry(0); jentry < nentries; jentry++){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
 
-        if (jentry % 100000 == 0) std::cout << jentry << std::endl;
+        if (jentry % 100000 == 0) cout << jentry << endl;
         nb = fChain->GetEntry(jentry);  
         nbytes += nb;
         nEvents++;
@@ -292,9 +305,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             weight *= (double)puWeight.weight(int(PU_npT));
             //-- reweight again to IMPOSE FLAT #VTX DATA/MC RATIO
             if (doFlat){
-                reweighting = FlatNVtxWeight->GetBinContent(EvtInfo_NumVtx + 1);
+                reweighting = FlatNVtxWeight->GetBinContent(EvtInfo_NumVtx+1);
                 //-- for safety check the value of the weight...
-                if (reweighting <= 0 || reweighting > 1000) reweighting = 1;
+                if (reweighting <= 0 || reweighting > 1000) reweighting = 1.;
                 weight *= reweighting;
             }
         }
@@ -328,15 +341,10 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (id1 == 21) id1 = 0; // 21 is Pythia convention for gluon, but needs to be 0 for LHAPDF
             if (id2 == 21) id2 = 0;
 
-            //cout << "id1: " << id1 << "  id2: " << id2 << "  Q: " << pdfInfo_->at(4) << endl;
-
             double pdf1 = LHAPDF::xfx(1, pdfInfo_->at(2), pdfInfo_->at(4), id1);
             double pdf2 = LHAPDF::xfx(1, pdfInfo_->at(3), pdfInfo_->at(4), id2);
-            //cout << "CT10    -> pdf1:  " << pdf1 << "  pdf2:  " << pdf2 << endl;
-
             double pdf01 = LHAPDF::xfx(2, pdfInfo_->at(2), pdfInfo_->at(4), id1);
             double pdf02 = LHAPDF::xfx(2, pdfInfo_->at(3), pdfInfo_->at(4), id2);
-            //cout << "CTEQ6L1 -> pdf01: " << pdf01 << "  pdf02: " << pdf02 << endl;
 
             if (pdfInfo_->at(2) * pdfInfo_->at(3) > 0) {
                 wPdf = pdf1 * pdf2;
@@ -348,7 +356,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                     wPdf /= (pdf01 * pdf02);
                 }
             }
-            //cout << "weight: " << wPdf << endl;
         }
         //==========================================================================================================//
 
@@ -381,6 +388,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             bool eventTrigger = false;
             //--- DO MUONS ---
             if (doMuons){
+                if (DEBUG) cout << "Stop after line " << __LINE__ << "   muons size input:  " << patMuonEta_->size() <<  endl;
                 nTotLeptons = patMuonEta_->size();
                 // test if any of the leptons is atached to trigger
                 // if we don't reall care to match both leptons to trigger
@@ -428,6 +436,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                     }
                 }//End of loop over all the muons
             }
+            if ( DEBUG ) cout <<__LINE__<< "   " << doMuons <<"  " << doElectrons <<endl;
             nMuons = muons.size();
 
             ///  ------ DO ELECTRONS -------
@@ -456,7 +465,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                     bool elePassesEMuAndWJetsTrig(whichTrigger == 1 || whichTrigger == 16 || whichTrigger == 17 || whichTrigger == 32 || whichTrigger == 33 || whichTrigger == 48 || whichTrigger == 49 ) ;
                     bool elePassesAnyTrig(  (doZ && (whichTrigger >= 2 && !elePassesEMuAndWJetsTrig )) || ( doTT && whichTrigger >= 16 ) || ( doW && whichTrigger % 2 == 1) );
                     if ( DEBUG ) cout << EvtInfo_EventNum << "  lepton loop: "<<elePassesAnyTrig <<"   " << ele.pt <<"   " << ele.eta <<"  " <<"  " << patElecEn_->at(i) <<"  " <<elePassesIdCut<<"  SIZE  " << nTotLeptons <<  endl;
-                    //elePassesAnyTrig = true ; 
 
                     // select the good muons only
                     if (!doTT && elePassesEtaCut && int(patElecID_->at(i)) >= 2 && ele.pt >= 15. && patElecPfIsoRho_->at(i) < 0.2 )  electrons.push_back(ele); /// DO I WANT THIS !!!!!!
@@ -539,20 +547,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
                 diLepCharge = int (abs(lepton1.charge) + abs(lepton2.charge));
 
-                //rochester
-                //float qter(1.);
-                //if (useRoch){
-                //  if (leptonFlavor == "Muons"){
-                //    if (!isData){
-                //      rmcor->momcor_mc(lep1, lepton1.charge, 0, 0, qter);
-                //      rmcor->momcor_mc(lep2, lepton2.charge, 0, 0, qter);
-                //    }		
-                //    else {
-                //      rmcor->momcor_data(lep1, lepton1.charge, 0, 0, qter);
-                //      rmcor->momcor_data(lep2, lepton2.charge, 0, 0, qter);
-                //    }
-                //  }
-                //}	
                 Z = lep1 + lep2;
                 sumLepCharge = int (lepton1.charge + lepton2.charge);
 
@@ -720,7 +714,6 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             nTotGenLeptons = genLepEta_->size();
             if (DEBUG) std::cout << "Stop after line " << __LINE__ << std::endl;
             for (unsigned short i(0); i < nTotGenLeptons; i++){
-                if (DEBUG) std::cout << "Stop after line " << __LINE__ << "    " << abs(genLepId_->at(i)) << std::endl;
                 if (abs(genLepId_->at(i)) == 6) {
                     weight *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
                     weightTop *= exp(genLepPt_->at(i) * -0.00129 + 0.148);
@@ -864,7 +857,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             nTotJets = patJetPfAk05Eta_->size();
             for (unsigned short i(0); i < nTotJets; i++) {
                 bool passBJets(0);
-                //if (patJetPfAk05OCSV_->at(i) >= 0.679) passBJets = true;
+                if (patJetPfAk05OCSV_->at(i) >= 0.679) passBJets = true;
+
                 jetStruct jet = {patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i), patJetPfAk05Phi_->at(i), patJetPfAk05En_->at(i), i, passBJets};
 
                 //-- apply jet energy scale uncertainty (need to change the scale when initiating the object)
@@ -930,7 +924,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                             puMVA->Fill(patJetPfAk05jetpuMVA_->at(i), weight);
                             puMVAvsBeta->Fill(patJetPfAk05jetpuMVA_->at(i),patJetPfAk05jetBZ_->at(i), weight);
                         }
-                        if ( fabs(doBJets) > 0 && patJetPfAk05OCSV_->at(i) >=  0.679 )  countBJets++ ;// count BJets, used for BVeto
+                        if (fabs(doBJets) > 0 && patJetPfAk05OCSV_->at(i) >= 0.679)  countBJets++ ;// count BJets, used for BVeto
                         // We apply only the pu MVA variable for the time being.
                         // This is the recommended one.
                         // if (jetPassesBetaCut && jetPassesBetaStarCut && jetPassesMVACut) 
@@ -1027,9 +1021,9 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
             if (fileName.find("Tau") != string::npos && countTauS3 == 0 && hasGenInfo ) {
                 passesLeptonCut = 0;
             }
-            if (doBJets < 0 && countBJets >= fabs(doBJets)) { 
+            if (doBJets < 0 && countBJets >= fabs(doBJets)) {
                 nEventsIncBJets++; 
-                passesLeptonCut = 0; 
+                passesLeptonCut = 0;
             }
 
             if (doBJets > 0 && countBJets < fabs(doBJets)) passesLeptonCut = 0;   
@@ -2710,7 +2704,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 nEventsExcl2Jets++;
                 //TruePU_2->Fill(PU_npT, weight);
                 //PU_2->Fill(PU_npIT, weight);              
-            PU_2->Fill(EvtInfo_NumVtx, weight);
+                PU_2->Fill(EvtInfo_NumVtx, weight);
                 ZNGoodJets_Zexc_NoWeight->Fill(2.);
                 ZMass_Zexc2jet->Fill(Z.M(), weight);
                 ZPt_Zexc2jet->Fill(Z.Pt(), weight);
@@ -3085,7 +3079,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
 
 ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, bool useTriggerCorrection_, bool useEfficiencyCorrection_, 
         int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetPtCutMax_, int ZPtCutMin_, int ZEtaCutMin_, int ZEtaCutMax_, int METcut_, bool nEvents_10000_, int jetEtaCutMin_, int jetEtaCutMax_): 
-    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFilesJetsMass/"),
+    HistoSet(fileName_.substr(0, fileName_.find("_"))), nEvents_10000(nEvents_10000_), outputDirectory("HistoFiles/"),
     fileName(fileName_), lumiScale(lumiScale_), puScale(puScale_), useTriggerCorrection(useTriggerCorrection_), useEfficiencyCorrection(useEfficiencyCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetPtCutMax(jetPtCutMax_), jetEtaCutMin(jetEtaCutMin_), jetEtaCutMax(jetEtaCutMax_), ZPtCutMin(ZPtCutMin_), ZEtaCutMin(ZEtaCutMin_), ZEtaCutMax(ZEtaCutMax_), METcut(METcut_)
 {
@@ -3125,7 +3119,7 @@ ZJetsAndDPS::ZJetsAndDPS(string fileName_, float lumiScale_, float puScale_, boo
             countFiles++;
             string treePath = line + "/tree/tree";
             if (fileName.find("Sherpa") != string::npos) treePath = line + "/tree";
-            chain->Add(treePath.c_str());       
+            chain->Add(treePath.c_str());
         }
     }
     fChain = chain;

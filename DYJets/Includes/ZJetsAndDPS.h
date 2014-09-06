@@ -105,6 +105,7 @@ class ZJetsAndDPS: public HistoSet {
         vector<double>  *patJetPfAk05jetBZ_;
         vector<double>  *patJetPfAk05jetpuMVA_;
         vector<double>  *patJetPfAk05OCSV_;
+        vector<int>     *patJetPfAk05PartonFlavour_;
         // -- MET ---
         vector<double>  *patMetPt_;
         vector<double>  *patMetPhi_;
@@ -178,7 +179,7 @@ class ZJetsAndDPS: public HistoSet {
         TBranch        *b_patJetPfAk05jetBZ_;   //!
         TBranch        *b_patJetPfAk05jetpuMVA_;   //!
         TBranch        *b_patJetPfAk05OCSV_;   //!
-
+        TBranch        *b_patJetPfAk05PartonFlavour_;
         TBranch        *b_patMetPt_;   //!
         TBranch        *b_patMetPhi_;   //!
         TBranch        *b_patMetSig_;   //!
@@ -187,7 +188,7 @@ class ZJetsAndDPS: public HistoSet {
 
         ZJetsAndDPS(string fileName_, float lumiScale_ = 1., float puScale_ = 1., bool useTriggerCorrection_ = 0, bool useEfficiencyCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., int jetPtCutMin_ = 20, int jetPtCutMax_ = 0, int ZPtCutMin_ = 0 , int ZEtaCutMin_ = -999999, int ZEtaCutMax_ = 999999, int METcut_ = -30, bool nEvents_10000_ = 0, int jetEtaCutMin_ = -24, int jetEtaCutMax_ = 24) ; 
         ~ZJetsAndDPS();
-        string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool , string pdfSet = "", int aa = -1, int startEvent = 0 , int skipEvent = 1 );
+        string   CreateOutputFileName(bool, bool, int, bool, int, int, bool, bool , string pdfSet = "", int aa = -1, int startEvent = 0, int skipEvent = 1);
         Int_t    Cut(Long64_t entry);
         Int_t    GetEntry(Long64_t entry);
         Long64_t LoadTree(Long64_t entry);
