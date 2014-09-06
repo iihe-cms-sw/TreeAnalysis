@@ -859,6 +859,23 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 bool passBJets(0);
                 if (patJetPfAk05OCSV_->at(i) >= 0.679) passBJets = true;
 
+                //cout<<" -------- BTag Modification Tests -------- "<<endl;
+                //Print the original value of the b-tag
+                //cout<<"BTag Originally: "<<passBJets<<endl;
+
+                //-----------B Tag Modification --------------------------- 
+
+                if (!isData) { // MC-only
+                    float this_rand = RandGen->Rndm(); // Get a random number. 
+                    float pt = patJetPfAk05Pt_->at(i);
+                    float eta = patJetPfAk05Eta_->at(i);
+                    int jetflavour = patJetPfAk05PartonFlavour_->at(i);
+
+                    BTagModification(this_rand, pt, eta, jetflavour, passBJets);
+
+                }//MC only
+                //cout<<"BTag After Modifying: "<<passBJets<<endl;
+
                 jetStruct jet = {patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i), patJetPfAk05Phi_->at(i), patJetPfAk05En_->at(i), i, passBJets};
 
                 //-- apply jet energy scale uncertainty (need to change the scale when initiating the object)
@@ -924,7 +941,8 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                             puMVA->Fill(patJetPfAk05jetpuMVA_->at(i), weight);
                             puMVAvsBeta->Fill(patJetPfAk05jetpuMVA_->at(i),patJetPfAk05jetBZ_->at(i), weight);
                         }
-                        if (fabs(doBJets) > 0 && patJetPfAk05OCSV_->at(i) >= 0.679)  countBJets++ ;// count BJets, used for BVeto
+                        if (fabs(doBJets) > 0 && passBJets) countBJets++;// count BJets, used for BVeto
+
                         // We apply only the pu MVA variable for the time being.
                         // This is the recommended one.
                         // if (jetPassesBetaCut && jetPassesBetaStarCut && jetPassesMVACut) 
@@ -3253,6 +3271,7 @@ void ZJetsAndDPS::Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo){
     patJetPfAk05jetBZ_ = 0;
     patJetPfAk05jetpuMVA_ = 0;
     patJetPfAk05OCSV_ = 0 ;
+    patJetPfAk05PartonFlavour_ = 0;
     patMetPt_ = 0 ;
     patMetPhi_= 0 ;
     patMetSig_= 0 ;
@@ -3279,6 +3298,7 @@ void ZJetsAndDPS::Init(bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo){
         fChain->SetBranchAddress("patJetPfAk05jetBZ_", &patJetPfAk05jetBZ_, &b_patJetPfAk05jetBZ_);
         fChain->SetBranchAddress("patJetPfAk05jetpuMVA_", &patJetPfAk05jetpuMVA_, &b_patJetPfAk05jetpuMVA_);
         fChain->SetBranchAddress("patJetPfAk05OCSV_", &patJetPfAk05OCSV_, &b_patJetPfAk05OCSV_);
+        fChain->SetBranchAddress("patJetPfAk05PartonFlavour_", &patJetPfAk05PartonFlavour_, &b_patJetPfAk05PartonFlavour_);
 
         if (leptonFlavor != "Muons"){
             //fChain->SetBranchAddress("gsfElecPt_", &gsfElecPt_, &b_gsfElecPt_); // not used
