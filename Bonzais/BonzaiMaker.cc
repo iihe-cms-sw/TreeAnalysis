@@ -16,7 +16,7 @@
 using namespace std;
 
 
-void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool doUnfold, bool hasRecoInfo, bool hasGenInfo, bool hasPartonInfo)
+void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool doUnfold, bool hasRecoInfo, bool hasGenInfo)
 {
     //--------------------------------------------------------
     //-- output file --
@@ -40,8 +40,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
 
     //--------------------------------------------------------
     //-- output tree containt --
-    double mcEveWeight_;
-    double mcSherpaSumWeight3_ ;
     // boson vector id. This is overwritten according to leptonIdSum
     // 23: Z boson; 24: W boson
     int doVector = 23; 
@@ -72,13 +70,12 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
         lepID = 24;
     }
 
-    cout << " leptons are  ... " << lepID << " leptonIdSum " << leptonIdSum << endl;
+    cout << " leptons are " << lepID << " leptonIdSum " << leptonIdSum << endl;
 
     // Here we check if it is MC or Data according to dataset_
     bool isMC = false;
     if (dataset_.find("MC") != string::npos) isMC = true;
 
-    double PU_weight(0);
     double PU_npT(0);
     double PU_npIT(0);
 
@@ -153,10 +150,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     vector<double> patMetSigYY_;
 
 
-    //  outputTree->Branch("PU_weight", &PU_weight );
-    //  outputTree->Branch("PU_npT", &PU_npT);
-    //  outputTree->Branch("PU_npIT", &PU_npIT);
-
     outputTree->Branch("EvtInfo_NumVtx", &EvtInfo_NumVtx);
     outputTree->Branch("EvtInfo_RunNum", &EvtInfo_RunNum);
     outputTree->Branch("EvtInfo_LumiNum", &EvtInfo_LumiNum);
@@ -229,7 +222,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
     outputTree->Branch("patJetPfAk05jetBZ_", &patJetPfAk05jetBZ_);
     outputTree->Branch("patJetPfAk05jetpuMVA_", &patJetPfAk05jetpuMVA_);
     outputTree->Branch("patJetPfAk05OCSV_", &patJetPfAk05OCSV_);
-    if ( hasGenInfo ) outputTree->Branch("patJetPfAk05PartonFlavour_", &patJetPfAk05PartonFlavour_);
+    outputTree->Branch("patJetPfAk05PartonFlavour_", &patJetPfAk05PartonFlavour_);
 
 
     // MET
@@ -357,7 +350,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
         int genLep = 0;
         int recoLep = 0;
         int countMuon(0), countElec(0), invIsoCountMuon(0),invIsoCountElec(0);
-        if ( hasGenInfo ) {
+        if (hasGenInfo) {
             //		cout << " Event:"<< endl;
             vector<double> genPhoPtDupl_;
             vector<double> genPhoEtaDupl_;
@@ -388,7 +381,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                     tmp.SetPxPyPzE(mc_px[i], mc_py[i], mc_pz[i], mc_en[i]);
                     if (mc_status[i] != 1) continue;
                     bool photonPass = true;
-                    for (int ll = 0; ll < genPhoEtaDupl_.size(); ll++) {
+                    for (unsigned int ll = 0; ll < genPhoEtaDupl_.size(); ll++) {
                         double minPt = tmp.Pt() > genPhoPtDupl_[ll] ? genPhoPtDupl_[ll] : tmp.Pt();
                         double razlikaPT = fabs((tmp.Pt() - genPhoPtDupl_[ll]) / minPt);
                         double dPhi = tmp.Phi()-genPhoPhiDupl_[ll] ;
@@ -446,9 +439,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
             if (leptonIdSum == 24 && t_bits[4]) eventElecTrig += 16; 
             if (leptonIdSum == 24 && t_bits[5]) eventElecTrig += 32; 
 
-            if (DEBUG) cout << "trigger global: elec " << eventElecTrig << " and muon: " << eventMuonTrig << endl;
             // -- fill reco leptons ----
-            int countGammas = 0 ;
             for (int i(0); i < ln; i++) {
                 TLorentzVector tmp;
                 tmp.SetPxPyPzE(ln_px[i], ln_py[i], ln_pz[i], ln_en[i]);
@@ -487,49 +478,32 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                             if ( DEBUG ) cout << " dR = " << mindR<< "  " <<"  dPhi and dR " << dphi <<"   " << tmp.Eta()-egn_sceta[k] << endl;
                         }
                     }
-                    // cout <<  " test eta : " << tmp.Eta() <<"   " <<  i<<"   "<< egn_sceta[i] << " final:" << eta << endl;
-                    if ( DEBUG ) cout <<  " test eta : " << tmp.Eta() <<"   " <<  i<<"   "<< egn_sceta[i] << " final:" << eta << endl;
-                    if(fabs(eta)<1.0)                         Aeff= 0.130 ;
-                    else if(fabs(eta)>=1.0 && fabs(eta)<1.479) Aeff= 0.137 ;
-                    else if(fabs(eta)>=1.479 && fabs(eta)<2.0) Aeff= 0.067 ;
-                    else if(fabs(eta)>=2.0 && fabs(eta)<2.2)   Aeff= 0.089 ;
-                    else if(fabs(eta)>=2.2 && fabs(eta)<2.3)   Aeff= 0.107 ;
-                    else if(fabs(eta)>=2.3 && fabs(eta)<2.4)   Aeff= 0.110 ;
-                    else Aeff=0.138;
-                    double isoPF = ln_chIso03[i] ;
-                    double test = ln_nhIso03[i] + ln_gIso03[i] - rho * Aeff ;
-                    if ( test > 0 )  isoPF += test ;
-                    //                      cout << "ABCDrho1  "<< test << "   " << isoPF << endl;
-                    double rhoPrime = 0.;
-                    if ( test > 0 )  rhoPrime = test ;
+                    if      (fabs(eta) < 1.0)   Aeff = 0.130;
+                    else if (fabs(eta) < 1.479) Aeff = 0.137;
+                    else if (fabs(eta) < 2.0)   Aeff = 0.067;
+                    else if (fabs(eta) < 2.2)   Aeff = 0.089;
+                    else if (fabs(eta) < 2.3)   Aeff = 0.107;
+                    else if (fabs(eta) < 2.4)   Aeff = 0.110;
+                    else                        Aeff = 0.138;
+                    double isoPF = ln_chIso03[i] + max(ln_nhIso03[i] + ln_gIso03[i] - rho * Aeff, 0.);
 
-                    //                      cout<<"ABCDrho: "<<event<<" "<<rho<<" "<<rhoPrime<<" "<<ln_chIso03[i]<<" "<<ln_nhIso03[i] + ln_gIso03[i]<<" "<< ln_chIso03[i] + max(0.0, ln_nhIso03[i] + ln_gIso03[i] - rho*Aeff)<<" "<<bits[5]<<endl;
-                    isoPF/=tmp.Pt();
+                    isoPF /= tmp.Pt();
                     patElecPfIsoRho_.push_back(isoPF );
 
-                    double singleElecTrig = 0 ;
+                    double singleElecTrig = 0;
                     if ( elecID > 3 && tmp.Pt() > 15. ) {
                         if ( isoPF < 0.15 ) countElec++;
                         else invIsoCountElec++;
                     }
-                    if ( DEBUG){ 		cout << " test trigger " << endl;
-                        cout << TRIGbits[0] << "   " << TRIGbits[1] << endl;
-                        cout << TRIGbits[4] << "   " << TRIGbits[5] << endl;
-                        cout << TRIGbits[12] << "   " << TRIGbits[13] << endl;
-                    }
-                    if (leptonIdSum == 11 && TRIGbits[13])   singleElecTrig += 1 ; // HLT_Ele27_WP80_v
-                    if (leptonIdSum == 22 && TRIGbits[0])   singleElecTrig += 2 ; // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v 
-                    if (leptonIdSum == 24 && TRIGbits[4])   singleElecTrig += 16 ; // MuEle ?? 
-                    if (leptonIdSum == 24 && TRIGbits[5])   singleElecTrig += 32 ; // EleMu ?? 
-                    if ( DEBUG) cout << singleElecTrig << endl;
-                    patElecTrig_.push_back((double)   singleElecTrig );
-                    if ( DEBUG) cout << " event infor and trig : " << EvtInfo_EventNum <<"   " <<  singleElecTrig << "   pt , eta, iso " << tmp.Pt() << "  "<< tmp.Eta()<<"  " << isoPF << " SC eta:  " <<eta <<  " ID " << elecID << endl;
-
-                    //		    patElecDetIso_.push_back((double)  ln_id[i] );
+                    if (leptonIdSum == 11 && TRIGbits[13])  singleElecTrig += 1;  // HLT_Ele27_WP80_v
+                    if (leptonIdSum == 22 && TRIGbits[0])   singleElecTrig += 2;  // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v 
+                    if (leptonIdSum == 24 && TRIGbits[4])   singleElecTrig += 16; // MuEle ?? 
+                    if (leptonIdSum == 24 && TRIGbits[5])   singleElecTrig += 32; // EleMu ?? 
+                    patElecTrig_.push_back((double) singleElecTrig);
                     patElecScEta_.push_back((double) eta);
                 }
 
-                if ( abs(ln_id[i]) == 13 ){
+                if (abs(ln_id[i]) == 13){
                     patMuonPt_.push_back((double)  tmp.Pt());
                     patMuonEta_.push_back((double) tmp.Eta());
                     patMuonPhi_.push_back((double) tmp.Phi());
@@ -537,9 +511,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                     patMuonCharge_.push_back((double)  ln_id[i] );
                     patMuonDxy_.push_back((double) ln_d0[i] );
 
-                    double isoPF = ln_chIso04[i] ;
-                    double test = ln_nhIso04[i] + ln_gIso04[i] - 0.5 * ln_puchIso04[i] ;
-                    if ( test > 0 )  isoPF += test ;
+                    double isoPF = ln_chIso04[i] + max(ln_nhIso04[i] + ln_gIso04[i] - 0.5 * ln_puchIso04[i], 0.);
                     isoPF/=tmp.Pt();
                     patMuonPfIsoDbeta_.push_back(isoPF);
 
@@ -595,7 +567,8 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                 if ( passLooseSimplePuId ) fakeMVA = 1.;
                 patJetPfAk05jetpuMVA_.push_back(fakeMVA);
                 patJetPfAk05OCSV_.push_back(jn_origcsv[i]);
-                if ( hasGenInfo ) patJetPfAk05PartonFlavour_.push_back(jn_genflav[i]);
+                //if ( hasGenInfo ) patJetPfAk05PartonFlavour_.push_back(jn_genflav[i]);
+                patJetPfAk05PartonFlavour_.push_back(jn_genflav[i]);
 
 
             }
