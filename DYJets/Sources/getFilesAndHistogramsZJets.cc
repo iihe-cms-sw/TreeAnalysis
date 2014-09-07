@@ -136,7 +136,7 @@ void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin,
     //------------------------------------------------------------------------------------------ 
 }
 
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[13])
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[])
 {
 
     //--- get rec Data histograms ---
@@ -376,7 +376,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
     } 
 }
 
-void getResps(RooUnfoldResponse *responses[13], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
+void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
 {
     TH1D *hRecDYJetsPlusSumBg = NULL;
     //--- build response object for central ---
