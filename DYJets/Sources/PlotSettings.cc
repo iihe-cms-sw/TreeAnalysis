@@ -1,7 +1,6 @@
 #include "PlotSettings.h"
 #include "TStyle.h"
 
-
 void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGenerator)
 {
     if (numbOfGenerator == 1) {
@@ -300,10 +299,10 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
         if (numbOfGenerator == 3) gen->GetYaxis()->SetLabelSize(0.115);
         gen->GetYaxis()->SetTitleSize(0.08);
         if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleSize(0.09);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.1);
+        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.11);
         gen->GetYaxis()->SetTitleOffset(0.8);
         if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleOffset(0.75);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.7);
+        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.62);
         gen->GetXaxis()->SetLabelSize(0.10);
         gen->GetXaxis()->SetTitleSize(0.12);
         gen->GetXaxis()->SetTitleOffset(1.10);
@@ -316,11 +315,6 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
         TLegendEntry *leEntry = legend->AddEntry(gen, "Stat. unc. (gen)", "f");
         leEntry->SetFillColor(ZJetsFillColor[genNum-1]);
         leEntry->SetFillStyle(ZJetsFillStyle);
-        //if (yTitle.find("MadGraph") == string::npos) {
-        //    TLegendEntry *leEntry2 = legend->AddEntry(gPDF, "Tot. unc. (gen)", "f");
-        //    leEntry2->SetFillColor(ZJetsPdfFillColor[genNum-1]);
-        //    leEntry2->SetFillStyle(ZJetsFillStyle);
-        //}
     }
 
 
@@ -444,5 +438,213 @@ std::string getYaxisTitle(const TH1D *gen1)
     return title;
 }
 
+TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen1, TH1D *hGen2, TH1D* hGen3)
+{
 
+    //--- Determine how many comparison we have ---
+    int numbOfGenerator = 1;
+    if (hGen2) numbOfGenerator = 2;
+    if (hGen3) numbOfGenerator = 3;
+    //---------------------------------------------
+    
+    TH1D *hPDFUp = (TH1D*) hStat->Clone();
+    hPDFUp->Scale(1.10);
+    TH1D *hPDFDown = (TH1D*) hStat->Clone();
+    hPDFDown->Scale(0.75);
+
+
+    TH1D *hSyst = (TH1D*) hStat->Clone();
+    int nBins = hSyst->GetNbinsX();
+    for (int i = 1; i <= nBins; ++i) {
+        hSyst->SetBinError(i, sqrt(pow(hStat->GetBinError(i), 2) + hCovSyst->GetBinContent(i, i)));
+    }
+
+    //--- Declare all additional TGraphs ---
+    TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
+    grCentralStat->SetName("gr" + variable + "CentralStatError"); 
+    TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
+    grCentralSyst->SetName("gr" + variable + "CentralTotError"); 
+    TGraphAsymmErrors *grCentralStatRatio = createRatioGraph(grCentralStat);
+    TGraphAsymmErrors *grCentralSystRatio = createRatioGraph(grCentralSyst);
+    TGraphAsymmErrors *grGen1ToCentral = createGenToCentral(hGen1, grCentralStat);
+    TGraphAsymmErrors *grGen1PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen1ToCentral); 
+    TGraphAsymmErrors *grGen2ToCentral = NULL;
+    TGraphAsymmErrors *grGen2PDFSyst = NULL;
+    if (hGen2) {
+        grGen2ToCentral = createGenToCentral(hGen2, grCentralStat);
+        grGen2PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen2ToCentral); 
+    }
+    TGraphAsymmErrors *grGen3ToCentral = NULL;
+    TGraphAsymmErrors *grGen3PDFSyst = NULL;
+    if (hGen3) {
+        grGen3ToCentral = createGenToCentral(hGen3, grCentralStat);
+        grGen3PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen3ToCentral); 
+    }
+    //---------------------------------------------
+
+    //--- Main Canvas ---
+    double maximum = hGen1->GetMaximum();
+    TString canvasName = "canvas" + variable;
+    TCanvas *plots = new TCanvas(canvasName, hStat->GetTitle(), 600, 800);
+    //-------------------
+
+    //--- First Pad ---
+    plots->cd();
+    TPad *plot1 = new TPad("plot1", "plot1", 0., 0., 0., 0.);
+    setAndDrawTPad(canvasName, plot1, 1, numbOfGenerator);
+
+    //--- TLegend ---
+    TLegend *legend = new TLegend(0.47, 0.74, 0.99, 0.98);
+    customizeLegend(legend, numbOfGenerator);
+    //------------------
+
+    customizeCentral(grCentralSyst, legend, "Data");
+    customizeCentral(grCentralStat, false);
+    customizeCentral(grCentralSystRatio, true);
+    customizeCentral(grCentralStatRatio, (bool)true);
+    grCentralSyst->Draw("a2");
+    customizeGenHist(hGen1, 1, legend, hGen1->GetZaxis()->GetTitle());
+    hGen1->DrawCopy("ESAME");
+    if (hGen2) {
+        customizeGenHist(hGen2, 2, legend, hGen2->GetZaxis()->GetTitle());
+        hGen2->DrawCopy("ESAME");
+    }
+    if (hGen3) {
+        customizeGenHist(hGen3, 3, legend, hGen3->GetZaxis()->GetTitle());
+        hGen3->DrawCopy("ESAME");
+    }
+
+    configYaxis(grCentralSyst, hGen1, hGen2, hGen3);
+    configXaxis(grCentralSyst, hGen1);
+    grCentralStat->Draw("p");
+
+    if (canvasName.Index("Eta") >= 0) {
+        grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
+    }
+    legend->Draw("same");
+
+    //--- TLatex stuff ---
+    TLatex *latexLabel = new TLatex(); 
+    latexLabel->SetNDC();
+    latexLabel->SetTextSize(0.035);
+    if (hGen2) latexLabel->SetTextSize(0.035);
+    if (hGen3) latexLabel->SetTextSize(0.05);
+    latexLabel->SetTextFont(42);
+    latexLabel->SetLineWidth(2);
+
+    latexLabel->SetTextFont(61);
+    latexLabel->DrawLatex(0.13,0.95,"CMS");
+    latexLabel->SetTextFont(52);
+    latexLabel->DrawLatex(0.20,0.95,"Preliminary");
+    latexLabel->SetTextFont(42);
+    latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
+    latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
+    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
+    else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
+    else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    latexLabel->Draw("same");
+
+    TLatex *ytitle = new TLatex();
+    ytitle->SetTextSize(0.04);
+    if (hGen2) ytitle->SetTextSize(0.04);
+    if (hGen3) ytitle->SetTextSize(0.06);
+    ytitle->SetTextFont(42);
+    ytitle->SetLineWidth(2);
+    ytitle->SetTextColor(kBlack);
+    ytitle->SetNDC();
+    ytitle->SetTextAlign(33);
+    ytitle->SetTextAngle(90);
+    std::string strYtitle = getYaxisTitle(hGen1);
+    if (strYtitle.find("eta") != std::string::npos) {
+        size_t first = strYtitle.find("#eta");
+        std::string tmp1 = strYtitle.substr(0, first);
+        std::string tmp2 = strYtitle.substr(first);
+        strYtitle = tmp1 + "|" + tmp2;
+        size_t second = strYtitle.find(")");
+        tmp1 = strYtitle.substr(0, second+1);
+        tmp2 = strYtitle.substr(second+1);
+        strYtitle = tmp1 + "|" + tmp2;
+    }
+    ytitle->DrawLatex(0.008,0.91,strYtitle.c_str());
+    //--- End Of first Pad ---
+
+    //--- Second Pad ---
+    plots->cd();
+    TPad *plot2 = new TPad("plot2", "plot2", 0., 0., 0., 0.);
+    setAndDrawTPad(canvasName, plot2, 2, numbOfGenerator);
+
+
+    //--- TLegend ---
+    TLegend *legend2 = new TLegend(0.16, 0.05, 0.42, 0.20);
+    customizeLegend(legend2, 1, 1);
+    TString generator1 = hGen1->GetZaxis()->GetTitle();
+    generator1 = generator1(0, generator1.Index(" "));
+    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", 1, legend2);
+    configXaxis(grGen1ToCentral, hGen1);
+    grGen1PDFSyst->SetFillStyle(1001);
+    grGen1PDFSyst->SetFillColor(kBlue-6);
+    grGen1ToCentral->Draw("a2");
+    grGen1ToCentral->Draw("2");
+    grCentralSystRatio->Draw("2");
+    grCentralStatRatio->Draw("p");
+    grGen1ToCentral->Draw("p");
+    legend2->Draw("same");
+    plot2->RedrawAxis();
+    //--- End of Second Pad ---
+
+    if (hGen2) {
+        //--- Third Pad ---
+        plots->cd();
+        TPad *plot3 = new TPad("plot3", "plot3", 0., 0., 0., 0.);
+        setAndDrawTPad(canvasName, plot3, 3, numbOfGenerator);
+
+        //--- TLegend ---
+        TLegend *legend3 = new TLegend(0.16, 0.05, 0.42, 0.20);
+        customizeLegend(legend3, 2, numbOfGenerator);
+        TString generator2 = hGen2->GetZaxis()->GetTitle();
+        generator2 = generator2(0, generator2.Index(" "));
+        customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
+        configXaxis(grGen2ToCentral, hGen2);
+        grGen2PDFSyst->SetFillStyle(ZJetsFillStyle);
+        grGen2PDFSyst->SetFillColor(ZJetsPdfFillColor[2]);
+        grGen2ToCentral->Draw("a2");
+        //grGen2PDFSyst->Draw("2");
+        grGen2ToCentral->Draw("2");
+        grCentralSystRatio->Draw("2");
+        grCentralStatRatio->Draw("p");
+        grGen2ToCentral->Draw("p");
+        legend3->Draw("same");
+        plot3->RedrawAxis();
+        //--- End of Third Pad ---
+    }
+
+    if (hGen3) {
+        //--- Fourth Pad ---
+        plots->cd();
+        TPad *plot4 = new TPad("plot4", "plot4", 0., 0., 0., 0.);
+        setAndDrawTPad(canvasName, plot4, 4, numbOfGenerator);
+
+        //--- TLegend ---
+        TLegend *legend4 = new TLegend(0.16, 0.05, 0.42, 0.20);
+        customizeLegend(legend4, 3, numbOfGenerator);
+        TString generator3 = hGen3->GetZaxis()->GetTitle();
+        generator3 = generator3(0, generator3.Index(" "));
+        customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
+        configXaxis(grGen3ToCentral, hGen3);
+        grGen3PDFSyst->SetFillStyle(ZJetsFillStyle);
+        grGen3PDFSyst->SetFillColor(ZJetsPdfFillColor[1]);
+        grGen3ToCentral->Draw("a2");
+        //grGen3PDFSyst->Draw("2");
+        grGen3ToCentral->Draw("2");
+        grCentralSystRatio->Draw("2");
+        grCentralStatRatio->Draw("p");
+        grGen3ToCentral->Draw("p");
+        legend4->Draw("same");
+        plot4->RedrawAxis();
+        //--- End of Fourth Pad ---
+    }
+    plots->Update();
+    return plots;
+}
 

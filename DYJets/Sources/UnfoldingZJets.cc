@@ -52,6 +52,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetEtaMax, fData, fDYJets, fBg, NBGDYJETS);
     //----------------------------------------------------------------------------------------- 
 
+    //--- Open additional generator files -----------------------------------------------------
+    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //----------------------------------------------------------------------------------------- 
+
     //----------------------------------------------------------------------------------------- 
     //--- Now run on the different variables ---
     for (int i = start; i < end; ++i) {
@@ -86,8 +92,20 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
                 hRecDYJets, hGenDYJets, hResDYJets, fDYJets,
                 hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets);
         //----------------------------------------------------------------------------------------- 
+        
+        RooUnfoldResponse *respShe = getResp(fSheUnf, hRecSumBg[0], variable);
+        TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
+        TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
 
         TH1D *hGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
+        hGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
+        TH1D *hSheCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
+        hSheCrossSection->SetZTitle("Sherpa (#leq2j@NLO 3,4j@LO + PS)");
+        hSheCrossSection->Scale(0.95);
+        TH1D *hPowCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
+        hPowCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
+        hPowCrossSection->Scale(1.10);
+        
 
         // Here is an array of TH1D to store the various unfolded data:
         // 0 - Central, 
@@ -146,7 +164,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
         for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hUnfData[0], hCov[8], hGenCrossSection, lepSel); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[8], hGenCrossSection, hSheCrossSection, hPowCrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -189,6 +207,9 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     //--- Close all files ----------------------------------------------------------------------
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
+    fSheUnf->Close();
+    fSheGen->Close();
+    fPowGen->Close();
     //------------------------------------------------------------------------------------------ 
 
 }
@@ -321,128 +342,3 @@ TH1D* makeCrossSectionHist(TH1D* hGenDYJets, double integratedLumi)
     return hGenCrossSection;
 }
 
-TCanvas* makeCrossSectionPlot(TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen, TString lepSel)
-{
-
-    double maximum = hGen->GetMaximum();
-    TH1D *hPDFUp = (TH1D*) hStat->Clone();
-    hPDFUp->Scale(1.10);
-    TH1D *hPDFDown = (TH1D*) hStat->Clone();
-    hPDFDown->Scale(0.75);
-
-    //--- Main Canvas ---
-    TString canvasName = "canvas" + variable;
-    TCanvas *plots = new TCanvas(canvasName, hStat->GetTitle(), 600, 800);
-    //-------------------
-
-    //--- First Pad ---
-    plots->cd();
-    TPad *plot1 = new TPad("plot1", "plot1", 0., 0., 0., 0.);
-    setAndDrawTPad(canvasName, plot1, 1, 1);
-
-    //--- TLegend ---
-    TLegend *legend = new TLegend(0.47, 0.74, 0.99, 0.98);
-    customizeLegend(legend, 1);
-    //------------------
-
-    TH1D *hSyst = (TH1D*) hStat->Clone();
-    int nBins = hSyst->GetNbinsX();
-
-    for (int i = 1; i <= nBins; ++i) {
-        hSyst->SetBinError(i, sqrt(pow(hStat->GetBinError(i), 2) + hCovSyst->GetBinContent(i, i)));
-    }
-
-    TGraphAsymmErrors *grCentralStat = createGrFromHist(hStat);
-    grCentralStat->SetName("gr" + variable + "CentralStatError"); 
-    TGraphAsymmErrors *grCentralSyst = createGrFromHist(hSyst);
-    grCentralSyst->SetName("gr" + variable + "CentralTotError"); 
-    TGraphAsymmErrors *grCentralStatRatio = createRatioGraph(grCentralStat);
-    TGraphAsymmErrors *grCentralSystRatio = createRatioGraph(grCentralSyst);
-    TGraphAsymmErrors *grGen1ToCentral = createGenToCentral(hGen, grCentralStat);
-    TGraphAsymmErrors *grGen1PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen1ToCentral); 
-
-    customizeCentral(grCentralSyst, legend, "Data");
-    customizeCentral(grCentralStat, false);
-    customizeCentral(grCentralSystRatio, true);
-    customizeCentral(grCentralStatRatio, (bool)true);
-    grCentralSyst->Draw("a2");
-    customizeGenHist(hGen, 1, legend, "Madgraph + Pythia6 (#leq4j@LO + PS)");
-    hGen->DrawCopy("ESAME");
-
-    configYaxis(grCentralSyst, hGen);
-    configXaxis(grCentralSyst, hGen);
-    grCentralStat->Draw("p");
-
-    if (canvasName.Index("Eta") >= 0) {
-        grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
-    }
-    legend->Draw("same");
-
-    //--- TLatex stuff ---
-    TLatex *latexLabel = new TLatex(); 
-    latexLabel->SetNDC();
-    latexLabel->SetTextSize(0.035);
-    latexLabel->SetTextFont(42);
-    latexLabel->SetLineWidth(2);
-
-    latexLabel->SetTextFont(61);
-    latexLabel->DrawLatex(0.13,0.95,"CMS");
-    latexLabel->SetTextFont(52);
-    latexLabel->DrawLatex(0.20,0.95,"Preliminary");
-    latexLabel->SetTextFont(42);
-    latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
-    latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
-    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
-    if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
-    else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
-    else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
-    latexLabel->Draw("same");
-
-    TLatex *ytitle = new TLatex();
-    ytitle->SetTextSize(0.04);
-    ytitle->SetTextFont(42);
-    ytitle->SetLineWidth(2);
-    ytitle->SetTextColor(kBlack);
-    ytitle->SetNDC();
-    ytitle->SetTextAlign(33);
-    ytitle->SetTextAngle(90);
-    std::string strYtitle = getYaxisTitle(hGen);
-    cout << strYtitle << endl;
-    if (strYtitle.find("eta") != std::string::npos) {
-        size_t first = strYtitle.find("#eta");
-        std::string tmp1 = strYtitle.substr(0, first);
-        std::string tmp2 = strYtitle.substr(first);
-        strYtitle = tmp1 + "|" + tmp2;
-        size_t second = strYtitle.find(")");
-        tmp1 = strYtitle.substr(0, second+1);
-        tmp2 = strYtitle.substr(second+1);
-        strYtitle = tmp1 + "|" + tmp2;
-    }
-    ytitle->DrawLatex(0.008,0.91,strYtitle.c_str());
-    //--- End Of first Pad ---
-
-    //--- Second Pad ---
-    plots->cd();
-    TPad *plot2 = new TPad("plot2", "plot2", 0., 0., 0., 0.);
-    setAndDrawTPad(canvasName, plot2, 2, 1);
-
-
-    //--- TLegend ---
-    TLegend *legend2 = new TLegend(0.16, 0.05, 0.42, 0.20);
-    customizeLegend(legend2, 1, 1);
-    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, "MadGraph/Data", 1, legend2);
-    configXaxis(grGen1ToCentral, hGen);
-    grGen1PDFSyst->SetFillStyle(1001);
-    grGen1PDFSyst->SetFillColor(kBlue-6);
-    grGen1ToCentral->Draw("a2");
-    grGen1ToCentral->Draw("2");
-    grCentralSystRatio->Draw("2");
-    grCentralStatRatio->Draw("p");
-    grGen1ToCentral->Draw("p");
-    legend2->Draw("same");
-    plot2->RedrawAxis();
-    //--- End of Second Pad ---
-
-    plots->Update();
-    return plots;
-}

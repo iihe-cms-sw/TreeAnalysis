@@ -5,7 +5,7 @@
 #include <TH2D.h>
 #include <TCanvas.h>
 #include "variablesOfInterestZJets.h"
-#include "UnfoldingZJets.h"
+#include "PlotSettings.h"
 #include "Combination.h"
 #include "BLUEMeth.h"
 
@@ -154,7 +154,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //---------------------------------------------------------------------
 
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(variable, hCombination, covxaxbSyst, hGenCombined); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hGenCombined); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");

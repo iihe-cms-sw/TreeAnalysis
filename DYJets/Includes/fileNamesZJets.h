@@ -38,7 +38,11 @@ const unsigned int NFILESDYJETS(12);
 const unsigned int NBGDYJETS(NFILESDYJETS-2);
 const unsigned int FilesDYJets[NFILESDYJETS] = {0, 1, 10, 4, 9, 3, 5, 8, 7, 6, 2, 11};
 
-const TString DYPOWHEGFILENAME("DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ");
-const TString DYSHERPAFILENAME("DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL");
+//const TString DYPOWHEGFILENAME("DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ");
+//const TString DYSHERPAFILENAME("DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL");
+
+const TString DYPOWHEGFILENAME("DYJets_Powheg_FROM_COPY_OF_MADGRAPH");
+const TString DYSHERPAFILENAME("DYJets_Sherpa_FROM_COPY_OF_MADGRAPH");
+const TString DYSHERPAUNFOLDINGFILENAME("DYJets_Sherpa_UNFOLDING_FROM_COPY_OF_MADGRAPH");
 
 #endif

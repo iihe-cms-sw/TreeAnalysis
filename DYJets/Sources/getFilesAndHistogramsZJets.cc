@@ -347,6 +347,18 @@ RooUnfoldResponse* getResp(TFile *File, TString variable)
     return response;
 }
 
+RooUnfoldResponse* getResp(TFile *File, TH1D *hRecSumBg, TString variable)
+{
+    TH1D *hRec = (TH1D*) File->Get(variable);
+    hRec->Add(hRecSumBg);
+    RooUnfoldResponse *response = new RooUnfoldResponse(
+            hRec,
+            (TH1D*) File->Get("gen" + variable), 
+            (TH2D*) File->Get("hresponse" + variable), true
+            ); 
+    return response;
+}
+
 void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
