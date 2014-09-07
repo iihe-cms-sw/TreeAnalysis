@@ -72,7 +72,7 @@ void customizeLegend(TLegend *legend, int numbOfGenerator)
     legend->SetBorderSize(1);
     if (numbOfGenerator == 1) {
         legend->SetX1(0.44);
-        legend->SetY1(0.8);
+        legend->SetY1(0.84);
         legend->SetX2(0.97);
         legend->SetY2(0.98);
         legend->SetTextSize(.029);
@@ -86,10 +86,10 @@ void customizeLegend(TLegend *legend, int numbOfGenerator)
     }
     else if (numbOfGenerator == 3) {
         legend->SetX1(0.44);
-        legend->SetY1(0.74);
+        legend->SetY1(0.7);
         legend->SetX2(0.95);
         legend->SetY2(0.98);
-        legend->SetTextSize(.04);
+        legend->SetTextSize(.042);
     }
 }
 
@@ -102,11 +102,28 @@ void customizeLegend(TLegend *legend, int genNumb, int numbOfGenerator)
     legend->SetTextSize(.12);
 
     if (genNumb == numbOfGenerator) {
-        legend->SetY1(0.34);
-        legend->SetX2(0.4);
-        legend->SetY2(0.44);
-        //legend->SetTextSize(0.06);
-        legend->SetTextSize(0.078);
+        if (numbOfGenerator == 1) {
+            legend->SetY1(0.35);
+            legend->SetX2(0.43);
+            legend->SetY2(0.45);
+            //legend->SetTextSize(0.06);
+            legend->SetTextSize(0.08);
+        }
+
+        if (numbOfGenerator == 2) {
+            legend->SetY1(0.34);
+            legend->SetX2(0.43);
+            legend->SetY2(0.45);
+            //legend->SetTextSize(0.06);
+            legend->SetTextSize(0.08);
+        }
+        if (numbOfGenerator == 3) {
+            legend->SetY1(0.34);
+            legend->SetX2(0.43);
+            legend->SetY2(0.45);
+            //legend->SetTextSize(0.06);
+            legend->SetTextSize(0.09);
+        }
     }
 
 }
@@ -298,11 +315,11 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
         if (numbOfGenerator == 2) gen->GetYaxis()->SetLabelSize(0.105);
         if (numbOfGenerator == 3) gen->GetYaxis()->SetLabelSize(0.115);
         gen->GetYaxis()->SetTitleSize(0.08);
-        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleSize(0.09);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.11);
+        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleSize(0.10);
+        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.105);
         gen->GetYaxis()->SetTitleOffset(0.8);
-        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleOffset(0.75);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.62);
+        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleOffset(0.65);
+        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.63);
         gen->GetXaxis()->SetLabelSize(0.10);
         gen->GetXaxis()->SetTitleSize(0.12);
         gen->GetXaxis()->SetTitleOffset(1.10);
@@ -446,7 +463,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     if (hGen2) numbOfGenerator = 2;
     if (hGen3) numbOfGenerator = 3;
     //---------------------------------------------
-    
+
     TH1D *hPDFUp = (TH1D*) hStat->Clone();
     hPDFUp->Scale(1.10);
     TH1D *hPDFDown = (TH1D*) hStat->Clone();
@@ -577,10 +594,10 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
 
     //--- TLegend ---
     TLegend *legend2 = new TLegend(0.16, 0.05, 0.42, 0.20);
-    customizeLegend(legend2, 1, 1);
+    customizeLegend(legend2, 1, numbOfGenerator);
     TString generator1 = hGen1->GetZaxis()->GetTitle();
     generator1 = generator1(0, generator1.Index(" "));
-    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", 1, legend2);
+    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
     configXaxis(grGen1ToCentral, hGen1);
     grGen1PDFSyst->SetFillStyle(1001);
     grGen1PDFSyst->SetFillColor(kBlue-6);
