@@ -141,6 +141,14 @@ int main(int argc, char **argv)
             if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets DMudata(lepSel + "_8TeV_Data_dR", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
             DMudata.Loop(hasRecoInfo, hasGenInfo);
+            //ZJets DMudataA(lepSel + "_8TeV_Data_dR_RunA", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
+            //DMudataA.Loop(hasRecoInfo, hasGenInfo);
+            //ZJets DMudataB(lepSel + "_8TeV_Data_dR_RunB", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
+            //DMudataB.Loop(hasRecoInfo, hasGenInfo);
+            //ZJets DMudataC(lepSel + "_8TeV_Data_dR_RunC", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
+            //DMudataC.Loop(hasRecoInfo, hasGenInfo);
+            //ZJets DMudataD(lepSel + "_8TeV_Data_dR_RunD", 1, 1, dataSyst[i], dataDir[i], 1, jetPtMin, jetEtaMax, do10000Events, histoDir);
+            //DMudataD.Loop(hasRecoInfo, hasGenInfo);
         }
     }
 
