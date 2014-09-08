@@ -94,19 +94,18 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
         //--- Get Sherpa Unfolding response ---
         respDYJets[13] = getResp(fSheUnf, hRecSumBg[0], variable);
+        TH1D *hSheGen = hSheGen = getHisto(fSheGen, "gen" + variable);
+        TH1D *hPowGen = hPowGen = getHisto(fPowGen, "gen" + variable);
         //----------------------------------------------------------------------------------------- 
-        
-        TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
-        TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
 
         TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
         hMadGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
         TH1D *hSheGenCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
         hSheGenCrossSection->SetZTitle("Sherpa (#leq2j@NLO 3,4j@LO + PS)");
-        hSheGenCrossSection->Scale(0.95);
+        hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
         TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowGenCrossSection->Scale(1.10);
+        hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
         
 
         // Here is an array of TH1D to store the various unfolded data:
@@ -168,13 +167,15 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[9] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
         for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
+        //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
         crossSectionPlot->SaveAs(outputFileName + ".ps");
         crossSectionPlot->SaveAs(outputFileName + ".C");
 
+        hUnfData[13]->Scale(1.05); // I don't have Sherpa yet, so this is to simulate it
         //--- print out break down of errors ---
         for (int i = 2; i <= 9; ++i) {
             cout << hUnfData[0]->GetBinContent(i);
@@ -208,7 +209,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         outputRootFile->Close();
 
         if (end == start + 1) system("display " + outputFileName + ".png &");
-        
+
     }
 
     //--- Close all files ----------------------------------------------------------------------

@@ -46,18 +46,18 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         commonName += jetEtaMax;
         commonName += ".root";
         TFile *fDE = new TFile(unfoldDir + "DE" + commonName);
-        if (!fDE) {
-            cerr << "\nError: file " << unfoldDir + "DE" + commonName << "does not exist." << endl;
-            cerr << "       You can create it using\n\t ./runUnfoldingZJets lepSel=DE" << endl;
-            cerr << "Skipping variable " << variable << "." << endl;
+        if (!fDE->IsOpen()) {
+            cerr << "\nError: file " << unfoldDir + "DE" + commonName << " does not exist." << endl;
+            cerr << "       You can create it using\n\t ./runUnfoldingZJets lepSel=DE variable=" << variable << endl;
+            cerr << "Skipping variable " << variable << ".\n" << endl;
             continue;
         }
 
         TFile *fDMu = new TFile(unfoldDir + "DMu" + commonName);
-        if (!fDMu) {
-            cerr << "\nError: file " << unfoldDir + "DMu" + commonName << "does not exist." << endl;
-            cerr << "       You can create it using\n\t ./runUnfoldingZJets lepSel=DMu" << endl;
-            cerr << "Skipping variable " << variable << "." << endl;
+        if (!fDMu->IsOpen()) {
+            cerr << "\nError: file " << unfoldDir + "DMu" + commonName << " does not exist." << endl;
+            cerr << "       You can create it using\n\t ./runUnfoldingZJets lepSel=DMu variable=" << variable << endl;
+            cerr << "Skipping variable " << variable << ".\n" << endl;
             continue;
         }
         //---------------------------------------------------------------------
@@ -171,7 +171,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //---------------------------------------------------------------------
 
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
+        //TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
