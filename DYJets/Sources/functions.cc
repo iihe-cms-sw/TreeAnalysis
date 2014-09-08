@@ -297,7 +297,7 @@ void BTagModification(double randNumber, double pt, double eta, int jetFlavour, 
         float effb = -1.73338329789*x*x*x*x +  1.26161794785*x*x*x +  0.784721653518*x*x +  -1.03328577451*x +  1.04305075822;
         float SFb = (0.938887+(0.00017124*pt))+(-2.76366e-07*(pt*pt));
 
-        float SFb_error;
+        float SFb_error = 0;
 
         if      (pt >= 20  && pt < 30)  SFb_error = 0.0415707;
         else if (pt >= 30  && pt < 40)  SFb_error = 0.0204209;
@@ -314,7 +314,7 @@ void BTagModification(double randNumber, double pt, double eta, int jetFlavour, 
         else if (pt >= 320 && pt < 400) SFb_error = 0.0313175;
         else if (pt >= 400 && pt < 500) SFb_error = 0.0415417;
         else if (pt >= 500 && pt < 600) SFb_error = 0.0740446;
-        else if (pt >= 600 && pt < 800) SFb_error = 0.0596716;
+        else if (pt >= 600) SFb_error = 0.0596716;
 
         float SFb_up = SFb + SFb_error;
         float SFb_down = SFb - SFb_error;
@@ -354,7 +354,7 @@ void BTagModification(double randNumber, double pt, double eta, int jetFlavour, 
         float effc = -1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724;
         float SFc = (0.938887+(0.00017124*pt))+(-2.76366e-07*(pt*pt));
 
-        float SFc_error;
+        float SFc_error = 0.;
 
         if      (pt >= 20  && pt < 30)  SFc_error = 0.0415707;
         else if (pt >= 30  && pt < 40)  SFc_error = 0.0204209;
@@ -371,7 +371,7 @@ void BTagModification(double randNumber, double pt, double eta, int jetFlavour, 
         else if (pt >= 320 && pt < 400) SFc_error = 0.0313175;
         else if (pt >= 400 && pt < 500) SFc_error = 0.0415417;
         else if (pt >= 500 && pt < 600) SFc_error = 0.0740446;
-        else if (pt >= 600 && pt < 800) SFc_error = 0.0596716;
+        else if (pt >= 600) SFc_error = 0.0596716;
 
         float SFc_up = SFc + 2*SFc_error;
         float SFc_down = SFc - 2*SFc_error;

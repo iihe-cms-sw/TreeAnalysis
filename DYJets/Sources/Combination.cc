@@ -65,7 +65,9 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //--- fetch the cross section histogram and the covariance matrices ---
         fDE->cd();
         TH1D *hUnfDE = (TH1D*) fDE->Get("UnfDataCentral");
-        TH1D *hGenDE = (TH1D*) fDE->Get("hGenDYJetsCrossSection");
+        TH1D *hMadGenDE = (TH1D*) fDE->Get("hMadGenDYJetsCrossSection");
+        TH1D *hSheGenDE = (TH1D*) fDE->Get("hSheGenDYJetsCrossSection");
+        TH1D *hPowGenDE = (TH1D*) fDE->Get("hPowGenDYJetsCrossSection");
         TH2D *hCovDataStatDE = (TH2D*) fDE->Get("CovDataStat");
         TH2D *hCovMCStatDE = (TH2D*) fDE->Get("CovMCStat");
         TH2D *hCovPUSystDE = (TH2D*) fDE->Get("CovPU");
@@ -74,10 +76,13 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D *hCovLumiSystDE = (TH2D*) fDE->Get("CovLumi");
         TH2D *hCovSFSystDE = (TH2D*) fDE->Get("CovSF");
         TH2D *hCovJESSystDE = (TH2D*) fDE->Get("CovJES");
+        TH2D *hCovSherpaUnfSystDE = (TH2D*) fDE->Get("CovSherpaUnf");
 
         fDMu->cd();
         TH1D *hUnfDMu = (TH1D*) fDMu->Get("UnfDataCentral");
-        TH1D *hGenDMu = (TH1D*) fDMu->Get("hGenDYJetsCrossSection");
+        TH1D *hMadGenDMu = (TH1D*) fDMu->Get("hMadGenDYJetsCrossSection");
+        TH1D *hSheGenDMu = (TH1D*) fDMu->Get("hSheGenDYJetsCrossSection");
+        TH1D *hPowGenDMu = (TH1D*) fDMu->Get("hPowGenDYJetsCrossSection");
         TH2D *hCovDataStatDMu = (TH2D*) fDMu->Get("CovDataStat");
         TH2D *hCovMCStatDMu = (TH2D*) fDMu->Get("CovMCStat");
         TH2D *hCovPUSystDMu = (TH2D*) fDMu->Get("CovPU");
@@ -86,6 +91,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D *hCovLumiSystDMu = (TH2D*) fDMu->Get("CovLumi");
         TH2D *hCovSFSystDMu = (TH2D*) fDMu->Get("CovSF");
         TH2D *hCovJESSystDMu = (TH2D*) fDMu->Get("CovJES");
+        TH2D *hCovSherpaUnfSystDMu = (TH2D*) fDMu->Get("CovSherpaUnf");
         //---------------------------------------------------------------------
 
         //--- create the output root file ---
@@ -111,8 +117,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- fill in the vector of vector of covariances ---
         vector<vector<TH2D*>> covariances{
-            {hCovDataStatDE, hCovMCStatDE, hCovPUSystDE, hCovJERSystDE, hCovXSecSystDE, hCovLumiSystDE, hCovSFSystDE, hCovJESSystDE}, 
-                {hCovDataStatDMu, hCovMCStatDMu, hCovPUSystDMu, hCovJERSystDMu, hCovXSecSystDMu, hCovLumiSystDMu, hCovSFSystDMu, hCovJESSystDMu}
+            {hCovDataStatDE, hCovMCStatDE, hCovPUSystDE, hCovJERSystDE, hCovXSecSystDE, hCovLumiSystDE, hCovSFSystDE, hCovJESSystDE, hCovSherpaUnfSystDE}, 
+                {hCovDataStatDMu, hCovMCStatDMu, hCovPUSystDMu, hCovJERSystDMu, hCovXSecSystDMu, hCovLumiSystDMu, hCovSFSystDMu, hCovJESSystDMu, hCovSherpaUnfSystDMu}
         };
         //---------------------------------------------------------------------
 
@@ -122,7 +128,9 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D* covxaxb = NULL; // total covariance matrix
         TH2D* covxaxbSyst = NULL; // total syst covariance matrix
         TH1D* hCombination = NULL; // combined cross section
-        TH1D* hGenCombined = NULL;
+        TH1D* hMadGenCombined = NULL;
+        TH1D* hSheGenCombined = NULL;
+        TH1D* hPowGenCombined = NULL;
         //---------------------------------------------------------------------
 
         //--- create the BLUEMeth object to compute the covariance ---
@@ -145,16 +153,25 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         covxaxbSyst->Add(covuxaxb[0], -1);
         covxaxbSyst->SetName("CombCovTotSyst");
 
-        hGenCombined = (TH1D*) hGenDE->Clone();
-        hGenCombined->Add(hGenDMu);
-        hGenCombined->Scale(0.5);
-        hGenCombined->SetName("hCombGenDYJetsCrossSection");
+        hMadGenCombined = (TH1D*) hMadGenDE->Clone();
+        hMadGenCombined->Add(hMadGenDMu);
+        hMadGenCombined->Scale(0.5);
+        hMadGenCombined->SetName("hMadCombGenDYJetsCrossSection");
 
+        hSheGenCombined = (TH1D*) hSheGenDE->Clone();
+        hSheGenCombined->Add(hSheGenDMu);
+        hSheGenCombined->Scale(0.5);
+        hSheGenCombined->SetName("hSheCombGenDYJetsCrossSection");
+
+        hPowGenCombined = (TH1D*) hPowGenDE->Clone();
+        hPowGenCombined->Add(hPowGenDMu);
+        hPowGenCombined->Scale(0.5);
+        hPowGenCombined->SetName("hPowCombGenDYJetsCrossSection");
 
         //---------------------------------------------------------------------
 
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hGenCombined); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -170,7 +187,9 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         outputRootFile->cd();
         crossSectionPlot->Write();
         hCombination->Write("CombDataCentral");
-        hGenCombined->Write();
+        hMadGenCombined->Write();
+        hSheGenCombined->Write();
+        hPowGenCombined->Write();
         covxaxb->Write("CombCovTot");
         covxaxbSyst->Write("CombCovTotSyst");
         for (unsigned int i = 0; i < covuxaxb.size(); ++i) {

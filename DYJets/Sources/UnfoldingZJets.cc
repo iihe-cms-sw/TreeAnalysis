@@ -85,26 +85,28 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //--- rec Sum Bg histograms ---
         TH1D *hRecSumBg[9] = {NULL};
         //--- response DYJets objects ---
-        RooUnfoldResponse *respDYJets[13] = {NULL};
+        RooUnfoldResponse *respDYJets[14] = {NULL};
 
         //--- Get all histograms ---
         getAllHistos(variable, hRecData, fData, 
                 hRecDYJets, hGenDYJets, hResDYJets, fDYJets,
                 hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets);
+
+        //--- Get Sherpa Unfolding response ---
+        respDYJets[13] = getResp(fSheUnf, hRecSumBg[0], variable);
         //----------------------------------------------------------------------------------------- 
         
-        RooUnfoldResponse *respShe = getResp(fSheUnf, hRecSumBg[0], variable);
         TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
         TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
 
-        TH1D *hGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
-        hGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
-        TH1D *hSheCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
-        hSheCrossSection->SetZTitle("Sherpa (#leq2j@NLO 3,4j@LO + PS)");
-        hSheCrossSection->Scale(0.95);
-        TH1D *hPowCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
-        hPowCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowCrossSection->Scale(1.10);
+        TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
+        hMadGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
+        TH1D *hSheGenCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
+        hSheGenCrossSection->SetZTitle("Sherpa (#leq2j@NLO 3,4j@LO + PS)");
+        hSheGenCrossSection->Scale(0.95);
+        TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
+        hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
+        hPowGenCrossSection->Scale(1.10);
         
 
         // Here is an array of TH1D to store the various unfolded data:
@@ -115,11 +117,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         // 7 - XSEC up, 8 - XSEC down
         // 9 - Lumi up, 10 - Lumi down
         // 11 - SF up, 12 - SF down
+        // 13 - SherpaUnf
         TString name[] = {"Central", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", 
-            "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown"};
-        TH1D *hUnfData[13] = {NULL};
-        TH2D *hUnfDataStatCov[13] = {NULL};
-        TH2D *hUnfMCStatCov[13] = {NULL};
+            "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown", "SherpaUnf"};
+        TH1D *hUnfData[14] = {NULL};
+        TH2D *hUnfDataStatCov[14] = {NULL};
+        TH2D *hUnfMCStatCov[14] = {NULL};
 
         int nIter; 
         if (algo == "Bayes" && lepSel == "DMu")     
@@ -136,7 +139,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             return;
         }
         //--- Unfold the Data histograms for each systematic ---
-        for (unsigned short iSyst = 0; iSyst < 13; ++iSyst) {
+        for (unsigned short iSyst = 0; iSyst < 14; ++iSyst) {
 
             //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
             unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
@@ -151,7 +154,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //----------------------------------------------------------------------------------------- 
 
         //--- Now create the covariance matrices ---
-        TH2D *hCov[9] = {NULL};
+        TH2D *hCov[10] = {NULL};
         hCov[0] = (TH2D*) hUnfDataStatCov[0]->Clone("CovDataStat");
         hCov[1] = (TH2D*) hUnfMCStatCov[0]->Clone("CovMCStat");
         hCov[2] = makeCovFromUpAndDown(hUnfData[0], hUnfData[1], hUnfData[2], "CovJES");
@@ -160,11 +163,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[5] = makeCovFromUpAndDown(hUnfData[0], hUnfData[7], hUnfData[8], "CovXSec");
         hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLumi");
         hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovSF");
+        hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[13], "CovSherpaUnf");
 
-        hCov[8] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
-        for (int i = 2; i < 8; ++i) hCov[8]->Add(hCov[i]);
+        hCov[9] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
+        for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[8], hGenCrossSection, hSheCrossSection, hPowCrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -172,9 +176,9 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         crossSectionPlot->SaveAs(outputFileName + ".C");
 
         //--- print out break down of errors ---
-        for (int i = 2; i <= 8; ++i) {
+        for (int i = 2; i <= 9; ++i) {
             cout << hUnfData[0]->GetBinContent(i);
-            for (int j = 0; j <= 8; ++j) {
+            for (int j = 0; j <= 9; ++j) {
                 cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
             }
             cout << endl;
@@ -187,7 +191,9 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hRecSumBg[0]->Write("hRecSumBgCentral");
         hRecDYJets[0]->Write("hRecDYJetsCentral");
         hGenDYJets[0]->Write("hGenDYJetsCentral");
-        hGenCrossSection->Write("hGenDYJetsCrossSection");
+        hMadGenCrossSection->Write("hMadGenDYJetsCrossSection");
+        hSheGenCrossSection->Write("hSheGenDYJetsCrossSection");
+        hPowGenCrossSection->Write("hPowGenDYJetsCrossSection");
         respDYJets[0]->Write("respDYJetsCentral");
         for (int i = 0; i < 9; ++i) {
             hCov[i]->Write();
