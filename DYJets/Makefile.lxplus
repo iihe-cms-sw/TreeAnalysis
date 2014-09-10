@@ -18,7 +18,7 @@ RTL = -Wl,-rpath,
 LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 
 SRCDIR = Sources/
-INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I$(SRT_LHAPATH_SCRAMRTDEL)/../../../include
+INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/include
 
 #CXX           = gfortran -std=c++0x 
 CXX           = g++ -std=c++0x 
