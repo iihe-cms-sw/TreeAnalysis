@@ -25,19 +25,6 @@ To build it, nothing hard:
     $ make 
 
 Bravo ! You have compiled the RooUnfold classes and you are ready to use it.
-You also need LHAPDF. If you are on lxplus it will require the following.
-I found this recipe to work: I m not saying
-it is the best but it worked for me. If you have another solution, please
-send it to me:
-
-    $ cd DYJets
-    $ mkdir lhapdf
-    $ cd lhapdf
-    $ ar -x $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib/libLHAPDF.a
-    $ gcc -shared *.o -o libLHAPDF.so
-
-This will create the libLHAPDF.so from the libLHAPDF.a that I could not get
-to work.
 
 Three Makefile are provided. One for each host... If somebody wants to create
 a configure script, he can, but I found it easier to have three Makefile and 
