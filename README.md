@@ -7,10 +7,6 @@ For 2012 data analysis do:
 
     git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2012
 
-For 2011 data analysis do:
-
-    git clone git@github.com:iihe-cms-sw/TreeAnalysis.git TreeAnalysis2011
-
 if you want to run on:
   1. WJets: move DYJets directory to WJets
   2. TTbar to emu : move DYJets directory to TTbarEMu
@@ -29,6 +25,64 @@ To build it, nothing hard:
     $ make 
 
 Bravo ! You have compiled the RooUnfold classes and you are ready to use it.
+You also need LHAPDF. If you are on lxplus it will require the following.
+I found this recipe to work: I m not saying
+it is the best but it worked for me. If you have another solution, please
+send it to me:
+
+    $ cd DYJets
+    $ mkdir lhapdf
+    $ cd lhapdf
+    $ ar -x $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib/libLHAPDF.a
+    $ gcc -shared *.o -o libLHAPDF.so
+
+This will create the libLHAPDF.so from the libLHAPDF.a that I could not get
+to work.
+
+Three Makefile are provided. One for each host... If somebody wants to create
+a configure script, he can, but I found it easier to have three Makefile and 
+create a symbolinc link to the one we want. For example, if you are on lxplus,
+you will do this:
+
+    $ ln -s Makefile.lxplus Makefile
+
+I m mostly working on the m-machines, so I do
+
+    $ ln -s Makefile.m6 Makefile
+
+The created link Makefile is mentioned in the .gitignore and will therefore not
+be commited.
+
+Now you should have everything setup and you can try to build the executables.
+The source code is contained in the Sources and some in DYJets. The code in
+Sources will only be compiled into .o files. While the code in DYJets, meanly
+some runBlaBla.cc code are dedicated to user executables. For example, after
+compilation you will have
+
+    $ ./runZJets
+
+That will use some .o files in the Sources directory.
+
+
+So, right now you are ready to compile the Sources code. Simply do:
+
+    $ make
+
+It will also create the first executable: runZJets
+
+You can then compile each of the other runBlabla:
+
+    $ make runRecoComparison
+    $ make runUnfoldingZJets
+    $ make runCombination
+
+Once you ve done this. If there was no error, you can start using the executbles.
+The executables come with some options. You can use the option -help to know more
+about what it is possible to do.
+
+
+
+
 
 
 You can also create some directories that will be needed later:
