@@ -18,6 +18,7 @@ and produce weights to convert the input distribution (1) to the latter (2).
 #include "TH1.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "TString.h"
 #include <string>
 #include <vector>
 #include <TROOT.h>
@@ -27,7 +28,7 @@ using namespace std;
 
 class standalone_LumiReWeighting {
     public:
-        standalone_LumiReWeighting(string leptonFlavor = "Muons", int year = 2013,int mode = 0); // 0: central, -1: down, +1: up
+        standalone_LumiReWeighting(TString leptonFlavor = "Muons", int year = 2013,int mode = 0); // 0: central, -1: down, +1: up
         virtual ~standalone_LumiReWeighting();
         double weight( int npv) ;
         //void weightOOT_init();

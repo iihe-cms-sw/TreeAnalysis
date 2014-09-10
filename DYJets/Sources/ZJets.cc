@@ -133,7 +133,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     // Start looping over all the events //
     //===================================//
     cout << endl;
-    printf("\nProcessing : %s    -->   %s \n", fileName.c_str(), outputFileName.c_str()); 
+    cout << "\nProcessing : " << fileName << "    -->  " << outputFileName << endl;
 
     //--- Initialize the tree branches ---
     Init(hasRecoInfo, hasGenInfo);
@@ -177,7 +177,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         }
         weight *= lumiScale * xsec;
 
-        if (fileName.find("DYJets") != string::npos && fileName.find("MIX") != string::npos && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6]; 
+        if (fileName.Index("DYJets") >= 0 && fileName.Index("MIX") >= 0 && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6]; 
         
 
         //==========================================================================================================//
@@ -242,7 +242,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                     bool muPassesIsoCut(patMuonPfIsoDbeta_->at(i) < 0.2);  
                     bool muPassesAnyTrig(whichTrigger & 0x8); // 8TeV comment: Mu17Mu8Tk = 4; Mu17Mu8 = 8 
                     /// for files obtained form bugra
-                    if (fileName.find("DYJets_Sherpa_UNFOLDING_dR_5311") != string::npos && whichTrigger > 0) muPassesAnyTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
+                    if (fileName.Index("DYJets_Sherpa_UNFOLDING_dR_5311") >= 0 && whichTrigger > 0) muPassesAnyTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
 
                     // select the good muons only
                     if (muPassesPtCut && muPassesEtaCut && muPassesIdCut && muPassesIsoCut && (!useTriggerCorrection || muPassesAnyTrig)) {
@@ -387,14 +387,14 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
             nGenLeptons = genLeptons.size();
 
-            if (countTauS3 == 0 && fileName.find("UNFOLDING") != string::npos) {
+            if (countTauS3 == 0 && fileName.Index("UNFOLDING") >= 0) {
                 partonsN->Fill(nup_-5);
                 partonsNWeighted->Fill(nup_-5, genWeight);
             }
 
             //--- if there are taus, but we do not run on the Tau file, thus we run on the DYJets file, 
             //    then we don't count the event at reco.
-            if (countTauS3 > 0 && fileName.find("Tau") == string::npos) passesLeptonCut = 0; 
+            if (countTauS3 > 0 && fileName.Index("Tau") < 0) passesLeptonCut = 0; 
 
             //-- determine if the event passes the leptons requirements
             if (nGenLeptons >= 2){
@@ -472,7 +472,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             nGoodJets_20 = jets_20.size();
 
             // line below to test reco events that originate from TAU
-            if (fileName.find("Tau") != string::npos && countTauS3 == 0 && hasGenInfo) {
+            if (fileName.Index("Tau") >= 0 && countTauS3 == 0 && hasGenInfo) {
                 passesLeptonCut = 0;
             }
         }  // END IF HAS RECO
@@ -1567,7 +1567,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 }
 
 ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
-        int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetEtaCutMax_,  bool do10000Events_, TString outDir_): 
+        int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetEtaCutMax_,  bool do10000Events_, TString outDir_, TString bonzaiDir): 
     HistoSetZJets(fileName_(0, fileName_.Index("_"))), outputDirectory(outDir_),
     fileName(fileName_), lumiScale(lumiScale_), useTriggerCorrection(useTriggerCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), do10000Events(do10000Events_)
@@ -1584,30 +1584,30 @@ ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
 
     TChain *chain = new TChain("", "");
 
-    isData = (fileName.find("Data") != string::npos); 
-    string fullFileName = "~/ZJetsFiles/" + fileName;
+    isData = (fileName.Index("Data") >= 0); 
+    TString fullFileName = bonzaiDir + fileName;
 
 
-    if (fileName.find("DMu_") == 0) leptonFlavor = "Muons";
-    else if (fileName.find("DE_") == 0)  leptonFlavor = "Electrons"; 
+    if (fileName.BeginsWith("DMu_")) leptonFlavor = "Muons";
+    else if (fileName.BeginsWith("DE_"))  leptonFlavor = "Electrons"; 
 
-    if (fileName.find("List") == string::npos){
+    if (fileName.Index("List") < 0){
         fullFileName += ".root";
-        string treePath = fullFileName + "/tree/tree";
-        if (fileName.find("Sherpa") != string::npos) treePath = fullFileName + "/tree";
+        TString treePath = fullFileName + "/tree/tree";
+        if (fileName.Index("Sherpa") >= 0) treePath = fullFileName + "/tree";
         cout << "Loading file: " << fullFileName << endl;
-        chain->Add(treePath.c_str());
+        chain->Add(treePath);
     }
     else {
         fullFileName += ".txt";
-        ifstream infile(fullFileName.c_str());
+        ifstream infile(fullFileName.Data());
         string line; 
         int countFiles(0);
         while (getline(infile, line)){
             countFiles++;
-            string treePath = line + "/tree/tree";
-            if (fileName.find("Sherpa") != string::npos) treePath = line + "/tree";
-            chain->Add(treePath.c_str());       
+            TString treePath = line + "/tree/tree";
+            if (fileName.Index("Sherpa") >= 0) treePath = line + "/tree";
+            chain->Add(treePath);       
         }
     }
     fChain = chain;
@@ -1709,7 +1709,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     // Set branch addresses and branch pointers
     fCurrent = -1;
     fChain->SetMakeClass(1);
-    if (fileName.find("Data") == string::npos) {
+    if (fileName.Index("Data") < 0) {
         fChain->SetBranchAddress("PU_npT", &PU_npT, &b_PU_npT);
         fChain->SetBranchAddress("PU_npIT", &PU_npIT, &b_PU_npIT);
     }

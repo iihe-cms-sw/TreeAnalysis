@@ -27,7 +27,7 @@ and produce weights to convert the input distribution (1) to the latter (2).
 
 using namespace std;
 
-standalone_LumiReWeighting::standalone_LumiReWeighting(string leptonFlavor, int year,int mode) {
+standalone_LumiReWeighting::standalone_LumiReWeighting(TString leptonFlavor, int year,int mode) {
 
     //std::cout << "=======================================================================" << std::endl;
 
