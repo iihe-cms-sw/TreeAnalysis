@@ -32,6 +32,27 @@ SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)
 
+.PHONY: all clean
+
+all: runCombination \
+runRecoComparison \
+runZJets \
+runUnfoldingZJets \
+dispatcher
+#runSystPlots \
+#runStatistics \
+#runPlotting3Ratios \
+#runPlotting \
+#runPlotter \
+#runMergeChannels \
+#runIndividual \
+#runFinalUnfoldAndCombination \
+#runFinalUnfold \
+#runFastPlots \
+#runFSRStudy \
+#runDYJets \
+#runCompareUnfolding
+
 # ===========================================================================
 runZJets: $(OBJLIST) runZJets.o
 	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
