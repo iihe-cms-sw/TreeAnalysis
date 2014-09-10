@@ -47,7 +47,7 @@ int main(int argc, char **argv)
                 getArg(currentArg, doPASPlots);
             }
             //--- asking for help ---
-            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+            else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: \n\t./runRecoComparison [lepSel=(DMu, DE)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [recoCompDir=(path)] [doPASPlots=(0,1)] [--help]" << std::endl;
                 std::cout << "\neg: ./runRecoComparison lepSel=DMu jetEtaMax=24" << std::endl;
                 std::cout << "\nunspecified options will be read from vjets.cfg\n" << std::endl;

@@ -59,7 +59,7 @@ int main(int argc, char **argv)
                 getArg(currentArg, variable);
             }
             //--- asking for help ---
-            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+            else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: ./runCombination [unfoldDir=(path)] [combDir=(path)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
                 std::cout << "[diagXChanCov=(1,0)] [fullXChanCov=(1,0)] [fullSChanCov=(1,0)] [--help]" << std::endl;
                 std::cout << "eg: ./runCombination fullXChanCov=0 jetEtaMax=24" << std::endl;

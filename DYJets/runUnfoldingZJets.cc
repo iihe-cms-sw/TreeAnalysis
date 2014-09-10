@@ -47,7 +47,7 @@ int main(int argc, char **argv)
                 getArg(currentArg, variable);
             }
             //--- asking for help ---
-            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+            else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: \n\t./runUnfolding [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [unfoldDir=(path)] [--help]" << std::endl;
                 std::cout << "\neg: ./runUnfolding lepSel=DMu jetEtaMax=24" << std::endl;
                 std::cout << "\nunspecified options will be read from vjets.cfg\n" << std::endl;

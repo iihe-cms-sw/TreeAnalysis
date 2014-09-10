@@ -63,7 +63,7 @@ int main(int argc, char **argv)
                 getArg(currentArg, do10000Events);
             }
             //--- asking for help ---
-            else if (currentArg.BeginsWith("--help") || currentArg.BeginsWith("-h")) {
+            else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: ./runZJets [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
                 std::cout << "[doWhat=(sample)] [doSysRunning=(1,0)] [doCentral=(1,0)] [do10000Events=(1,0)] [--help]" << std::endl;
                 std::cout << "eg: ./runZJets lepSel=DMu jetEtaMax=24" << std::endl;
