@@ -172,7 +172,7 @@ void BLUEMeth::ComputeFullCovariance()
         // the off diagonal blocks are filed with sigma(i, j+N) = sign(sigma(i,j)) * sqrt(sigma(i,i) * sigma(j+N,j+N))
         // to exhibit the same behavior than individual channel covariance matrix
         TString syst = _covariances[0][iCov]->GetName();
-        if ((syst.Contains("JES") || syst.Contains("JER") || syst.Contains("PU") || syst.Contains("Lumi") || syst.Contains("XSec")) && _diagCrossChannelCov) {
+        if ((syst.Contains("JES") || syst.Contains("JER") || syst.Contains("PU") || syst.Contains("Lumi") || syst.Contains("XSec")) && (_diagCrossChannelCov || _fullCrossChannelCov)) {
             //--- loop on each pair of channels to add correlation between each pair of measurements ---
             for (unsigned int iMeas1 = 0; iMeas1 < _nMeasurements; ++iMeas1) {
                 for (unsigned int iMeas2 = iMeas1+1; iMeas2 < _nMeasurements; ++iMeas2) {

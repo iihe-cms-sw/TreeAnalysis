@@ -117,7 +117,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         // 9 - Lumi up, 10 - Lumi down
         // 11 - SF up, 12 - SF down
         // 13 - SherpaUnf
-        TString name[] = {"Central", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", 
+        TString name[] = {"Central", "JESUp", "JESDown", "PUUp", "PUDown", "JERUp", "JERDown", 
             "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown", "SherpaUnf"};
         TH1D *hUnfData[14] = {NULL};
         TH2D *hUnfDataStatCov[14] = {NULL};

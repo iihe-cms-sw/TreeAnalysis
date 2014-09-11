@@ -5,7 +5,7 @@
 void executeInThread(std::string executable, std::string option, std::string machine) 
 {
     std::string command = executable + " " + option;
-    if (machine != "") command = "ssh " + machine + " \'source .bash_profile; cd TreeAnalysis2012/DYJets/; " + command + "\'";  
+    if (machine != "") command = "ssh -o StrictHostKeyChecking=no " + machine + " \'source .bash_profile; cd TreeAnalysis2012/DYJets/; " + command + "\'";  
     //std::string command = "./runZJets " + option;
     std::cout << command << std::endl;
     system(command.c_str());
