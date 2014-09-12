@@ -94,8 +94,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
         //--- Get Sherpa Unfolding response ---
         respDYJets[13] = getResp(fSheUnf, hRecSumBg[0], variable);
-        TH1D *hSheGen = hSheGen = getHisto(fSheGen, "gen" + variable);
-        TH1D *hPowGen = hPowGen = getHisto(fPowGen, "gen" + variable);
+        TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
+        TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
         //----------------------------------------------------------------------------------------- 
 
         TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
@@ -117,7 +117,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         // 9 - Lumi up, 10 - Lumi down
         // 11 - SF up, 12 - SF down
         // 13 - SherpaUnf
-        TString name[] = {"Central", "JesUp", "JesDown", "PUUp", "PUDown", "JERUp", "JERDown", 
+        TString name[] = {"Central", "JESUp", "JESDown", "PUUp", "PUDown", "JERUp", "JERDown", 
             "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown", "SherpaUnf"};
         TH1D *hUnfData[14] = {NULL};
         TH2D *hUnfDataStatCov[14] = {NULL};
@@ -172,6 +172,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
+        crossSectionPlot->SaveAs(outputFileName + ".eps");
         crossSectionPlot->SaveAs(outputFileName + ".ps");
         crossSectionPlot->SaveAs(outputFileName + ".C");
 
@@ -244,22 +245,25 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
     }
 
     //--- Unfold data minus background ---
-    RooUnfold *RObject = RooUnfold::New(alg, resp, hRecData, nIter);
+    RooUnfold *RObjectForData = RooUnfold::New(alg, resp, hRecData, nIter);
     //RObject->SetVerbose(0);
 
     //--- get the unfolded result ---
-    hUnfData = (TH1D*) RObject->Hreco(RooUnfold::kCovariance);
+    RObjectForData->IncludeSystematics(0); // new version of RooUnfold: will compute Cov based on Data Statistics only
+    hUnfData = (TH1D*) RObjectForData->Hreco(RooUnfold::kCovariance);
     hUnfData->SetName("UnfData" + name);
     hUnfData->SetTitle(hRecData->GetTitle());
 
     if (algo == "Bayes") {
         //--- get covariance from statistics on Data ---
-        hUnfDataStatCov = M2H(RObject->GetDataStatCov());
+        hUnfDataStatCov = M2H(RObjectForData->Ereco(RooUnfold::kCovariance)); // new version of RooUnfold   
         hUnfDataStatCov->SetName("UnfDataStatCov" + name);
         hUnfDataStatCov->SetTitle(hRecData->GetTitle());
 
         //--- get covariance from MC stat ---
-        hUnfMCStatCov = M2H(RObject->GetMCStatCov());
+        RooUnfold *RObjectForMC = RooUnfold::New(alg, resp, hRecData, nIter);
+        RObjectForMC->IncludeSystematics(2); // new version of RooUnfold: will compute Cov based on MC Statistics only
+        hUnfMCStatCov = M2H(RObjectForMC->Ereco(RooUnfold::kCovariance)); // new version of RooUnfold
         hUnfMCStatCov->SetName("UnfMCStatCov" + name);
         hUnfMCStatCov->SetTitle(hRecData->GetTitle());
     }
@@ -292,8 +296,6 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
             hUnfMCStatCov->SetBinError(i, j, hUnfMCStatCov->GetBinError(i, j)*1./(binWidth*binWidth));
         }
     }
-
-    delete RObject;
 }
 
 

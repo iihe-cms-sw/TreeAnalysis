@@ -1,4 +1,3 @@
-Makefile
 # git will ignore the executable files:
 runZJets
 runRecoComparison
@@ -12,6 +11,9 @@ dispatcher
 *.o
 DYJets/RooUnfold-1.1.1/libRooUnfold.rootmap
 DYJets/RooUnfold-1.1.1/tmp
+DYJets/RooUnfold/libRooUnfold.rootmap
+DYJets/RooUnfold/tmp
+DYJets/RooUnfold/tmp/linuxx8664gcc/Roo*
 *.so
 *.d
 *.log
