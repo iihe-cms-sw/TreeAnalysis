@@ -2,22 +2,40 @@
 # Makefile for ZJets Analysis 
 # =============================== 
 
+HOST = $(shell hostname | grep "lxplus")
+
+ifeq ($(HOST), "")
+  HOST = $(shell hostname | grep "iihe")
+  ifeq ($(HOST), "")
+    HOST = "iihe"
+  endif
+else
+  HOST = "lxplus"
+endif
+
+ifeq ($(HOST), "lxplus")
+  LHAPDFPATH = /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/
+else
+  ifeq ($(HOST), "iihe")
+    LHAPDFPATH = /user/aleonard/LHAPDF/
+  endif
+endif
+
+
 ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags) 
 
 LIB = RooUnfold LHAPDF
 LIBLIST = $(addprefix -l, $(LIB))
 
-LIBDIR = RooUnfold /user/aleonard/LHAPDF/lib
-#LIBDIR = RooUnfold-1.1.1 /usr/local/lib
-#LHAPDFLIBDIR  = $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib
+LIBDIR = RooUnfold $(LHAPDFPATH)lib
 LIBDIRLIST = $(addprefix -L, $(LIBDIR))
+
 RTL = -Wl,-rpath,
 LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 
 SRCDIR = Sources/
-#INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/usr/local/include
-INCDIR = -IIncludes/ -IRooUnfold/src -I/user/aleonard/LHAPDF/include
+INCDIR = -IIncludes/ -IRooUnfold/src -I$(LHAPDFPATH)include
 
 CXX           = g++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
@@ -30,6 +48,13 @@ SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)
 
+.PHONY: all clean
+
+all: runCombination \
+runRecoComparison \
+runZJets \
+runUnfoldingZJets \
+dispatcher
 # ===========================================================================
 runZJets: $(OBJLIST) runZJets.o
 	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)

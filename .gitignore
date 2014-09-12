@@ -1,4 +1,3 @@
-Makefile
 # git will ignore the executable files:
 runZJets
 runRecoComparison
