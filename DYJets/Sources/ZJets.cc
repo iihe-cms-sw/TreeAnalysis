@@ -1,3 +1,4 @@
+//-*- c-basic-offset: 4; -*-
 #define PI 3.14159265359
 #define DEBUG              0
 #define PRINTEVENT         0
@@ -18,6 +19,7 @@
 #include "standalone_LumiReWeighting.h"
 #include "HistoSetZJets.h"
 #include "ZJets.h"
+#include <sys/time.h>
 
 
 using namespace std;
@@ -129,6 +131,26 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     // setting weight when running on MIX of exclusive DY/WJets files to match number of parton events
     double mixingWeightsDY[4] = {0.192686, 0.0718097, 0.04943495, 0.0360337}; // here we match all partons, and combine electron and muon side
 
+    //======================================================================
+    //additionnal PU weights
+    TH1*  addPuWeights = 0;
+    std::string addPuFile =cfg_.getS("additionalPuWeightFile");
+    if(addPuFile.size() > 0){
+      TFile f(addPuFile.c_str());
+      if(f.IsZombie()){
+	std::cerr << "PU reweighting file, " << addPuFile << " was not found!" << std::endl;
+      } else{
+	std::cout << "Event will be reweighting according to their number of vertices using weights from file "
+		  << addPuFile << "." << std::endl;
+	f.GetObject("hWeights", addPuWeights);
+	addPuWeights->SetDirectory(0);
+      }
+    }
+    //======================================================================
+
+    
+
+
     //==========================================================================================================//
     // Start looping over all the events //
     //===================================//
@@ -139,16 +161,40 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
     Init(hasRecoInfo, hasGenInfo);
     if (fChain == 0) return;
     Long64_t nentries = fChain->GetEntries();
-    if (do10000Events) nentries = 10000;
+    if (0 <= nMaxEvents && nMaxEvents  < nentries) nentries = nMaxEvents;
     
     std::cout << "We will run on " << nentries << " events" << std::endl;
     //------------------------------------
 
+    struct timeval t0;
+    gettimeofday(&t0, 0);
+    int mess_every_n =  std::min(10000LL, nentries/10);
+
     for (Long64_t jentry(0); jentry < nentries; jentry += 1){
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
+	
+        if (jentry % mess_every_n == 0 && jentry > 0){
+	    timeval t1;
+	    gettimeofday(&t1, 0);
+	    double dt = (t1.tv_sec - t0.tv_sec) + 1.e-6*(t1.tv_usec - t0.tv_usec);
+	    dt *= double(nentries  - jentry) / mess_every_n;
+	    int dt_s = int(dt + 0.5);
+	    int dt_h = int(dt_s) / 3600; 
+	    dt_s -= dt_h * 3600;
+	    int dt_m = dt_s / 60;
+	    dt_s -= dt_m *60;
+	    std::cout << TString::Format("%4.1f%%", (100. * jentry) / nentries)
+		      << "\t" << jentry << " / " << nentries
+		      << "\t " << std::setw(4) << int(dt / mess_every_n * 1.e6 + 0.5)<< " us/event"
+		      << "\t Remaining time for this dataset loop: " 
+		      << std::setw(2) << dt_h << " h "
+		      << std::setw(2) << dt_m << " min "
+		      << std::setw(2) << dt_s << " s"
+		      << "\r" << std::flush;
+	    t0 = t1;
+	}
 
-        if (jentry % 100000 == 0) std::cout << jentry << std::endl;
         fChain->GetEntry(jentry);  
         nEvents++;
 
@@ -176,6 +222,13 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             weight = 1;
         }
         weight *= lumiScale * xsec;
+
+	if(addPuWeights){
+	  //	  std::cout << EvtInfo_NumVtx << std::endl;
+	  //std::cout << "bin: " << addPuWeights->GetXaxis()->FindBin(EvtInfo_NumVtx) << std::endl;
+	  double add_w_ = addPuWeights->GetBinContent(addPuWeights->GetXaxis()->FindBin(EvtInfo_NumVtx));
+	  if(add_w_ > 0) weight  *= add_w_;
+	}
 
         if (fileName.Index("DYJets") >= 0 && fileName.Index("MIX") >= 0 && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6]; 
         
@@ -984,7 +1037,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 SpTLeptons_Zexc0jet->Fill(SpTsub(lep1, lep2), weight);
             }
 
-            if (nGoodJets_20 >= 1) FirstJetPt_Zinc1jet->Fill(jets_20[0].pt, weight);
+            if (nGoodJets_20 >= 1) {
+	      FirstJetPt_Zinc1jet->Fill(jets_20[0].pt, weight);
+	      FirstJetPt_Zinc1jet_NVtx->Fill(jets_20[0].pt, EvtInfo_NumVtx, weight);
+	    }
+	    
             if (nGoodJets >= 1){
                 ZNGoodJets_Zinc->Fill(1., weight);
                 ZNGoodJets_Zinc_NoWeight->Fill(1.);
@@ -1322,7 +1379,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         //             Unfolding              //
         //====================================//
         if (hasRecoInfo && hasGenInfo) {
-
+	    
+	    if (nGoodJets_20 >= 1 && nGoodGenJets_20 >= 1) {
+		//looks for matching gen jet:
+		int igen = 0;
+		double dr2 = 999.;
+		for(int i = 0; i < nGoodGenJets_20; ++i){
+		    double dr2_ = std::pow(jets_20[0].eta - genJets_20[i].eta, 2)
+			+ std::pow(jets_20[0].pt - genJets_20[i].pt, 2);
+		    if( dr2_ < dr2) { dr2 = dr2_; igen = i;}
+		}
+		FirstJetPtRecoOvGen_Zinc1jet_NVtx->Fill(jets_20[0].pt/genJets_20[igen].pt, EvtInfo_NumVtx, weight);
+	    }
+	  
             //-- Z Mass and jet multiplicity
             if (passesGenLeptonCut) {
                 if (passesLeptonCut) {
@@ -1517,6 +1586,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         //=======================================================================================================//
 
     } //End of loop over all the events
+    std::cout << "\n";
     //==========================================================================================================//
 
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
@@ -1567,17 +1637,20 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 }
 
 ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
-        int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, int jetEtaCutMax_,  bool do10000Events_, TString outDir_, TString bonzaiDir): 
+	     int systematics_, int direction_, float xsecfactor_, int jetPtCutMin_, 
+	     int jetEtaCutMax_,  Long_t maxEvents_, TString outDir_, TString bonzaiDir): 
     HistoSetZJets(fileName_(0, fileName_.Index("_"))), outputDirectory(outDir_),
     fileName(fileName_), lumiScale(lumiScale_), useTriggerCorrection(useTriggerCorrection_), 
-    systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), do10000Events(do10000Events_)
+    systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_), nMaxEvents(maxEvents_)
 {
 
     //--- Create output directory if necessary ---
-    if (do10000Events) {
-        outputDirectory = "HistoFilesTest/";
-        cout << "Doing test for 10000 events  => output directory has been changed to HistoFilesTest/" << endl;
+    if (nMaxEvents > 0) {
+      outputDirectory.Remove(TString::kTrailing, '/');
+      outputDirectory += TString::Format("_%ldevts/", nMaxEvents);
+      cout << "Output directory has been changed to " << outputDirectory << endl;
     }
+
     TString command = "mkdir -p " + outputDirectory;
     system(command);
     //--------------------------------------------

@@ -1,3 +1,4 @@
+// -*- c-basic-offset:8; -*-
 #ifndef _HistoSetZJets_h_
 #define _HistoSetZJets_h_
 
@@ -86,6 +87,8 @@ class HistoSetZJets {
         TH1D *FirstJetEta_Zexc1jet;
         TH1D *SecondJetEta_Zexc2jet;
         TH1D *FirstJetPhi_Zinc1jet;
+        TH2D *FirstJetPt_Zinc1jet_NVtx;
+	TH2D *FirstJetPtRecoOvGen_Zinc1jet_NVtx;
         TH1D *SecondJetPhi_Zinc2jet;
         TH1D *ThirdJetPhi_Zinc3jet;
         TH1D *FourthJetPhi_Zinc4jet;

@@ -370,6 +370,15 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genJetsHT_Zinc5jet                  = newTH1D("genJetsHT_Zinc5jet",                  "Scalar sum jets p_{T} (N_{jets} #geq 5)",     HT,     nJetHT_Zinc5jet, jetHT_Zinc5jet);  
     genJetsHT_Zinc6jet                  = newTH1D("genJetsHT_Zinc6jet",                  "Scalar sum jets p_{T} (N_{jets} #geq 6)",     HT,     nJetHT_Zinc5jet, jetHT_Zinc5jet);  
 
+    FirstJetPt_Zinc1jet_NVtx = newTH2D("FirstJetPt_Zinc1jet_NVtx","1st jet p_{T} (N_{jets} #geq 1) and vertex multiplicity;p_{T}(j_{1}) [GeV];N_{vertices}", 
+				       nJetPt_Zinc1jet, jetPt_Zinc1jet, //x-axis
+				       45, 0.5, 45.5); //y-axis
+
+    FirstJetPtRecoOvGen_Zinc1jet_NVtx = newTH2D("FirstJetPtRecoOvGen_Zinc1jet_NVtx","1st jet p_{T}^{reco}/p_{T}^{gen} (N_{jets} #geq 1) and vertex multiplicity;p_{T}(j_{1})^{reco}/p_{T}(j_{1})^{gen};N_{vertices}", 
+						100, 0, 2, //x-axis
+						45, 0.5, 45.5); //y-axis
+
+
     FirstJetPt_Zinc1jet               = newTH1D("FirstJetPt_Zinc1jet",                 "1st jet p_{T} (N_{jets} #geq 1)",             "p_{T}(j_{1}) [GeV]",     nJetPt_Zinc1jet, jetPt_Zinc1jet); 
     SecondJetPt_Zinc2jet              = newTH1D("SecondJetPt_Zinc2jet",                "2nd jet p_{T} (N_{jets} #geq 2)",             "p_{T}(j_{2}) [GeV]",     nJetPt_Zinc2jet, jetPt_Zinc2jet); 
     ThirdJetPt_Zinc3jet               = newTH1D("ThirdJetPt_Zinc3jet",                 "3rd jet p_{T} (N_{jets} #geq 3)",             "p_{T}(j_{3}) [GeV]",     nJetPt_Zinc3jet, jetPt_Zinc3jet); 
