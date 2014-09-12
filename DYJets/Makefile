@@ -2,16 +2,18 @@
 # Makefile for ZJets Analysis 
 # =============================== 
 
-HOST = $(shell hostname | grep "lxplus")
+HOST = $(shell hostname | grep lxplus)
 
-ifeq ($(HOST), "")
-  HOST = $(shell hostname | grep "iihe")
-  ifeq ($(HOST), "")
+ifeq ($(HOST),)
+  HOST = $(shell hostname | grep iihe)
+  ifeq ($(HOST),)
+  else
     HOST = "iihe"
   endif
 else
   HOST = "lxplus"
 endif
+
 
 ifeq ($(HOST), "lxplus")
   LHAPDFPATH = /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/
@@ -55,6 +57,9 @@ runRecoComparison \
 runZJets \
 runUnfoldingZJets \
 dispatcher
+
+echo: 
+	@echo $(HOST)
 # ===========================================================================
 runZJets: $(OBJLIST) runZJets.o
 	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
