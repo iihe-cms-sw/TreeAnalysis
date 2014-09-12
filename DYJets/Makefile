@@ -58,8 +58,6 @@ runZJets \
 runUnfoldingZJets \
 dispatcher
 
-echo: 
-	@echo $(HOST)
 # ===========================================================================
 runZJets: $(OBJLIST) runZJets.o
 	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
