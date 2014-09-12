@@ -10,6 +10,11 @@ void getArg(TString fullArg, int &arg) {
     std::cout << "Using command line option " << fullArg << std::endl;
 }
 
+void getArg(TString fullArg, Long_t &arg) {
+    arg = TString(fullArg(fullArg.Index("=")+1, fullArg.Length())).Atoll();
+    std::cout << "Using command line option " << fullArg << std::endl;
+}
+
 void getArg(TString fullArg, double &arg) {
     arg = TString(fullArg(fullArg.Index("=")+1, fullArg.Length())).Atof();
     std::cout << "Using command line option " << fullArg << std::endl;
