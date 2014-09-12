@@ -12,6 +12,8 @@ dispatcher
 *.o
 DYJets/RooUnfold-1.1.1/libRooUnfold.rootmap
 DYJets/RooUnfold-1.1.1/tmp
+DYJets/RooUnfold/libRooUnfold.rootmap
+DYJets/RooUnfold/tmp
 *.so
 *.d
 *.log

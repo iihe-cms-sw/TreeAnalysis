@@ -11,14 +11,14 @@ LIBLIST = $(addprefix -l, $(LIB))
 
 #LIBDIR = RooUnfold-1.1.1 $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib
 #LIBDIR = RooUnfold-1.1.1 lhapdf
-LIBDIR = RooUnfold-1.1.1 /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/lib/
+LIBDIR = RooUnfold /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/lib/
 LIBDIRLIST = $(addprefix -L, $(LIBDIR))
 
 RTL = -Wl,-rpath,
 LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 
 SRCDIR = Sources/
-INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/include
+INCDIR = -IIncludes/ -IRooUnfold/src -I/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/include
 
 #CXX           = gfortran -std=c++0x 
 CXX           = g++ -std=c++0x 

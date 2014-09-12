@@ -8,7 +8,7 @@ ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
 LIB = RooUnfold LHAPDF
 LIBLIST = $(addprefix -l, $(LIB))
 
-LIBDIR = RooUnfold-1.1.1 /user/aleonard/LHAPDF/lib
+LIBDIR = RooUnfold /user/aleonard/LHAPDF/lib
 #LIBDIR = RooUnfold-1.1.1 /usr/local/lib
 #LHAPDFLIBDIR  = $(SRT_LHAPATH_SCRAMRTDEL)/../../../lib
 LIBDIRLIST = $(addprefix -L, $(LIBDIR))
@@ -17,7 +17,7 @@ LIBDIRLISTRTL = $(addprefix $(RTL), $(LIBDIR))
 
 SRCDIR = Sources/
 #INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/usr/local/include
-INCDIR = -IIncludes/ -IRooUnfold-1.1.1/src -I/user/aleonard/LHAPDF/include
+INCDIR = -IIncludes/ -IRooUnfold/src -I/user/aleonard/LHAPDF/include
 
 CXX           = g++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
