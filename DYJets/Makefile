@@ -59,39 +59,41 @@ runUnfoldingZJets \
 dispatcher
 
 # ===========================================================================
-runZJets: $(OBJLIST) runZJets.o
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runZJets $(ROOTGLIBS) $(LIBLIST)
+runZJets: $(OBJLIST) runZJets.o RooUnfold/libRooUnfold.so
+	$(CXX) -o runZJets $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
 .cc.o:
 	$(CXX) -c $< -o $@ $(CXXFLAGS) $(INCDIR)
 
 runZJets.o: runZJets.cc
-	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR) 
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR) 
 
-runRecoComparison: $(OBJLIST) runRecoComparison.o
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runRecoComparison $(ROOTGLIBS) $(LIBLIST)
+runRecoComparison: $(OBJLIST) runRecoComparison.o  RooUnfold/libRooUnfold.so
+	$(CXX) -o runRecoComparison $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
 runRecoComparison.o: runRecoComparison.cc
-	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
 
-runUnfoldingZJets: $(OBJLIST) runUnfoldingZJets.o
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runUnfoldingZJets $(ROOTGLIBS) $(LIBLIST)
+runUnfoldingZJets: $(OBJLIST) runUnfoldingZJets.o  RooUnfold/libRooUnfold.so
+	$(CXX) -o runUnfoldingZJets $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
-runUnfoldingZJets.o: runUnfoldingZJets.cc
-	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+runUnfoldingZJets.o: runUnfoldingZJets.cc RooUnfold/libRooUnfold.so
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
 
 runCombination: $(OBJLIST) runCombination.o
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o runCombination $(ROOTGLIBS) $(LIBLIST)
+	$(CXX) -o runCombination $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
-runCombination.o: runCombination.cc
-	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+runCombination.o: runCombination.cc RooUnfold/libRooUnfold.so
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
 
-dispatcher: $(OBJLIST) dispatcher.o 
-	$(CXX) $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ -o dispatcher $(ROOTGLIBS) $(LIBLIST)
+dispatcher: $(OBJLIST) dispatcher.o  RooUnfold/libRooUnfold.so
+	$(CXX) -o dispatcher $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
 dispatcher.o: dispatcher.cc
-	$(CXX) -c -IIncludes $< -o $@ $(CXXFLAGS) $(INCDIR)
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
 
+RooUnfold/libRooUnfold.so:
+	$(MAKE) -C RooUnfold
 
 # =========================================================================== 
 clean: 
