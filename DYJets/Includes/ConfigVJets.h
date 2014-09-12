@@ -1,3 +1,6 @@
+#ifndef CONFIGVJETS_H
+#define CONFIGVJETS_H
+
 #include <map>
 #include <string>
 #include <stdio.h>
@@ -44,6 +47,8 @@ class ConfigVJets{
 
         int getI(const char* key, int defaultValue = 0);
 
+	int getL(const char* key, Long64_t defaultValue = 0);
+
         float getF(const char* key, float defaultValue = 0.);
 
         double getD(const char* key, double defaultValue = 0.);
@@ -77,6 +82,8 @@ class ConfigVJets{
 
         void convert(const std::string& str, int& x) const;
 
+        void convert(const std::string& str, Long64_t& x) const;
+
         void convert(const std::string& str, std::string&  x) const;  
 
         template<typename T>
@@ -98,3 +105,5 @@ class ConfigVJets{
 
 };
 
+
+#endif //CONFIGVJETS_H not defined

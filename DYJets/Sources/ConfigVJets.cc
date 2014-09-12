@@ -43,7 +43,7 @@ bool ConfigVJets::readConfigVJets(const char* filename){
         trim(line);
         if(line.size() == 0 || line[0] == '#') continue;
         int pos=0;
-        std::string key = tokenize(line, " \t", pos);
+        std::string key = tokenize(line, " \t=", pos);
         std::string value = tokenize(line, "\n", pos);
         pos = 0;
         value = tokenize(value, "#", pos); //drop comments at end of the line.
@@ -110,6 +110,10 @@ int ConfigVJets::getI(const char* key, int defaultValue){
     return get2<int>(key, defaultValue);
 }
 
+int ConfigVJets::getL(const char* key, Long64_t defaultValue){
+    return get2<Long64_t>(key, defaultValue);
+}
+
 float ConfigVJets::getF(const char* key, float defaultValue){
     return get2<float>(key, defaultValue);
 }
@@ -170,11 +174,18 @@ void ConfigVJets::convert(const std::string& str, double& x) const{
 }
 
 void ConfigVJets::convert(const std::string& str, bool& x) const{
-    x = strtol(str.c_str(), 0, 0);
+  x = strtol(str.c_str(), 0, 0); //handles 0, 1. It will give also the corret value (0) for f(alse) and n(o)
+  if(str.size()>0
+     && (str[0]=='t' || str[0] =='T'
+	 || str[0]=='y' || str[0] =='Y')) x = true;
 }
 
 void ConfigVJets::convert(const std::string& str, int& x) const{
     x = strtol(str.c_str(), 0, 0);
+}
+
+void ConfigVJets::convert(const std::string& str, Long64_t& x) const{
+    x = strtoll(str.c_str(), 0, 0);
 }
 
 void ConfigVJets::convert(const std::string& str, std::string&  x) const{  
