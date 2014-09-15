@@ -518,7 +518,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     customizeCentral(grCentralSyst, legend, "Data");
     customizeCentral(grCentralStat, false);
     customizeCentral(grCentralSystRatio, true);
-    customizeCentral(grCentralStatRatio, (bool)true);
+    customizeCentral(grCentralStatRatio, true);
     grCentralSyst->Draw("a2");
     customizeGenHist(hGen1, 1, legend, hGen1->GetZaxis()->GetTitle());
     hGen1->DrawCopy("ESAME");
@@ -535,8 +535,16 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     configXaxis(grCentralSyst, hGen1);
     grCentralStat->Draw("p");
 
-    if (canvasName.Index("Eta") >= 0) {
+    if (canvasName.Contains("Eta")) {
         grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
+    }
+    double x, y, ex;
+    int nPoints = grCentralSyst->GetN();
+    grCentralSyst->GetPoint(nPoints-1, x, y);
+    ex = grCentralSyst->GetErrorX(nPoints-1);
+    if (canvasName.Contains("JetPt_Zinc")) {
+        std::cout << "x: " << x << "  ew: " << ex << std::endl;
+        grCentralSyst->GetXaxis()->SetRangeUser(30, x + ex);
     }
     legend->Draw("same");
 
@@ -607,6 +615,9 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     grCentralStatRatio->Draw("p");
     grGen1ToCentral->Draw("p");
     legend2->Draw("same");
+    if (canvasName.Contains("JetPt_Zinc")) {
+        grGen1ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+    }
     plot2->RedrawAxis();
     //--- End of Second Pad ---
 
@@ -632,6 +643,9 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         grCentralStatRatio->Draw("p");
         grGen2ToCentral->Draw("p");
         legend3->Draw("same");
+        if (canvasName.Contains("JetPt_Zinc")) {
+            grGen2ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+        }
         plot3->RedrawAxis();
         //--- End of Third Pad ---
     }
@@ -658,6 +672,9 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         grCentralStatRatio->Draw("p");
         grGen3ToCentral->Draw("p");
         legend4->Draw("same");
+        if (canvasName.Contains("JetPt_Zinc")) {
+            grGen3ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+        }
         plot4->RedrawAxis();
         //--- End of Fourth Pad ---
     }
