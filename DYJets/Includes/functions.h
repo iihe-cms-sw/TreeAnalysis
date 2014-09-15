@@ -23,6 +23,10 @@ struct jetStruct{
 
 bool LepDescendingOrder(leptonStruct, leptonStruct);
 bool JetDescendingOrder(jetStruct, jetStruct);
+//--- for WJets ---
+bool JetYDescendingOrder(TLorentzVector, TLorentzVector);
+double deltaRYPhi(TLorentzVector, TLorentzVector);
+//-----------------
 
 vector<double> makeVector(int num, ...);
 void insertVector(vector<double>& veca, int num, ...);

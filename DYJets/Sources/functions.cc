@@ -31,6 +31,18 @@ bool JetDescendingOrder(jetStruct j1, jetStruct j2){
     return (j1.pt > j2.pt);
 }
 
+//--- for WJets ---
+bool JetYDescendingOrder(TLorentzVector tj1, TLorentzVector tj2){
+    return (tj1.Rapidity() > tj2.Rapidity());
+}
+
+double deltaRYPhi(TLorentzVector j1, TLorentzVector j2){
+    double dY = j1.Rapidity() - j2.Rapidity();
+    double dPhi = deltaPhi(j1, j2);
+    return sqrt(dY * dY + dPhi * dPhi);
+}
+//-----------------
+
 vector<double> makeVector(int num, ...)
 {
     va_list list;

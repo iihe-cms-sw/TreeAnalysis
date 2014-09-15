@@ -455,6 +455,107 @@ class HistoSet: public TObject{
         TH1D *ZNGoodJets_Zexc_NoWeight;
         TH1D *ZNGoodJets_Zinc_NoWeight;
 
+        //******** additional plots for WJets ********//
+        //Jets Rapidity
+        TH1D *FirstJetRapidity_Zinc1jet;
+        TH1D *SecondJetRapidity_Zinc2jet;
+        TH1D *ThirdJetRapidity_Zinc3jet;
+        TH1D *FourthJetRapidity_Zinc4jet;
+        TH1D *FirstJetRapidityFull_Zinc1jet;
+        TH1D *SecondJetRapidityFull_Zinc2jet;
+        TH1D *ThirdJetRapidityFull_Zinc3jet;
+        TH1D *FourthJetRapidityFull_Zinc4jet;
+        TH1D *genFirstJetRapidity_Zinc1jet;
+        TH1D *genSecondJetRapidity_Zinc2jet;
+        TH1D *genThirdJetRapidity_Zinc3jet;
+        TH1D *genFourthJetRapidity_Zinc4jet;
+        TH1D *genFirstJetRapidityFull_Zinc1jet;
+        TH1D *genSecondJetRapidityFull_Zinc2jet;
+        TH1D *genThirdJetRapidityFull_Zinc3jet;
+        TH1D *genFourthJetRapidityFull_Zinc4jet;
+        RooUnfoldResponse *responseFirstJetRapidity_Zinc1jet;
+        RooUnfoldResponse *responseSecondJetRapidity_Zinc2jet;
+        RooUnfoldResponse *responseThirdJetRapidity_Zinc3jet;
+        RooUnfoldResponse *responseFourthJetRapidity_Zinc4jet;
+        RooUnfoldResponse *responseFirstJetRapidityFull_Zinc1jet;
+        RooUnfoldResponse *responseSecondJetRapidityFull_Zinc2jet;
+        RooUnfoldResponse *responseThirdJetRapidityFull_Zinc3jet;
+        RooUnfoldResponse *responseFourthJetRapidityFull_Zinc4jet;
+        // Jets Mass
+        TH1D *FirstJetmass_Zinc1jet;
+        TH1D *SecondJetmass_Zinc2jet;
+        TH1D *ThirdJetmass_Zinc3jet;
+        TH1D *FourthJetmass_Zinc4jet;
+        TH1D *FirstJetmass_1_Zinc1jet;
+        TH1D *SecondJetmass_1_Zinc2jet;
+        TH1D *ThirdJetmass_1_Zinc3jet;
+        TH1D *FourthJetmass_1_Zinc4jet;
+        // dijet Rapidity
+        TH1D *dRapidityJets_Zinc2jet;
+        TH1D *dRapidityJets_Zinc3jet;
+        TH1D *dRapidityJets_Zinc4jet;
+        TH1D *gendRapidityJets_Zinc2jet;
+        TH1D *gendRapidityJets_Zinc3jet;
+        TH1D *gendRapidityJets_Zinc4jet;
+        RooUnfoldResponse *responsedRapidityJets_Zinc2jet;
+        RooUnfoldResponse *responsedRapidityJets_Zinc3jet;
+        RooUnfoldResponse *responsedRapidityJets_Zinc4jet;
+        // dRapidity
+        TH1D *dRapidityJets_First_Third_Zinc3jet;
+        TH1D *dRapidityJets_Second_Third_Zinc3jet;
+        TH1D *gendRapidityJets_First_Third_Zinc3jet;
+        TH1D *gendRapidityJets_Second_Third_Zinc3jet;
+        RooUnfoldResponse *responsedRapidityJets_First_Third_Zinc3jet;
+        RooUnfoldResponse *responsedRapidityJets_Second_Third_Zinc3jet;
+        TH1D *dRapidityJetsFB_Zinc2jet;
+        TH1D *dRapidityJetsFB_Zinc3jet;
+        TH1D *dRapidityJetsFB_Zinc4jet;
+        TH1D *gendRapidityJetsFB_Zinc2jet;
+        TH1D *gendRapidityJetsFB_Zinc3jet;
+        TH1D *gendRapidityJetsFB_Zinc4jet;
+        RooUnfoldResponse *responsedRapidityJetsFB_Zinc2jet;
+        RooUnfoldResponse *responsedRapidityJetsFB_Zinc3jet;
+        RooUnfoldResponse *responsedRapidityJetsFB_Zinc4jet;
+        // dijet mass
+        TH1D *diJetMass_Zinc2jet;
+        TH1D *diJetMass_Zinc3jet;
+        TH1D *diJetMass_Zinc4jet;
+        TH1D *gendiJetMass_Zinc2jet;
+        TH1D *gendiJetMass_Zinc3jet;
+        TH1D *gendiJetMass_Zinc4jet;
+        RooUnfoldResponse *responsediJetMass_Zinc2jet;
+        RooUnfoldResponse *responsediJetMass_Zinc3jet;
+        RooUnfoldResponse *responsediJetMass_Zinc4jet;
+        // dPhi dR diJetPt
+        TH1D *dPhiJetsFB_Zinc2jet;
+        TH1D *dRJets_Zinc2jet;
+        TH1D *diJetPt_Zinc2jet;
+        TH1D *diJetPt_Zinc3jet;
+        TH1D *diJetPt_Zinc4jet;
+        TH1D *gendPhiJetsFB_Zinc2jet;
+        TH1D *gendRJets_Zinc2jet;
+        TH1D *gendiJetPt_Zinc2jet;
+        TH1D *gendiJetPt_Zinc3jet;
+        TH1D *gendiJetPt_Zinc4jet;
+        RooUnfoldResponse *responsedPhiJetsFB_Zinc2jet;
+        RooUnfoldResponse *responsedRJets_Zinc2jet;
+        RooUnfoldResponse *responsediJetPt_Zinc2jet;
+        RooUnfoldResponse *responsediJetPt_Zinc3jet;
+        RooUnfoldResponse *responsediJetPt_Zinc4jet;
+        // mean number of jets
+        TH2D *MeanNJetsHT_Zinc1jet;
+        TH2D *MeanNJetsHT_Zinc2jet;
+        TH2D *MeanNJetsdRapidity_Zinc2jet;
+        TH2D *MeanNJetsdRapidityFB_Zinc2jet;
+        TH2D *genMeanNJetsHT_Zinc1jet;
+        TH2D *genMeanNJetsHT_Zinc2jet;
+        TH2D *genMeanNJetsdRapidity_Zinc2jet;
+        TH2D *genMeanNJetsdRapidityFB_Zinc2jet;
+        RooUnfoldResponse *responseMeanNJetsHT_Zinc1jet;
+        RooUnfoldResponse *responseMeanNJetsHT_Zinc2jet;
+        RooUnfoldResponse *responseMeanNJetsdRapidity_Zinc2jet;
+        RooUnfoldResponse *responseMeanNJetsdRapidityFB_Zinc2jet;
+        //******** end additional plots for WJets ********//
 
         TH1D *TwoJetsPtDiff_Zexc2jet;
         TH1D *genTwoJetsPtDiff_Zexc2jet;
