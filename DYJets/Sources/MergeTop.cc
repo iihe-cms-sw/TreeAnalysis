@@ -38,9 +38,9 @@ void MergeTop(){
     //runMergeTop("DE",-3,30,0);
 }
 
-void runMergeTop(TString lepSelection, int systematics, float jetPtCutMin, float jetEtaCutMax, bool do10000Events, TString outDir)
+void runMergeTop(TString lepSelection, int systematics, float jetPtCutMin, float jetEtaCutMax, Long_t maxEvents, TString outDir)
 {
-    if (do10000Events) {
+    if (maxEvents >= 0) {
         outDir = "HistoFilesTest/";
         cout << "Doing test for 10000 events  => output directory has been changed to HistoFilesTest/" << endl;
     }

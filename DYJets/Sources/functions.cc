@@ -218,25 +218,34 @@ double SmearJetPt(double recoPt, double genPt, double eta, int smearJet){
     // summer 2011 resolution scale factor
     // twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     double centralSF(1.00);
-    if      (fabs(eta) < 0.5) centralSF = 1.052;
-    else if (fabs(eta) < 1.1) centralSF = 1.057;
-    else if (fabs(eta) < 1.7) centralSF = 1.096;
-    else if (fabs(eta) < 2.3) centralSF = 1.134;
-    else centralSF = 1.288;
+    if      (fabs(eta) < 0.5) centralSF = 1.079;
+    else if (fabs(eta) < 1.1) centralSF = 1.099;
+    else if (fabs(eta) < 1.7) centralSF = 1.121;
+    else if (fabs(eta) < 2.3) centralSF = 1.208;
+    else if (fabs(eta) < 2.8) centralSF = 1.254;
+    else if (fabs(eta) < 3.2) centralSF = 1.395;
+    else if (fabs(eta) < 5.0) centralSF = 1.056;
+    else centralSF = 1.056;
 
     double upSF(1.00);
-    if      (fabs(eta) < 0.5) upSF = 1.115;
-    else if (fabs(eta) < 1.1) upSF = 1.114;
-    else if (fabs(eta) < 1.7) upSF = 1.161;
-    else if (fabs(eta) < 2.3) upSF = 1.228;
-    else upSF = 1.488;
+    if      (fabs(eta) < 0.5) upSF = 1.105;
+    else if (fabs(eta) < 1.1) upSF = 1.127;
+    else if (fabs(eta) < 1.7) upSF = 1.150;
+    else if (fabs(eta) < 2.3) upSF = 1.254;
+    else if (fabs(eta) < 2.8) upSF = 1.316;
+    else if (fabs(eta) < 3.2) upSF = 1.458;
+    else if (fabs(eta) < 5.0) upSF = 1.247;
+    else upSF = 1.247;
 
     double downSF(1.00);
-    if      (fabs(eta) < 0.5) downSF = 0.990;
-    else if (fabs(eta) < 1.1) downSF = 1.001;
-    else if (fabs(eta) < 1.7) downSF = 1.032;
-    else if (fabs(eta) < 2.3) downSF = 1.042;
-    else downSF = 1.089;
+    if      (fabs(eta) < 0.5) downSF = 1.053;
+    else if (fabs(eta) < 1.1) downSF = 1.071;
+    else if (fabs(eta) < 1.7) downSF = 1.092;
+    else if (fabs(eta) < 2.3) downSF = 1.162;
+    else if (fabs(eta) < 2.8) downSF = 1.192;
+    else if (fabs(eta) < 3.2) downSF = 1.332;
+    else if (fabs(eta) < 5.0) downSF = 0.865;
+    else downSF = 0.865;
 
     double smearedPt(0);
 

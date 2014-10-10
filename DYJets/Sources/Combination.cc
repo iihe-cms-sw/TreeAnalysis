@@ -153,6 +153,10 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         covxaxbSyst->Add(covuxaxb[0], -1);
         covxaxbSyst->SetName("CombCovTotSyst");
 
+        int nbins = covxaxb->GetNbinsX();
+        for (int i = 1; i <= nbins; i++) {
+            std::cout << i << "  " << sqrt(covxaxb->GetBinContent(i, i)) << std::endl;
+        }
         hMadGenCombined = (TH1D*) hMadGenDE->Clone();
         hMadGenCombined->Add(hMadGenDMu);
         hMadGenCombined->Scale(0.5);

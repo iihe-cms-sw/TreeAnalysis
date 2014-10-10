@@ -136,7 +136,7 @@ void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin,
     //------------------------------------------------------------------------------------------ 
 }
 
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[])
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[], TH1D *hFakDYJets[14])
 {
 
     //--- get rec Data histograms ---
@@ -161,7 +161,10 @@ void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hR
     }
 
     //--- get response DYJets objects ---
-    getResps(respDYJets, hRecDYJets, hRecSumBg, hGenDYJets, hResDYJets);
+    getResps(respDYJets, hGenDYJets, hResDYJets);
+
+    //--- get fakes DYJets ---
+    getFakes(hFakDYJets, hRecData, hRecSumBg, hRecDYJets, hResDYJets);
 }
 
 //------------------------------------------------------------
@@ -247,11 +250,11 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
 
         double lumiErr = 0.026;
         //--- lumi scale up ---
-        histograms[5] = (TH1D*) Files[0]->Get(variable);
+        histograms[5] = (TH1D*) histograms[0]->Clone();
         histograms[5]->Scale(1. + lumiErr);
 
         //--- lumi scale down ---
-        histograms[6] = (TH1D*) Files[0]->Get(variable);
+        histograms[6] = (TH1D*) histograms[0]->Clone();
         histograms[6]->Scale(1. - lumiErr);
 
 
@@ -263,15 +266,16 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
         //    This should not be applied to gen histograms however.
         //    That is why errSF = 0 when variable contains "gen"
         TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
-        double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        double errSF = (lepSel == "DMu") ? 0.005 : 0.005;
         if (variable.Index("gen") < 0) {
 
             //--- SF up ---
-            histograms[7] = (TH1D*) Files[0]->Get(variable);
+            histograms[7] = (TH1D*) histograms[0]->Clone();
             histograms[7]->Scale(1. + errSF);
 
             //--- SF down ---
-            histograms[8] = (TH1D*) Files[0]->Get(variable);
+            histograms[8] = (TH1D*) histograms[0]->Clone();
             histograms[8]->Scale(1. - errSF);
         }
     }
@@ -312,7 +316,8 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
         //    2.5% for muons and 0.5% for electron.
         //    This should not be applied to gen histograms however.
         TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
-        double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        double errSF = (lepSel == "DMu") ? 0.005 : 0.005;
         if (variable.Index("gen") < 0) {
 
             //--- SF up ---
@@ -330,7 +335,7 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
 void getResp(RooUnfoldResponse *response, TFile *File, TString variable)
 {
     response = new RooUnfoldResponse(
-            (TH1D*) File->Get(variable), 
+            NULL, 
             (TH1D*) File->Get("gen" + variable), 
             (TH2D*) File->Get("hresponse" + variable)
             ); 
@@ -340,20 +345,7 @@ void getResp(RooUnfoldResponse *response, TFile *File, TString variable)
 RooUnfoldResponse* getResp(TFile *File, TString variable)
 {
     RooUnfoldResponse *response = new RooUnfoldResponse(
-            (TH1D*) File->Get(variable), 
-            (TH1D*) File->Get("gen" + variable), 
-            (TH2D*) File->Get("hresponse" + variable)
-            ); 
-    response->UseOverflow();
-    return response;
-}
-
-RooUnfoldResponse* getResp(TFile *File, TH1D *hRecSumBg, TString variable)
-{
-    TH1D *hRec = (TH1D*) File->Get(variable);
-    hRec->Add(hRecSumBg);
-    RooUnfoldResponse *response = new RooUnfoldResponse(
-            hRec,
+            NULL, 
             (TH1D*) File->Get("gen" + variable), 
             (TH2D*) File->Get("hresponse" + variable)
             ); 
@@ -371,7 +363,7 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
     for (int i(0); i < nFiles; i++){
         Files[i]->cd();
         responses[i] = new RooUnfoldResponse(
-                (TH1D*) Files[i]->Get(variable), 
+                NULL, 
                 (TH1D*) Files[i]->Get("gen" + variable), 
                 (TH2D*) Files[i]->Get("hresponse" + variable)
                 ); 
@@ -379,85 +371,109 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
     } 
 }
 
-void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
+
+TH1D* getFakes(TH1D *hRecDYJets, TH1D *hRecData, TH1D *hRecSumBg, TH2D *hResDYJets)
 {
-    TH1D *hRecDYJetsPlusSumBg = NULL;
+    TH1D *hFakDYJets = (TH1D*) hRecDYJets->Clone();
+
+    int sm= hRecDYJets->GetSumw2N();
+    int s = hResDYJets->GetSumw2N();
+    int nm = hResDYJets->GetNbinsX() + 2;
+    int nt = hResDYJets->GetNbinsY() + 2;
+
+    double dyIntegral = hRecDYJets->Integral(0, hRecDYJets->GetNbinsX()+1);
+    double dataIntegral = hRecData->Integral(0, hRecData->GetNbinsX()+1);
+    double bgIntegral = hRecSumBg->Integral(0, hRecSumBg->GetNbinsX()+1);
+    for (int i= 0; i<nm; i++) {
+        double nmes= 0.0, wmes= 0.0;
+        for (int j= 0; j<nt; j++) {
+            nmes += hResDYJets->GetBinContent(i, j);
+            if (s) wmes += pow(hResDYJets->GetBinError(i, j), 2);
+        }
+        double fake = hRecDYJets->GetBinContent(i) - nmes;
+        double factor = dyIntegral;
+        if (factor != 0) factor = (dataIntegral - bgIntegral) / factor;
+        if (!s) wmes= nmes;
+        hFakDYJets->SetBinContent (i, factor*fake);
+        hFakDYJets->SetBinError   (i, sqrt (wmes + (sm ? pow(hRecDYJets->GetBinError(i),2) : hRecDYJets->GetBinContent(i))));
+    }
+    hFakDYJets->SetEntries (hFakDYJets->GetEffectiveEntries());  // 0 entries if 0 fakes
+
+    return hFakDYJets;
+
+}
+
+void getFakes(TH1D *hFakDYJets[14], TH1D *hRecData[3], TH1D *hRecSumBg[9], TH1D *hRecDYJets[9], TH2D *hResDYJets[9])
+{
+
+    hFakDYJets[0] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[0], hResDYJets[0]);
+    hFakDYJets[1] = getFakes(hRecDYJets[0], hRecData[1], hRecSumBg[0], hResDYJets[0]);
+    hFakDYJets[2] = getFakes(hRecDYJets[0], hRecData[2], hRecSumBg[0], hResDYJets[0]);
+    hFakDYJets[3] = getFakes(hRecDYJets[1], hRecData[0], hRecSumBg[1], hResDYJets[1]);
+    hFakDYJets[4] = getFakes(hRecDYJets[2], hRecData[0], hRecSumBg[2], hResDYJets[2]);
+    hFakDYJets[5] = getFakes(hRecDYJets[3], hRecData[0], hRecSumBg[0], hResDYJets[3]);
+    hFakDYJets[6] = getFakes(hRecDYJets[4], hRecData[0], hRecSumBg[0], hResDYJets[4]);
+    hFakDYJets[7] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[3], hResDYJets[0]);
+    hFakDYJets[8] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[4], hResDYJets[0]);
+    hFakDYJets[9] = getFakes(hRecDYJets[5], hRecData[0], hRecSumBg[5], hResDYJets[5]);
+    hFakDYJets[10] = getFakes(hRecDYJets[6], hRecData[0], hRecSumBg[6], hResDYJets[6]);
+    hFakDYJets[11] = getFakes(hRecDYJets[7], hRecData[0], hRecSumBg[7], hResDYJets[7]);
+    hFakDYJets[12] = getFakes(hRecDYJets[8], hRecData[0], hRecSumBg[8], hResDYJets[8]);
+    hFakDYJets[13] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[0], hResDYJets[0]);
+}
+
+void getResps(RooUnfoldResponse *responses[], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
+{
     //--- build response object for central ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[0] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[0] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[0]); 
     responses[0]->UseOverflow();
 
     //--- build response object for JES up (same as central because JES is done on data) ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[1] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[1] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[0]); 
     responses[1]->UseOverflow();
 
     //--- build response object for JES down (same as central because JES is done on data) ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[2] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[2] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[0]); 
     responses[2]->UseOverflow();
 
     //--- build response object for PU up ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[1]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[1]);
-    responses[3] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[1], hResDYJets[1]); 
+    responses[3] = new RooUnfoldResponse(NULL, hGenDYJets[1], hResDYJets[1]); 
     responses[3]->UseOverflow();
 
     //--- build response object for PU down ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[2]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[2]);
-    responses[4] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[2], hResDYJets[2]); 
+    responses[4] = new RooUnfoldResponse(NULL, hGenDYJets[2], hResDYJets[2]); 
     responses[4]->UseOverflow();
 
     //--- build response object for JER up ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[3]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[5] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[3], hResDYJets[3]); 
+    responses[5] = new RooUnfoldResponse(NULL, hGenDYJets[3], hResDYJets[3]); 
     responses[5]->UseOverflow();
 
     //--- build response object for JER down ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[4]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[0]);
-    responses[6] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[4], hResDYJets[4]); 
+    responses[6] = new RooUnfoldResponse(NULL, hGenDYJets[4], hResDYJets[4]); 
     responses[6]->UseOverflow();
 
     //--- build response object for XSec up ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[3]);
-    responses[7] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[7] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[0]); 
     responses[7]->UseOverflow();
 
     //--- build response object for XSec down ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[0]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[4]);
-    responses[8] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[0]); 
+    responses[8] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[0]); 
     responses[8]->UseOverflow();
 
     //--- build response object for Lumi up ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[5]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[5]);
-    responses[9] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[5], hResDYJets[5]); 
+    responses[9] = new RooUnfoldResponse(NULL, hGenDYJets[5], hResDYJets[5]); 
     responses[9]->UseOverflow();
 
     //--- build response object for Lumi down ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[6]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[6]);
-    responses[10] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[6], hResDYJets[6]); 
+    responses[10] = new RooUnfoldResponse(NULL, hGenDYJets[6], hResDYJets[6]); 
     responses[10]->UseOverflow();
 
     //--- build response object for SF up ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[7]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[7]);
-    responses[11] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[7]); 
+    responses[11] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[7]); 
     responses[11]->UseOverflow();
 
     //--- build response object for SF down ---
-    hRecDYJetsPlusSumBg = (TH1D*) hRecDYJets[8]->Clone();
-    hRecDYJetsPlusSumBg->Add(hRecSumBg[8]);
-    responses[12] = new RooUnfoldResponse(hRecDYJetsPlusSumBg, hGenDYJets[0], hResDYJets[8]); 
+    responses[12] = new RooUnfoldResponse(NULL, hGenDYJets[0], hResDYJets[8]); 
     responses[12]->UseOverflow();
 
 }

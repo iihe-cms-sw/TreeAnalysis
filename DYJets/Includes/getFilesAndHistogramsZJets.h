@@ -25,10 +25,11 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString);
 void getHistos(TH2D *histograms[], TFile *Files[], TString);
 void getResp(RooUnfoldResponse*, TFile*, TString);
 RooUnfoldResponse* getResp(TFile*, TString);
-RooUnfoldResponse* getResp(TFile *File, TH1D *hRecSumBg, TString variable);
 void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString);
-void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hRecSumBg[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9]);
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[]);
+void getResps(RooUnfoldResponse *responses[], TH1D *hGenDYJets[7], TH2D *hResDYJets[9]);
+void getFakes(TH1D *hFakDYJets[14], TH1D *hRecData[3], TH1D *hRecSumBg[9], TH1D *hRecDYJets[9], TH2D *hResDYJets[9]);
+TH1D* getFakes(TH1D *hRecDYJets, TH2D *hResDYJets);
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[], TH1D *hFakDYJets[14]);
 void getStatistics(TString lepSel = "DMu",  int jetPtMin = 30, int jetEtaMax = 24);
 #endif
 

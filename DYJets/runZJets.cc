@@ -40,7 +40,7 @@ int main(int argc, char **argv)
                 getArg(currentArg, bonzaiDir);
             }
             else if (currentArg.BeginsWith("histoDir")) {
-		getArg(currentArg, histoDir);
+                getArg(currentArg, histoDir);
             }
             else if (currentArg.BeginsWith("lepSel=")) {
                 getArg(currentArg, lepSel);

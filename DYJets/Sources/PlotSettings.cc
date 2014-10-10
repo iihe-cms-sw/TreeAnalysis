@@ -535,16 +535,16 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     configXaxis(grCentralSyst, hGen1);
     grCentralStat->Draw("p");
 
-    if (canvasName.Contains("Eta")) {
-        grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
-    }
     double x, y, ex;
     int nPoints = grCentralSyst->GetN();
     grCentralSyst->GetPoint(nPoints-1, x, y);
     ex = grCentralSyst->GetErrorX(nPoints-1);
     if (canvasName.Contains("JetPt_Zinc")) {
         std::cout << "x: " << x << "  ew: " << ex << std::endl;
-        grCentralSyst->GetXaxis()->SetRangeUser(30, x + ex);
+        grCentralSyst->GetXaxis()->SetRangeUser(40, x + ex);
+    }
+    if (canvasName.Contains("Eta")) {
+        grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
     legend->Draw("same");
 
@@ -616,7 +616,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     grGen1ToCentral->Draw("p");
     legend2->Draw("same");
     if (canvasName.Contains("JetPt_Zinc")) {
-        grGen1ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+        grGen1ToCentral->GetXaxis()->SetRangeUser(35, x + ex);
     }
     plot2->RedrawAxis();
     //--- End of Second Pad ---

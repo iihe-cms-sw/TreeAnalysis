@@ -71,6 +71,12 @@ class HistoSetZJets {
         TH1D *FourthJetEta_Zinc4jet;
         TH1D *FifthJetEta_Zinc5jet;
         TH1D *SixthJetEta_Zinc6jet;
+        TH1D *FirstJetEtaHigh_Zinc1jet;
+        TH1D *SecondJetEtaHigh_Zinc2jet;
+        TH1D *ThirdJetEtaHigh_Zinc3jet;
+        TH1D *FourthJetEtaHigh_Zinc4jet;
+        TH1D *FifthJetEtaHigh_Zinc5jet;
+        TH1D *SixthJetEtaHigh_Zinc6jet;
         TH1D *FirstJetEtaFull_Zinc1jet;
         TH1D *SecondJetEtaFull_Zinc2jet;
         TH1D *ThirdJetEtaFull_Zinc3jet;
@@ -84,6 +90,12 @@ class HistoSetZJets {
         TH1D *genFourthJetEta_Zinc4jet;
         TH1D *genFifthJetEta_Zinc5jet;
         TH1D *genSixthJetEta_Zinc6jet;
+        TH1D *genFirstJetEtaHigh_Zinc1jet;
+        TH1D *genSecondJetEtaHigh_Zinc2jet;
+        TH1D *genThirdJetEtaHigh_Zinc3jet;
+        TH1D *genFourthJetEtaHigh_Zinc4jet;
+        TH1D *genFifthJetEtaHigh_Zinc5jet;
+        TH1D *genSixthJetEtaHigh_Zinc6jet;
         TH1D *FirstJetEta_Zexc1jet;
         TH1D *SecondJetEta_Zexc2jet;
         TH1D *FirstJetPhi_Zinc1jet;
@@ -542,6 +554,12 @@ class HistoSetZJets {
         TH2D *hresponseThirdJetEta_Zinc3jet; 
         TH2D *hresponseFourthJetEta_Zinc4jet;
         TH2D *hresponseFifthJetEta_Zinc5jet; 
+
+        TH2D *hresponseFirstJetEtaHigh_Zinc1jet; 
+        TH2D *hresponseSecondJetEtaHigh_Zinc2jet; 
+        TH2D *hresponseThirdJetEtaHigh_Zinc3jet; 
+        TH2D *hresponseFourthJetEtaHigh_Zinc4jet;
+        TH2D *hresponseFifthJetEtaHigh_Zinc5jet; 
 
         TH2D *hresponseJetsMass_Zinc2jet;
 
