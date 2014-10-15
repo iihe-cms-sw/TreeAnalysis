@@ -149,12 +149,6 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             else if (iSyst == 3 || iSyst == 4) iBg = iSyst - 2; // PU
             else if (iSyst == 7 || iSyst == 8 || iSyst == 9 || iSyst == 10 || iSyst == 11 || iSyst == 12) iBg = iSyst - 4; // XSec, Lumi, SF
 
-            unsigned short iDY = 0;
-            if (iSyst == 0 || iSyst == 1 || iSyst == 2 || iSyst == 7 || iSyst == 8 || iSyst == 13) iDY = 0; // Central, JES, XSec, Sherpa
-            else if (iSyst == 3 || iSyst == 4) iDY = iSyst - 2; // PU
-            else if (iSyst == 5 || iSyst == 6) iDY = iSyst - 2; // JER
-            else if (iSyst == 9 || iSyst == 10 || iSyst == 11 || iSyst == 12) iDY = iSyst - 4; // Lumi, SF
-
             TH1D *hRecDataMinusFakes = (TH1D*) hRecData[iData]->Clone();
             hRecDataMinusFakes->Add(hRecSumBg[iBg], -1);
             hRecDataMinusFakes->Add(hFakDYJets[iSyst], -1);
