@@ -299,7 +299,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                     bool muPassesIsoCut(mu.iso < 0.2);  
                     bool muPassesTrig;
                     if (lepSel == "DMu" && (mu.trigger & 0x8)) muPassesTrig = 1;      // HLT_Mu17_Mu8 
-                    else if (lepSel = "SMu" && (mu.trigger & 0x1)) muPassesTrig = 1;  // HLT_IsoMu24_eta2p1_v
+                    else if (lepSel == "SMu" && (mu.trigger & 0x1)) muPassesTrig = 1;  // HLT_IsoMu24_eta2p1_v
 
                     /// for files obtained form bugra
                     if (fileName.Index("DYJets_Sherpa_UNFOLDING_dR_5311") >= 0 && mu.trigger > 0) muPassesTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
