@@ -76,6 +76,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         TH1D *hRecData[3] = {NULL};
         //--- rec DYJets histograms ---
         TH1D *hRecDYJets[9] = {NULL};
+        //--- fake DYJets histograms ---
+        TH1D *hFakDYJets[14] = {NULL};
         //--- gen DYJets histograms ---
         TH1D *hGenDYJets[7] = {NULL};
         //--- res DYJets histograms ---
@@ -90,10 +92,10 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //--- Get all histograms ---
         getAllHistos(variable, hRecData, fData, 
                 hRecDYJets, hGenDYJets, hResDYJets, fDYJets,
-                hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets);
+                hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets, hFakDYJets);
 
         //--- Get Sherpa Unfolding response ---
-        respDYJets[13] = getResp(fSheUnf, hRecSumBg[0], variable);
+        respDYJets[13] = getResp(fSheUnf, variable);
         TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
         TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
         //----------------------------------------------------------------------------------------- 
@@ -142,8 +144,22 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
             //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
             unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
+            unsigned short iBg = 0;
+            if (iSyst == 0 || iSyst == 1 || iSyst == 2 || iSyst == 5 || iSyst == 6 || iSyst == 13) iBg = 0; // Central, JES, JER, Sherpa
+            else if (iSyst == 3 || iSyst == 4) iBg = iSyst - 2; // PU
+            else if (iSyst == 7 || iSyst == 8 || iSyst == 9 || iSyst == 10 || iSyst == 11 || iSyst == 12) iBg = iSyst - 4; // XSec, Lumi, SF
 
-            UnfoldData(algo, respDYJets[iSyst], hRecData[iData], nIter, hUnfData[iSyst], 
+            unsigned short iDY = 0;
+            if (iSyst == 0 || iSyst == 1 || iSyst == 2 || iSyst == 7 || iSyst == 8 || iSyst == 13) iDY = 0; // Central, JES, XSec, Sherpa
+            else if (iSyst == 3 || iSyst == 4) iDY = iSyst - 2; // PU
+            else if (iSyst == 5 || iSyst == 6) iDY = iSyst - 2; // JER
+            else if (iSyst == 9 || iSyst == 10 || iSyst == 11 || iSyst == 12) iDY = iSyst - 4; // Lumi, SF
+
+            TH1D *hRecDataMinusFakes = (TH1D*) hRecData[iData]->Clone();
+            hRecDataMinusFakes->Add(hRecSumBg[iBg], -1);
+            hRecDataMinusFakes->Add(hFakDYJets[iSyst], -1);
+
+            UnfoldData(algo, respDYJets[iSyst], hRecDataMinusFakes, nIter, hUnfData[iSyst], 
                     hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
 
             //--- save the unfolded histograms ---
@@ -213,6 +229,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     }
 
+    test();
+
     //--- Close all files ----------------------------------------------------------------------
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
     fSheUnf->Close();
@@ -223,7 +241,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 }
 
 
-void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int nIter, 
+void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinusFakes, int nIter, 
         TH1D* &hUnfData, TH2D* &hUnfDataStatCov, TH2D* &hUnfMCStatCov, TString name, 
         double integratedLumi)
 {
@@ -244,28 +262,72 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecData, int
         alg = RooUnfold::kBayes;
     }
 
+    //std::cout << "-----------------------" << std::endl;
+    TFile *f = new TFile("Test_" + name + ".root", "RECREATE"); 
+    TH1D *hchi2 = new TH1D("hchi2", "hchi2", 100, 0, 100);
+    f->cd();
+    for (int i = 1; i <= 100; ++i) {
+        RooUnfold *RObjectForDataTmp = RooUnfold::New(alg, resp, hRecDataMinusFakes, i);
+        int nBinsToSkip = (TString(hRecDataMinusFakes->GetName()).Index("JetPt_Zinc") > 0) ? 2 : 0;
+        RObjectForDataTmp->IncludeSystematics(0); // new version of RooUnfold: will compute Cov based on Data Statistics only
+        std::cout << "niter = " << i << std::endl;
+        hUnfData = (TH1D*) RObjectForDataTmp->Hreco(RooUnfold::kCovariance);
+        TString tmpName = "Unf" + name + "_"; 
+        tmpName += i; 
+        hUnfData->SetName(tmpName);
+        hUnfData->SetTitle(tmpName);
+        tmpName = "fol" + name + "_"; 
+        tmpName += i; 
+        TH1D *hfoldUnfData = foldUnfData(hUnfData, resp);
+        hfoldUnfData->SetName(tmpName);
+        hfoldUnfData->SetTitle(tmpName);
+        std::cout << "Root Chi2 " << std::endl;
+        std::cout << hfoldUnfData->Chi2Test(hRecDataMinusFakes, "WW,P,CHI2/NDF") << std::endl;
+        std::cout << "My Chi2 (skipping underflow bin)" << std::endl;
+        std::cout << MyChi2Test(hfoldUnfData, hRecDataMinusFakes, 0) << std::endl;
+        std::cout << "My Chi2 (skipping " << nBinsToSkip << " first bins)" << std::endl;
+        double mychi2 = MyChi2Test(hfoldUnfData, hRecDataMinusFakes, nBinsToSkip);
+        std::cout << mychi2 << std::endl;
+        hchi2->SetBinContent(i, mychi2);
+        if (i==1) hRecDataMinusFakes->Write("Unf" + name + "_0"); 
+        hUnfData->Write();
+        hfoldUnfData->Write();
+        nIter = i;
+        if (mychi2 < 1./sqrt(2)) {
+            std::cout << "Will use " << nIter << " iterations with a final Chi2/ndf of: " << mychi2 << std::endl;
+            break;
+        }
+
+
+    }
+
+    hchi2->Write();
+    f->Close();
+
+    std::cout << "\n---------------------------------------------------------------------------------------------------------------\n-" << std::endl;
+
     //--- Unfold data minus background ---
-    RooUnfold *RObjectForData = RooUnfold::New(alg, resp, hRecData, nIter);
+    RooUnfold *RObjectForData = RooUnfold::New(alg, resp, hRecDataMinusFakes, nIter);
     //RObject->SetVerbose(0);
 
     //--- get the unfolded result ---
     RObjectForData->IncludeSystematics(0); // new version of RooUnfold: will compute Cov based on Data Statistics only
     hUnfData = (TH1D*) RObjectForData->Hreco(RooUnfold::kCovariance);
     hUnfData->SetName("UnfData" + name);
-    hUnfData->SetTitle(hRecData->GetTitle());
+    hUnfData->SetTitle(hRecDataMinusFakes->GetTitle());
 
     if (algo == "Bayes") {
         //--- get covariance from statistics on Data ---
         hUnfDataStatCov = M2H(RObjectForData->Ereco(RooUnfold::kCovariance)); // new version of RooUnfold   
         hUnfDataStatCov->SetName("UnfDataStatCov" + name);
-        hUnfDataStatCov->SetTitle(hRecData->GetTitle());
+        hUnfDataStatCov->SetTitle(hRecDataMinusFakes->GetTitle());
 
         //--- get covariance from MC stat ---
-        RooUnfold *RObjectForMC = RooUnfold::New(alg, resp, hRecData, nIter);
+        RooUnfold *RObjectForMC = RooUnfold::New(alg, resp, hRecDataMinusFakes, nIter);
         RObjectForMC->IncludeSystematics(2); // new version of RooUnfold: will compute Cov based on MC Statistics only
         hUnfMCStatCov = M2H(RObjectForMC->Ereco(RooUnfold::kCovariance)); // new version of RooUnfold
         hUnfMCStatCov->SetName("UnfMCStatCov" + name);
-        hUnfMCStatCov->SetTitle(hRecData->GetTitle());
+        hUnfMCStatCov->SetTitle(hRecDataMinusFakes->GetTitle());
     }
 
     //--- divide by luminosity ---
@@ -351,3 +413,90 @@ TH1D* makeCrossSectionHist(TH1D* hGenDYJets, double integratedLumi)
     return hGenCrossSection;
 }
 
+TH1D* foldUnfData(TH1D *hUnfData, RooUnfoldResponse *hresp)
+{
+    TH1D *hfoldUnfData = (TH1D*) hUnfData->Clone();
+    RooUnfoldResponse *resp = (RooUnfoldResponse*) hresp->Clone();
+    TH2D *hres = (TH2D*) resp->Hresponse();
+    TH1D *hgen = (TH1D*) resp->Htruth();
+
+
+    int nBins = hfoldUnfData->GetNbinsX();
+
+    for (int i = 0; i <= nBins; ++i) {
+        double totGen = hgen->GetBinContent(i);
+        for (int j = 0; j <= nBins; ++j) {
+            if (totGen != 0.0) {
+                hres->SetBinContent(j, i, hres->GetBinContent(j, i)/totGen);
+                hres->SetBinError(j, i, hres->GetBinError(j, i)/totGen);
+            }
+            else {
+                hres->SetBinContent(i, j, 0);
+                hres->SetBinError(i, j, hres->GetBinError(i, j));
+            }
+        }
+    }
+
+    for (int i = 0; i <= nBins; ++i) {
+        double sum = 0.0;
+        double error2 = 0.0;
+        for (int j = 0; j <= nBins; ++j) {
+            sum += hres->GetBinContent(i, j) * hUnfData->GetBinContent(j);
+            error2 += pow(hres->GetBinContent(i, j) * hUnfData->GetBinError(j), 2);
+        }
+        hfoldUnfData->SetBinContent(i, sum);
+        hfoldUnfData->SetBinError(i, sqrt(error2));
+    }
+    return hfoldUnfData;
+}
+
+
+void test()
+{
+    TH1D *hreco = new TH1D("hreco", "hreco", 2, 0, 2);
+    TH1D *hgen = new TH1D("hgen", "hgen", 2, 0, 2);
+    TH2D *hresp = new TH2D("hresp", "hresp", 2, 0, 2, 2, 0, 2);
+
+    hreco->Sumw2();
+    hgen->Sumw2();
+    hresp->Sumw2();
+
+    hreco->Fill(0.5, 3.5);
+    hreco->Fill(1.5, 5);
+
+    hgen->Fill(0.5, 4);
+    hgen->Fill(1.5, 6);
+
+    hresp->Fill(0.5, 0.5, 3);
+    hresp->Fill(0.5,1.5,0.5);
+    hresp->Fill(1.5,0.5,0.5);
+    hresp->Fill(1.5,1.5,4.5);
+
+    RooUnfoldResponse *resp = new RooUnfoldResponse(NULL, hgen, hresp);
+
+    RooUnfold *RObjectForData = RooUnfold::New(RooUnfold::kBayes, resp, hreco, 3);
+    TH1D *hUnfData = (TH1D*) RObjectForData->Hreco(RooUnfold::kCovariance);
+
+    TH1D *hfoldUnfData = foldUnfData(hUnfData, resp);
+
+    std::cout << "reco: " << hreco->GetBinContent(1) << "   " << hreco->GetBinContent(2) << std::endl; 
+    std::cout << "gen : " << hgen->GetBinContent(1) << "   " << hgen->GetBinContent(2) << std::endl; 
+    std::cout << "unf : " << hUnfData->GetBinContent(1) << "   " << hUnfData->GetBinContent(2) << std::endl; 
+    std::cout << "fol : " << hfoldUnfData->GetBinContent(1) << "   " << hfoldUnfData->GetBinContent(2) << std::endl; 
+
+
+
+}
+
+double MyChi2Test(TH1D *h1, TH1D *h2, int nBinsToSkip)
+{
+    TH1D *h1Copy = (TH1D*) h1->Clone();
+    TH1D *h2Copy = (TH1D*) h2->Clone();
+
+    for (int i = 0; i <= nBinsToSkip; ++i) {
+        h1Copy->SetBinContent(i, 0.0);
+        h2Copy->SetBinContent(i, 0.0);
+    }
+    return h1Copy->Chi2Test(h2Copy, "WW,P,CHI2/NDF");
+
+}

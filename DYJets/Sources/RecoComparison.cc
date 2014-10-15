@@ -197,12 +197,12 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
             hSumMC[i]->GetXaxis()->SetRangeUser(71,111);
             hRatio->GetXaxis()->SetRangeUser(71,111);
         }
-        if (vhNames[i].Index("JetEta") >= 0){
-            hist[0][i]->GetXaxis()->SetRangeUser(-2.4,2.4);
-            hSumMC[i]->GetXaxis()->SetRangeUser(-2.4,2.4);
-            hRatio->GetXaxis()->SetRangeUser(-2.4,2.4);
+        //if (vhNames[i].Index("JetEta") >= 0){
+        //    hist[0][i]->GetXaxis()->SetRangeUser(-2.4,2.4);
+        //    hSumMC[i]->GetXaxis()->SetRangeUser(-2.4,2.4);
+        //    hRatio->GetXaxis()->SetRangeUser(-2.4,2.4);
 
-        }
+        //}
 
         hSumMC[i]->SetTitle(""); 
         hSumMC[i]->GetYaxis()->SetLabelSize(0.04); 

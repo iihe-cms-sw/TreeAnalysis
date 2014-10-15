@@ -24,11 +24,11 @@ void barre_de_progression(int pourcentage){
 }
 
 bool LepDescendingOrder(leptonStruct l1, leptonStruct l2){
-    return (l1.pt > l2.pt);
+    return (l1.v.Pt() > l2.v.Pt());
 }
 
 bool JetDescendingOrder(jetStruct j1, jetStruct j2){
-    return (j1.pt > j2.pt);
+    return (j1.v.Pt() > j2.v.Pt());
 }
 
 //--- for WJets ---
@@ -106,11 +106,8 @@ double deltaR(TLorentzVector v1, TLorentzVector v2){
 }
 
 double deltaR(double Phi1, double Eta1, double Phi2, double Eta2){
-    //cout << "DeltaR:" << endl;
-    //cout << "phi1 = " << Phi1 << "  eta1 = " << Eta1 << "  phi2 = " << Phi2 << "  eta2 = " << Eta2 << endl; 
     double dEta = Eta1 - Eta2;
     double dPhi = deltaPhi(Phi1, Phi2);
-    //cout << "   deltaR = " << sqrt(dEta * dEta + dPhi * dPhi) << endl;
     return sqrt(dEta * dEta + dPhi * dPhi);
 }
 
@@ -271,9 +268,9 @@ void bestTwoJetsCandidatesPt(vector<jetStruct> jets, pair<TLorentzVector, TLoren
         //cout << "\nMore than 2 jets, selecting best pair" << endl;
         double minPt(999999.);
         for (int i(0); i < nGoodJets - 1; i++) {
-            TLorentzVector jeti; jeti.SetPtEtaPhiE(jets[i].pt, jets[i].eta, jets[i].phi, jets[i].energy);
+            TLorentzVector jeti = jets[i].v;
             for (int j(i + 1); j < nGoodJets; j++) {
-                TLorentzVector jetj; jetj.SetPtEtaPhiE(jets[j].pt, jets[j].eta, jets[j].phi, jets[j].energy);
+                TLorentzVector jetj = jets[j].v;
                 TLorentzVector jetij = jeti + jetj;
                 //cout << i << " " << j << ": Pair pt = " << jetij.Pt() << endl;
                 if (jetij.Pt() < minPt){
@@ -294,9 +291,9 @@ void bestTwoJetsCandidatesPhi(vector<jetStruct> jets, pair<TLorentzVector, TLore
         //cout << "\nMore than 2 jets, selecting best pair" << endl;
         double maxdPhi(-0.0001);
         for (int i(0); i < nGoodJets - 1; i++) {
-            TLorentzVector jeti; jeti.SetPtEtaPhiE(jets[i].pt, jets[i].eta, jets[i].phi, jets[i].energy);
+            TLorentzVector jeti = jets[i].v;
             for (int j(i + 1); j < nGoodJets; j++) {
-                TLorentzVector jetj; jetj.SetPtEtaPhiE(jets[j].pt, jets[j].eta, jets[j].phi, jets[j].energy);
+                TLorentzVector jetj = jets[j].v;
                 double dPhi = deltaPhi(jeti, jetj);
                 //cout << i << " " << j << ": dPhi = " << dPhi << endl;
                 if (dPhi > maxdPhi){
