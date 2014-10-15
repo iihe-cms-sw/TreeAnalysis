@@ -54,16 +54,23 @@ OBJLIST = $(SRCLIST:.cc=.o)
 
 all: runCombination \
 runRecoComparison \
+runVJets \
 runZJets \
 runUnfoldingZJets \
 dispatcher
 
 # ===========================================================================
-runZJets: $(OBJLIST) runZJets.o RooUnfold/libRooUnfold.so
-	$(CXX) -o runZJets $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
-
 .cc.o:
 	$(CXX) -c $< -o $@ $(CXXFLAGS) $(INCDIR)
+
+runVJets: $(OBJLIST) runVJets.o RooUnfold/libRooUnfold.so
+	$(CXX) -o runVJets $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
+
+runVJets.o: runVJets.cc
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR) 
+
+runZJets: $(OBJLIST) runZJets.o RooUnfold/libRooUnfold.so
+	$(CXX) -o runZJets $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
 runZJets.o: runZJets.cc
 	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR) 

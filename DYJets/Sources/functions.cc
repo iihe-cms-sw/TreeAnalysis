@@ -169,16 +169,14 @@ table::table()
 table::table(string filename)
 {
     ifstream file(filename.c_str());
-    cout << filename << endl;
-    if (file) cout << "OK" << endl;
-    else cout << "Not OK" << endl;
+    if (!file) {
+        cerr << "Could not open " << filename << endl;
+    }
     double data[7];
     while (file) {
         for (int i(0); i < 7; i++) {
             file >> data[i];
-            //cout << data[i] <<"  " ;
         }
-        //cout << endl;
         recd.push_back(record(data[2], data[3], data[0], data[1], data[4], data[5], data[6]));
     }
 

@@ -1,4 +1,5 @@
 # git will ignore the executable files:
+runVJets
 runZJets
 runRecoComparison
 runFinalUnfold

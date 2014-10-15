@@ -144,7 +144,7 @@ int main(int argc, char **argv)
         NSystMC = whichSyst + 1;
     }
     //----------------------------------------------------------------------
-    //
+    
     if (doWhat == "DATA" || doWhat == "ALL") {
         hasRecoInfo = true;
         hasGenInfo = false;
@@ -152,14 +152,6 @@ int main(int argc, char **argv)
             if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets Data(lepSel + "_8TeV_Data_dR", 1, 1, dataSyst[i], dataDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
             Data.Loop(hasRecoInfo, hasGenInfo);
-            //ZJets DMudataA(lepSel + "_8TeV_Data_dR_RunA", 1, 1, dataSyst[i], dataDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-            //DMudataA.Loop(hasRecoInfo, hasGenInfo);
-            //ZJets DMudataB(lepSel + "_8TeV_Data_dR_RunB", 1, 1, dataSyst[i], dataDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-            //DMudataB.Loop(hasRecoInfo, hasGenInfo);
-            //ZJets DMudataC(lepSel + "_8TeV_Data_dR_RunC", 1, 1, dataSyst[i], dataDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-            //DMudataC.Loop(hasRecoInfo, hasGenInfo);
-            //ZJets DMudataD(lepSel + "_8TeV_Data_dR_RunD", 1, 1, dataSyst[i], dataDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-            //DMudataD.Loop(hasRecoInfo, hasGenInfo);
         }
     }
 

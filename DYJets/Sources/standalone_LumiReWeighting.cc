@@ -36,18 +36,11 @@ standalone_LumiReWeighting::standalone_LumiReWeighting(TString leptonFlavor, int
 
     MC_distr.clear();
     Lumi_distr.clear();
-    //std::cout << "Year " << year << std::endl;
-    if(year!=2011 && year!=2012 && year!=2013 && year!=201117 && leptonFlavor != "Muons" && leptonFlavor != "Electrons")
-    {
-        std::cout << "The year is not correct!! Reset to year 2012." << std::endl;
-        year=2012;
-        std::cout << "Year " << year << std::endl;
-    }
 
-    if (leptonFlavor == "Muons"){
+    if (leptonFlavor == "DMu"){
         cout << "Muons PU distribution" << endl;
     }
-    else if (leptonFlavor == "Electrons"){
+    else if (leptonFlavor == "DE"){
         cout << "Electrons PU distribution" << endl;
     }
     switch (mode)
@@ -128,7 +121,7 @@ standalone_LumiReWeighting::standalone_LumiReWeighting(TString leptonFlavor, int
             MC_distr.push_back(Summer2012_S10[i]);
         }
         else if ( year == 2013 ){
-            if (leptonFlavor == "SingleMuon" ){
+            if (leptonFlavor == "SMu" ){
                 switch (mode){
                     case 0:
                         Lumi_distr.push_back(SMu2013_Central[i]);
@@ -163,7 +156,7 @@ standalone_LumiReWeighting::standalone_LumiReWeighting(TString leptonFlavor, int
 
             }
 
-            else  if (leptonFlavor == "SingleElectron"  ){
+            else  if (leptonFlavor == "SE"  ){
                 switch (mode){
                     case 0:
                         Lumi_distr.push_back(SE2013_Central[i]);
@@ -181,7 +174,7 @@ standalone_LumiReWeighting::standalone_LumiReWeighting(TString leptonFlavor, int
 
             }
 
-            else if ( leptonFlavor == "Muons" || leptonFlavor == "Electrons"){
+            else if (leptonFlavor == "DMu" || leptonFlavor == "DE"){
                 switch (mode){
                     case 0:
                         Lumi_distr.push_back(DMu2013_Central[i]);

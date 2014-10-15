@@ -17,7 +17,7 @@ void MergeTop(){
     //runMergeTop("DMu",-3,20,0);	        
 
     // DMu 30 GeV
-    runMergeTop("DMu", 0, 30, 2.4, 0, "HistoFilesAugust");
+    //runMergeTop("DMu", 0, 30, 2.4, 0, "HistoFilesAugust");
     //runMergeTop("DMu",1,30,0);
     //runMergeTop("DMu",-1,30,0);
     //runMergeTop("DMu",3,30,0);
@@ -38,7 +38,7 @@ void MergeTop(){
     //runMergeTop("DE",-3,30,0);
 }
 
-void runMergeTop(TString lepSelection, int systematics, float jetPtCutMin, float jetEtaCutMax, Long_t maxEvents, TString outDir)
+void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetEtaCutMax, Long_t maxEvents, TString outDir)
 {
     if (maxEvents >= 0) {
         outDir = "HistoFilesTest/";

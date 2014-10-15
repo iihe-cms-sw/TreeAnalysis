@@ -7,8 +7,6 @@
 
 using namespace std;
 
-void runMergeTop(TString lepSelection = "DE", int systematics = 0, float jetPtCutMin = 30, float jetEtaCutMax = 2.4, Long_t maxEvents = -1, TString outDir = "TEST");
 
 void MergeTop();
-
-void runMergeTop(TString lepSelection, int systematics, float jetPtCutMin, float jetEtaCutMax, Long_t maxEvents, TString outDir);
+void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetEtaCutMax, Long_t maxEvents, TString outDir);
