@@ -88,6 +88,11 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patJetPfAk05LooseId_;
         vector<double>  *patJetPfAk05jetpuMVA_;
 
+        // -- MET ---
+        vector<double>  *patMetPt_;
+        vector<double>  *patMetPhi_;
+        vector<double>  *patMetSig_;
+
         // List of branches
         TBranch        *b_mcEveWeight_;   //!
         TBranch        *b_mcSherpaSumWeight3_;   //!
@@ -156,6 +161,10 @@ class ZJets: public HistoSetZJets {
         TBranch        *b_patJetPfAk05jetBZ_;   //!
         TBranch        *b_patJetPfAk05jetpuMVA_;   //!
         TBranch        *b_patJetPfAk05OCSV_;   //!
+
+        TBranch        *b_patMetPt_;   //!
+        TBranch        *b_patMetPhi_;   //!
+        TBranch        *b_patMetSig_;   //!
 
 
 

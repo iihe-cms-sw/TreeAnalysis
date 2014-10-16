@@ -747,7 +747,7 @@ void ZJetsAndDPS::Loop(bool hasRecoInfo, bool hasGenInfo, int doQCD, bool doSSig
                 leptonStruct genLep = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0.};
                 leptonStruct genLepNoFSR = {genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), charge, 0., 0. };
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
-                if ( ( genLepSt_->at(i) == 1 && lepSelector &&  abs(genLepId_->at(i)) == LeptonID) || ( doW && charge == 0 ) ){
+                if ( ( genLepSt_->at(i) == 1 && lepSelector &&  abs(genLepId_->at(i)) == LeptonID) || (doW && charge == 0) ){
                     TLorentzVector tmpGenLep;
                     tmpGenLep.SetPtEtaPhiM(genLep.pt, genLep.eta, genLep.phi, leptonMass);
                     for (unsigned short j(0); j < nTotGenPhotons; j++){

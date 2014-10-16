@@ -52,6 +52,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 
     //==========================================================================================================//
     int ZMCutLow(71), ZMCutHigh(111);
+    int MTCutLow(50), METCutLow(30);
     // additional variables
     double ZptRange[6] = {0, 40, 80, 120, 160, 1000};
     int LeptonID(11);
@@ -273,6 +274,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         bool passesLeptonCut(0);
         unsigned short nTotLeptons(0), nLeptons(0);
         vector<leptonStruct> leptons;
+        TLorentzVector MET;
+        double MT = -99;
         TLorentzVector EWKBoson;
 
         if (hasRecoInfo) {
@@ -298,11 +301,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
 
                     bool muPassesIsoCut(mu.iso < 0.2);  
                     bool muPassesTrig;
-                    if (lepSel == "DMu" && (mu.trigger & 0x8)) muPassesTrig = 1;      // HLT_Mu17_Mu8 
+                    if (lepSel == "DMu" && (mu.trigger & 0x8)) muPassesTrig = 1;       // HLT_Mu17_Mu8 
                     else if (lepSel == "SMu" && (mu.trigger & 0x1)) muPassesTrig = 1;  // HLT_IsoMu24_eta2p1_v
 
                     /// for files obtained form bugra
-                    if (fileName.Index("DYJets_Sherpa_UNFOLDING_dR_5311") >= 0 && mu.trigger > 0) muPassesTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
+                    if (fileName.Index("DYJets_Sherpa_UNFOLDING_dR") >= 0 && mu.trigger > 0) muPassesTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
 
                     // select the good muons only
                     if (muPassesPtCut && muPassesEtaCut && muPassesIdCut && muPassesIsoCut && (!useTriggerCorrection || muPassesTrig)) {
@@ -348,16 +351,22 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             }
             if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
 
-            nLeptons = leptons.size();
+            if (lepSel == "SMu" || lepSel == "SE") {
+                int whichMET(2); //  0 - pfMETPFlow, 1 - pfMet, 2 - pfType1CorrectedMet, 3 - pfType1p2CorrectedMet
+                MET.SetPtEtaPhiM(patMetPt_->at(whichMET), 0, patMetPhi_->at(whichMET), 0);
+            }
 
-            //-- determine if the event passes the leptons requirements for EWKBoson Boson
-            if (nLeptons >= 2){
-                // sort leptons by descending pt
-                sort(leptons.begin(), leptons.end(), LepDescendingOrder);
+
+            nLeptons = leptons.size();
+            // sort leptons by descending pt
+            sort(leptons.begin(), leptons.end(), LepDescendingOrder);
+
+            //-- determine if the event passes the leptons requirements for EWKBoson = Z Boson
+            if ((lepSel == "DMu" || lepSel == "DE") && nLeptons >= 2) {
 
                 EWKBoson = leptons[0].v + leptons[1].v;
 
-                // apply charge, mass and eta cut
+                // apply charge, mass cut
                 if (leptons[0].charge * leptons[1].charge < 0 && EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) passesLeptonCut = 1;
 
                 // apply scale factors only on MC.
@@ -377,10 +386,27 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                         effWeight *= LeptID.getEfficiency(leptons[0].v.Pt(), fabs(leptons[0].scEta));
                         effWeight *= LeptID.getEfficiency(leptons[1].v.Pt(), fabs(leptons[1].scEta)); 
                     }
-                    else if (lepSel == "SMu") {
+                    weight *= effWeight;
+                }
+
+            } // end if Z study and nLeptons>=2
+            else if ((lepSel == "SMu" || lepSel == "SE") && (nLeptons >= 1)) {
+                if (leptons.size() > 1) leptons[1].v = MET;
+                else leptons.push_back(leptonStruct(MET.Pt(), 0, MET.Phi(), MET.Pt(), 0, 0, 0, 0, 0)); 
+
+                EWKBoson = leptons[0].v + MET;
+                MT = sqrt(2 * leptons[0].v.Pt() * MET.Pt() * (1 - cos(leptons[0].v.Phi() - MET.Phi())));
+
+                // apply transver mass and MET cut
+                if (MT > MTCutLow && MET.Pt() > METCutLow) passesLeptonCut = 1;
+
+                // apply scale factors only on MC.
+                if (!isData) {
+                    double effWeight = 1.;
+                    if (lepSel == "SMu") {
                         effWeight *= LeptID.getEfficiency(leptons[0].v.Pt(), fabs(leptons[0].v.Eta()));
                         effWeight *= LeptIso.getEfficiency(leptons[0].v.Pt(), fabs(leptons[0].v.Eta())); 
-                        if (useTriggerCorrection) effWeight *= LeptTrig.getEfficiency(fabs(leptons[0].v.Pt()), fabs(leptons[1].v.Eta()));
+                        if (useTriggerCorrection) effWeight *= LeptTrig.getEfficiency(fabs(leptons[0].v.Pt()), fabs(leptons[0].v.Eta()));
                     }
                     else if (lepSel == "SE") {
                         effWeight *= Ele_Rec.getEfficiency(leptons[0].v.Pt(), fabs(leptons[0].scEta));
@@ -388,9 +414,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                     }
                     weight *= effWeight;
                 }
-
-            } // end if nLeptons>=2
-
+            } // end if W study and nLeptons>=1
         }// end has reco info
 
 
@@ -402,29 +426,34 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         unsigned short nTotgenLeptons(0), ngenLeptons(0), nTotGenPhotons(0);
         vector<leptonStruct> genLeptons;
         vector<int> usedGenPho;
+        TLorentzVector genMET;
+        double genMT = -99;
         TLorentzVector genEWKBoson;
         int countTauS3 = 0;
         int nTauWithStatus3 = 0;
 
         if (hasGenInfo) {
-            if (hasRecoInfo) countTauS3 = 2;
+            if (hasRecoInfo) countTauS3 = (lepSel == "DMu" || lepSel == "DE") ? 2 : 1;
             nTotGenPhotons = genPhoEta_->size();
             nTotgenLeptons = genLepEta_->size();
             //-- retriveing generated leptons with status 1
             for (unsigned short i(0); i < nTotgenLeptons; i++) {
+                bool lepToBeConsidered(false); 
+                if ((lepSel == "DMu" || lepSel == "DE") && abs(genLepId_->at(i)) == LeptonID) lepToBeConsidered = true; 
+                else if ((lepSel == "SMu" || lepSel == "SE") && (abs(genLepId_->at(i)) == LeptonID || abs(genLepId_->at(i)) == 12 || abs(genLepId_->at(i)) == 14)) lepToBeConsidered = true;
                 // following two lines should give the same result
                 if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) != LeptonID && (abs(genLepId_->at(i)) == 15 || abs(genLepId_->at(i)) == 13 || abs(genLepId_->at(i)) == 11)) countTauS3++;
                 if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) == LeptonID) countTauS3--;
 
                 if (genLepSt_->at(i) == 3 && abs(genLepId_->at(i)) == 15) nTauWithStatus3++;
 
-                if (abs(genLepId_->at(i)) != LeptonID) continue;
+                if (!lepToBeConsidered) continue;
 
                 leptonStruct genLep(genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), genLepQ_->at(i), 0, 0, 0, 0);
                 leptonStruct genLepNoFSR(genLepPt_->at(i), genLepEta_->at(i), genLepPhi_->at(i), genLepE_->at(i), genLepQ_->at(i), 0, 0, 0, 0);
 
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
-                if (genLepSt_->at(i) == 1 &&  abs(genLepId_->at(i)) == LeptonID) {
+                if (genLepSt_->at(i) == 1 && lepToBeConsidered) {
                     for (unsigned short j(0); j < nTotGenPhotons; j++){
                         TLorentzVector tmpGenPho;
                         tmpGenPho.SetPtEtaPhiM(genPhoPt_->at(j), genPhoEta_->at(j), genPhoPhi_->at(j), 0.);
@@ -437,12 +466,22 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                             usedGenPho.push_back(j);
                         }
                     }   
-                    if (genLep.v.Pt() >= lepPtCutMin && fabs(genLep.v.Eta()) <= lepEtaCutMax) {
+                    if ((genLep.v.Pt() >= lepPtCutMin && fabs(genLep.v.Eta()) <= lepEtaCutMax && abs(genLep.charge) > 0) 
+                        || ((lepSel == "SMu" || lepSel == "SE") && genLep.charge == 0)) {
                         genLeptons.push_back(genLep);
                     }
                 }
             }
+
+            if (lepSel == "SMu" || lepSel == "SE") {
+                int whichMET(2); //  0 - pfMETPFlow, 1 - pfMet, 2 - pfType1CorrectedMet, 3 - pfType1p2CorrectedMet
+                genMET.SetPtEtaPhiM(patMetPt_->at(whichMET), 0, patMetPhi_->at(whichMET), 0);
+            }
+
             ngenLeptons = genLeptons.size();
+           
+            // sort leptons by descending pt
+            sort(genLeptons.begin(), genLeptons.end(), LepDescendingOrder);
 
             if (countTauS3 == 0 && fileName.Index("UNFOLDING") >= 0) {
                 partonsN->Fill(nup_-5);
@@ -454,9 +493,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             if (countTauS3 > 0 && fileName.Index("Tau") < 0) passesLeptonCut = 0; 
 
             //-- determine if the event passes the leptons requirements
-            if (ngenLeptons >= 2){
-                // sort leptons by descending pt
-                sort(genLeptons.begin(), genLeptons.end(), LepDescendingOrder);
+            if ((lepSel == "DMu" || lepSel == "DE") && ngenLeptons >= 2) {
 
                 // build the EWKBoson candidate and the kinematic
                 genEWKBoson = genLeptons[0].v + genLeptons[1].v;
@@ -468,7 +505,27 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                 //--- if there are taus we don't want the gen level
                 if (countTauS3 > 0) passesgenLeptonCut = 0;
             }
-        }
+            else if ((lepSel == "SMu" || lepSel == "SE") && (ngenLeptons >= 2)) {
+
+                if (abs(genLeptons[0].charge) > 0 && genLeptons[1].charge == 0) {
+                    genMET = genLeptons[1].v;
+                }
+                else if (abs(genLeptons[1].charge) > 0 && genLeptons[0].charge == 0) {
+                    genMET = genLeptons[0].v;
+                    genLeptons[0] = genLeptons[1];
+                }
+                else passesgenLeptonCut = 0;
+
+                genEWKBoson = genLeptons[0].v + genMET;
+                genMT = sqrt(2 * genLeptons[0].v.Pt() * genMET.Pt() * (1 - cos(genLeptons[0].v.Phi() - genMET.Phi())));
+
+
+                // apply transver mass and MET cut
+                if (genMT > MTCutLow && genMET.Pt() > METCutLow) passesgenLeptonCut = 1;
+                //--- if there are taus we don't want the gen level
+                if (countTauS3 > 0) passesgenLeptonCut = 0;
+            }
+        } // end of hasGenInfo
 
         if (passesgenLeptonCut) {
             TotalGenWeightPassGEN += genWeightBackup; 
@@ -519,7 +576,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
                     jets_20.push_back(jet);
                 }
             } //End of loop over all the jets 
-
 
             nGoodJets = jets.size();
             nGoodJets_20 = jets_20.size();
@@ -1779,6 +1835,10 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     patJetPfAk05LooseId_ = 0;
     patJetPfAk05jetpuMVA_ = 0;
 
+    patMetPt_ = 0;
+    patMetPhi_ = 0;
+    patMetSig_ = 0;
+
     // Set branch addresses and branch pointers
     fCurrent = -1;
     fChain->SetMakeClass(1);
@@ -1796,8 +1856,11 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("patJetPfAk05Phi_", &patJetPfAk05Phi_, &b_patJetPfAk05Phi_);
         fChain->SetBranchAddress("patJetPfAk05LooseId_", &patJetPfAk05LooseId_, &b_patJetPfAk05LooseId_);
         fChain->SetBranchAddress("patJetPfAk05jetpuMVA_", &patJetPfAk05jetpuMVA_, &b_patJetPfAk05jetpuMVA_);
+        fChain->SetBranchAddress("patMetPt_", &patMetPt_, &b_patMetPt_);
+        fChain->SetBranchAddress("patMetPhi_", &patMetPhi_, &b_patMetPhi_);
+        //fChain->SetBranchAddress("patMetSig_", &patMetSig_, &b_patMetSig_); // not used
 
-        if (lepSel != "DMu"){
+        if (lepSel == "DE" || lepSel == "SE"){
             fChain->SetBranchAddress("patElecPt_", &patElecPt_, &b_patElecPt_);
             fChain->SetBranchAddress("patElecEta_", &patElecEta_, &b_patElecEta_);
             fChain->SetBranchAddress("patElecPhi_", &patElecPhi_, &b_patElecPhi_);
@@ -1808,7 +1871,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
             fChain->SetBranchAddress("patElecPfIsoRho_", &patElecPfIsoRho_, &b_patElecPfIsoRho_); 
             fChain->SetBranchAddress("patElecScEta_", &patElecScEta_, &b_patElecScEta_);
         }
-        if (lepSel != "DE"){
+        if (lepSel == "DMu" || lepSel == "SMu"){
             fChain->SetBranchAddress("patMuonPt_", &patMuonPt_, &b_patMuonPt_);
             fChain->SetBranchAddress("patMuonEta_", &patMuonEta_, &b_patMuonEta_);
             fChain->SetBranchAddress("patMuonPhi_", &patMuonPhi_, &b_patMuonPhi_);
