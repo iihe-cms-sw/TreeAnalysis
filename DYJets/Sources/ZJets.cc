@@ -211,9 +211,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
         //         Computing weight           //
         //====================================//
         weight = 1.;
-        // for data PU_npT == -2
         // line below is to see distributions as provided with default MC PU distribution
-        if (hasRecoInfo && PU_npT > 0) weight *= puWeight.weight(int(PU_npT));
+        if (hasRecoInfo && !isData) weight *= puWeight.weight(int(PU_npT));
 
         if (weight > 10000 || weight < 0) {
             cout << "Oopss such a big weight " << weight << endl;
