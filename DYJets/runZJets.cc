@@ -237,6 +237,11 @@ int main(int argc, char **argv)
         }
     }
 
+    if (doWhat == "SHERPA") {
+        ZJets DYShe("DMu_8TeV_Sherpa_Bugra_1_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(1, 1);
+    }
+
     if (doWhat == "PDF") {
         for (int pdfMember(0); pdfMember <= 0; pdfMember++) {
             ZJets DYMixPDF(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
