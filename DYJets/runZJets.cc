@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 
     if (doWhat == "WJETS" || doWhat == "ALL") {
         hasRecoInfo = true; 
-        hasGenInfo = false;
+        hasGenInfo = (lepSel == "DMu" || lepSel == "DE") ? false : true;
 
         for (unsigned int i(start); i < NSystMC; i++) { 
             if (i == 0 && !doCentral && whichSyst < 0) continue;
