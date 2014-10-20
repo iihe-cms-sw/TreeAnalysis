@@ -375,7 +375,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             if ((lepSel == "DMu" || lepSel == "DE") && nLeptons >= 2) {
 
                 EWKBoson = leptons[0].v + leptons[1].v;
-
+                
                 // apply charge, mass cut
                 if (leptons[0].charge * leptons[1].charge < 0 && EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) passesLeptonCut = 1;
 
@@ -492,14 +492,14 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, string pdfSet, int pdfMember
             // sort leptons by descending pt
             sort(genLeptons.begin(), genLeptons.end(), LepDescendingOrder);
 
-            if (countTauS3 == 0 && fileName.Index("UNFOLDING") >= 0) {
+            if (countTauS3 == 0 && fileName.Index("UNFOLDING") >= 0 && fileName.Index("Sherpa") < 0) {
                 partonsN->Fill(nup_-5);
                 partonsNWeighted->Fill(nup_-5, genWeight);
             }
 
             //--- if there are taus, but we do not run on the Tau file, thus we run on the DYJets file, 
             //    then we don't count the event at reco.
-            if (countTauS3 > 0 && fileName.Index("Tau") < 0) passesLeptonCut = 0; 
+            if (countTauS3 > 0 && fileName.Index("Tau") < 0 && fileName.Index("Sherpa") < 0) passesLeptonCut = 0; 
 
             //-- determine if the event passes the leptons requirements
             if ((lepSel == "DMu" || lepSel == "DE") && ngenLeptons >= 2) {
