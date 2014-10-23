@@ -87,11 +87,15 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patJetPfAk05Phi_;
         vector<double>  *patJetPfAk05LooseId_;
         vector<double>  *patJetPfAk05jetpuMVA_;
+        vector<double>  *patJetPfAk05OCSV_;
+        vector<int>     *patJetPfAk05PartonFlavour_;
 
         // -- MET ---
         vector<double>  *patMetPt_;
         vector<double>  *patMetPhi_;
         vector<double>  *patMetSig_;
+
+        vector<double> *mcSherpaWeights_;
 
         // List of branches
         TBranch        *b_mcEveWeight_;   //!
@@ -161,6 +165,7 @@ class ZJets: public HistoSetZJets {
         TBranch        *b_patJetPfAk05jetBZ_;   //!
         TBranch        *b_patJetPfAk05jetpuMVA_;   //!
         TBranch        *b_patJetPfAk05OCSV_;   //!
+        TBranch        *b_patJetPfAk05PartonFlavour_;  //!
 
         TBranch        *b_patMetPt_;   //!
         TBranch        *b_patMetPhi_;   //!
@@ -168,16 +173,21 @@ class ZJets: public HistoSetZJets {
 
 
 
+
         ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., 
-              int lepPtCutMin_ = 20, int jetEtaCutMax = 24, int jetPtCutMin_ = 30, int jetEtaCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
+              int lepPtCutMin_ = 20, int lepEtaCutMax_ = 24, int jetPtCutMin_ = 30, int jetRapidityCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
               TString bonzaiDir = "/afs/cern.ch/work/a/aleonard/public/ZJetsFiles/");
         ~ZJets();
-        string   CreateOutputFileName(string pdfSet = "", int pdfMember = -1);
+        string   CreateOutputFileName(TString pdfSet = "", int pdfMember = -1);
         Int_t    Cut(Long64_t entry);
         Int_t    GetEntry(Long64_t entry);
         Long64_t LoadTree(Long64_t entry);
         void     Init(bool hasRecoInfo, bool hasGenInfo);
-        void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, string pdfSet = "", int pdfMember = 0);
+        void     initLHAPDF(TString pdfSet, int pdfMember);
+        double   computePDFWeight();
+        void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, TString pdfSet = "", int pdfMember = 0);
+        void     getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoMuons);
+        void     getElectrons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoElectrons);
         Bool_t   Notify();
         void     Show(Long64_t entry = -1);
 
@@ -192,11 +202,12 @@ class ZJets: public HistoSetZJets {
         int lepPtCutMin;
         int lepEtaCutMax;
         int jetPtCutMin;
-        int jetEtaCutMax;
+        int jetRapidityCutMax;
         Long_t nMaxEvents;
         TString lepSel;
+        bool rejectBTagEvents;
 
-	ConfigVJets cfg_;
+        ConfigVJets cfg_;
 };
 #endif
 
