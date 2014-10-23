@@ -275,13 +275,7 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinus
         TH1D *hfoldUnfData = foldUnfData(hUnfData, resp);
         hfoldUnfData->SetName(tmpName);
         hfoldUnfData->SetTitle(tmpName);
-        std::cout << "Root Chi2 " << std::endl;
-        std::cout << hfoldUnfData->Chi2Test(hRecDataMinusFakes, "WW,P,CHI2/NDF") << std::endl;
-        std::cout << "My Chi2 (skipping underflow bin)" << std::endl;
-        std::cout << MyChi2Test(hfoldUnfData, hRecDataMinusFakes, 0) << std::endl;
-        std::cout << "My Chi2 (skipping " << nBinsToSkip << " first bins)" << std::endl;
         double mychi2 = MyChi2Test(hfoldUnfData, hRecDataMinusFakes, nBinsToSkip);
-        std::cout << mychi2 << std::endl;
         hchi2->SetBinContent(i, mychi2);
         if (i==1) hRecDataMinusFakes->Write("Unf" + name + "_0"); 
         hUnfData->Write();
