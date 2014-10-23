@@ -415,7 +415,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     passesgenLeptonCut = 1;
                 }
                 //--- if there are taus we don't want the gen level
-                if (countTauS3 > 0) passesgenLeptonCut = 0;
+                if (countTauS3 > 0 && fileName.Index("Bugra") < 0) passesgenLeptonCut = 0;
             }
             else if ((lepSel == "SMu" || lepSel == "SE") && (ngenLeptons >= 2)) {
 
