@@ -172,8 +172,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[5] = makeCovFromUpAndDown(hUnfData[0], hUnfData[7], hUnfData[8], "CovXSec");
         hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLumi");
         hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovSF");
-        hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[13], "CovSherpaUnf");
-
+        hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[0], "CovSherpaUnf");
         hCov[9] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
         for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
 
@@ -378,10 +377,12 @@ TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, 
 
     for (int i = 1; i <= nBins; ++i) {
         double sigmaMeani = 0.5*fabs(hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i)); 
+        if (name.Index("Sherpa") >= 0) sigmaMeani *= 2;
         int signi = (hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i) < 0) ? -1 : 1;
 
         for (int j = 1; j <= nBins; ++j) {
             double sigmaMeanj = 0.5*fabs(hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j)); 
+            if (name.Index("Sherpa") >= 0) sigmaMeanj *= 2;
             int signj = (hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j) < 0) ? -1 : 1;
 
             h->SetBinContent(i, j, signi * signj * sigmaMeani * sigmaMeanj);
