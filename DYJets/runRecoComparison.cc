@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     TString recoCompDir = cfg.getS("recoCompDir");
     TString lepSel      = cfg.getS("lepSel");
     int jetPtMin        = cfg.getI("jetPtMin");
-    int jetEtaMax       = cfg.getI("jetEtaMax");
+    int jetRapidityMax  = cfg.getI("jetRapidityMax");
     bool doPASPlots     = cfg.getB("doPASPlots");
     
     //-----------------------------------------------------------------------------
@@ -40,16 +40,16 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("jetPtMin=")) {
                 getArg(currentArg, jetPtMin);
             }
-            else if (currentArg.BeginsWith("jetEtaMax=")) {
-                getArg(currentArg, jetEtaMax);
+            else if (currentArg.BeginsWith("jetRapidityMax=")) {
+                getArg(currentArg, jetRapidityMax);
             }
             else if (currentArg.BeginsWith("doPASPlots=")) {
                 getArg(currentArg, doPASPlots);
             }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
-                std::cout << "\nUsage: \n\t./runRecoComparison [lepSel=(DMu, DE)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [recoCompDir=(path)] [doPASPlots=(0,1)] [--help]" << std::endl;
-                std::cout << "\neg: ./runRecoComparison lepSel=DMu jetEtaMax=24" << std::endl;
+                std::cout << "\nUsage: \n\t./runRecoComparison [lepSel=(DMu, DE)] [jetPtMin=(int)] [jetRapidityMax=(int*10)] [histoDir=(path)] [recoCompDir=(path)] [doPASPlots=(0,1)] [--help]" << std::endl;
+                std::cout << "\neg: ./runRecoComparison lepSel=DMu jetRapidityMax=24" << std::endl;
                 std::cout << "\nunspecified options will be read from vjets.cfg\n" << std::endl;
                 return 0;
             }
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     if (!histoDir.EndsWith("/")) histoDir += "/";
     if (!recoCompDir.EndsWith("/")) recoCompDir += "/";
 
-    RecoComparison(doPASPlots, lepSel, histoDir, recoCompDir, jetPtMin, jetEtaMax);
+    RecoComparison(doPASPlots, lepSel, histoDir, recoCompDir, jetPtMin, jetRapidityMax);
 
     //getStatistics("Electrons", 30);
     //getStatistics("Muons", 30);

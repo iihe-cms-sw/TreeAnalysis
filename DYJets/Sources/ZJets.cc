@@ -793,6 +793,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genTwoJetsPtDiff_Zinc2jet->Fill(genJet1Minus2.Pt(), genWeight);
                     genBestTwoJetsPtDiff_Zinc2jet->Fill(genBestJet1Minus2.Pt(), genWeight);
                     genJetsMass_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
+                    if (EvtInfo_NumVtx < 12) genJetsMassLowPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
+                    else if (EvtInfo_NumVtx < 20) genJetsMassMidPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
+                    else genJetsMassHigPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     genZPt_Zinc2jet->Fill(genEWKBoson.Pt(), genWeight);
                     genZRapidity_Zinc2jet->Fill(genEWKBoson.Rapidity(), genWeight);
                     genZEta_Zinc2jet->Fill(genEWKBoson.Eta(), genWeight);
@@ -1094,6 +1097,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 TwoJetsPtDiff_Zinc2jet->Fill(jet1Minus2.Pt(), weight);
                 BestTwoJetsPtDiff_Zinc2jet->Fill(bestJet1Minus2.Pt(), weight);
                 JetsMass_Zinc2jet->Fill(jet1Plus2.M(), weight);
+                if (EvtInfo_NumVtx < 12) JetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
+                else if (EvtInfo_NumVtx < 20) JetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
+                else JetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 ZPt_Zinc2jet->Fill(EWKBoson.Pt(), weight);
                 ZRapidity_Zinc2jet->Fill(EWKBoson.Rapidity(), weight);
                 ZEta_Zinc2jet->Fill(EWKBoson.Eta(), weight);
@@ -1431,6 +1437,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 //responseBestTwoJetsPtDiffInc->Fill(bestJet1Minus2.Pt(), genBestJet1Minus2.Pt(), weight);
                 //responseJetsMassInc->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 hresponseJetsMass_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                if (EvtInfo_NumVtx < 12) hresponseJetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                else if (EvtInfo_NumVtx < 20) hresponseJetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                else hresponseJetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 //responseBestJetsMassInc->Fill(bestJet1Plus2.M(), genBestJet1Plus2.M(), weight);
                 //responseSpTJets_Zinc2jet->Fill(SpTsub(jets[0].v, jets[1].v), SpTsub(genJets[0].v, genJets[1].v), weight);
                 //responseBestSpTJets_Zinc2jet->Fill(SpTsub(bestTwoJets.first, bestTwoJets.second), SpTsub(genBestTwoJets.first, genBestTwoJets.second), weight);
@@ -1875,7 +1884,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("patJetPfAk05LooseId_", &patJetPfAk05LooseId_, &b_patJetPfAk05LooseId_);
         fChain->SetBranchAddress("patJetPfAk05jetpuMVA_", &patJetPfAk05jetpuMVA_, &b_patJetPfAk05jetpuMVA_);
         fChain->SetBranchAddress("patJetPfAk05OCSV_", &patJetPfAk05OCSV_, &b_patJetPfAk05OCSV_);
-        fChain->SetBranchAddress("patJetPfAk05PartonFlavour_", &patJetPfAk05PartonFlavour_, &b_patJetPfAk05PartonFlavour_);
+        //fChain->SetBranchAddress("patJetPfAk05PartonFlavour_", &patJetPfAk05PartonFlavour_, &b_patJetPfAk05PartonFlavour_);
         fChain->SetBranchAddress("patMetPt_", &patMetPt_, &b_patMetPt_);
         fChain->SetBranchAddress("patMetPhi_", &patMetPhi_, &b_patMetPhi_);
         //fChain->SetBranchAddress("patMetSig_", &patMetSig_, &b_patMetSig_); // not used

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString variable)
+void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetRapidityMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString variable)
 {
     //--- create output directory if does not exist ---
     system("mkdir -p " + combDir);
@@ -42,8 +42,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TString commonName = "_unfolded_" + variable + "_" + algo;
         commonName += "_jetPtMin_";
         commonName += jetPtMin;
-        commonName += "_jetEtaMax_";
-        commonName += jetEtaMax;
+        commonName += "_jetRapidityMax_";
+        commonName += jetRapidityMax;
         commonName += ".root";
         TFile *fDE = new TFile(unfoldDir + "DE" + commonName);
         if (!fDE->IsOpen()) {
@@ -104,8 +104,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         outputFileName += (int) fullSChanCov;
         outputFileName += "_jetPtMin_";
         outputFileName += jetPtMin;
-        outputFileName += "_jetEtaMax_";
-        outputFileName += jetEtaMax;
+        outputFileName += "_jetRapidityMax_";
+        outputFileName += jetRapidityMax;
 
         TFile *outputRootFile = new TFile(outputFileName + ".root", "RECREATE");
         //---------------------------------------------------------------------

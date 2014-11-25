@@ -238,7 +238,7 @@ int main(int argc, char **argv)
     }
 
     if (doWhat == "SHERPA") {
-        ZJets DYShe("DMu_8TeV_DYJets_Sherpa_Bugra_1_6_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        ZJets DYShe("DMu_8TeV_DYJets_Sherpa_Bugra_1_6_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetRapidityMax, maxEvents, histoDir, bonzaiDir);
         DYShe.Loop(1, 1);
     }
 

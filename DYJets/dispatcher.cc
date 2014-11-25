@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     bool doUnfold = true;
     bool doCombination = true;
     bool doCopyToMac = false;
-    std::string machines[] = {"m5.iihe.ac.be", "m6.iihe.ac.be", "m7.iihe.ac.be", "m8.iihe.ac.be", "m9.iihe.ac.be"};
+    std::string machines[] = {"m7.iihe.ac.be", "m6.iihe.ac.be", "m7.iihe.ac.be", "m8.iihe.ac.be", "m8.iihe.ac.be"};
 
     //--- Parse the arguments -----------------------------------------------------
     if (argc > 1) {

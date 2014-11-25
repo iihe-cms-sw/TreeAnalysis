@@ -9,12 +9,12 @@ int main(int argc, char **argv)
     //--- Loads configuration -----------------------------------------------------
     ConfigVJets cfg;
 
-    TString histoDir  = cfg.getS("histoDir");
-    TString unfoldDir = cfg.getS("unfoldDir");
-    TString lepSel    = cfg.getS("lepSel");
-    TString algo      = cfg.getS("algo");
-    int jetPtMin      = cfg.getI("jetPtMin");
-    int jetEtaMax     = cfg.getI("jetEtaMax");
+    TString histoDir   = cfg.getS("histoDir");
+    TString unfoldDir  = cfg.getS("unfoldDir");
+    TString lepSel     = cfg.getS("lepSel");
+    TString algo       = cfg.getS("algo");
+    int jetPtMin       = cfg.getI("jetPtMin");
+    int jetRapidityMax = cfg.getI("jetRapidityMax");
 
     TString variable = "";
 
@@ -40,16 +40,16 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("jetPtMin=")) {
                 getArg(currentArg, jetPtMin);
             }
-            else if (currentArg.BeginsWith("jetEtaMax=")) {
-                getArg(currentArg, jetEtaMax);
+            else if (currentArg.BeginsWith("jetRapidityMax=")) {
+                getArg(currentArg, jetRapidityMax);
             }
             else if (currentArg.BeginsWith("variable=")) {
                 getArg(currentArg, variable);
             }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
-                std::cout << "\nUsage: \n\t./runUnfolding [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [unfoldDir=(path)] [--help]" << std::endl;
-                std::cout << "\neg: ./runUnfolding lepSel=DMu jetEtaMax=24" << std::endl;
+                std::cout << "\nUsage: \n\t./runUnfolding [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetRapidityMax=(int*10)] [histoDir=(path)] [unfoldDir=(path)] [--help]" << std::endl;
+                std::cout << "\neg: ./runUnfolding lepSel=DMu jetRapidityMax=24" << std::endl;
                 std::cout << "\nunspecified options will be read from vjets.cfg\n" << std::endl;
                 return 0;
             }
@@ -65,10 +65,10 @@ int main(int argc, char **argv)
     if (!histoDir.EndsWith("/")) histoDir += "/";
     if (!unfoldDir.EndsWith("/")) unfoldDir += "/";
 
-    std::cout << "\n executing UnfoldingZJets(\"" << lepSel << "\", \"" <<  algo << "\", \"" << histoDir << "\", \"" << unfoldDir << "\", " << jetPtMin << ", " << jetEtaMax << ", &argc, argv);" << std::endl;
+    std::cout << "\n executing UnfoldingZJets(\"" << lepSel << "\", \"" <<  algo << "\", \"" << histoDir << "\", \"" << unfoldDir << "\", " << jetPtMin << ", " << jetRapidityMax << ", &argc, argv);" << std::endl;
     //-----------------------------------------------------------------------------
     
-    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, variable);
+    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetRapidityMax, variable);
 
     return 0;
 }

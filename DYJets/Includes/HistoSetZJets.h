@@ -221,8 +221,19 @@ class HistoSetZJets {
         TH1D *genTwoJetsPtDiff_Zinc2jet;
         TH1D *BestTwoJetsPtDiff_Zinc2jet;
         TH1D *genBestTwoJetsPtDiff_Zinc2jet;
+
         TH1D *JetsMass_Zinc2jet;
         TH1D *genJetsMass_Zinc2jet;
+
+        TH1D *JetsMassLowPU_Zinc2jet;
+        TH1D *genJetsMassLowPU_Zinc2jet;
+
+        TH1D *JetsMassMidPU_Zinc2jet;
+        TH1D *genJetsMassMidPU_Zinc2jet;
+
+        TH1D *JetsMassHigPU_Zinc2jet;
+        TH1D *genJetsMassHigPU_Zinc2jet;
+
         TH1D *BestJetsMass_Zinc2jet;
         TH1D *genBestJetsMass_Zinc2jet;
         TH1D *ptBal_Zinc2jet;
@@ -593,6 +604,9 @@ class HistoSetZJets {
         TH2D *hresponseFifthJetRapidityHigh_Zinc5jet; 
 
         TH2D *hresponseJetsMass_Zinc2jet;
+        TH2D *hresponseJetsMassLowPU_Zinc2jet;
+        TH2D *hresponseJetsMassMidPU_Zinc2jet;
+        TH2D *hresponseJetsMassHigPU_Zinc2jet;
 
         TH2D *hresponseFirstJetPtEta_Zinc1jet;              
         TH2D *FirstJetPtEta_Zinc1jet;              

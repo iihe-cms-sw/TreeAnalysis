@@ -13,7 +13,7 @@
 using namespace std;
 
 void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
-        int jetPtMin, int jetEtaMax, TString variable)
+        int jetPtMin, int jetRapidityMax, TString variable)
 {
     //--- create output directory if does not exist ---
     system("mkdir -p " + unfoldDir);
@@ -49,13 +49,13 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     TFile *fBg[NBGDYJETS][5] = {{NULL}};
 
     //--- Open all files ---------------------------------------------------------------------- 
-    getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetEtaMax, fData, fDYJets, fBg, NBGDYJETS);
+    getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetRapidityMax, fData, fDYJets, fBg, NBGDYJETS);
     //----------------------------------------------------------------------------------------- 
 
     //--- Open additional generator files -----------------------------------------------------
-    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
+    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
+    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
     //----------------------------------------------------------------------------------------- 
 
     //----------------------------------------------------------------------------------------- 
@@ -67,8 +67,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         outputFileName += "_unfolded_" + variable + "_" + algo;
         outputFileName += "_jetPtMin_";
         outputFileName += jetPtMin;
-        outputFileName += "_jetEtaMax_";
-        outputFileName += jetEtaMax;
+        outputFileName += "_jetRapidityMax_";
+        outputFileName += jetRapidityMax;
         TFile *outputRootFile = new TFile(outputFileName + ".root", "RECREATE");
 
 

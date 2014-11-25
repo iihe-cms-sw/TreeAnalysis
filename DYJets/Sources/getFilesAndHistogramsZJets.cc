@@ -33,7 +33,7 @@ TString getEnergy()
 }
 //------------------------------------------------------------
 
-TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, int jetPtMin, int jetEtaMax, TString closureTest, TString syst)
+TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, int jetPtMin, int jetRapidityMax, TString closureTest, TString syst)
 {
     
     TString fileName = histoDir; // TString to contain the name of the file
@@ -63,8 +63,8 @@ TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, i
     fileName += "_Syst_" + syst;
     fileName += "_JetPtMin_";
     fileName += jetPtMin;
-    fileName += "_JetEtaMax_";
-    fileName += jetEtaMax; 
+    fileName += "_JetRapidityMax_";
+    fileName += jetRapidityMax; 
     if (closureTest != "") fileName += closureTest;
     //---------------------------------------------------
 
@@ -81,7 +81,7 @@ TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, i
     //----------------------------------------------------------------
 }
 
-void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, TString Name, int jetPtMin, int jetEtaMax)
+void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, TString Name, int jetPtMin, int jetRapidityMax)
 {
 
     //--- make sure lepSel is short version ---
@@ -114,24 +114,24 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
     //--- determnie how many files we have and open them all ---
     int nSyst(Syst.size());
     for (int i(0); i < nSyst; i++) {
-        Files[i] = getFile(histoDir, lepSel, energy, Name, jetPtMin, jetEtaMax, "", Syst[i]);
+        Files[i] = getFile(histoDir, lepSel, energy, Name, jetPtMin, jetRapidityMax, "", Syst[i]);
     }
     //----------------------------------------------------------
 }
 
-void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetEtaMax, TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
+void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetRapidityMax, TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
 {
     //--- Open data files ---------------------------------------------------------------------- 
-    getFiles(histoDir, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax); 
+    getFiles(histoDir, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetRapidityMax); 
     //------------------------------------------------------------------------------------------ 
 
     //--- Open DYJets files --------------------------------------------------------------------
-    getFiles(histoDir, fDYJets, lepSel, energy, Samples[DYJETS].name, jetPtMin, jetEtaMax); 
+    getFiles(histoDir, fDYJets, lepSel, energy, Samples[DYJETS].name, jetPtMin, jetRapidityMax); 
     //------------------------------------------------------------------------------------------ 
 
     //--- Open Bg files ------------------------------------------------------------------------
     for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
-        getFiles(histoDir, fBg[iBg], lepSel, energy, Samples[iBg+1].name, jetPtMin, jetEtaMax);
+        getFiles(histoDir, fBg[iBg], lepSel, energy, Samples[iBg+1].name, jetPtMin, jetRapidityMax);
     }
     //------------------------------------------------------------------------------------------ 
 }
@@ -489,7 +489,7 @@ void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hGenDYJ
 }
 
 
-void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
+void getStatistics(TString lepSel, int jetPtMin, int jetRapidityMax)
 {
     TString variable = "ZNGoodJets_Zexc";
     TString energy = getEnergy();
@@ -510,7 +510,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
         TFile *fData;
         int sel = FilesDYJets[i];
 
-        fData = getFile(FILESDIRECTORY,  lepSel, energy, Samples[sel].name, jetPtMin, jetEtaMax);
+        fData = getFile(FILESDIRECTORY,  lepSel, energy, Samples[sel].name, jetPtMin, jetRapidityMax);
         TH1D *hTemp = getHisto(fData, variable);
 
         for (int j = 1 ; j < NBins + 1 ; j++ ){
@@ -525,7 +525,7 @@ void getStatistics(TString lepSel, int jetPtMin, int jetEtaMax)
     cout << "Closed all files" << endl;
 
     ostringstream nameStr;
-    nameStr << "outputTable_" << lepSel << "_JetPtMin_" << jetPtMin << "_JetEtaMax_" << jetEtaMax;
+    nameStr << "outputTable_" << lepSel << "_JetPtMin_" << jetPtMin << "_JetRapidityMax_" << jetRapidityMax;
     nameStr << ".tex";
 
     FILE *outFile = fopen(nameStr.str().c_str(),"w");

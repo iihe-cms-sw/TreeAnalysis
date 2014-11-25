@@ -9,4 +9,4 @@ using namespace std;
 
 
 void MergeTop();
-void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetEtaCutMax, Long_t maxEvents, TString outDir);
+void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetRapidityCutMax, Long_t maxEvents, TString outDir);
