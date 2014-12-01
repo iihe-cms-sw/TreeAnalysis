@@ -175,7 +175,7 @@ class ZJets: public HistoSetZJets {
 
 
         ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., 
-              int lepPtCutMin_ = 20, int lepEtaCutMax_ = 24, int jetPtCutMin_ = 30, int jetRapidityCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
+              int lepPtCutMin_ = 20, int lepEtaCutMax_ = 24, int jetPtCutMin_ = 30, int jetEtaCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
               TString bonzaiDir = "/afs/cern.ch/work/a/aleonard/public/ZJetsFiles/");
         ~ZJets();
         string   CreateOutputFileName(TString pdfSet = "", int pdfMember = -1);
@@ -202,7 +202,7 @@ class ZJets: public HistoSetZJets {
         int lepPtCutMin;
         int lepEtaCutMax;
         int jetPtCutMin;
-        int jetRapidityCutMax;
+        int jetEtaCutMax;
         Long_t nMaxEvents;
         TString lepSel;
         bool rejectBTagEvents;

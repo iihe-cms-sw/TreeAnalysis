@@ -569,8 +569,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                 patJetPfAk05OCSV_.push_back(jn_origcsv[i]);
                 //if ( hasGenInfo ) patJetPfAk05PartonFlavour_.push_back(jn_genflav[i]);
                 patJetPfAk05PartonFlavour_.push_back(jn_genflav[i]);
-
-
             }
 
             // --- reco MET fill ---
@@ -583,9 +581,6 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                 patMetSigYY_.push_back((double) met_sigy2[i]) ;
 
             }
-
-
-
         }  //  RECO if
 
         if (DEBUG) cout << "Passes  " <<  EvtInfo_EventNum << endl;

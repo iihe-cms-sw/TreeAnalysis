@@ -38,7 +38,7 @@ void MergeTop(){
     //runMergeTop("DE",-3,30,0);
 }
 
-void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetRapidityCutMax, Long_t maxEvents, TString outDir)
+void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lepEtaCutMax, int jetPtCutMin, int jetEtaCutMax, Long_t maxEvents, TString outDir)
 {
     if (maxEvents >= 0) {
         outDir = "HistoFilesTest/";
@@ -50,7 +50,7 @@ void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lep
 
     cout << __FILE__ << endl;
     ostringstream strJetPtCutMin; strJetPtCutMin << jetPtCutMin;
-    ostringstream strJetRapidityCutMax; strJetRapidityCutMax << jetRapidityCutMax;
+    ostringstream strJetEtaCutMax; strJetEtaCutMax << jetEtaCutMax;
     TString syst;
     if (systematics == 0) syst = "Syst_0_";
     else if (systematics == 1) syst = "Syst_1_Up_"; 
@@ -58,13 +58,13 @@ void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lep
     else if (systematics == 3) syst = "Syst_3_Up_"; 
     else if (systematics == -3) syst = "Syst_3_Down_"; 
 
-    TString str1 = outDir + lepSelection +  "_8TeV_T_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString str2 = outDir + lepSelection +  "_8TeV_T_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString str3 = outDir + lepSelection +  "_8TeV_T_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString str4 = outDir + lepSelection +  "_8TeV_Tbar_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString str5 = outDir + lepSelection +  "_8TeV_Tbar_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString str6 = outDir + lepSelection +  "_8TeV_Tbar_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
-    TString strf = outDir + lepSelection +  "_8TeV_Top_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetRapidityMax_" + strJetRapidityCutMax.str() + ".root";
+    TString str1 = outDir + lepSelection +  "_8TeV_T_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString str2 = outDir + lepSelection +  "_8TeV_T_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString str3 = outDir + lepSelection +  "_8TeV_T_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString str4 = outDir + lepSelection +  "_8TeV_Tbar_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString str5 = outDir + lepSelection +  "_8TeV_Tbar_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString str6 = outDir + lepSelection +  "_8TeV_Tbar_tW_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
+    TString strf = outDir + lepSelection +  "_8TeV_Top_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
     cout << strf << endl;
 
     TFile *f1 = new TFile(str1);

@@ -464,7 +464,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         if (hasRecoInfo) {
             nTotJets = patJetPfAk05Eta_->size();
             for (unsigned short i(0); i < nTotJets; i++) {
-                bool passesBJets(patJetPfAk05OCSV_->at(i) >= 0.679); 
+                bool passesBJets = false;
+                if (fileName.Index("Sherpa") < 0) patJetPfAk05OCSV_->at(i) >= 0.679; 
+
                 if (!isData && lepSel == "SMu") {
                     BTagModification(RandGen->Rndm(), patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i),patJetPfAk05PartonFlavour_->at(i), passesBJets);
                 }
@@ -478,7 +480,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 jet.v.SetPtEtaPhiE(jet.v.Pt() * (1 + scale * jetEnergyCorr), jet.v.Eta(), jet.v.Phi(), jet.v.E() * (1 + scale * jetEnergyCorr));
 
-                bool jetPassesEtaCut(fabs(jet.v.Rapidity()) <= 0.1*jetRapidityCutMax); 
+                bool jetPassesEtaCut(fabs(jet.v.Eta()) <= 0.1*jetEtaCutMax); 
                 bool jetPassesIdCut(patJetPfAk05LooseId_->at(i) > 0);
                 bool jetPassesMVACut(patJetPfAk05jetpuMVA_->at(i) > 0);
 
@@ -647,8 +649,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             vector<jetStruct> tmpGenJets;
             vector<jetStruct> tmpGenJets_20;
             for (unsigned short i(0); i < nGoodGenJets; i++){
-                if (genJets[i].v.Pt() >= jetPtCutMin && fabs(genJets[i].v.Rapidity()) <= 0.1*jetRapidityCutMax) tmpGenJets.push_back(genJets[i]);
-                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Rapidity()) <= 0.1*jetRapidityCutMax) tmpGenJets_20.push_back(genJets[i]);
+                if (genJets[i].v.Pt() >= jetPtCutMin && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
+                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) tmpGenJets_20.push_back(genJets[i]);
             }
             genJets.clear();
             genJets = tmpGenJets; 
@@ -793,8 +795,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genTwoJetsPtDiff_Zinc2jet->Fill(genJet1Minus2.Pt(), genWeight);
                     genBestTwoJetsPtDiff_Zinc2jet->Fill(genBestJet1Minus2.Pt(), genWeight);
                     genJetsMass_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
-                    if (EvtInfo_NumVtx < 12) genJetsMassLowPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
-                    else if (EvtInfo_NumVtx < 20) genJetsMassMidPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
+                    genllJetsMass_Zinc2jet->Fill(genJet1Plus2PlusZ.M(), genWeight);
+                    if (EvtInfo_NumVtx < 14) genJetsMassLowPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
+                    else if (EvtInfo_NumVtx < 18) genJetsMassMidPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     else genJetsMassHigPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     genZPt_Zinc2jet->Fill(genEWKBoson.Pt(), genWeight);
                     genZRapidity_Zinc2jet->Fill(genEWKBoson.Rapidity(), genWeight);
@@ -1097,8 +1100,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 TwoJetsPtDiff_Zinc2jet->Fill(jet1Minus2.Pt(), weight);
                 BestTwoJetsPtDiff_Zinc2jet->Fill(bestJet1Minus2.Pt(), weight);
                 JetsMass_Zinc2jet->Fill(jet1Plus2.M(), weight);
-                if (EvtInfo_NumVtx < 12) JetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
-                else if (EvtInfo_NumVtx < 20) JetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
+                llJetsMass_Zinc2jet->Fill(jet1Plus2PlusZ.M(), genWeight);
+                if (EvtInfo_NumVtx < 14) JetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
+                else if (EvtInfo_NumVtx < 18) JetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 else JetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 ZPt_Zinc2jet->Fill(EWKBoson.Pt(), weight);
                 ZRapidity_Zinc2jet->Fill(EWKBoson.Rapidity(), weight);
@@ -1437,8 +1441,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 //responseBestTwoJetsPtDiffInc->Fill(bestJet1Minus2.Pt(), genBestJet1Minus2.Pt(), weight);
                 //responseJetsMassInc->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 hresponseJetsMass_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
-                if (EvtInfo_NumVtx < 12) hresponseJetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
-                else if (EvtInfo_NumVtx < 20) hresponseJetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                if (EvtInfo_NumVtx < 14) hresponseJetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                else if (EvtInfo_NumVtx < 18) hresponseJetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 else hresponseJetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 //responseBestJetsMassInc->Fill(bestJet1Plus2.M(), genBestJet1Plus2.M(), weight);
                 //responseSpTJets_Zinc2jet->Fill(SpTsub(jets[0].v, jets[1].v), SpTsub(genJets[0].v, genJets[1].v), weight);
@@ -1713,11 +1717,11 @@ void ZJets::getElectrons(vector<leptonStruct>& leptons,  vector<leptonStruct>& v
 
 ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
         int systematics_, int direction_, float xsecfactor_, int lepPtCutMin_, int lepEtaCutMax_, 
-        int jetPtCutMin_, int jetRapidityCutMax_,  Long_t maxEvents_, TString outDir_, TString bonzaiDir): 
+        int jetPtCutMin_, int jetEtaCutMax_,  Long_t maxEvents_, TString outDir_, TString bonzaiDir): 
     HistoSetZJets(fileName_(0, fileName_.Index("_"))), outputDirectory(outDir_),
     fileName(fileName_), lumiScale(lumiScale_), useTriggerCorrection(useTriggerCorrection_), 
     systematics(systematics_), direction(direction_), xsecfactor(xsecfactor_), 
-    lepPtCutMin(lepPtCutMin_), lepEtaCutMax(lepEtaCutMax_), jetPtCutMin(jetPtCutMin_), jetRapidityCutMax(jetRapidityCutMax_),
+    lepPtCutMin(lepPtCutMin_), lepEtaCutMax(lepEtaCutMax_), jetPtCutMin(jetPtCutMin_), jetEtaCutMax(jetEtaCutMax_),
     nMaxEvents(maxEvents_)
 {
 
@@ -1781,7 +1785,7 @@ string ZJets::CreateOutputFileName(TString pdfSet, int pdfMember)
     if (direction == 1) result << "_Up";
     else if (direction == -1) result << "_Down";
     result << "_JetPtMin_" << jetPtCutMin;
-    result << "_JetRapidityMax_" << jetRapidityCutMax;
+    result << "_JetEtaMax_" << jetEtaCutMax;
 
     if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
     //--- Add your test names here ---

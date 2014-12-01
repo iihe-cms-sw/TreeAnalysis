@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     TString combDir    = cfg.getS("combDir", "CombinationAugust");
     TString algo       = cfg.getS("algo");
     int jetPtMin       = cfg.getI("jetPtMin", 30);
-    int jetRapidityMax = cfg.getI("jetRapidityMax", 24);
+    int jetEtaMax = cfg.getI("jetEtaMax", 24);
     bool diagXChanCov  = cfg.getB("diagXChanCov", false);
     bool fullXChanCov  = cfg.getB("fullXChanCov", false);
     bool fullSChanCov  = cfg.getB("fullSChanCov", false);
@@ -43,8 +43,8 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("jetPtMin=")) {
                 getArg(currentArg, jetPtMin);
             }
-            else if (currentArg.BeginsWith("jetRapidityMax=")) {
-                getArg(currentArg, jetRapidityMax);
+            else if (currentArg.BeginsWith("jetEtaMax=")) {
+                getArg(currentArg, jetEtaMax);
             }
             else if (currentArg.BeginsWith("diagXChanCov=")) {
                 getArg(currentArg, diagXChanCov);
@@ -60,9 +60,9 @@ int main(int argc, char **argv)
             }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
-                std::cout << "\nUsage: ./runCombination [unfoldDir=(path)] [combDir=(path)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetRapidityMax=(int*10)] ";
+                std::cout << "\nUsage: ./runCombination [unfoldDir=(path)] [combDir=(path)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
                 std::cout << "[diagXChanCov=(1,0)] [fullXChanCov=(1,0)] [fullSChanCov=(1,0)] [--help]" << std::endl;
-                std::cout << "eg: ./runCombination fullXChanCov=0 jetRapidityMax=24" << std::endl;
+                std::cout << "eg: ./runCombination fullXChanCov=0 jetEtaMax=24" << std::endl;
                 std::cout << "unspecified options will be read from vjets.cfg\n" << std::endl;
                 return 0;
             }
@@ -78,6 +78,6 @@ int main(int argc, char **argv)
     if (!unfoldDir.EndsWith("/")) unfoldDir += "/";
     if (!combDir.EndsWith("/")) combDir += "/";
 
-    Combination(unfoldDir, combDir, algo, jetPtMin, jetRapidityMax, diagXChanCov, fullXChanCov, fullSChanCov, variable);
+    Combination(unfoldDir, combDir, algo, jetPtMin, jetEtaMax, diagXChanCov, fullXChanCov, fullSChanCov, variable);
     return 0;
 }

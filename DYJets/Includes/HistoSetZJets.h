@@ -222,6 +222,9 @@ class HistoSetZJets {
         TH1D *BestTwoJetsPtDiff_Zinc2jet;
         TH1D *genBestTwoJetsPtDiff_Zinc2jet;
 
+        TH1D *llJetsMass_Zinc2jet;
+        TH1D *genllJetsMass_Zinc2jet;
+
         TH1D *JetsMass_Zinc2jet;
         TH1D *genJetsMass_Zinc2jet;
 

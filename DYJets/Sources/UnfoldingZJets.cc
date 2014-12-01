@@ -13,7 +13,7 @@
 using namespace std;
 
 void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
-        int jetPtMin, int jetRapidityMax, TString variable)
+        int jetPtMin, int jetEtaMax, TString variable)
 {
     //--- create output directory if does not exist ---
     system("mkdir -p " + unfoldDir);
@@ -49,14 +49,16 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     TFile *fBg[NBGDYJETS][5] = {{NULL}};
 
     //--- Open all files ---------------------------------------------------------------------- 
-    getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetRapidityMax, fData, fDYJets, fBg, NBGDYJETS);
+    getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetEtaMax, fData, fDYJets, fBg, NBGDYJETS);
     //----------------------------------------------------------------------------------------- 
 
     //--- Open additional generator files -----------------------------------------------------
-    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
-    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
-    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetRapidityMax_24.root");
+    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     //----------------------------------------------------------------------------------------- 
+        std::cout << __LINE__ << std::endl;
 
     //----------------------------------------------------------------------------------------- 
     //--- Now run on the different variables ---
@@ -67,8 +69,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         outputFileName += "_unfolded_" + variable + "_" + algo;
         outputFileName += "_jetPtMin_";
         outputFileName += jetPtMin;
-        outputFileName += "_jetRapidityMax_";
-        outputFileName += jetRapidityMax;
+        outputFileName += "_jetEtaMax_";
+        outputFileName += jetEtaMax;
         TFile *outputRootFile = new TFile(outputFileName + ".root", "RECREATE");
 
 
@@ -95,11 +97,16 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
                 hRecBg, hRecSumBg, fBg, NBGDYJETS, respDYJets, hFakDYJets);
 
         //--- Get Sherpa Unfolding response ---
+
+        std::cout << __LINE__ << std::endl;
         respDYJets[13] = getResp(fSheUnf, variable);
+        std::cout << __LINE__ << std::endl;
         TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
         TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
+        std::cout << __LINE__ << std::endl;
         //----------------------------------------------------------------------------------------- 
 
+        std::cout << __LINE__ << std::endl;
         TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
         hMadGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
         TH1D *hSheGenCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
@@ -109,6 +116,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
         hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
         
+        std::cout << __LINE__ << std::endl;
 
         // Here is an array of TH1D to store the various unfolded data:
         // 0 - Central, 
@@ -274,6 +282,25 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinus
         TH1D *hfoldUnfData = foldUnfData(hUnfData, resp);
         hfoldUnfData->SetName(tmpName);
         hfoldUnfData->SetTitle(tmpName);
+        TH1D *hgen = (TH1D*) resp->Htruth();
+        tmpName = "gen" + name + "_";
+        tmpName += i;
+        hgen->SetName(tmpName);
+        hgen->SetTitle(tmpName);
+        hgen->Write();
+        TH1D *hfoldgen = foldUnfData(hgen, resp);
+        tmpName = "folgen" + name + "_";
+        tmpName += i;
+        hfoldgen->SetName(tmpName);
+        hfoldgen->SetTitle(tmpName);
+        hfoldgen->Write();
+        TH1D *hmes = (TH1D*) resp->Hmeasured();
+        tmpName = "mes" + name + "_";
+        tmpName += i;
+        hmes->SetName(tmpName);
+        hmes->SetTitle(tmpName);
+        hmes->Write();
+        
         double mychi2 = MyChi2Test(hfoldUnfData, hRecDataMinusFakes, nBinsToSkip);
         hchi2->SetBinContent(i, mychi2);
         if (i==1) hRecDataMinusFakes->Write("Unf" + name + "_0"); 

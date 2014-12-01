@@ -499,6 +499,9 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     BestTwoJetsPtDiff_Zinc2jet    = newTH1D("BestTwoJetsPtDiff_Zinc2jet",    "Best pT diff of the two highest jet (N_{jets} #geq 2)",                        "#Delta pT(j_{1}j_{2}) [GeV]",      10,  0, 100);
     genBestTwoJetsPtDiff_Zinc2jet = newTH1D("genBestTwoJetsPtDiff_Zinc2jet", "gen Best pT diff of the two highest jet (N_{jets} #geq 2)",                    "#Delta pT(j_{1}j_{2}) [GeV]",      10,  0, 100);
 
+    llJetsMass_Zinc2jet             = newTH1D("llJetsMass_Zinc2jet",             "ll+2Jets Invariant Mass (N_{jets} #geq 2)",                                       "M(lljj)", 50, 0, 1000);
+    genllJetsMass_Zinc2jet          = newTH1D("genllJetsMass_Zinc2jet",          "gen ll+2Jets Invariant Mass (N_{jets} #geq 2)",                                   "M(lljj)", 50, 0, 1000);
+
     JetsMass_Zinc2jet             = newTH1D("JetsMass_Zinc2jet",             "2Jets Invariant Mass (N_{jets} #geq 2)",                                       Mjj, 25, 0, 625);
     genJetsMass_Zinc2jet          = newTH1D("genJetsMass_Zinc2jet",          "gen 2Jets Invariant Mass (N_{jets} #geq 2)",                                   Mjj, 25, 0, 625);
     hresponseJetsMass_Zinc2jet    = newTH2D("hresponseJetsMass_Zinc2jet", "hresponseJetsMass_Zinc2jet", 25, 0, 625, 25, 0, 625);

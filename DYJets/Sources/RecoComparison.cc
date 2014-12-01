@@ -19,7 +19,7 @@
 
 using namespace std;
 
-void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString recoCompDir, int jetPtMin, int jetRapidityMax)
+void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString recoCompDir, int jetPtMin, int jetEtaMax)
 {
     //--- make sure lepSel is short version ---
     if (lepSel == "Muons" || lepSel == "DMu_") lepSel = "DMu";
@@ -38,7 +38,7 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
     TFile *fSamples[NFILESDYJETS];
     for (unsigned short iSample = 0; iSample < NFILESDYJETS; ++iSample){
         //--- get the file ---
-        fSamples[iSample] = getFile(histoDir, lepSel, energy, Samples[iSample].name, jetPtMin, jetRapidityMax);
+        fSamples[iSample] = getFile(histoDir, lepSel, energy, Samples[iSample].name, jetPtMin, jetEtaMax);
         if (!fSamples[iSample]) return;
         //-- set the legend name for the current file ---
         if (iSample == 0) 
@@ -58,8 +58,8 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
     outputFileName += "Comparison_" + lepSel + "_" + energy + "_Data_All_MC";
     outputFileName += "_JetPtMin_";
     outputFileName += jetPtMin;
-    outputFileName += "_JetRapidityMax_";
-    outputFileName += jetRapidityMax;
+    outputFileName += "_JetEtaMax_";
+    outputFileName += jetEtaMax;
     //--- create the directory if it doesn't exist ---
     system("mkdir -p " + outputFileName);
     TString outputFileRoot = outputFileName + ".root";
@@ -197,7 +197,7 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
             hSumMC[i]->GetXaxis()->SetRangeUser(71,111);
             hRatio->GetXaxis()->SetRangeUser(71,111);
         }
-        //if (vhNames[i].Index("JetRapidity") >= 0){
+        //if (vhNames[i].Index("JetEta") >= 0){
         //    hist[0][i]->GetXaxis()->SetRangeUser(-2.4,2.4);
         //    hSumMC[i]->GetXaxis()->SetRangeUser(-2.4,2.4);
         //    hRatio->GetXaxis()->SetRangeUser(-2.4,2.4);
@@ -223,7 +223,7 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
         if (vhNames[i].Index("inc0") < 0){
             if (!doPASPlots) {
                 ostringstream ptLegend;
-                ptLegend << "p_{T}^{jet} > " << jetPtMin << "GeV,  |#eta^{jet}| < " << (0.1*jetRapidityMax);
+                ptLegend << "p_{T}^{jet} > " << jetPtMin << "GeV,  |#eta^{jet}| < " << (0.1*jetEtaMax);
                 jetAlgo->DrawLatex(0.13,0.74, "anti-k_{t} jets,  R = 0.5");
                 jetCuts->DrawLatex(0.13,0.70, ptLegend.str().c_str());
             }
