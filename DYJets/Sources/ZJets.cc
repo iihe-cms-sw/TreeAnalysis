@@ -465,7 +465,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             nTotJets = patJetPfAk05Eta_->size();
             for (unsigned short i(0); i < nTotJets; i++) {
                 bool passesBJets = false;
-                if (fileName.Index("Sherpa") < 0) passBJets = (patJetPfAk05OCSV_->at(i) >= 0.679); 
+                if (fileName.Index("Sherpa") < 0) passesBJets = (patJetPfAk05OCSV_->at(i) >= 0.679); 
 
                 if (!isData && lepSel == "SMu") {
                     BTagModification(RandGen->Rndm(), patJetPfAk05Pt_->at(i), patJetPfAk05Eta_->at(i),patJetPfAk05PartonFlavour_->at(i), passesBJets);
