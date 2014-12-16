@@ -37,6 +37,7 @@ class HistoSetZJets {
         TH1D *ZPt_Zinc1jet;
         TH1D *ZPt_Zinc2jet;
         TH1D *genZPt_Zinc0jet;
+        TH2D *hresponseZPt_Zinc0jet;
         TH1D *genZPt_Zinc1jet;
         TH1D *genZPt_Zinc2jet;
         TH1D *ZPt_Zexc0jet;
@@ -44,9 +45,11 @@ class HistoSetZJets {
         TH1D *ZPt_Zexc2jet;
         TH1D *ZRapidity_Zinc0jet;
         TH1D *ZRapidity_Zinc1jet;
+        TH1D *ZAbsRapidity_Zinc1jet;
         TH1D *ZRapidity_Zinc2jet;
         TH1D *genZRapidity_Zinc0jet;
         TH1D *genZRapidity_Zinc1jet;
+        TH1D *genZAbsRapidity_Zinc1jet;
         TH1D *genZRapidity_Zinc2jet;
         TH1D *ZRapidity_Zexc0jet;
         TH1D *ZRapidity_Zexc1jet;
@@ -86,6 +89,7 @@ class HistoSetZJets {
         TH1D *FifthJetEtaHigh_Zinc5jet;
         TH1D *SixthJetEtaHigh_Zinc6jet;
 
+        TH1D *FirstJetAbsRapidity_Zinc1jet;
         TH1D *FirstJetRapidityHigh_Zinc1jet;
         TH1D *SecondJetRapidityHigh_Zinc2jet;
         TH1D *ThirdJetRapidityHigh_Zinc3jet;
@@ -114,6 +118,7 @@ class HistoSetZJets {
         TH1D *genFifthJetEtaHigh_Zinc5jet;
         TH1D *genSixthJetEtaHigh_Zinc6jet;
 
+        TH1D *genFirstJetAbsRapidity_Zinc1jet;
         TH1D *genFirstJetRapidityHigh_Zinc1jet;
         TH1D *genSecondJetRapidityHigh_Zinc2jet;
         TH1D *genThirdJetRapidityHigh_Zinc3jet;
@@ -563,6 +568,20 @@ class HistoSetZJets {
         TH1D *gentau_c_cm_sum_Zinc1jet[5];
         TH1D *gentau_c_cm_max_Zinc1jet[5];
 
+        TH1D *SumZJetRapidity_Zinc1jet;
+        TH1D *genSumZJetRapidity_Zinc1jet;
+        TH1D *DifZJetRapidity_Zinc1jet;
+        TH1D *genDifZJetRapidity_Zinc1jet;
+
+        TH1D *CentralJetPt_Zinc2jet;
+        TH1D *ForwardJetPt_Zinc2jet;
+        TH1D *CentralJetEta_Zinc2jet;
+        TH1D *ForwardJetEta_Zinc2jet;
+        TH1D *genCentralJetPt_Zinc2jet;
+        TH1D *genForwardJetPt_Zinc2jet;
+        TH1D *genCentralJetEta_Zinc2jet;
+        TH1D *genForwardJetEta_Zinc2jet;
+
         // TH2D for reponse objects
 
         TH2D *hresponsetau_sum_Zinc1jet[5];
@@ -575,6 +594,10 @@ class HistoSetZJets {
         TH2D *hresponsetau_c_cm_max_Zinc1jet[5];
 
         TH2D *hresponseZNGoodJets_Zexc;              
+
+        TH2D *hresponseZAbsRapidity_Zinc1jet;              
+        TH2D *hresponseSumZJetRapidity_Zinc1jet;
+        TH2D *hresponseDifZJetRapidity_Zinc1jet;
 
         TH2D *hresponseFirstJetPt_Zinc1jet;              
         TH2D *hresponseSecondJetPt_Zinc2jet;              
@@ -600,6 +623,7 @@ class HistoSetZJets {
         TH2D *hresponseFourthJetEtaHigh_Zinc4jet;
         TH2D *hresponseFifthJetEtaHigh_Zinc5jet; 
 
+        TH2D *hresponseFirstJetAbsRapidity_Zinc1jet; 
         TH2D *hresponseFirstJetRapidityHigh_Zinc1jet; 
         TH2D *hresponseSecondJetRapidityHigh_Zinc2jet; 
         TH2D *hresponseThirdJetRapidityHigh_Zinc3jet; 

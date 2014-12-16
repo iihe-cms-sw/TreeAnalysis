@@ -25,6 +25,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         start = findVariable(variable);
         if (start >= 0) {
             end = start + 1;
+            cout << "Processing only variable: " << variable << endl;
         }
         else {
             cerr << "\nError: variable " << variable << " is not interesting." << endl;
@@ -114,7 +115,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
         TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
+        hPowGenCrossSection->SetZTitle("aMC@NLO_MG FxFx + Py8 (#leq 2j NLO+PS)");
+        //hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
         
         std::cout << __LINE__ << std::endl;
 
@@ -185,7 +187,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
 
         //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hPowGenCrossSection); 
+        //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -198,7 +201,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         for (int i = 2; i <= 9; ++i) {
             cout << hUnfData[0]->GetBinContent(i);
             for (int j = 0; j <= 9; ++j) {
-                cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*1./hUnfData[0]->GetBinContent(i);
+                cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*100./hUnfData[0]->GetBinContent(i) << "%";
             }
             cout << endl;
         }

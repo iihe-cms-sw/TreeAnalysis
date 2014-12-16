@@ -13,7 +13,7 @@ struct variableStruct{
 
 //--- Z Jets ------------------------------------
 
-const unsigned int NVAROFINTERESTZJETS(17);
+const unsigned int NVAROFINTERESTZJETS(18);
 const variableStruct VAROFINTERESTZJETS[] = {
    //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm  - E Bayes kterm COMBINE
    {"ZNGoodJets_Zexc",             1,      1,           6,              4,             3,            3 ,               3    }, // 0
@@ -41,6 +41,7 @@ const variableStruct VAROFINTERESTZJETS[] = {
 
    //-- Jets Mass distribution
    {"JetsMass_Zinc2jet",           0,      1,           9,              5,            13,           11 ,               5    }, // 16
+   {"ZPt_Zinc0jet",                0,      1,           9,              5,            13,           11 ,               5    }, // 16
 
 }; 
 

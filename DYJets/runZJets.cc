@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 
     if (doWhat == "SHERPA") {
         //ZJets DYShe("DMu_8TeV_DYJets_Sherpa_Bugra_1_6_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa_Bugra_1_13_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa_Bugra_1_13_UNFOLDING_dR", lumi*3531.8*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
         DYShe.Loop(1, 1);
     }
 
@@ -249,6 +249,12 @@ int main(int argc, char **argv)
             //DYMixPDF.Loop(0, 1, "CT10.LHgrid", pdfMember);
             DYMixPDF.Loop(0, 1, "MSTW2008nlo68cl.LHgrid", pdfMember);
         }
+    }
+
+    if (doWhat == "MCATNLO") {
+        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/560000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYatNLO.Loop(0, 1);
+
     }
 
     //---------------------------------------------------------------------
