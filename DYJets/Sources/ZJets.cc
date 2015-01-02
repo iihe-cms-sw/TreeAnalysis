@@ -208,7 +208,12 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
         if (fileName.Index("DYJets") >= 0 && fileName.Index("MIX") >= 0 && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6]; 
         if (fileName.Index("SMu_8TeV_WJets") >= 0 && fileName.Index("MIX") >= 0 && nup_ > 5) weight *= mixingWeightsWJ_SMu[nup_ - 6]; 
-        if (fileName.Index("Sherpa") >= 0 && fileName.Index("UNFOLDING") >= 0) weight *= mcSherpaWeights_->at(0);
+        if (fileName.Index("Sherpa") >= 0 && fileName.Index("UNFOLDING") >= 0) {
+            weight *= mcSherpaWeights_->at(0) / 43597515.;
+        }
+        if (fileName.Index("MCatNLO") >= 0) {
+            weight *= mcSherpaWeights_->at(0);
+        }
 
         //==========================================================================================================//
         // Compute the weight for PDF syst    //
@@ -778,11 +783,15 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genZNGoodJets_Zinc->Fill(1., genWeight);
                     genZPt_Zinc1jet->Fill(genEWKBoson.Pt(), genWeight);
                     genZRapidity_Zinc1jet->Fill(genEWKBoson.Rapidity(), genWeight);
+                    genZAbsRapidity_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()), genWeight);
                     genZEta_Zinc1jet->Fill(genEWKBoson.Eta(), genWeight);
                     genFirstJetEta_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
                     genFirstJetEtaHigh_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
+                    genFirstJetAbsRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight);
                     genFirstJetRapidityHigh_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight);
                     genJetsHT_Zinc1jet->Fill(genJetsHT, genWeight);
+                    genSumZJetRapidity_Zinc1jet->Fill(0.5*fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity()), genWeight);
+                    genDifZJetRapidity_Zinc1jet->Fill(0.5*fabs(genEWKBoson.Rapidity()-genJets[0].v.Rapidity()), genWeight);
                     if (nGoodGenJets == 1){
                         genFirstJetPt_Zexc1jet->Fill(genJets[0].v.Pt(), genWeight);
                     }
@@ -796,6 +805,22 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genBestTwoJetsPtDiff_Zinc2jet->Fill(genBestJet1Minus2.Pt(), genWeight);
                     genJetsMass_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     genllJetsMass_Zinc2jet->Fill(genJet1Plus2PlusZ.M(), genWeight);
+
+                    if (genJet1Plus2PlusZ.M() > 450 && genJet1Plus2PlusZ.M() < 600) {
+                        if (fabs(genJets[0].v.Eta()) < fabs(genJets[1].v.Eta())) {
+                            genCentralJetEta_Zinc2jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
+                            genForwardJetEta_Zinc2jet->Fill(fabs(genJets[1].v.Eta()), genWeight);
+                            genCentralJetPt_Zinc2jet->Fill(genJets[0].v.Pt(), genWeight);
+                            genForwardJetPt_Zinc2jet->Fill(genJets[1].v.Pt(), genWeight);
+                        }
+                        else {
+                            genCentralJetEta_Zinc2jet->Fill(fabs(genJets[1].v.Eta()), genWeight);
+                            genForwardJetEta_Zinc2jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
+                            genCentralJetPt_Zinc2jet->Fill(genJets[1].v.Pt(), genWeight);
+                            genForwardJetPt_Zinc2jet->Fill(genJets[0].v.Pt(), genWeight);
+                        }
+                    }
+
                     if (EvtInfo_NumVtx < 14) genJetsMassLowPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     else if (EvtInfo_NumVtx < 18) genJetsMassMidPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
                     else genJetsMassHigPU_Zinc2jet->Fill(genJet1Plus2.M(), genWeight);
@@ -1036,15 +1061,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZNGoodJets_Zinc_NoWeight->Fill(1.);
                 ZPt_Zinc1jet->Fill(EWKBoson.Pt(), weight);
                 ZRapidity_Zinc1jet->Fill(EWKBoson.Rapidity(), weight);
+                ZAbsRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()), weight);
                 ZEta_Zinc1jet->Fill(EWKBoson.Eta(), weight);
                 SpTLeptons_Zinc1jet->Fill(SpTsub(leptons[0].v, leptons[1].v), weight);
                 FirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
                 FirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
+                FirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetEtaFull_Zinc1jet->Fill(jets[0].v.Eta(), weight);
                 FirstJetPhi_Zinc1jet->Fill(jets[0].v.Phi(), weight);
                 JetsHT_Zinc1jet->Fill(jetsHT, weight);
                 dEtaBosonJet_Zinc1jet->Fill(fabs(jets[0].v.Eta() - EWKBoson.Eta()), weight);
+                SumZJetRapidity_Zinc1jet->Fill(0.5*fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity()), weight);
+                DifZJetRapidity_Zinc1jet->Fill(0.5*fabs(EWKBoson.Rapidity()-jets[0].v.Rapidity()), weight);
 
                 for (unsigned short i(0); i < nGoodJets; i++) {
                     double trans_mass = jets[i].v.Mt();
@@ -1101,6 +1130,22 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 BestTwoJetsPtDiff_Zinc2jet->Fill(bestJet1Minus2.Pt(), weight);
                 JetsMass_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 llJetsMass_Zinc2jet->Fill(jet1Plus2PlusZ.M(), genWeight);
+
+                if (jet1Plus2PlusZ.M() > 450 && jet1Plus2PlusZ.M() < 600) {
+                    if (fabs(jets[0].v.Eta()) < fabs(jets[1].v.Eta())) {
+                        CentralJetEta_Zinc2jet->Fill(fabs(jets[0].v.Eta()), weight);
+                        ForwardJetEta_Zinc2jet->Fill(fabs(jets[1].v.Eta()), weight);
+                        CentralJetPt_Zinc2jet->Fill(jets[0].v.Pt(), weight);
+                        ForwardJetPt_Zinc2jet->Fill(jets[1].v.Pt(), weight);
+                    }
+                    else {
+                        CentralJetEta_Zinc2jet->Fill(fabs(jets[1].v.Eta()), weight);
+                        ForwardJetEta_Zinc2jet->Fill(fabs(jets[0].v.Eta()), weight);
+                        CentralJetPt_Zinc2jet->Fill(jets[1].v.Pt(), weight);
+                        ForwardJetPt_Zinc2jet->Fill(jets[0].v.Pt(), weight);
+                    }
+                }
+
                 if (EvtInfo_NumVtx < 14) JetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 else if (EvtInfo_NumVtx < 18) JetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
                 else JetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), weight);
@@ -1399,15 +1444,23 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if (passesgenLeptonCut && passesLeptonCut) {
                 nEventsUNFOLDIncl0Jets++;
                 hresponseZNGoodJets_Zexc->Fill(nGoodJets, nGoodGenJets, weight);
+                hresponseZPt_Zinc0jet->Fill(EWKBoson.Pt(), genEWKBoson.Pt(), weight);
             }
 
             //-- First Jet Pt 
             if (nGoodGenJets >= 1 && passesgenLeptonCut && nGoodJets >= 1 && passesLeptonCut) {
 
+                hresponseZAbsRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()), fabs(genEWKBoson.Rapidity()), weight);      
                 hresponseFirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
                 hresponseFirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
+                hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
+                hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseFirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc1jet->Fill(jetsHT, genJetsHT, weight);
+
+                hresponseSumZJetRapidity_Zinc1jet->Fill(0.5*fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity()), 0.5*fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity()), weight);
+                hresponseDifZJetRapidity_Zinc1jet->Fill(0.5*fabs(EWKBoson.Rapidity()-jets[0].v.Rapidity()), 0.5*fabs(genEWKBoson.Rapidity()-genJets[0].v.Rapidity()), weight);
+
 
                 for (unsigned short i(0); i < 5; i++) {
                     if (EWKBoson.Pt() > ZptRange[i] && EWKBoson.Pt() <= ZptRange[i+1]) {
@@ -1441,9 +1494,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 //responseBestTwoJetsPtDiffInc->Fill(bestJet1Minus2.Pt(), genBestJet1Minus2.Pt(), weight);
                 //responseJetsMassInc->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 hresponseJetsMass_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+                
                 if (EvtInfo_NumVtx < 14) hresponseJetsMassLowPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 else if (EvtInfo_NumVtx < 18) hresponseJetsMassMidPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
                 else hresponseJetsMassHigPU_Zinc2jet->Fill(jet1Plus2.M(), genJet1Plus2.M(), weight);
+
                 //responseBestJetsMassInc->Fill(bestJet1Plus2.M(), genBestJet1Plus2.M(), weight);
                 //responseSpTJets_Zinc2jet->Fill(SpTsub(jets[0].v, jets[1].v), SpTsub(genJets[0].v, genJets[1].v), weight);
                 //responseBestSpTJets_Zinc2jet->Fill(SpTsub(bestTwoJets.first, bestTwoJets.second), SpTsub(genBestTwoJets.first, genBestTwoJets.second), weight);
@@ -1752,6 +1807,7 @@ ZJets::ZJets(TString fileName_, float lumiScale_, bool useTriggerCorrection_,
     if (fileName.Index("List") < 0){
         fullFileName += ".root";
         TString treePath = fullFileName + "/tree/tree";
+        if (fileName.Index("MCatNLO") >= 0) treePath = fullFileName + "/tree";
         if (fileName.Index("Sherpa") >= 0) treePath = fullFileName + "/tree";
         cout << "Loading file: " << fullFileName << endl;
         chain->Add(treePath);
@@ -1869,6 +1925,7 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
     patMetPt_ = 0;
     patMetPhi_ = 0;
     patMetSig_ = 0;
+    mcSherpaWeights_ = 0; 
 
     // Set branch addresses and branch pointers
     fCurrent = -1;
@@ -1932,9 +1989,11 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("genPhoPhi_", &genPhoPhi_, &b_genPhoPhi_);
         fChain->SetBranchAddress("pdfInfo_", &pdfInfo_, &b_pdfInfo_);
         fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
-    }
-    if(fileName.Index("Sherpa") >= 0 && fileName.Index("UNFOLDING") >= 0) {
-        fChain->SetBranchAddress("mcSherpaWeights_", &mcSherpaWeights_, &b_mcSherpaWeights_);
+        if((fileName.Index("Sherpa") >= 0 && fileName.Index("UNFOLDING") >= 0) || fileName.Index("MCatNLO") >= 0) {
+            cout << "Loading the branch" << endl;
+            fChain->SetBranchAddress("mcSherpaWeights_", &mcSherpaWeights_, &b_mcSherpaWeights_);
+            cout << "Loaded branch" << endl;
+        }
     }
     Notify();
     cout << "Branches are properly initialized." << endl;

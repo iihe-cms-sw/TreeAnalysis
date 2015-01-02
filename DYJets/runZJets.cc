@@ -252,7 +252,8 @@ int main(int argc, char **argv)
     }
 
     if (doWhat == "MCATNLO") {
-        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/560000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        //ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/2705136., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/(1.9023879662*2705136.), 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
         DYatNLO.Loop(0, 1);
 
     }

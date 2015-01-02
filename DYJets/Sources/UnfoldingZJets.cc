@@ -54,8 +54,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     //----------------------------------------------------------------------------------------- 
 
     //--- Open additional generator files -----------------------------------------------------
-    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    //TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     //----------------------------------------------------------------------------------------- 
@@ -115,7 +115,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
         TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowGenCrossSection->SetZTitle("aMC@NLO_MG FxFx + Py8 (#leq 2j NLO+PS)");
+        hPowGenCrossSection->SetZTitle("MG@NLO + Py8 (#leq 2j NLO+PS)");
         //hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
         
         std::cout << __LINE__ << std::endl;
@@ -314,8 +314,6 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinus
             std::cout << "Will use " << nIter << " iterations with a final Chi2/ndf of: " << mychi2 << std::endl;
             break;
         }
-
-
     }
 
     hchi2->Write();
@@ -325,6 +323,7 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinus
 
     //--- Unfold data minus background ---
     RooUnfold *RObjectForData = RooUnfold::New(alg, resp, hRecDataMinusFakes, nIter);
+    //RooUnfold *RObjectForData = RooUnfold::New(alg, resp, hRecDataMinusFakes, 3);
     //RObject->SetVerbose(0);
 
     //--- get the unfolded result ---

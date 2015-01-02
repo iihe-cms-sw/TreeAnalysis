@@ -37,12 +37,8 @@ DataW
 DataTTbarEMu
 
 # ignores output root files
-DYJets/HistoFiles
-DYJets/HistoFilesTest
-DYJets/HistoFilesNew
+DYJets/HistoFiles*
 
 # ignores pngs and pdf output files
-DYJets/PNGFiles
-DYJets/MyPNGFiles
-DYJets/PNGFilesTest
-DYJets/PNGFilesNew
+DYJets/RecoComparison*
+DYJets/Unfolded*
