@@ -293,16 +293,17 @@ TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDFUp, const TH1D *hPDFDown, 
     return grPDFSyst;
 }
 
-void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, TString yTitle, int numbOfGenerator, TLegend *legend)
+//void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, TString yTitle, int numbOfGenerator, TLegend *legend)
+void customizeGenGraph(TH1D *hSyst, TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNum, TString yTitle, int numbOfGenerator, TLegend *legend)
 {
-    gen->GetYaxis()->SetRangeUser(0.2, 1.8);
-    gen->GetYaxis()->SetNdivisions(507);
-    gen->GetYaxis()->SetLabelSize(0.15);
-    gen->GetYaxis()->SetTitle(yTitle);
-    gen->GetYaxis()->SetTitleSize(0.14);
-    gen->GetYaxis()->SetTitleOffset(0.45);
-    gen->GetYaxis()->CenterTitle();
-    gen->SetTitle();
+    hSyst->GetYaxis()->SetRangeUser(0.2, 1.8);
+    hSyst->GetYaxis()->SetNdivisions(507);
+    hSyst->GetYaxis()->SetLabelSize(0.15);
+    hSyst->GetYaxis()->SetTitle(yTitle);
+    hSyst->GetYaxis()->SetTitleSize(0.14);
+    hSyst->GetYaxis()->SetTitleOffset(0.45);
+    hSyst->GetYaxis()->CenterTitle();
+    //hSyst->SetTitle();
     gen->SetFillColor(ZJetsFillColor[genNum-1]);
     gen->SetFillStyle(ZJetsFillStyle);
     gen->SetLineColor(ZJetsLineColor[genNum-1]);
@@ -311,21 +312,21 @@ void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genN
     gen->SetMarkerStyle(ZJetsMarkerStyle[genNum-1]);
 
     if (genNum == numbOfGenerator) {
-        gen->GetYaxis()->SetLabelSize(0.09);
-        if (numbOfGenerator == 2) gen->GetYaxis()->SetLabelSize(0.105);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetLabelSize(0.115);
-        gen->GetYaxis()->SetTitleSize(0.08);
-        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleSize(0.10);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleSize(0.105);
-        gen->GetYaxis()->SetTitleOffset(0.8);
-        if (numbOfGenerator == 2) gen->GetYaxis()->SetTitleOffset(0.65);
-        if (numbOfGenerator == 3) gen->GetYaxis()->SetTitleOffset(0.63);
-        gen->GetXaxis()->SetLabelSize(0.10);
-        gen->GetXaxis()->SetTitleSize(0.12);
-        gen->GetXaxis()->SetTitleOffset(1.10);
+        hSyst->GetYaxis()->SetLabelSize(0.09);
+        if (numbOfGenerator == 2) hSyst->GetYaxis()->SetLabelSize(0.105);
+        if (numbOfGenerator == 3) hSyst->GetYaxis()->SetLabelSize(0.115);
+        hSyst->GetYaxis()->SetTitleSize(0.08);
+        if (numbOfGenerator == 2) hSyst->GetYaxis()->SetTitleSize(0.100);
+        if (numbOfGenerator == 3) hSyst->GetYaxis()->SetTitleSize(0.105);
+        hSyst->GetYaxis()->SetTitleOffset(0.8);
+        if (numbOfGenerator == 2) hSyst->GetYaxis()->SetTitleOffset(0.63);
+        if (numbOfGenerator == 3) hSyst->GetYaxis()->SetTitleOffset(0.63);
+        hSyst->GetXaxis()->SetLabelSize(0.10);
+        hSyst->GetXaxis()->SetTitleSize(0.12);
+        hSyst->GetXaxis()->SetTitleOffset(1.10);
     }
     else {
-        gen->GetXaxis()->SetTitle();
+        hSyst->GetXaxis()->SetTitle();
     }
 
     if (legend) {
@@ -356,15 +357,15 @@ void customizeGenHist(TH1D *gen, int genNumb, TLegend *legend, TString legText)
 }
 
 
-void configYaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
+void configYaxis(TH1D *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
 {
     //--- Configure Y axis of the plot ---
-    double minimumToPlot = grCentralSyst->GetHistogram()->GetMinimum();
+    double minimumToPlot = grCentralSyst->GetMinimum();
     minimumToPlot = TMath::Min(minimumToPlot, gen1->GetBinContent(gen1->GetMinimumBin()));
     //if (gen2) minimumToPlot = TMath::Min(minimumToPlot, gen2->GetBinContent(gen2->GetMinimumBin()));
     //if (gen3) minimumToPlot = TMath::Min(minimumToPlot, gen3->GetBinContent(gen3->GetMinimumBin()));
 
-    double maximumToPlot = grCentralSyst->GetHistogram()->GetMaximum();
+    double maximumToPlot = grCentralSyst->GetMaximum();
     maximumToPlot = TMath::Max(maximumToPlot, gen1->GetBinContent(gen1->GetMaximumBin()));
     //if (gen2) maximumToPlot = TMath::Max(maximumToPlot, gen2->GetBinContent(gen2->GetMaximumBin()));
     //if (gen3) maximumToPlot = TMath::Max(maximumToPlot, gen3->GetBinContent(gen3->GetMaximumBin()));
@@ -372,43 +373,43 @@ void configYaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D 
     grCentralSyst->GetYaxis()->SetRangeUser(0.2*minimumToPlot, 5*maximumToPlot);
 }
 
-void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
+//void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
+void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
 {
     //--- Configure X axis of the plot ---
-    double minX, tmp;
-    double maxX;
-    int firstBin = 0;
+    //double minX, tmp;
+    //double maxX;
     TString variable = gen1->GetName();
-    if (variable.Index("ZNGoodJets") >= 0) firstBin = 1;
-    grCentralSyst->GetPoint(firstBin, minX, tmp);
-    grCentralSyst->GetPoint(grCentralSyst->GetN()-1, maxX, tmp);
-    minX -= grCentralSyst->GetErrorXlow(firstBin); 
-    maxX += grCentralSyst->GetErrorXhigh(grCentralSyst->GetN()-1);
+    //grCentralSyst->GetPoint(firstBin, minX, tmp);
+    //grCentralSyst->GetPoint(grCentralSyst->GetN()-1, maxX, tmp);
+    //minX -= grCentralSyst->GetErrorXlow(firstBin); 
+    //maxX += grCentralSyst->GetErrorXhigh(grCentralSyst->GetN()-1);
     if (variable.Index("ZNGoodJets_Zexc") >= 0) {
-        grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
-        grCentralSyst->GetXaxis()->SetBinLabel(1, "= 1");
-        grCentralSyst->GetXaxis()->SetBinLabel(2, "= 2");
-        grCentralSyst->GetXaxis()->SetBinLabel(3, "= 3");
-        grCentralSyst->GetXaxis()->SetBinLabel(4, "= 4");
-        grCentralSyst->GetXaxis()->SetBinLabel(5, "= 5");
-        grCentralSyst->GetXaxis()->SetBinLabel(6, "= 6");
-        grCentralSyst->GetXaxis()->SetBinLabel(7, "= 7");
+        //grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
+        grCentralSyst->GetXaxis()->SetBinLabel(2, "= 1");
+        grCentralSyst->GetXaxis()->SetBinLabel(3, "= 2");
+        grCentralSyst->GetXaxis()->SetBinLabel(4, "= 3");
+        grCentralSyst->GetXaxis()->SetBinLabel(5, "= 4");
+        grCentralSyst->GetXaxis()->SetBinLabel(6, "= 5");
+        grCentralSyst->GetXaxis()->SetBinLabel(7, "= 6");
+        grCentralSyst->GetXaxis()->SetBinLabel(8, "= 7");
+        grCentralSyst->GetXaxis()->SetBinLabel(9, "= 8");
         grCentralSyst->GetXaxis()->SetLabelSize(0.14);
         grCentralSyst->GetXaxis()->SetLabelOffset(0.01);
     }
     else if (variable.Index("ZNGoodJets_Zinc") >= 0) {
-        grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
-        grCentralSyst->GetXaxis()->SetBinLabel(1, "#geq 1");
-        grCentralSyst->GetXaxis()->SetBinLabel(2, "#geq 2");
-        grCentralSyst->GetXaxis()->SetBinLabel(3, "#geq 3");
-        grCentralSyst->GetXaxis()->SetBinLabel(4, "#geq 4");
-        grCentralSyst->GetXaxis()->SetBinLabel(5, "#geq 5");
-        grCentralSyst->GetXaxis()->SetBinLabel(6, "#geq 6");
-        grCentralSyst->GetXaxis()->SetBinLabel(7, "#geq 7");
+        //grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
+        grCentralSyst->GetXaxis()->SetBinLabel(2, "#geq 1");
+        grCentralSyst->GetXaxis()->SetBinLabel(3, "#geq 2");
+        grCentralSyst->GetXaxis()->SetBinLabel(4, "#geq 3");
+        grCentralSyst->GetXaxis()->SetBinLabel(5, "#geq 4");
+        grCentralSyst->GetXaxis()->SetBinLabel(6, "#geq 5");
+        grCentralSyst->GetXaxis()->SetBinLabel(7, "#geq 6");
+        grCentralSyst->GetXaxis()->SetBinLabel(8, "#geq 7");
         grCentralSyst->GetXaxis()->SetLabelSize(0.14);
         grCentralSyst->GetXaxis()->SetLabelOffset(0.01);
     }
-    grCentralSyst->GetXaxis()->SetRangeUser(minX, maxX);
+    //grCentralSyst->GetXaxis()->SetRangeUser(minX, maxX);
     TString xtitle = gen1->GetXaxis()->GetTitle();
     if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
     if (xtitle.Index("H_{T}") >= 0) {
@@ -424,6 +425,7 @@ void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
         xtitle = "H_{T}, N_{jets} #geq " + njets + " [GeV]";
     }
     grCentralSyst->GetXaxis()->SetTitle(xtitle);
+    grCentralSyst->GetXaxis()->SetTitleSize(0.14);
     //-----------------------------------------
 
 }
@@ -458,6 +460,7 @@ std::string getYaxisTitle(const TH1D *gen1)
 TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen1, TH1D *hGen2, TH1D* hGen3)
 {
 
+    gStyle->SetOptStat(0);
     //--- Determine how many comparison we have ---
     int numbOfGenerator = 1;
     if (hGen2) numbOfGenerator = 2;
@@ -519,7 +522,25 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     customizeCentral(grCentralStat, false);
     customizeCentral(grCentralSystRatio, true);
     customizeCentral(grCentralStatRatio, true);
-    grCentralSyst->Draw("a2");
+    hSyst->SetLineColor(kWhite);
+    hSyst->SetMarkerColor(kWhite);
+    hSyst->SetTitle("");
+    hSyst->GetXaxis()->SetLabelSize(0);
+    hSyst->GetYaxis()->SetTitle("");
+    hSyst->GetYaxis()->SetLabelSize(0.055);
+    if (canvasName.Contains("ZNGoodJets")) {
+        hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax() - 1);
+    }
+    if (canvasName.Contains("JetPt_Zinc")) {
+        hSyst->GetXaxis()->SetRangeUser(30, hSyst->GetXaxis()->GetXmax());
+    }
+    if (canvasName.Contains("Eta")) {
+        hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
+    }
+    configXaxis(hSyst, hGen1);
+    configYaxis(hSyst, hGen1, hGen2, hGen3);
+    hSyst->DrawCopy("e");
+    grCentralSyst->Draw("2");
     customizeGenHist(hGen1, 1, legend, hGen1->GetZaxis()->GetTitle());
     hGen1->DrawCopy("ESAME");
     if (hGen2) {
@@ -531,21 +552,8 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         hGen3->DrawCopy("ESAME");
     }
 
-    configYaxis(grCentralSyst, hGen1, hGen2, hGen3);
-    configXaxis(grCentralSyst, hGen1);
     grCentralStat->Draw("p");
 
-    double x, y, ex;
-    int nPoints = grCentralSyst->GetN();
-    grCentralSyst->GetPoint(nPoints-1, x, y);
-    ex = grCentralSyst->GetErrorX(nPoints-1);
-    if (canvasName.Contains("JetPt_Zinc")) {
-        std::cout << "x: " << x << "  ew: " << ex << std::endl;
-        grCentralSyst->GetXaxis()->SetRangeUser(30, x + ex);
-    }
-    if (canvasName.Contains("Eta")) {
-        grCentralSyst->GetHistogram()->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
-    }
     legend->Draw("same");
 
     //--- TLatex stuff ---
@@ -572,7 +580,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
 
     TLatex *ytitle = new TLatex();
     ytitle->SetTextSize(0.04);
-    if (hGen2) ytitle->SetTextSize(0.04);
+    if (hGen2) ytitle->SetTextSize(0.05);
     if (hGen3) ytitle->SetTextSize(0.06);
     ytitle->SetTextFont(42);
     ytitle->SetLineWidth(2);
@@ -605,19 +613,21 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     customizeLegend(legend2, 1, numbOfGenerator);
     TString generator1 = hGen1->GetZaxis()->GetTitle();
     generator1 = generator1(0, generator1.Index(" "));
-    customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
-    configXaxis(grGen1ToCentral, hGen1);
+    customizeGenGraph(hSyst, grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
+    //customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
+    configXaxis(hSyst, hGen1);
     grGen1PDFSyst->SetFillStyle(1001);
     grGen1PDFSyst->SetFillColor(kBlue-6);
-    grGen1ToCentral->Draw("a2");
+    hSyst->DrawCopy("e");
+    grGen1ToCentral->Draw("2");
     grGen1ToCentral->Draw("2");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
     grGen1ToCentral->Draw("p");
     legend2->Draw("same");
-    if (canvasName.Contains("JetPt_Zinc")) {
-        grGen1ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
-    }
+    //if (canvasName.Contains("JetPt_Zinc")) {
+    //    grGen1ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+    //}
     plot2->RedrawAxis();
     //--- End of Second Pad ---
 
@@ -632,20 +642,22 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         customizeLegend(legend3, 2, numbOfGenerator);
         TString generator2 = hGen2->GetZaxis()->GetTitle();
         generator2 = generator2(0, generator2.Index(" "));
-        customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
-        configXaxis(grGen2ToCentral, hGen2);
+        customizeGenGraph(hSyst, grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
+        //customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
+        configXaxis(hSyst, hGen2);
         grGen2PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen2PDFSyst->SetFillColor(ZJetsPdfFillColor[2]);
-        grGen2ToCentral->Draw("a2");
+        hSyst->DrawCopy("e");
+        grGen2ToCentral->Draw("2");
         //grGen2PDFSyst->Draw("2");
         grGen2ToCentral->Draw("2");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen2ToCentral->Draw("p");
         legend3->Draw("same");
-        if (canvasName.Contains("JetPt_Zinc")) {
-            grGen2ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
-        }
+        //if (canvasName.Contains("JetPt_Zinc")) {
+        //    grGen2ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+        //}
         plot3->RedrawAxis();
         //--- End of Third Pad ---
     }
@@ -661,20 +673,22 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         customizeLegend(legend4, 3, numbOfGenerator);
         TString generator3 = hGen3->GetZaxis()->GetTitle();
         generator3 = generator3(0, generator3.Index(" "));
-        customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
-        configXaxis(grGen3ToCentral, hGen3);
+        customizeGenGraph(hSyst, grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
+        //customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
+        configXaxis(hSyst, hGen3);
         grGen3PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen3PDFSyst->SetFillColor(ZJetsPdfFillColor[1]);
-        grGen3ToCentral->Draw("a2");
+        hSyst->DrawCopy("e");
+        grGen3ToCentral->Draw("2");
         //grGen3PDFSyst->Draw("2");
         grGen3ToCentral->Draw("2");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen3ToCentral->Draw("p");
         legend4->Draw("same");
-        if (canvasName.Contains("JetPt_Zinc")) {
-            grGen3ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
-        }
+        //if (canvasName.Contains("JetPt_Zinc")) {
+        //    grGen3ToCentral->GetXaxis()->SetRangeUser(30, x + ex);
+        //}
         plot4->RedrawAxis();
         //--- End of Fourth Pad ---
     }

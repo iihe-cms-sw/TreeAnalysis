@@ -54,7 +54,6 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     //----------------------------------------------------------------------------------------- 
 
     //--- Open additional generator files -----------------------------------------------------
-    //TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");

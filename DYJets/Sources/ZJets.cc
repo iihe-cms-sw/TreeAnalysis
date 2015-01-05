@@ -1750,6 +1750,7 @@ void ZJets::getElectrons(vector<leptonStruct>& leptons,  vector<leptonStruct>& v
         bool elePassesIdCut(ele.id >= 4); /// 4 is medium ID, 2 is Loose ID
         bool elePassesIsoCut(ele.iso < 0.15);
         bool elePassesAnyTrig(ele.trigger & 0x2);
+        if (fileName.Index("Sherpa_Bugra_1_13_UNFOLDING") > 0) elePassesAnyTrig = true;
 
         //--- veto electrons ---
         bool elePassesVetoPtCut(ele.v.Pt() >= 15);

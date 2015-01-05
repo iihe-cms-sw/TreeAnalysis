@@ -25,12 +25,12 @@ void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGe
 std::string getYaxisTitle(const TH1D *gen1);
 void customizeLegend(TLegend *legend, int numbOfGenerator);
 void customizeLegend(TLegend *legend, int genNumb, int numbOfGenerator);
-void configYaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
-void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1);
+void configYaxis(TH1D *grCentralSyst, TH1D *gen1, TH1D *gen2 = NULL, TH1D *gen3 = NULL);
+void configXaxis(TH1D *grCentralSyst, TH1D *gen1);
 void customizeCentral(TGraphAsymmErrors *grCentral, bool ratio);
 void customizeCentral(TGraphAsymmErrors *grCentral, TLegend *legend, TString legText = "");
 void customizeGenHist(TH1D *gen, int genNumb, TLegend *legend, TString legText);
-void customizeGenGraph(TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNumb, TString yTitle, int numbOfGenerator, TLegend *legend = NULL);
+void customizeGenGraph(TH1D *hSyst, TGraphAsymmErrors *gen, TGraphAsymmErrors *gPDF, int genNumb, TString yTitle, int numbOfGenerator, TLegend *legend = NULL);
 TGraphAsymmErrors* createGrFromHist(const TH1D *h);
 TGraphAsymmErrors* createRatioGraph(const TGraphAsymmErrors* grCentral);
 TGraphErrors* createRatioGraph(const TGraphErrors* grCentral);
