@@ -56,7 +56,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     //--- Open additional generator files -----------------------------------------------------
     TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     //----------------------------------------------------------------------------------------- 
         std::cout << __LINE__ << std::endl;
 
@@ -114,7 +115,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
         TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowGenCrossSection->SetZTitle("MG@NLO + Py8 (#leq 2j NLO+PS)");
+        hPowGenCrossSection->SetZTitle("Sherpa1.4 LO");
         //hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
         
         std::cout << __LINE__ << std::endl;
