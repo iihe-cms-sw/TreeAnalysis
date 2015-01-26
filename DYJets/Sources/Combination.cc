@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <TFile.h>
 #include <TH1D.h>
@@ -11,6 +12,8 @@
 
 using namespace std;
 
+void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
+void createTable(TString outputFileName, TString variable, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst);
 void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString variable)
 {
     //--- create output directory if does not exist ---
@@ -125,7 +128,9 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- create objects to be filled with output of combination ---
         vector<TH2D*> covuxaxb(covariances[0].size(), NULL); // each covariance matrix
+        vector<TH2D*> covuxaxbtmp(covariances[0].size(), NULL); // each covariance matrix
         TH2D* covxaxb = NULL; // total covariance matrix
+        TH2D* covxaxbtmp = NULL; // total covariance matrix
         TH2D* covxaxbSyst = NULL; // total syst covariance matrix
         TH1D* hCombination = NULL; // combined cross section
         TH1D* hMadGenCombined = NULL;
@@ -134,7 +139,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //---------------------------------------------------------------------
 
         //--- create the BLUEMeth object to compute the covariance ---
-        BLUEMeth* blue = new BLUEMeth(measurements, covariances, variable);
+        BLUEMeth* blueXSec = new BLUEMeth(measurements, covariances, variable);
+        BLUEMeth* blueError = new BLUEMeth(measurements, covariances, variable);
         //---------------------------------------------------------------------
 
         //--- set up how you want to combine the channels and do the combination ---
@@ -147,7 +153,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //
         // blue->GetCombination(true, true, true, covuxaxb, covxaxb);
         //
-        hCombination = blue->GetCombination(diagXChanCov, fullXChanCov, fullSChanCov, covuxaxb, covxaxb);
+        hCombination = blueXSec->GetCombination(false, false, false, covuxaxbtmp, covxaxbtmp);
+        blueError->GetCombination(diagXChanCov, fullXChanCov, fullSChanCov, covuxaxb, covxaxb);
 
         covxaxbSyst = (TH2D*) covxaxb->Clone();
         covxaxbSyst->Add(covuxaxb[0], -1);
@@ -175,8 +182,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //---------------------------------------------------------------------
 
 
-        //TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
+        //TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -195,6 +202,12 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
             }
             cout << endl;
         }
+
+        createTable(outputFileName, variable, hCombination, covuxaxb, covxaxbSyst);
+        if (variable.Index("ZNGoodJets_Zexc") >= 0) {
+            createInclusivePlots(outputFileName, hCombination, covuxaxb, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined);
+        }
+
 
         //--- save results and inputs to root file ---
         outputRootFile->cd();
@@ -237,3 +250,161 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         if (end == start + 1) system("display " + outputFileName + ".png &");
     }
 }
+
+void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection)
+{
+    TH1D *hInc = (TH1D*) hUnfData->Clone("ZNGoodJets_Zinc");
+    TH1D *hIncMad = (TH1D*) hMadGenCrossSection->Clone("ZNGoodJets_Zinc_Mad");
+    TH1D *hIncShe = (TH1D*) hSheGenCrossSection->Clone("ZNGoodJets_Zinc_She");
+    TH1D *hIncPow = (TH1D*) hPowGenCrossSection->Clone("ZNGoodJets_Zinc_Pow");
+    TH2D *hIncCovSyst = (TH2D*) hCovSyst->Clone("CovSystTot");
+    vector<TH2D*> hCovInc;
+    hCovInc.push_back((TH2D*) hCov[0]->Clone("CovDataStat"));
+    hCovInc.push_back((TH2D*) hCov[1]->Clone("CovMCStat"));
+    hCovInc.push_back((TH2D*) hCov[2]->Clone("CovPU"));
+    hCovInc.push_back((TH2D*) hCov[3]->Clone("CovJER"));
+    hCovInc.push_back((TH2D*) hCov[4]->Clone("CovXSec"));
+    hCovInc.push_back((TH2D*) hCov[5]->Clone("CovLumi"));
+    hCovInc.push_back((TH2D*) hCov[6]->Clone("CovSF"));
+    hCovInc.push_back((TH2D*) hCov[7]->Clone("CovJES"));
+    hCovInc.push_back((TH2D*) hCov[8]->Clone("CovSherpaUnf"));
+
+    int nBins = hInc->GetNbinsX();
+    for (int i = 1; i <= nBins; i++) {
+        double binSum = 0;
+        double binSumMad = 0;
+        double binSumShe = 0;
+        double binSumPow = 0;
+        double binStatError2 = 0;
+        double binStatMadError2 = 0;
+        double binStatSheError2 = 0;
+        double binStatPowError2 = 0;
+        double binCov[9] = {0};
+        double binCovSystError2 = 0;
+        for (int j = i; j <= nBins; j++) {
+            binSum += hInc->GetBinContent(j);
+            binSumMad += hIncMad->GetBinContent(j);
+            binSumShe += hIncShe->GetBinContent(j);
+            binSumPow += hIncPow->GetBinContent(j);
+            binStatError2 += pow(hInc->GetBinError(j), 2);
+            binStatMadError2 += pow(hIncMad->GetBinError(j), 2);
+            binStatSheError2 += pow(hIncShe->GetBinError(j), 2);
+            binStatPowError2 += pow(hIncPow->GetBinError(j), 2);
+            binCovSystError2 += hIncCovSyst->GetBinError(j, j);
+            for (int k = 0; k < 9; k++) {
+                binCov[k] += hCovInc[k]->GetBinContent(j, j);
+            }
+        }
+        hInc->SetBinContent(i, binSum);
+        hIncMad->SetBinContent(i, binSumMad);
+        hIncShe->SetBinContent(i, binSumShe);
+        hIncPow->SetBinContent(i, binSumPow);
+        hInc->SetBinError(i, sqrt(binStatError2));
+        hIncMad->SetBinError(i, sqrt(binStatMadError2));
+        hIncShe->SetBinError(i, sqrt(binStatSheError2));
+        hIncPow->SetBinError(i, sqrt(binStatPowError2));
+        hIncCovSyst->SetBinError(i, i, binCovSystError2);
+        for (int k = 0; k < 9; k++) {
+            hCovInc[k]->SetBinContent(i, i, binCov[k]);
+        }
+    }
+
+    TCanvas *crossSectionPlot = makeCrossSectionPlot("", TString("ZNGoodJets_Zinc"), hInc, hIncCovSyst, hIncMad, hIncShe, hIncPow); 
+    outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc");
+    crossSectionPlot->Draw();
+    crossSectionPlot->SaveAs(outputFileName + ".png");
+    crossSectionPlot->SaveAs(outputFileName + ".pdf");
+    crossSectionPlot->SaveAs(outputFileName + ".eps");
+    crossSectionPlot->SaveAs(outputFileName + ".ps");
+    crossSectionPlot->SaveAs(outputFileName + ".C");
+    createTable(outputFileName, TString("ZNGoodJets_Zinc"), hInc, hCovInc, hIncCovSyst);
+}
+
+void createTable(TString outputFileName, TString variable, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst)
+{
+    cout << "Hello" << endl;    
+    //--- print out break down of errors ---
+    
+    TString title = hCombination->GetTitle();
+    int nBins = hCombination->GetNbinsX();
+    TString var = "";
+    TString dSigma = "";
+    TString xtitle = hCombination->GetXaxis()->GetTitle();
+    createTitleVariableAnddSigma(variable, xtitle, title, var, dSigma);
+    cout << "Title: " << title << endl;
+    cout << "Var: " << var << endl;
+    cout << "dSig: " << dSigma << endl;
+    cout << "nBins: " << nBins << endl;
+
+    TString table = "\\begin{table}[htb!]\n\\begin{center}\n";
+    table += "\\caption{Differential cross section in " + title;
+    table += " and break down of the systematic uncertainites for the ";
+    table += "combinaton of both decay channels.}\n";
+    table += "\\scriptsize{\n";
+    table += "\\begin{tabular}{c|cc|cccccccc}\n";
+    table += "\\multicolumn{11}{c}{" + title + "} \\\\\n";
+    table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
+    table += "\\tiny{stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
+    table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
+    table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
+
+    int start = 1;
+    if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
+        start = 2; 
+        //nBins--;
+    }
+    if (title.Index("jet $p_{\\text{T}}$", 0, TString::ECaseCompare::kIgnoreCase) >= 0) start = 3; 
+
+    for (int i = start; i <= nBins; ++i) {
+        double xs = hCombination->GetBinContent(i);
+        TString numbers;
+        if (title.Index("exclusive jet multiplicity", 0,  TString::ECaseCompare::kIgnoreCase) >= 0) {
+            numbers.Form("= %d", i - 1);
+        }
+        else if (title.Index("inclusive jet multiplicity", 0,  TString::ECaseCompare::kIgnoreCase) >= 0) {
+            numbers.Form("\\geq %d", i - 1);
+        }
+        else {
+            numbers.Form("$%g \\ -\\ %g$", hCombination->GetBinLowEdge(i), hCombination->GetBinLowEdge(i+1));
+        }
+        table += numbers + " & "; 
+        numbers.Form("%#.3g", xs);
+        table += numbers + " & ";
+        // total uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[0]->GetBinContent(i,i) + covxaxbSyst->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // stat uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[0]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // JES uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[7]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // JER uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[3]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // PU uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[2]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // XSec uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[4]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // Lumi uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[5]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // Unf uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[8]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // SF uncertinaty
+        numbers.Form("%#.2g", sqrt(covuxaxb[6]->GetBinContent(i,i))*100./xs);
+        table += numbers + " \\\\\n";
+    }
+
+    table += "\\end{tabular}}\n";
+    table += "\\label{tab:comb" + variable + "}\n";
+    table += "\\end{center}\\end{table}\n";
+    ofstream out(outputFileName + ".tex");
+    out << table;
+    out.close();
+    cout << table << endl;
+}
+

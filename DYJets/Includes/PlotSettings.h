@@ -37,4 +37,5 @@ TGraphErrors* createRatioGraph(const TGraphErrors* grCentral);
 TGraphAsymmErrors *createGenToCentral(const TH1D *gen, const TGraphAsymmErrors *grCentral);
 TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDFUp, const TH1D *hPDFDown, const TGraphAsymmErrors *grGenToCentral);
 TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hData, TH2D *hCovSyst, TH1D *hGen, TH1D *hGen1 = NULL, TH1D *hGen2 = NULL);
+void createTitleVariableAnddSigma(TString variable, TString xtitle, TString &title, TString &var, TString &dSigma) ;
 #endif

@@ -12,8 +12,7 @@ TH2D* M2H(TMatrixD m);
 TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, const TH1D* hUnfDataDown, TString name);
 TH1D* makeCrossSectionHist(TH1D* hGenDYJets, double integratedLumi);
 TH1D* foldUnfData(TH1D *hUnfData, RooUnfoldResponse *resp);
-void createTable(TString lepSel, TString variable, TH1D *hUnfData, TH2D *hCov[]);
-void createTitleVariableAnddSigma(TString xtitle, TString &title, TString &var, TString &dSigma) ;
+void createTable(TString outputFileName, TString lepSel, TString variable, TH1D *hUnfData, TH2D *hCov[]);
 void test();
 
 double MyChi2Test(TH1D *h1, TH1D *h2, int nBinsToSkip = 0);

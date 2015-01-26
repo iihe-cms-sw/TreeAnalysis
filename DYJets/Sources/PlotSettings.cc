@@ -321,7 +321,7 @@ void customizeGenGraph(TH1D *hSyst, TGraphAsymmErrors *gen, TGraphAsymmErrors *g
         hSyst->GetYaxis()->SetTitleOffset(0.8);
         if (numbOfGenerator == 2) hSyst->GetYaxis()->SetTitleOffset(0.63);
         if (numbOfGenerator == 3) hSyst->GetYaxis()->SetTitleOffset(0.63);
-        hSyst->GetXaxis()->SetLabelSize(0.10);
+        hSyst->GetXaxis()->SetLabelSize(0.14);
         hSyst->GetXaxis()->SetTitleSize(0.12);
         hSyst->GetXaxis()->SetTitleOffset(1.10);
     }
@@ -397,7 +397,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
         grCentralSyst->GetXaxis()->SetBinLabel(7, "= 6");
         grCentralSyst->GetXaxis()->SetBinLabel(8, "= 7");
         grCentralSyst->GetXaxis()->SetBinLabel(9, "= 8");
-        grCentralSyst->GetXaxis()->SetLabelSize(0.14);
+        grCentralSyst->GetXaxis()->SetLabelSize(0.18);
         grCentralSyst->GetXaxis()->SetLabelOffset(0.01);
     }
     else if (variable.Index("ZNGoodJets_Zinc") >= 0) {
@@ -699,3 +699,115 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     return plots;
 }
 
+void createTitleVariableAnddSigma(TString variable, TString xtitle, TString& title, TString& var, TString& dSigma) 
+{
+
+    // jet multiplicity
+    if (variable.Index("ZNGoodJets_Zexc") >= 0) {
+        title = "Exclusive jet multiplicity";
+        var = "$N_{\\text{jets}}$";
+        dSigma = "$\\frac{d\\sigma}{N_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (variable.Index("ZNGoodJets_Zinc") >= 0) {
+        title = "Inclusive jet multiplicity";
+        var = "$N_{\\text{jets}}$";
+        dSigma = "$\\frac{d\\sigma}{N_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    // jet pt distributions
+    if (xtitle.Index("p_{T}(j_{1})") >= 0) {
+        title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$p_{\\text{T}}(j_{1})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{1})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{2})") >= 0) {
+        title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$p_{\\text{T}}(j_{2})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{2})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{3})") >= 0) {
+        title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$p_{\\text{T}}(j_{3})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{3})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{4})") >= 0) {
+        title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$p_{\\text{T}}(j_{4})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{4})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{5})") >= 0) {
+        title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$p_{\\text{T}}(j_{5})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{5})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{6})") >= 0) {
+        title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$p_{\\text{T}}(j_{6})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{6})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+
+    // jet HT distributions
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 1") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 2") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 3") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 4") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 5") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 6") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+
+    // jet eta distributions
+    if (xtitle.Index("\\eta(j_{1})") >= 0) {
+        title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$\\eta(j_{1})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{1})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{2})") >= 0) {
+        title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$\\eta(j_{2})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{2})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{3})") >= 0) {
+        title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$\\eta(j_{3})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{3})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{4})") >= 0) {
+        title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$\\eta(j_{4})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{4})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{5})") >= 0) {
+        title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$\\eta(j_{5})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{5})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{6})") >= 0) {
+        title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$\\eta(j_{6})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{6})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+}

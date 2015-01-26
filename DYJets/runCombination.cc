@@ -16,10 +16,10 @@ int main(int argc, char **argv)
     //          "WJETS", "ALL", "PDF", "SHERPA"
 
     TString unfoldDir  = cfg.getS("unfoldDir");
-    TString combDir    = cfg.getS("combDir", "CombinationAugust");
+    TString combDir    = cfg.getS("combDir");
     TString algo       = cfg.getS("algo");
     int jetPtMin       = cfg.getI("jetPtMin", 30);
-    int jetEtaMax = cfg.getI("jetEtaMax", 24);
+    int jetEtaMax      = cfg.getI("jetEtaMax", 24);
     bool diagXChanCov  = cfg.getB("diagXChanCov", false);
     bool fullXChanCov  = cfg.getB("fullXChanCov", false);
     bool fullSChanCov  = cfg.getB("fullSChanCov", false);
