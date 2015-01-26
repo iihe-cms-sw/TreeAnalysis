@@ -365,7 +365,7 @@ void BonzaiMaker::Loop(string dataset_, string fileName_, int leptonIdSum, bool 
                     TLorentzVector tmp;
                     tmp.SetPxPyPzE(mc_px[i], mc_py[i], mc_pz[i], mc_en[i]);
                     double sign = mc_id[i] > 0 ? 1 : -1;
-                    if (mc_status[i] == 1 && fabs(mc_mother[i]) !=  lepID && fabs(mc_mother[i]) != 23 && fabs(mc_mother[i]) != 24 ) continue ;
+                    if (mc_status[i] == 1 && fabs(mc_mother[i]) != lepID && fabs(mc_mother[i]) != 12 && lepID && fabs(mc_mother[i]) != 14 && lepID && fabs(mc_mother[i]) != 16 && fabs(mc_mother[i]) != 23 && fabs(mc_mother[i]) != 24) continue;
                     genLepId_.push_back((double)  mc_id[i]);
                     genLepSt_.push_back((double)  mc_status[i]);
                     genLepQ_.push_back((double)   sign);

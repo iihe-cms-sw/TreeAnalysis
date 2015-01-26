@@ -238,9 +238,18 @@ int main(int argc, char **argv)
     }
 
     if (doWhat == "SHERPA") {
-        //ZJets DYShe("DMu_8TeV_DYJets_Sherpa_Bugra_1_6_UNFOLDING_dR", 1, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
         ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa_Bugra_1_13_UNFOLDING_dR", lumi*3531.8*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
         DYShe.Loop(1, 1);
+    }
+
+    if (doWhat == "MCATNLO") {
+        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYatNLO.Loop(0, 1);
+    }
+
+    if (doWhat == "MG-MLM") {
+        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-MG-MLM-Bonzai_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYatNLO.Loop(0, 1);
     }
 
     if (doWhat == "PDF") {
@@ -251,12 +260,6 @@ int main(int argc, char **argv)
         }
     }
 
-    if (doWhat == "MCATNLO") {
-        //ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/2705136., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_MCatNLO_dR", lumi*1.*1000/(1.9023879662*2705136.), 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        DYatNLO.Loop(0, 1);
-
-    }
 
     //---------------------------------------------------------------------
 

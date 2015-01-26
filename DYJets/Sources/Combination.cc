@@ -187,6 +187,14 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         for (int i = 1; i <= hCombination->GetNbinsX(); ++i) {
             cout << hCombination->GetBinContent(i) << endl;
         }
+        //--- print out break down of errors ---
+        for (int i = 2; i <= 9; ++i) {
+            cout << hCombination->GetBinContent(i);
+            for (int j = 0; j < covuxaxb.size(); ++j) {
+                cout << " +/- " << sqrt(covuxaxb[j]->GetBinContent(i,i))*100./hCombination->GetBinContent(i) << "%";
+            }
+            cout << endl;
+        }
 
         //--- save results and inputs to root file ---
         outputRootFile->cd();

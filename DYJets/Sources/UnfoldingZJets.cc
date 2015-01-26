@@ -55,9 +55,11 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     //--- Open additional generator files -----------------------------------------------------
     TFile *fSheUnf = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    //TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
-    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + "DYJetsToLL_M-50_TuneCUETP8M1_8TeV-MG-MLM-Bonzai" + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fSheGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYPOWHEGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    //TFile *fPowGen = new TFile(histoDir + lepSel + "_8TeV_" + DYSHERPAUNFOLDINGFILENAME + "_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     //----------------------------------------------------------------------------------------- 
         std::cout << __LINE__ << std::endl;
 
@@ -99,27 +101,26 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
         //--- Get Sherpa Unfolding response ---
 
-        std::cout << __LINE__ << std::endl;
         respDYJets[13] = getResp(fSheUnf, variable);
-        std::cout << __LINE__ << std::endl;
         TH1D *hSheGen = getHisto(fSheGen, "gen" + variable);
         TH1D *hPowGen = getHisto(fPowGen, "gen" + variable);
-        std::cout << __LINE__ << std::endl;
         //----------------------------------------------------------------------------------------- 
 
-        std::cout << __LINE__ << std::endl;
         TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
         hMadGenCrossSection->SetZTitle("MadGraph + Pythia6 (#leq4j@LO + PS)");
         TH1D *hSheGenCrossSection = makeCrossSectionHist(hSheGen, integratedLumi);
         hSheGenCrossSection->SetZTitle("Sherpa (#leq2j@NLO 3,4j@LO + PS)");
-        hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
+        hSheGenCrossSection->SetZTitle("Sherpa1.4 LO");
+        hSheGenCrossSection->SetZTitle("MG+Py8 MLM LO");
+        //hSheGenCrossSection->Scale(0.95); // I don't have Sherpa yet, so it is to simulate it
         TH1D *hPowGenCrossSection = makeCrossSectionHist(hPowGen, integratedLumi);
         hPowGenCrossSection->SetZTitle("Powheg + Pythia6 (Z+2j@NLO + PS)");
-        hPowGenCrossSection->SetZTitle("Sherpa1.4 LO");
-        //hPowGenCrossSection->Scale(1.10); // I don't have Powheg yet, so it is to simulate it
+        hPowGenCrossSection->SetZTitle("aMC@NLO ");
+        if (lepSel == "DMu") hPowGenCrossSection->Scale(9.67682344591264986e+06/1.21990572533038822e+18); 
+        if (lepSel == "DE")  hPowGenCrossSection->Scale(9.68984524447932094e+06/1.26965652647094554e+18); 
+        if (lepSel == "DMu")  hSheGenCrossSection->Scale(9.68984524447932094e+06/1.56860892310320000e+14); 
+        if (lepSel == "DE") hSheGenCrossSection->Scale(9.68984524447932094e+06/2.07243222113040000e+14); 
         
-        std::cout << __LINE__ << std::endl;
-
         // Here is an array of TH1D to store the various unfolded data:
         // 0 - Central, 
         // 1 - JES up, 2 - JES down, 
@@ -163,6 +164,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             hRecDataMinusFakes->Add(hRecSumBg[iBg], -1);
             hRecDataMinusFakes->Add(hFakDYJets[iSyst], -1);
 
+            if (iSyst == 13) cout << "SHERPAUNFOLDING" << endl;
             UnfoldData(algo, respDYJets[iSyst], hRecDataMinusFakes, nIter, hUnfData[iSyst], 
                     hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
 
@@ -185,9 +187,19 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[0], "CovSherpaUnf");
         hCov[9] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
         for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
+        TCanvas *tmpCanvas = new TCanvas();
+        tmpCanvas->cd();
+        hUnfData[0]->DrawCopy();
+        hUnfData[1]->DrawCopy("same");
+        tmpCanvas->SaveAs("sherpaComp.C");
+        TCanvas *tmpCanvas2 = new TCanvas();
+        tmpCanvas2->cd();
+        hUnfData[1]->Divide(hUnfData[0]);
+        hUnfData[1]->DrawCopy();
+        tmpCanvas2->SaveAs("sherpaCompRatio.C");
 
-        //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hPowGenCrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hSheGenCrossSection, hPowGenCrossSection); 
+        //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection, hPowGenCrossSection); 
         //TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[9], hMadGenCrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
@@ -196,7 +208,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         crossSectionPlot->SaveAs(outputFileName + ".ps");
         crossSectionPlot->SaveAs(outputFileName + ".C");
 
-        hUnfData[13]->Scale(1.05); // I don't have Sherpa yet, so this is to simulate it
+        //hUnfData[13]->Scale(1.05); // I don't have Sherpa yet, so this is to simulate it
         //--- print out break down of errors ---
         for (int i = 2; i <= 9; ++i) {
             cout << hUnfData[0]->GetBinContent(i);
@@ -205,6 +217,8 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             }
             cout << endl;
         }
+
+        createTable(lepSel, variable, hUnfData[0], hCov);
         //--------------------------------------
 
         //--- Save other things --- 
@@ -233,7 +247,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
     }
 
-    test();
+    //test();
 
     //--- Close all files ----------------------------------------------------------------------
     closeAllFiles(fData, fDYJets, fBg, NBGDYJETS);
@@ -244,6 +258,186 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
 }
 
+void createTable(TString lepSel, TString variable, TH1D *hUnfData, TH2D *hCov[])
+{
+    cout << "Hello" << endl;    
+    //--- print out break down of errors ---
+    
+    TString title = hUnfData->GetTitle();
+    int nBins = hUnfData->GetNbinsX();
+    TString var = "";
+    TString dSigma = "";
+    TString xtitle = hUnfData->GetXaxis()->GetTitle();
+    createTitleVariableAnddSigma(xtitle, title, var, dSigma);
+    cout << "Title: " << title << endl;
+    cout << "Var: " << var << endl;
+    cout << "dSig: " << dSigma << endl;
+    cout << "nBins: " << nBins << endl;
+
+    TString table = "\\begin{table}[htb!]\n\\begin{center}\n";
+    table += "\\caption{Differential cross section in " + title;
+    table += " and break down of the systematic uncertainites for the ";
+    if (lepSel == "DMu") table += "muon decay channel.}\n";
+    if (lepSel == "DE") table += "electron decay channel.}\n";
+    if (lepSel == "") table += "combinaton of both decay channels.}\n";
+    table += "\\scriptsize{\n";
+    table += "\\begin{tabular}{c|cc|cccccccc}\n";
+    table += "\\multicolumn{11}{c}{" + title + "} \\\\\n";
+    table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
+    table += "\\tiny{stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
+    table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
+    table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
+
+    int start = 1;
+    if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) start = 2; 
+    if (title.Index("jet $p_{\\text{T}}$", 0, TString::ECaseCompare::kIgnoreCase) >= 0) start = 3; 
+
+    for (int i = start; i <= nBins; ++i) {
+        double xs = hUnfData->GetBinContent(i);
+        TString numbers;
+        if (title.Index("multiplicity", 0,  TString::ECaseCompare::kIgnoreCase) >= 0) {
+            numbers.Form("= %d", i - 1);
+        }
+        else {
+            numbers.Form("$%g \\ -\\ %g$", hUnfData->GetBinLowEdge(i), hUnfData->GetBinLowEdge(i+1));
+        }
+        table += numbers + " & "; 
+        numbers.Form("%#.3g", xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i) + hCov[9]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[2]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[4]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[3]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[5]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[6]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[8]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        numbers.Form("%#.2g", sqrt(hCov[7]->GetBinContent(i,i))*100./xs);
+        table += numbers + " \\\\\n";
+    }
+
+    table += "\\end{tabular}}\n";
+    table += "\\label{tab:" + lepSel + variable + "}\n";
+    table += "\\end{center}\\end{table}\n";
+
+    cout << table << endl;
+}
+
+void createTitleVariableAnddSigma(TString xtitle, TString& title, TString& var, TString& dSigma) 
+{
+
+    // jet multiplicity
+    if (xtitle.Index("N_{jets}") >= 0) {
+        title = "Exclusive jet multiplicity";
+        var = "$N_{\\text{jets}}$";
+        dSigma = "$\\frac{d\\sigma}{N_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    // jet pt distributions
+    if (xtitle.Index("p_{T}(j_{1})") >= 0) {
+        title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$p_{\\text{T}}(j_{1})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{1})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{2})") >= 0) {
+        title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$p_{\\text{T}}(j_{2})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{2})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{3})") >= 0) {
+        title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$p_{\\text{T}}(j_{3})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{3})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{4})") >= 0) {
+        title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$p_{\\text{T}}(j_{4})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{4})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{5})") >= 0) {
+        title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$p_{\\text{T}}(j_{5})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{5})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("p_{T}(j_{6})") >= 0) {
+        title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$p_{\\text{T}}(j_{6})$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{6})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+
+    // jet HT distributions
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 1") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 2") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 3") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 4") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 5") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+    if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 6") >= 0) {
+        title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+    }
+
+    // jet eta distributions
+    if (xtitle.Index("\\eta(j_{1})") >= 0) {
+        title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$\\eta(j_{1})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{1})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{2})") >= 0) {
+        title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$\\eta(j_{2})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{2})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{3})") >= 0) {
+        title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$\\eta(j_{3})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{3})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{4})") >= 0) {
+        title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$\\eta(j_{4})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{4})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{5})") >= 0) {
+        title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$\\eta(j_{5})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{5})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+    if (xtitle.Index("\\eta(j_{6})") >= 0) {
+        title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+        var = "$\\eta(j_{6})$";
+        dSigma = "$\\frac{d\\sigma}{\\eta(j_{6})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+}
 
 void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinusFakes, int nIter, 
         TH1D* &hUnfData, TH2D* &hUnfDataStatCov, TH2D* &hUnfMCStatCov, TString name, 
@@ -303,7 +497,7 @@ void UnfoldData(const TString algo, RooUnfoldResponse *resp, TH1D *hRecDataMinus
         hmes->SetName(tmpName);
         hmes->SetTitle(tmpName);
         hmes->Write();
-        
+
         double mychi2 = MyChi2Test(hfoldUnfData, hRecDataMinusFakes, nBinsToSkip);
         hchi2->SetBinContent(i, mychi2);
         if (i==1) hRecDataMinusFakes->Write("Unf" + name + "_0"); 

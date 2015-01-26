@@ -371,6 +371,9 @@ void configYaxis(TH1D *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
     //if (gen3) maximumToPlot = TMath::Max(maximumToPlot, gen3->GetBinContent(gen3->GetMaximumBin()));
 
     grCentralSyst->GetYaxis()->SetRangeUser(0.2*minimumToPlot, 5*maximumToPlot);
+    //if (TString(grCentralSyst->GetName()).Contains("Eta")) {
+    //    grCentralSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximumToPlot);
+    //}
 }
 
 //void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
@@ -411,7 +414,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
     }
     //grCentralSyst->GetXaxis()->SetRangeUser(minX, maxX);
     TString xtitle = gen1->GetXaxis()->GetTitle();
-    if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
+    //if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
     if (xtitle.Index("H_{T}") >= 0) {
         TString njets;
         if (variable.Index("Zinc1jet") >= 0) njets = "1";
@@ -438,9 +441,9 @@ std::string getYaxisTitle(const TH1D *gen1)
         std::string xtitle = gen1->GetXaxis()->GetTitle();
         std::string shortVar = xtitle.substr(0, xtitle.find(" "));
         std::string unit = "";
-        if (xtitle.find("#eta") != std::string::npos) {
-            xtitle = "|" + xtitle + "|";
-        }
+        //if (xtitle.find("#eta") != std::string::npos) {
+        //    xtitle = "|" + xtitle + "|";
+        //}
         if (xtitle.find("[") != std::string::npos){
             size_t begin = xtitle.find("[") + 1;
             unit = xtitle.substr(begin);
@@ -528,6 +531,8 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     hSyst->GetXaxis()->SetLabelSize(0);
     hSyst->GetYaxis()->SetTitle("");
     hSyst->GetYaxis()->SetLabelSize(0.055);
+    configXaxis(hSyst, hGen1);
+    configYaxis(hSyst, hGen1, hGen2, hGen3);
     if (canvasName.Contains("ZNGoodJets")) {
         hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax() - 1);
     }
@@ -537,8 +542,6 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     if (canvasName.Contains("Eta")) {
         hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
-    configXaxis(hSyst, hGen1);
-    configYaxis(hSyst, hGen1, hGen2, hGen3);
     hSyst->DrawCopy("e");
     grCentralSyst->Draw("2");
     customizeGenHist(hGen1, 1, legend, hGen1->GetZaxis()->GetTitle());

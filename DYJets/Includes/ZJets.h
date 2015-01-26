@@ -76,7 +76,8 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patMuonPhi_;
         vector<double>  *patMuonEn_;
         vector<double>  *patMuonCharge_;
-        vector<double>  *patMuonCombId_;
+        vector<double>  *patMuonCombId_Double;
+        vector<int>  *patMuonCombId_Int;
         vector<double>  *patMuonTrig_;
         vector<double>  *patMuonPfIsoDbeta_;
 
@@ -96,6 +97,7 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patMetSig_;
 
         vector<double> *mcSherpaWeights_;
+        Double_t mcEveWeight_;
 
         // List of branches
         TBranch        *b_mcEveWeight_;   //!
@@ -152,7 +154,8 @@ class ZJets: public HistoSetZJets {
         TBranch        *b_patMuonEn_;   //!
         TBranch        *b_patMuonCharge_;   //!
         TBranch        *b_patMuonDxy_;   //!
-        TBranch        *b_patMuonCombId_;   //!
+        TBranch        *b_patMuonCombId_Double;   //!
+        TBranch        *b_patMuonCombId_Int;   //!
         TBranch        *b_patMuonTrig_;   //!
         TBranch        *b_patMuonPfIsoDbeta_;   //!
 

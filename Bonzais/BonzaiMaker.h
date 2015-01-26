@@ -444,7 +444,8 @@ BonzaiMaker::BonzaiMaker(string dataset_, string fileName_) : fChain(0)
     // if parameter tree is not specified (or zero), connect the file
     // used to generate this class and read the Tree.
 
-    storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples/";
+    storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples_2015/";
+    //storageElement = "dcap://maite.iihe.ac.be:/pnfs/iihe/cms/store/user/aleonard/VJets_ntuples/";
     string dirPath = "/dataAnalyzer";
     string treeName = "/data";
 
