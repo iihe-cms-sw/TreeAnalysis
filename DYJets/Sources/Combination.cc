@@ -14,7 +14,7 @@ using namespace std;
 
 void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
 void createTable(TString outputFileName, TString variable, bool doNormalized, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst);
-void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString gen1, TString gen2, TString variable, bool doNormalized)
+void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, bool modifiedSWA, TString gen1, TString gen2, TString variable, bool doNormalized)
 {
     //--- create output directory if does not exist ---
     system("mkdir -p " + combDir);
@@ -107,6 +107,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         outputFileName += (int) fullXChanCov;
         outputFileName += "_fullSChanCov_"; 
         outputFileName += (int) fullSChanCov;
+        outputFileName += "_modifiedSWA_"; 
+        outputFileName += (int) modifiedSWA;
         outputFileName += "_JetPtMin_";
         outputFileName += jetPtMin;
         outputFileName += "_JetEtaMax_";
@@ -132,9 +134,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- create objects to be filled with output of combination ---
         vector<TH2D*> covuxaxb(covariances[0].size(), NULL); // each covariance matrix
-        vector<TH2D*> covuxaxbtmp(covariances[0].size(), NULL); // each covariance matrix
         TH2D* covxaxb = NULL; // total covariance matrix
-        TH2D* covxaxbtmp = NULL; // total covariance matrix
         TH2D* covxaxbSyst = NULL; // total syst covariance matrix
         TH1D* hCombination = NULL; // combined cross section
         TH1D* hMadGenCombined = NULL;
@@ -144,7 +144,6 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- create the BLUEMeth object to compute the covariance ---
         BLUEMeth* blueXSec = new BLUEMeth(measurements, covariances, variable);
-        BLUEMeth* blueError = new BLUEMeth(measurements, covariances, variable);
         //---------------------------------------------------------------------
 
         //--- set up how you want to combine the channels and do the combination ---
@@ -157,8 +156,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         //
         // blue->GetCombination(true, true, true, covuxaxb, covxaxb);
         //
-        hCombination = blueXSec->GetCombination(false, false, false, covuxaxbtmp, covxaxbtmp);
-        blueError->GetCombination(diagXChanCov, fullXChanCov, fullSChanCov, covuxaxb, covxaxb);
+        hCombination = blueXSec->GetCombination(diagXChanCov, fullXChanCov, fullSChanCov, modifiedSWA, covuxaxb, covxaxb);
 
         covxaxbSyst = (TH2D*) covxaxb->Clone();
         covxaxbSyst->Add(covuxaxb[0], -1);

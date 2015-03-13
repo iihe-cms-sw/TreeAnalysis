@@ -184,7 +184,7 @@ void BLUEMeth::ComputeFullCovariance()
                                 //--- compute the sign of the correlation
                                 int sign = _Muij[iCov](i, j) > 0 ? 1 : -1; 
                                 //--- compute the covariance ---
-                                _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N) = 1.0 * sign * sqrt(_Muij[iCov](i+iMeas1*_N,i+iMeas1*_N) * _Muij[iCov](j+iMeas2*_N,j+iMeas2*_N));
+                                _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N) = sign * sqrt(_Muij[iCov](i+iMeas1*_N,i+iMeas1*_N) * _Muij[iCov](j+iMeas2*_N,j+iMeas2*_N));
                                 //--- covariance is symmetric ---
                                 _Muij[iCov](j+iMeas2*_N, i+iMeas1*_N) = _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N);
                             }
@@ -198,7 +198,7 @@ void BLUEMeth::ComputeFullCovariance()
     }
 }
 
-TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCov, bool fullIndivChannelCov, vector<TH2D*> &covuxaxb, TH2D* &covxaxb)
+TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCov, bool fullIndivChannelCov, bool modifiedSWA, vector<TH2D*> &covuxaxb, TH2D* &covxaxb)
 {
     //--- it is time to compute the lambda coefficients of the BLUE ---
 
@@ -219,21 +219,38 @@ TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCo
     KInvertab.Invert();
 
     TMatrixD lambdaai = TMatrixD(KInvertab, TMatrixD::kMult, TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij));
+    _xa = lambdaai * _yi;
 
-    _covxaxb = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
-    _covxaxb.Invert();
+    if (modifiedSWA) {
+        _covxaxb = TMatrixD(lambdaai, TMatrixD::kMult, TMatrixD(_Mij, TMatrixD::kMultTranspose, lambdaai));
+    }
+    else {
+        _covxaxb = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
+        _covxaxb.Invert();
+    }
     covxaxb = new TH2D(_covxaxb);
     covxaxb->SetName("TotCombCov" + _variable);
 
-    _xa = lambdaai * _yi;
+
+
+    std::cout << "HERE IS THE LAMBDA" << std::endl;
+
+    lambdaai.Print();
+
+    std::cout << "END OF THE LAMBDA" << std::endl;
 
     for (unsigned int iCov = 0; iCov < _nCovariances; ++iCov) {
-        TMatrixD _MuInvertij = _Muij[iCov];
-        TDecompSVD svdMuij = _MuInvertij;
-        _MuInvertij = svdMuij.Invert();
-        _covuxaxb[iCov] = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MuInvertij), TMatrixD::kMult, _Uia);
-        TDecompSVD svdcovuxaxb = _covuxaxb[iCov];
-        _covuxaxb[iCov] = svdcovuxaxb.Invert();
+        if (modifiedSWA) {
+            _covuxaxb[iCov] = TMatrixD(lambdaai, TMatrixD::kMult, TMatrixD(_Muij[iCov], TMatrixD::kMultTranspose, lambdaai));
+        }
+        else {
+            TMatrixD _MuInvertij = _Muij[iCov];
+            TDecompSVD svdMuij = _MuInvertij;
+            _MuInvertij = svdMuij.Invert();
+            _covuxaxb[iCov] = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MuInvertij), TMatrixD::kMult, _Uia);
+            TDecompSVD svdcovuxaxb = _covuxaxb[iCov];
+            _covuxaxb[iCov] = svdcovuxaxb.Invert();
+        }
         covuxaxb[iCov] = new TH2D(_covuxaxb[iCov]);
         covuxaxb[iCov]->SetName(_covariances[0][iCov]->GetName() + _variable);
     }

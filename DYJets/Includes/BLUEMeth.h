@@ -44,7 +44,7 @@ class BLUEMeth : public TNamed {
         const vector<TH1D*> &measurements() const;
         const vector<vector<TH2D*>> &covariances() const;
 
-        TH1D* GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCov, bool fullIndivChannelCov, vector<TH2D*> &covuxaxb, TH2D* &covxaxb);
+        TH1D* GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCov, bool fullIndivChannelCov, bool modifiedSWA, vector<TH2D*> &covuxaxb, TH2D* &covxaxb);
 
     private:
         void Init();

@@ -414,10 +414,9 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1, TString variable)
     }
     //grCentralSyst->GetXaxis()->SetRangeUser(minX, maxX);
     TString xtitle = gen1->GetXaxis()->GetTitle();
-    //if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
+    if (xtitle.Index("^{gen}") >= 0) xtitle = xtitle.ReplaceAll("^{gen}","");
     if (xtitle.Index("H_{T}") >= 0) {
         TString njets;
-        std::cout << xtitle << std::endl;
         if (variable.Index("Zinc1jet") >= 0) njets = "1";
         else if (variable.Index("Zinc2jet") >= 0) njets = "2";
         else if (variable.Index("Zinc3jet") >= 0) njets = "3";
@@ -426,9 +425,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1, TString variable)
         else if (variable.Index("Zinc6jet") >= 0) njets = "6";
         else if (variable.Index("Zinc7jet") >= 0) njets = "7";
         else if (variable.Index("Zinc8jet") >= 0) njets = "8";
-        std::cout << "________________________________" << std::endl;
         xtitle = "H_{T}, N_{jets} #geq " + njets + " [GeV]";
-        std::cout << xtitle << std::endl;
     }
     grCentralSyst->GetXaxis()->SetTitle(xtitle);
     grCentralSyst->GetXaxis()->SetTitleSize(0.14);
@@ -442,9 +439,9 @@ std::string getYaxisTitle(bool doNormalized, const TH1D *gen1)
     std::string xtitle = gen1->GetXaxis()->GetTitle();
     std::string shortVar = xtitle.substr(0, xtitle.find(" "));
     std::string unit = "";
-    //if (xtitle.find("#eta") != std::string::npos) {
-    //    xtitle = "|" + xtitle + "|";
-    //}
+    if (xtitle.find("^{gen}") != std::string::npos) {
+        xtitle.replace(xtitle.find("^{gen}"),6,"");
+    }
     if (xtitle.find("[") != std::string::npos){
         size_t begin = xtitle.find("[") + 1;
         unit = xtitle.substr(begin);
@@ -578,6 +575,10 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
     latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
     latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    //    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 50 GeV, |#eta^{jet}| < 2.4 ");
+    //    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 80 GeV, |#eta^{jet}| < 2.4 ");
+    //    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 100 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    //    latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
     if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
     else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
     else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
