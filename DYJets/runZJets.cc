@@ -243,7 +243,8 @@ int main(int argc, char **argv)
     }
 
     if (doWhat == "MCATNLO") {
-        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        //ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        ZJets DYatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
         DYatNLO.Loop(0, 1);
     }
 
@@ -258,6 +259,87 @@ int main(int argc, char **argv)
             //DYMixPDF.Loop(0, 1, "CT10.LHgrid", pdfMember);
             DYMixPDF.Loop(0, 1, "MSTW2008nlo68cl.LHgrid", pdfMember);
         }
+    }
+
+    if (doWhat == "SHERPA2_500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_1000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_1000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_1500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_1500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_2000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_2000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_2500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_2500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_3000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_3000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_3500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_3500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_4000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_4000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_4500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_4500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_11000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_11000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_11500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_11500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_12000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_12000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_12500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_12500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_13000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_13000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_13500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_13500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_14000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_14000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_14500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_14500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_15000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_15000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_15500") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_15500_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
+    }
+    if (doWhat == "SHERPA2_16000") {
+        ZJets DYShe(lepSel + "_8TeV_DYJets_Sherpa2_16000_dR", lumi*1000, 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYShe.Loop(0, 1);
     }
 
 

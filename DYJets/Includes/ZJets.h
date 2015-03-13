@@ -96,15 +96,18 @@ class ZJets: public HistoSetZJets {
         vector<double>  *patMetPhi_;
         vector<double>  *patMetSig_;
 
-        vector<double> *mcSherpaWeights_;
-        Double_t mcEveWeight_;
+        vector<double>  *mcSherpaWeights_;
+        vector<double>  *mcEventWeight_;
+        //Double_t mcEveWeight_;
 
         // List of branches
-        TBranch        *b_mcEveWeight_;   //!
-        TBranch        *b_mcSherpaSumWeight3_;   //!
+        TBranch        *b_mcEventWeight_;   //!
+        //TBranch        *b_mcSherpaSumWeight3_;   //!
         TBranch        *b_mcSherpaWeights_;   //!
-        TBranch        *b_nup_;   //!
-        TBranch        *b_pdfInfo_;   //!
+        //TBranch        *b_weight_amcNLO_;   //!
+        //TBranch        *b_weight_amcNLO_sum_;   //!
+        //TBranch        *b_nup_;   //!
+        //TBranch        *b_pdfInfo_;   //!
         TBranch        *b_PU_npT;   //!
         TBranch        *b_PU_npIT;   //!
         TBranch        *b_EvtInfo_NumVtx;   //!
@@ -178,8 +181,8 @@ class ZJets: public HistoSetZJets {
 
 
         ZJets(TString fileName_, float lumiScale_ = 1., bool useTriggerCorrection_ = 0, int systematics_ = 0, int direction_ = 0, float xsecfactor_ = 1., 
-              int lepPtCutMin_ = 20, int lepEtaCutMax_ = 24, int jetPtCutMin_ = 30, int jetEtaCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
-              TString bonzaiDir = "/afs/cern.ch/work/a/aleonard/public/ZJetsFiles/");
+                int lepPtCutMin_ = 20, int lepEtaCutMax_ = 24, int jetPtCutMin_ = 30, int jetEtaCutMax_ = 24, Long_t nEvents_ = 0, TString outDir_ = "TEST", 
+                TString bonzaiDir = "/afs/cern.ch/work/a/aleonard/public/ZJetsFiles/");
         ~ZJets();
         string   CreateOutputFileName(TString pdfSet = "", int pdfMember = -1);
         Int_t    Cut(Long64_t entry);

@@ -131,7 +131,7 @@ class HistoSetZJets {
 
         TH1D *FirstJetPhi_Zinc1jet;
         TH2D *FirstJetPt_Zinc1jet_NVtx;
-	    TH2D *FirstJetPtRecoOvGen_Zinc1jet_NVtx;
+        TH2D *FirstJetPtRecoOvGen_Zinc1jet_NVtx;
 
         TH1D *SecondJetPhi_Zinc2jet;
         TH1D *ThirdJetPhi_Zinc3jet;
@@ -568,6 +568,245 @@ class HistoSetZJets {
         TH1D *gentau_c_cm_sum_Zinc1jet[5];
         TH1D *gentau_c_cm_max_Zinc1jet[5];
 
+        //Additional Histograms
+        TH1D *AbsZRapidity_Zinc1jet;
+        TH1D *genAbsZRapidity_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_Zinc1jet;
+
+        TH1D *SumZFirstJetEta_Zinc1jet;
+        TH1D *genSumZFirstJetEta_Zinc1jet;
+        TH1D *DifZFirstJetEta_Zinc1jet;
+        TH1D *genDifZFirstJetEta_Zinc1jet;
+
+        TH1D *DPhiZFirstJet_Zinc1jet;
+        TH1D *genDPhiZFirstJet_Zinc1jet;
+
+        TH1D *AbsZRapidity_Zexc1jet;
+        TH1D *genAbsZRapidity_Zexc1jet;
+        TH1D *AbsJetRapidity_Zexc1jet;
+        TH1D *genAbsJetRapidity_Zexc1jet;
+        TH1D *SumZJetRapidity_Zexc1jet;
+        TH1D *genSumZJetRapidity_Zexc1jet;
+        TH1D *DifZJetRapidity_Zexc1jet;
+        TH1D *genDifZJetRapidity_Zexc1jet;
+        TH1D *AbsFirstJetRapidity_Zinc2jet;	
+        TH1D *genAbsFirstJetRapidity_Zinc2jet;
+        TH1D *SumZFirstJetRapidity_Zinc2jet;
+        TH1D *genSumZFirstJetRapidity_Zinc2jet;
+        TH1D *DifZFirstJetRapidity_Zinc2jet;
+        TH1D *genDifZFirstJetRapidity_Zinc2jet;
+
+        TH1D *SumZTwoJetsRapidity_Zinc2jet;
+        TH1D *genSumZTwoJetsRapidity_Zinc2jet;
+        TH1D *DifZTwoJetsRapidity_Zinc2jet;
+        TH1D *genDifZTwoJetsRapidity_Zinc2jet;
+
+        TH1D *AbsZRapidity_Zinc2jet;
+        TH1D *genAbsZRapidity_Zinc2jet;
+        TH1D *AbsSecondJetRapidity_Zinc2jet;	
+        TH1D *genAbsSecondJetRapidity_Zinc2jet;
+        TH1D *SumZSecondJetRapidity_Zinc2jet;
+        TH1D *genSumZSecondJetRapidity_Zinc2jet;
+        TH1D *DifZSecondJetRapidity_Zinc2jet;
+        TH1D *genDifZSecondJetRapidity_Zinc2jet;
+
+        TH1D *SumFirstSecondJetRapidity_Zinc2jet;
+        TH1D *genSumFirstSecondJetRapidity_Zinc2jet;
+        TH1D *DifFirstSecondJetRapidity_Zinc2jet;
+        TH1D *genDifFirstSecondJetRapidity_Zinc2jet;
+
+        TH1D *DPhiZFirstJet_Zinc2jet;
+        TH1D *genDPhiZFirstJet_Zinc2jet;
+        TH1D *DPhiZSecondJet_Zinc2jet;
+        TH1D *genDPhiZSecondJet_Zinc2jet;
+        TH1D *DPhiFirstSecondJet_Zinc2jet;
+        TH1D *genDPhiFirstSecondJet_Zinc2jet;
+
+        TH1D *AbsZRapidity_Zexc2jet;
+        TH1D *genAbsZRapidity_Zexc2jet;
+        TH1D *AbsSecondJetRapidity_Zexc2jet;	
+        TH1D *genAbsSecondJetRapidity_Zexc2jet;
+        TH1D *SumZSecondJetRapidity_Zexc2jet;
+        TH1D *genSumZSecondJetRapidity_Zexc2jet;
+        TH1D *DifZSecondJetRapidity_Zexc2jet;
+        TH1D *genDifZSecondJetRapidity_Zexc2jet;
+
+        TH1D *DPhiZFirstJet_Zinc3jet;
+        TH1D *genDPhiZFirstJet_Zinc3jet;
+        TH1D *DPhiZSecondJet_Zinc3jet;
+        TH1D *genDPhiZSecondJet_Zinc3jet;
+        TH1D *DPhiZThirdJet_Zinc3jet;
+        TH1D *genDPhiZThirdJet_Zinc3jet;
+        TH1D *DPhiFirstSecondJet_Zinc3jet;
+        TH1D *genDPhiFirstSecondJet_Zinc3jet;
+        TH1D *DPhiFirstThirdJet_Zinc3jet;
+        TH1D *genDPhiFirstThirdJet_Zinc3jet;
+        TH1D *DPhiSecondThirdJet_Zinc3jet;
+        TH1D *genDPhiSecondThirdJet_Zinc3jet;
+
+        ////Different Z boson Pt cut branches///////////////////
+        TH1D *AbsZRapidity_ZPt100_Zinc1jet;
+        TH1D *genAbsZRapidity_ZPt100_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_ZPt100_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_ZPt100_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_ZPt100_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_ZPt100_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_ZPt100_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_ZPt100_Zinc1jet;
+
+        TH1D *AbsZRapidity_ZPt100_Zexc1jet;
+        TH1D *genAbsZRapidity_ZPt100_Zexc1jet;
+        TH1D *AbsJetRapidity_ZPt100_Zexc1jet;
+        TH1D *genAbsJetRapidity_ZPt100_Zexc1jet;
+        TH1D *SumZJetRapidity_ZPt100_Zexc1jet;
+        TH1D *genSumZJetRapidity_ZPt100_Zexc1jet;
+        TH1D *DifZJetRapidity_ZPt100_Zexc1jet;
+        TH1D *genDifZJetRapidity_ZPt100_Zexc1jet;
+
+        TH1D *AbsZRapidity_ZPt100_Zinc2jet;
+        TH1D *genAbsZRapidity_ZPt100_Zinc2jet;
+        TH1D *AbsSecondJetRapidity_ZPt100_Zinc2jet;	
+        TH1D *genAbsSecondJetRapidity_ZPt100_Zinc2jet;
+        TH1D *SumZSecondJetRapidity_ZPt100_Zinc2jet;
+        TH1D *genSumZSecondJetRapidity_ZPt100_Zinc2jet;
+        TH1D *DifZSecondJetRapidity_ZPt100_Zinc2jet;
+        TH1D *genDifZSecondJetRapidity_ZPt100_Zinc2jet;
+
+        TH1D *AbsZRapidity_ZPt100_Zexc2jet;
+        TH1D *genAbsZRapidity_ZPt100_Zexc2jet;
+        TH1D *AbsSecondJetRapidity_ZPt100_Zexc2jet;	
+        TH1D *genAbsSecondJetRapidity_ZPt100_Zexc2jet;
+        TH1D *SumZSecondJetRapidity_ZPt100_Zexc2jet;
+        TH1D *genSumZSecondJetRapidity_ZPt100_Zexc2jet;
+        TH1D *DifZSecondJetRapidity_ZPt100_Zexc2jet;
+        TH1D *genDifZSecondJetRapidity_ZPt100_Zexc2jet;
+
+
+        TH1D *AbsZRapidity_ZPt150_Zinc1jet;
+        TH1D *genAbsZRapidity_ZPt150_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_ZPt150_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_ZPt150_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_ZPt150_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_ZPt150_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_ZPt150_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_ZPt150_Zinc1jet;
+
+        TH1D *AbsZRapidity_ZPt150_Zexc1jet;
+        TH1D *genAbsZRapidity_ZPt150_Zexc1jet;
+        TH1D *AbsJetRapidity_ZPt150_Zexc1jet;
+        TH1D *genAbsJetRapidity_ZPt150_Zexc1jet;
+        TH1D *SumZJetRapidity_ZPt150_Zexc1jet;
+        TH1D *genSumZJetRapidity_ZPt150_Zexc1jet;
+        TH1D *DifZJetRapidity_ZPt150_Zexc1jet;
+        TH1D *genDifZJetRapidity_ZPt150_Zexc1jet;
+
+        TH1D *AbsZRapidity_ZPt150_Zinc2jet;
+        TH1D *genAbsZRapidity_ZPt150_Zinc2jet;
+        TH1D *AbsSecondJetRapidity_ZPt150_Zinc2jet;	
+        TH1D *genAbsSecondJetRapidity_ZPt150_Zinc2jet;
+        TH1D *SumZSecondJetRapidity_ZPt150_Zinc2jet;
+        TH1D *genSumZSecondJetRapidity_ZPt150_Zinc2jet;
+        TH1D *DifZSecondJetRapidity_ZPt150_Zinc2jet;
+        TH1D *genDifZSecondJetRapidity_ZPt150_Zinc2jet;
+
+        TH1D *AbsZRapidity_ZPt150_Zexc2jet;
+        TH1D *genAbsZRapidity_ZPt150_Zexc2jet;
+        TH1D *AbsSecondJetRapidity_ZPt150_Zexc2jet;	
+        TH1D *genAbsSecondJetRapidity_ZPt150_Zexc2jet;
+        TH1D *SumZSecondJetRapidity_ZPt150_Zexc2jet;
+        TH1D *genSumZSecondJetRapidity_ZPt150_Zexc2jet;
+        TH1D *DifZSecondJetRapidity_ZPt150_Zexc2jet;
+        TH1D *genDifZSecondJetRapidity_ZPt150_Zexc2jet;
+
+        ////Azimuthal cross check
+        TH1D *DPhiZFirstJet_ZPt150_Zinc1jet;
+        TH1D *genDPhiZFirstJet_ZPt150_Zinc1jet;
+        TH1D *DPhiZFirstJet_ZPt150_Zinc2jet;
+        TH1D *genDPhiZFirstJet_ZPt150_Zinc2jet;
+        TH1D *DPhiZFirstJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiZFirstJet_ZPt150_Zinc3jet;
+        TH1D *DPhiZSecondJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiZSecondJet_ZPt150_Zinc3jet;
+        TH1D *DPhiZThirdJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiZThirdJet_ZPt150_Zinc3jet;
+
+        TH1D *DPhiFirstSecondJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiFirstSecondJet_ZPt150_Zinc3jet;
+        TH1D *DPhiFirstThirdJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiFirstThirdJet_ZPt150_Zinc3jet;
+        TH1D *DPhiSecondThirdJet_ZPt150_Zinc3jet;
+        TH1D *genDPhiSecondThirdJet_ZPt150_Zinc3jet;
+
+
+        TH1D *DPhiZFirstJet_ZPt300_Zinc1jet;
+        TH1D *genDPhiZFirstJet_ZPt300_Zinc1jet;
+        TH1D *DPhiZFirstJet_ZPt300_Zinc2jet;
+        TH1D *genDPhiZFirstJet_ZPt300_Zinc2jet;
+        TH1D *DPhiZFirstJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiZFirstJet_ZPt300_Zinc3jet;
+        TH1D *DPhiZSecondJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiZSecondJet_ZPt300_Zinc3jet;
+        TH1D *DPhiZThirdJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiZThirdJet_ZPt300_Zinc3jet;
+
+        TH1D *DPhiFirstSecondJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiFirstSecondJet_ZPt300_Zinc3jet;
+        TH1D *DPhiFirstThirdJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiFirstThirdJet_ZPt300_Zinc3jet;
+        TH1D *DPhiSecondThirdJet_ZPt300_Zinc3jet;
+        TH1D *genDPhiSecondThirdJet_ZPt300_Zinc3jet;
+
+
+        TH1D *DPhiZFirstJet_ZPt150_HT300_Zinc3jet;
+        TH1D *genDPhiZFirstJet_ZPt150_HT300_Zinc3jet;
+        TH1D *DPhiZSecondJet_ZPt150_HT300_Zinc3jet;
+        TH1D *genDPhiZSecondJet_ZPt150_HT300_Zinc3jet;
+        TH1D *DPhiZThirdJet_ZPt150_HT300_Zinc3jet;
+        TH1D *genDPhiZThirdJet_ZPt150_HT300_Zinc3jet;
+
+        ///Branches with different JetPt cut///////////
+
+        TH1D *AbsZRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *genAbsZRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_FirstJetPt50_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+
+        TH1D *AbsZRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *genAbsZRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_FirstJetPt80_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+
+        //Set Jet rapidity difference discriminator/////
+        TH1D *AbsZRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *genAbsZRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *AbsFirstJetRapidity_DifJetRapidityl2_Zinc2jet;	
+        TH1D *genAbsFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *SumZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *genSumZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *DifZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH1D *genDifZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+
+        TH1D *AbsZRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *genAbsZRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *AbsFirstJetRapidity_DifJetRapiditys2_Zinc2jet;	
+        TH1D *genAbsFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *SumZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *genSumZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *DifZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH1D *genDifZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
         TH1D *SumZJetRapidity_Zinc1jet;
         TH1D *genSumZJetRapidity_Zinc1jet;
         TH1D *DifZJetRapidity_Zinc1jet;
@@ -595,6 +834,8 @@ class HistoSetZJets {
 
         TH2D *hresponseZNGoodJets_Zexc;              
 
+        TH2D *hresponseZPt_Zinc1jet;
+        TH2D *hresponseZPt_Zinc2jet;
         TH2D *hresponseZAbsRapidity_Zinc1jet;              
         TH2D *hresponseSumZJetRapidity_Zinc1jet;
         TH2D *hresponseDifZJetRapidity_Zinc1jet;
@@ -610,7 +851,7 @@ class HistoSetZJets {
         TH2D *hresponseJetsHT_Zinc3jet;
         TH2D *hresponseJetsHT_Zinc4jet;
         TH2D *hresponseJetsHT_Zinc5jet;
-             
+
         TH2D *hresponseFirstJetEta_Zinc1jet; 
         TH2D *hresponseSecondJetEta_Zinc2jet; 
         TH2D *hresponseThirdJetEta_Zinc3jet; 
@@ -639,6 +880,141 @@ class HistoSetZJets {
         TH2D *FirstJetPtEta_Zinc1jet;              
         TH2D *genFirstJetPtEta_Zinc1jet;              
 
+        //Additional response variables
+        TH2D *hresponseAbsZRapidity_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_Zinc1jet;
+
+        TH2D *hresponseSumZFirstJetEta_Zinc1jet;
+        TH2D *hresponseDifZFirstJetEta_Zinc1jet;
+
+        TH2D *hresponseDPhiZFirstJet_Zinc1jet;
+
+        TH2D *hresponseAbsZRapidity_Zexc1jet;
+        TH2D *hresponseAbsJetRapidity_Zexc1jet;
+        TH2D *hresponseSumZJetRapidity_Zexc1jet;
+        TH2D *hresponseDifZJetRapidity_Zexc1jet;
+
+        TH2D *hresponseAbsFirstJetRapidity_Zinc2jet;
+        TH2D *hresponseSumZFirstJetRapidity_Zinc2jet;
+        TH2D *hresponseDifZFirstJetRapidity_Zinc2jet;
+
+        TH2D *hresponseAbsZRapidity_Zinc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_Zinc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_Zinc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_Zinc2jet;
+
+        TH2D *hresponseSumFirstSecondJetRapidity_Zinc2jet;
+        TH2D *hresponseDifFirstSecondJetRapidity_Zinc2jet;
+
+        TH2D *hresponseSumZTwoJetsRapidity_Zinc2jet;
+        TH2D *hresponseDifZTwoJetsRapidity_Zinc2jet;
+
+        TH2D *hresponseDPhiZFirstJet_Zinc2jet;
+        TH2D *hresponseDPhiZSecondJet_Zinc2jet;
+        TH2D *hresponseDPhiFirstSecondJet_Zinc2jet;
+
+        TH2D *hresponseAbsZRapidity_Zexc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_Zexc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_Zexc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_Zexc2jet;
+
+        TH2D *hresponseDPhiZFirstJet_Zinc3jet;
+        TH2D *hresponseDPhiZSecondJet_Zinc3jet;
+        TH2D *hresponseDPhiZThirdJet_Zinc3jet;
+        TH2D *hresponseDPhiFirstSecondJet_Zinc3jet;
+        TH2D *hresponseDPhiFirstThirdJet_Zinc3jet;
+        TH2D *hresponseDPhiSecondThirdJet_Zinc3jet;
+
+        ///Different Z boson Pt cut////////////////////
+        TH2D *hresponseAbsZRapidity_ZPt100_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_ZPt100_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_ZPt100_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_ZPt100_Zinc1jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt100_Zexc1jet;
+        TH2D *hresponseAbsJetRapidity_ZPt100_Zexc1jet;
+        TH2D *hresponseSumZJetRapidity_ZPt100_Zexc1jet;
+        TH2D *hresponseDifZJetRapidity_ZPt100_Zexc1jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt100_Zinc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_ZPt100_Zinc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_ZPt100_Zinc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_ZPt100_Zinc2jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt100_Zexc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_ZPt100_Zexc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_ZPt100_Zexc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_ZPt100_Zexc2jet;
+
+
+        TH2D *hresponseAbsZRapidity_ZPt150_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_ZPt150_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_ZPt150_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_ZPt150_Zinc1jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt150_Zexc1jet;
+        TH2D *hresponseAbsJetRapidity_ZPt150_Zexc1jet;
+        TH2D *hresponseSumZJetRapidity_ZPt150_Zexc1jet;
+        TH2D *hresponseDifZJetRapidity_ZPt150_Zexc1jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt150_Zinc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_ZPt150_Zinc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_ZPt150_Zinc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_ZPt150_Zinc2jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt150_Zexc2jet;
+        TH2D *hresponseAbsSecondJetRapidity_ZPt150_Zexc2jet;
+        TH2D *hresponseSumZSecondJetRapidity_ZPt150_Zexc2jet;
+        TH2D *hresponseDifZSecondJetRapidity_ZPt150_Zexc2jet;
+
+        ///Azimuthal cross check/////////////////
+        TH2D *hresponseDPhiZFirstJet_ZPt150_Zinc1jet;
+        TH2D *hresponseDPhiZFirstJet_ZPt150_Zinc2jet;
+        TH2D *hresponseDPhiZFirstJet_ZPt150_Zinc3jet;
+        TH2D *hresponseDPhiZSecondJet_ZPt150_Zinc3jet;
+        TH2D *hresponseDPhiZThirdJet_ZPt150_Zinc3jet;
+        TH2D *hresponseDPhiFirstSecondJet_ZPt150_Zinc3jet;
+        TH2D *hresponseDPhiFirstThirdJet_ZPt150_Zinc3jet;
+        TH2D *hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet;
+
+        TH2D *hresponseDPhiZFirstJet_ZPt300_Zinc1jet;
+        TH2D *hresponseDPhiZFirstJet_ZPt300_Zinc2jet;
+        TH2D *hresponseDPhiZFirstJet_ZPt300_Zinc3jet;
+        TH2D *hresponseDPhiZSecondJet_ZPt300_Zinc3jet;
+        TH2D *hresponseDPhiZThirdJet_ZPt300_Zinc3jet;
+        TH2D *hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet;
+        TH2D *hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet;
+        TH2D *hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet;
+
+        TH2D *hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet;
+        TH2D *hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet;
+        TH2D *hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet;
+
+        ///Branches with different JetPt Cuts////////
+
+        TH2D *hresponseAbsZRapidity_FirstJetPt50_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_FirstJetPt50_Zinc1jet;
+
+        TH2D *hresponseAbsZRapidity_FirstJetPt80_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_FirstJetPt80_Zinc1jet;
+
+        //Set Jet rapidity discriminator//////
+
+        TH2D *hresponseAbsZRapidity_DifJetRapidityl2_Zinc2jet;
+        TH2D *hresponseAbsFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH2D *hresponseSumZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+        TH2D *hresponseDifZFirstJetRapidity_DifJetRapidityl2_Zinc2jet;
+
+        TH2D *hresponseAbsZRapidity_DifJetRapiditys2_Zinc2jet;
+        TH2D *hresponseAbsFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH2D *hresponseSumZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
+        TH2D *hresponseDifZFirstJetRapidity_DifJetRapiditys2_Zinc2jet;
 };
 
 #endif

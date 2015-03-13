@@ -38,13 +38,14 @@ const unsigned int NFILESDYJETS(12);
 const unsigned int NBGDYJETS(NFILESDYJETS-2);
 const unsigned int FilesDYJets[NFILESDYJETS] = {0, 1, 10, 4, 9, 3, 5, 8, 7, 6, 2, 11};
 
-//const TString DYPOWHEGFILENAME("DYJets_PowhegZ2jMiNLO_dR_GEN_CernMOJ");
-//const TString DYSHERPAFILENAME("DY_Sherpa_2NLO4_HepMC_dR_Full_ListALL");
-
-//const TString DYPOWHEGFILENAME("DYJetsToLL_MCatNLO");
-const TString DYPOWHEGFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai");
-const TString DYSHERPAFILENAME("DYJetsToLL_MIX_50toInf_UNFOLDING");
-const TString DYSHERPAUNFOLDINGFILENAME("DYJets_Sherpa_Bugra_1_13_UNFOLDING");
-//const TString DYSHERPAUNFOLDINGFILENAME("DYJetsToLL_MIX_50toInf_UNFOLDING");
+const TString DYPOWHEGFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed");
+const TString DYAMCATNLOFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed");
+const TString DYAMCATNLOLEGEND("amc@nlo ");
+const TString DYSHERPA2FILENAME("DYJets_Sherpa2_0_16000");
+const TString DYSHERPA2LEGEND("Sherpa2 (#leq2j@NLO 3,4j@LO + PS)");
+const TString DYSHERPA14FILENAME("DYJets_Sherpa_Bugra_1_13_UNFOLDING");
+const TString DYSHERPA14LEGEND("Sherpa1.4 LO");
+const TString DYMGPYTHIA8FILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-MG-MLM-Bonzai");
+const TString DYMGPYTHIA8LEGEND("MG+PYthia8 legend");
 
 #endif

@@ -377,12 +377,12 @@ void configYaxis(TH1D *grCentralSyst, TH1D *gen1, TH1D *gen2, TH1D *gen3)
 }
 
 //void configXaxis(TGraphAsymmErrors *grCentralSyst, TH1D *gen1)
-void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
+void configXaxis(TH1D *grCentralSyst, TH1D *gen1, TString variable)
 {
     //--- Configure X axis of the plot ---
     //double minX, tmp;
     //double maxX;
-    TString variable = gen1->GetName();
+    //TString variable = gen1->GetName();
     //grCentralSyst->GetPoint(firstBin, minX, tmp);
     //grCentralSyst->GetPoint(grCentralSyst->GetN()-1, maxX, tmp);
     //minX -= grCentralSyst->GetErrorXlow(firstBin); 
@@ -417,6 +417,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
     //if (xtitle.Index("#eta") >= 0) xtitle = "|" + xtitle + "|";
     if (xtitle.Index("H_{T}") >= 0) {
         TString njets;
+        std::cout << xtitle << std::endl;
         if (variable.Index("Zinc1jet") >= 0) njets = "1";
         else if (variable.Index("Zinc2jet") >= 0) njets = "2";
         else if (variable.Index("Zinc3jet") >= 0) njets = "3";
@@ -425,7 +426,9 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
         else if (variable.Index("Zinc6jet") >= 0) njets = "6";
         else if (variable.Index("Zinc7jet") >= 0) njets = "7";
         else if (variable.Index("Zinc8jet") >= 0) njets = "8";
+        std::cout << "________________________________" << std::endl;
         xtitle = "H_{T}, N_{jets} #geq " + njets + " [GeV]";
+        std::cout << xtitle << std::endl;
     }
     grCentralSyst->GetXaxis()->SetTitle(xtitle);
     grCentralSyst->GetXaxis()->SetTitleSize(0.14);
@@ -433,34 +436,33 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1)
 
 }
 
-std::string getYaxisTitle(const TH1D *gen1)
+std::string getYaxisTitle(bool doNormalized, const TH1D *gen1)
 {
     std::string title = "";
-    int doXSec = 1, doNormalize = 0;
-    if (doXSec || doNormalize) {
-        std::string xtitle = gen1->GetXaxis()->GetTitle();
-        std::string shortVar = xtitle.substr(0, xtitle.find(" "));
-        std::string unit = "";
-        //if (xtitle.find("#eta") != std::string::npos) {
-        //    xtitle = "|" + xtitle + "|";
-        //}
-        if (xtitle.find("[") != std::string::npos){
-            size_t begin = xtitle.find("[") + 1;
-            unit = xtitle.substr(begin);
-            unit = unit.substr(0, unit.find("]"));
-        }
-        title = "d#sigma/d" + shortVar;
-        if (doNormalize) title = "1/#sigma " + title;
-        else if (doXSec){
-            title += "  [pb";
-            if (unit != "" ) title += "/" + unit;
-            title += "]";
-        }
+    std::string xtitle = gen1->GetXaxis()->GetTitle();
+    std::string shortVar = xtitle.substr(0, xtitle.find(" "));
+    std::string unit = "";
+    //if (xtitle.find("#eta") != std::string::npos) {
+    //    xtitle = "|" + xtitle + "|";
+    //}
+    if (xtitle.find("[") != std::string::npos){
+        size_t begin = xtitle.find("[") + 1;
+        unit = xtitle.substr(begin);
+        unit = unit.substr(0, unit.find("]"));
+    }
+    title = "d#sigma/d" + shortVar;
+    if (doNormalized) {
+        title = "1/#sigma " + title;
+    }
+    else {
+        title += "  [pb";
+        if (unit != "" ) title += "/" + unit;
+        title += "]";
     }
     return title;
 }
 
-TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen1, TH1D *hGen2, TH1D* hGen3)
+TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalized, TH1D *hStat, TH2D *hCovSyst, TH1D *hGen1, TH1D *hGen2, TH1D* hGen3)
 {
 
     gStyle->SetOptStat(0);
@@ -531,7 +533,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     hSyst->GetXaxis()->SetLabelSize(0);
     hSyst->GetYaxis()->SetTitle("");
     hSyst->GetYaxis()->SetLabelSize(0.055);
-    configXaxis(hSyst, hGen1);
+    configXaxis(hSyst, hGen1, variable);
     configYaxis(hSyst, hGen1, hGen2, hGen3);
     if (canvasName.Contains("ZNGoodJets")) {
         hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax() - 1);
@@ -591,7 +593,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     ytitle->SetNDC();
     ytitle->SetTextAlign(33);
     ytitle->SetTextAngle(90);
-    std::string strYtitle = getYaxisTitle(hGen1);
+    std::string strYtitle = getYaxisTitle(doNormalized, hGen1);
     if (strYtitle.find("eta") != std::string::npos) {
         size_t first = strYtitle.find("#eta");
         std::string tmp1 = strYtitle.substr(0, first);
@@ -618,7 +620,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     generator1 = generator1(0, generator1.Index(" "));
     customizeGenGraph(hSyst, grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
     //customizeGenGraph(grGen1ToCentral, grGen1PDFSyst, 1, generator1 + "/Data", numbOfGenerator, legend2);
-    configXaxis(hSyst, hGen1);
+    configXaxis(hSyst, hGen1, variable);
     grGen1PDFSyst->SetFillStyle(1001);
     grGen1PDFSyst->SetFillColor(kBlue-6);
     hSyst->DrawCopy("e");
@@ -647,7 +649,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         generator2 = generator2(0, generator2.Index(" "));
         customizeGenGraph(hSyst, grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
         //customizeGenGraph(grGen2ToCentral, grGen2PDFSyst, 2, generator2 + "/Data", numbOfGenerator, legend3);
-        configXaxis(hSyst, hGen2);
+        configXaxis(hSyst, hGen2, variable);
         grGen2PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen2PDFSyst->SetFillColor(ZJetsPdfFillColor[2]);
         hSyst->DrawCopy("e");
@@ -678,7 +680,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
         generator3 = generator3(0, generator3.Index(" "));
         customizeGenGraph(hSyst, grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
         //customizeGenGraph(grGen3ToCentral, grGen3PDFSyst, 3, generator3 + "/Data", numbOfGenerator, legend4);
-        configXaxis(hSyst, hGen3);
+        configXaxis(hSyst, hGen3, variable);
         grGen3PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen3PDFSyst->SetFillColor(ZJetsPdfFillColor[1]);
         hSyst->DrawCopy("e");
@@ -699,115 +701,122 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     return plots;
 }
 
-void createTitleVariableAnddSigma(TString variable, TString xtitle, TString& title, TString& var, TString& dSigma) 
+void createTitleVariableAnddSigma(TString variable, bool doNormalized, TString xtitle, TString& title, TString& var, TString& dSigma) 
 {
 
     // jet multiplicity
     if (variable.Index("ZNGoodJets_Zexc") >= 0) {
         title = "Exclusive jet multiplicity";
         var = "$N_{\\text{jets}}$";
-        dSigma = "$\\frac{d\\sigma}{N_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dN_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (variable.Index("ZNGoodJets_Zinc") >= 0) {
         title = "Inclusive jet multiplicity";
         var = "$N_{\\text{jets}}$";
-        dSigma = "$\\frac{d\\sigma}{N_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dN_{\\text{jets}}} \\tiny{\\left[\\text{pb}\\right]}$";
     }
 
     // jet pt distributions
     if (xtitle.Index("p_{T}(j_{1})") >= 0) {
         title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
         var = "$p_{\\text{T}}(j_{1})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{1})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{1})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("p_{T}(j_{2})") >= 0) {
         title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
         var = "$p_{\\text{T}}(j_{2})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{2})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{2})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("p_{T}(j_{3})") >= 0) {
         title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
         var = "$p_{\\text{T}}(j_{3})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{3})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{3})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("p_{T}(j_{4})") >= 0) {
         title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
         var = "$p_{\\text{T}}(j_{4})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{4})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{4})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("p_{T}(j_{5})") >= 0) {
         title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
         var = "$p_{\\text{T}}(j_{5})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{5})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{5})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("p_{T}(j_{6})") >= 0) {
         title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
         var = "$p_{\\text{T}}(j_{6})$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{p_{\\text{T}}(j_{6})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dp_{\\text{T}}(j_{6})} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
 
     // jet HT distributions
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 1") >= 0) {
+        std::cout << "HIHIHIHIHIHIHIHIHIHIHI" << std::endl;
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 2") >= 0) {
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 3") >= 0) {
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 4") >= 0) {
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 5") >= 0) {
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 6") >= 0) {
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
-        dSigma = "$\\frac{d\\sigma}{H_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
 
     // jet eta distributions
     if (xtitle.Index("\\eta(j_{1})") >= 0) {
         title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
         var = "$\\eta(j_{1})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{1})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{1})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (xtitle.Index("\\eta(j_{2})") >= 0) {
         title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
         var = "$\\eta(j_{2})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{2})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{2})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (xtitle.Index("\\eta(j_{3})") >= 0) {
         title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
         var = "$\\eta(j_{3})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{3})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{3})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (xtitle.Index("\\eta(j_{4})") >= 0) {
         title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
         var = "$\\eta(j_{4})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{4})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{4})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (xtitle.Index("\\eta(j_{5})") >= 0) {
         title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
         var = "$\\eta(j_{5})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{5})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{5})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
     if (xtitle.Index("\\eta(j_{6})") >= 0) {
         title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
         var = "$\\eta(j_{6})$";
-        dSigma = "$\\frac{d\\sigma}{\\eta(j_{6})} \\tiny{\\left[\\text{pb}\\right]}$";
+        dSigma = "$\\frac{d\\sigma}{d\\eta(j_{6})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    if (doNormalized) {
+        dSigma = "$\\frac{1}{\\sigma}$ " + dSigma;
+        dSigma.ReplaceAll("\\frac{\\text{pb}}", "\\frac{1}");
+        dSigma.ReplaceAll("\\tiny{\\left[\\text{pb}\\right]}", "");
     }
 
 }

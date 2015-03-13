@@ -6,6 +6,8 @@ runFinalUnfold
 runUnfoldingZJets
 runCombination
 dispatcher
+runMakeStatisticsTable
+DYJets/Sources/plotRespMatrix
 
 # git will not consider the following files:
 *.root
@@ -38,6 +40,9 @@ DataTTbarEMu
 
 # ignores output root files
 DYJets/HistoFiles*
+DYJets/SystPlot*
+DYJets/UnfoldingCheck*
+DYJets/Combination*
 
 # ignores pngs and pdf output files
 DYJets/RecoComparison*

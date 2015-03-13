@@ -45,7 +45,7 @@ CXXFLAGS      += $(ROOTCFLAGS)
 
 SOURCES = ArgParser.cc variablesOfInterestZJets.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc
 SOURCES += MergeTop.cc standalone_LumiReWeighting.cc UnfoldingZJets.cc RecoComparison.cc
-SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc
+SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc makeStatisticsTable.cc
 
 SRCLIST = $(addprefix $(SRCDIR), $(SOURCES))
 OBJLIST = $(SRCLIST:.cc=.o)
@@ -57,6 +57,7 @@ runRecoComparison \
 runVJets \
 runZJets \
 runUnfoldingZJets \
+runMakeStatisticsTable \
 dispatcher
 
 # ===========================================================================
@@ -90,7 +91,13 @@ runUnfoldingZJets.o: runUnfoldingZJets.cc RooUnfold/libRooUnfold.so
 runCombination: $(OBJLIST) runCombination.o
 	$(CXX) -o runCombination $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
 
-runCombination.o: runCombination.cc RooUnfold/libRooUnfold.so
+runCombination.o: runCombination.cc
+	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
+
+runMakeStatisticsTable: $(OBJLIST) runMakeStatisticsTable.o
+	$(CXX) -o runMakeStatisticsTable $(LIBDIRLIST) $(LIBDIRLISTRTL) $^ $(ROOTGLIBS) $(LIBLIST)
+
+runMakeStatisticsTable.o: runMakeStatisticsTable.cc RooUnfold/libRooUnfold.so
 	$(CXX) -o $@ -c -IIncludes $< $(CXXFLAGS) $(INCDIR)
 
 dispatcher: $(OBJLIST) dispatcher.o  RooUnfold/libRooUnfold.so

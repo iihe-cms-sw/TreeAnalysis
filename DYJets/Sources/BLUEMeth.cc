@@ -184,7 +184,7 @@ void BLUEMeth::ComputeFullCovariance()
                                 //--- compute the sign of the correlation
                                 int sign = _Muij[iCov](i, j) > 0 ? 1 : -1; 
                                 //--- compute the covariance ---
-                                _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N) = sign * sqrt(_Muij[iCov](i+iMeas1*_N,i+iMeas1*_N) * _Muij[iCov](j+iMeas2*_N,j+iMeas2*_N));
+                                _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N) = 1.0 * sign * sqrt(_Muij[iCov](i+iMeas1*_N,i+iMeas1*_N) * _Muij[iCov](j+iMeas2*_N,j+iMeas2*_N));
                                 //--- covariance is symmetric ---
                                 _Muij[iCov](j+iMeas2*_N, i+iMeas1*_N) = _Muij[iCov](i+iMeas1*_N, j+iMeas2*_N);
                             }

@@ -23,8 +23,11 @@ int main(int argc, char **argv)
     bool diagXChanCov  = cfg.getB("diagXChanCov", false);
     bool fullXChanCov  = cfg.getB("fullXChanCov", false);
     bool fullSChanCov  = cfg.getB("fullSChanCov", false);
+    TString generator1 = cfg.getS("generator1", "sherpa2");
+    TString generator2 = cfg.getS("generator2", "amcatnlo");
 
     TString variable = "";
+    bool doNormalized(false);
 
     //--- Parse the arguments -----------------------------------------------------
     if (argc > 1) {
@@ -39,6 +42,12 @@ int main(int argc, char **argv)
             }
             else if (currentArg.BeginsWith("algo=")) {
                 getArg(currentArg, algo);
+            }
+            else if (currentArg.BeginsWith("generator1=")) {
+                getArg(currentArg, generator1);
+            }
+            else if (currentArg.BeginsWith("generator2=")) {
+                getArg(currentArg, generator2);
             }
             else if (currentArg.BeginsWith("jetPtMin=")) {
                 getArg(currentArg, jetPtMin);
@@ -58,10 +67,13 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("variable=")) {
                 getArg(currentArg, variable);
             }
+            else if (currentArg.BeginsWith("doNormalized=")) {
+                getArg(currentArg, doNormalized);
+            }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: ./runCombination [unfoldDir=(path)] [combDir=(path)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
-                std::cout << "[diagXChanCov=(1,0)] [fullXChanCov=(1,0)] [fullSChanCov=(1,0)] [--help]" << std::endl;
+                std::cout << "[diagXChanCov=(1,0)] [fullXChanCov=(1,0)] [fullSChanCov=(1,0)] [variable=(variableName)] [doNormalized=(0, 1)] [--help]" << std::endl;
                 std::cout << "eg: ./runCombination fullXChanCov=0 jetEtaMax=24" << std::endl;
                 std::cout << "unspecified options will be read from vjets.cfg\n" << std::endl;
                 return 0;
@@ -78,6 +90,6 @@ int main(int argc, char **argv)
     if (!unfoldDir.EndsWith("/")) unfoldDir += "/";
     if (!combDir.EndsWith("/")) combDir += "/";
 
-    Combination(unfoldDir, combDir, algo, jetPtMin, jetEtaMax, diagXChanCov, fullXChanCov, fullSChanCov, variable);
+    Combination(unfoldDir, combDir, algo, jetPtMin, jetEtaMax, diagXChanCov, fullXChanCov, fullSChanCov, generator1, generator2, variable, doNormalized);
     return 0;
 }

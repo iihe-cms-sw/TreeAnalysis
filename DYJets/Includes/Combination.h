@@ -3,6 +3,6 @@
 
 #include <TString.h>
 
-void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString variable = "");
+void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString gen1, TString gen2, TString variable = "", bool doNormalized = false);
 
 #endif

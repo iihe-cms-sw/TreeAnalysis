@@ -12,9 +12,9 @@
 
 using namespace std;
 
-void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
-void createTable(TString outputFileName, TString variable, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst);
-void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString variable)
+void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
+void createTable(TString outputFileName, TString variable, bool doNormalized, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst);
+void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin, int jetEtaMax, bool diagXChanCov, bool fullXChanCov, bool fullSChanCov, TString gen1, TString gen2, TString variable, bool doNormalized)
 {
     //--- create output directory if does not exist ---
     system("mkdir -p " + combDir);
@@ -43,10 +43,12 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- fetch the electron and muon unfolded files ---
         TString commonName = "_unfolded_" + variable + "_" + algo;
-        commonName += "_jetPtMin_";
+        commonName += "_JetPtMin_";
         commonName += jetPtMin;
-        commonName += "_jetEtaMax_";
+        commonName += "_JetEtaMax_";
         commonName += jetEtaMax;
+        commonName += "_MGPYTHIA6_" + gen1 + "_" + gen2;
+        commonName += doNormalized ? "_normalized" : "";
         commonName += ".root";
         TFile *fDE = new TFile(unfoldDir + "DE" + commonName);
         if (!fDE->IsOpen()) {
@@ -69,8 +71,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         fDE->cd();
         TH1D *hUnfDE = (TH1D*) fDE->Get("UnfDataCentral");
         TH1D *hMadGenDE = (TH1D*) fDE->Get("hMadGenDYJetsCrossSection");
-        TH1D *hSheGenDE = (TH1D*) fDE->Get("hSheGenDYJetsCrossSection");
-        TH1D *hPowGenDE = (TH1D*) fDE->Get("hPowGenDYJetsCrossSection");
+        TH1D *hGen1DE = (TH1D*) fDE->Get("hGen1DYJetsCrossSection");
+        TH1D *hGen2DE = (TH1D*) fDE->Get("hGen2DYJetsCrossSection");
         TH2D *hCovDataStatDE = (TH2D*) fDE->Get("CovDataStat");
         TH2D *hCovMCStatDE = (TH2D*) fDE->Get("CovMCStat");
         TH2D *hCovPUSystDE = (TH2D*) fDE->Get("CovPU");
@@ -84,8 +86,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         fDMu->cd();
         TH1D *hUnfDMu = (TH1D*) fDMu->Get("UnfDataCentral");
         TH1D *hMadGenDMu = (TH1D*) fDMu->Get("hMadGenDYJetsCrossSection");
-        TH1D *hSheGenDMu = (TH1D*) fDMu->Get("hSheGenDYJetsCrossSection");
-        TH1D *hPowGenDMu = (TH1D*) fDMu->Get("hPowGenDYJetsCrossSection");
+        TH1D *hGen1DMu = (TH1D*) fDMu->Get("hGen1DYJetsCrossSection");
+        TH1D *hGen2DMu = (TH1D*) fDMu->Get("hGen2DYJetsCrossSection");
         TH2D *hCovDataStatDMu = (TH2D*) fDMu->Get("CovDataStat");
         TH2D *hCovMCStatDMu = (TH2D*) fDMu->Get("CovMCStat");
         TH2D *hCovPUSystDMu = (TH2D*) fDMu->Get("CovPU");
@@ -105,10 +107,12 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         outputFileName += (int) fullXChanCov;
         outputFileName += "_fullSChanCov_"; 
         outputFileName += (int) fullSChanCov;
-        outputFileName += "_jetPtMin_";
+        outputFileName += "_JetPtMin_";
         outputFileName += jetPtMin;
-        outputFileName += "_jetEtaMax_";
+        outputFileName += "_JetEtaMax_";
         outputFileName += jetEtaMax;
+        outputFileName += "_MGPYTHIA6_" + gen1 + "_" + gen2;
+        outputFileName += doNormalized ? "_normalized" : "";
 
         TFile *outputRootFile = new TFile(outputFileName + ".root", "RECREATE");
         //---------------------------------------------------------------------
@@ -134,8 +138,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D* covxaxbSyst = NULL; // total syst covariance matrix
         TH1D* hCombination = NULL; // combined cross section
         TH1D* hMadGenCombined = NULL;
-        TH1D* hSheGenCombined = NULL;
-        TH1D* hPowGenCombined = NULL;
+        TH1D* hGen1Combined = NULL;
+        TH1D* hGen2Combined = NULL;
         //---------------------------------------------------------------------
 
         //--- create the BLUEMeth object to compute the covariance ---
@@ -169,21 +173,20 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         hMadGenCombined->Scale(0.5);
         hMadGenCombined->SetName("hMadCombGenDYJetsCrossSection");
 
-        hSheGenCombined = (TH1D*) hSheGenDE->Clone();
-        hSheGenCombined->Add(hSheGenDMu);
-        hSheGenCombined->Scale(0.5);
-        hSheGenCombined->SetName("hSheCombGenDYJetsCrossSection");
+        hGen1Combined = (TH1D*) hGen1DE->Clone();
+        hGen1Combined->Add(hGen1DMu);
+        hGen1Combined->Scale(0.5);
+        hGen1Combined->SetName("hCombGen1DYJetsCrossSection");
 
-        hPowGenCombined = (TH1D*) hPowGenDE->Clone();
-        hPowGenCombined->Add(hPowGenDMu);
-        hPowGenCombined->Scale(0.5);
-        hPowGenCombined->SetName("hPowCombGenDYJetsCrossSection");
+        hGen2Combined = (TH1D*) hGen2DE->Clone();
+        hGen2Combined->Add(hGen2DMu);
+        hGen2Combined->Scale(0.5);
+        hGen2Combined->SetName("hCombGen2DYJetsCrossSection");
 
         //---------------------------------------------------------------------
 
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined); 
-        //TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, hCombination, covxaxbSyst, hMadGenCombined); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot("", variable, doNormalized, hCombination, covxaxbSyst, hMadGenCombined, hGen1Combined, hGen2Combined); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -203,9 +206,9 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
             cout << endl;
         }
 
-        createTable(outputFileName, variable, hCombination, covuxaxb, covxaxbSyst);
+        createTable(outputFileName, variable, doNormalized, hCombination, covuxaxb, covxaxbSyst);
         if (variable.Index("ZNGoodJets_Zexc") >= 0) {
-            createInclusivePlots(outputFileName, hCombination, covuxaxb, covxaxbSyst, hMadGenCombined, hSheGenCombined, hPowGenCombined);
+            createInclusivePlots(doNormalized, outputFileName, hCombination, covuxaxb, covxaxbSyst, hMadGenCombined, hGen1Combined, hGen2Combined);
         }
 
 
@@ -214,8 +217,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         crossSectionPlot->Write();
         hCombination->Write("CombDataCentral");
         hMadGenCombined->Write();
-        hSheGenCombined->Write();
-        hPowGenCombined->Write();
+        hGen1Combined->Write();
+        hGen2Combined->Write();
         covxaxb->Write("CombCovTot");
         covxaxbSyst->Write("CombCovTotSyst");
         for (unsigned int i = 0; i < covuxaxb.size(); ++i) {
@@ -248,10 +251,11 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         fDMu->Close();
 
         if (end == start + 1) system("display " + outputFileName + ".png &");
+        if (end == start + 1 && variable == "ZNGoodJets_Zexc") system("display " + outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc") + ".png &");
     }
 }
 
-void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection)
+void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfData, vector<TH2D*> hCov, TH2D *hCovSyst, TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection)
 {
     TH1D *hInc = (TH1D*) hUnfData->Clone("ZNGoodJets_Zinc");
     TH1D *hIncMad = (TH1D*) hMadGenCrossSection->Clone("ZNGoodJets_Zinc_Mad");
@@ -309,7 +313,7 @@ void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> 
         }
     }
 
-    TCanvas *crossSectionPlot = makeCrossSectionPlot("", TString("ZNGoodJets_Zinc"), hInc, hIncCovSyst, hIncMad, hIncShe, hIncPow); 
+    TCanvas *crossSectionPlot = makeCrossSectionPlot("", TString("ZNGoodJets_Zinc"), doNormalized, hInc, hIncCovSyst, hIncMad, hIncShe, hIncPow); 
     outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc");
     crossSectionPlot->Draw();
     crossSectionPlot->SaveAs(outputFileName + ".png");
@@ -317,20 +321,20 @@ void createInclusivePlots(TString outputFileName, TH1D *hUnfData, vector<TH2D*> 
     crossSectionPlot->SaveAs(outputFileName + ".eps");
     crossSectionPlot->SaveAs(outputFileName + ".ps");
     crossSectionPlot->SaveAs(outputFileName + ".C");
-    createTable(outputFileName, TString("ZNGoodJets_Zinc"), hInc, hCovInc, hIncCovSyst);
+    createTable(outputFileName, TString("ZNGoodJets_Zinc"), doNormalized, hInc, hCovInc, hIncCovSyst);
 }
 
-void createTable(TString outputFileName, TString variable, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst)
+void createTable(TString outputFileName, TString variable, bool doNormalized, TH1D *hCombination, vector<TH2D*> &covuxaxb, TH2D* covxaxbSyst)
 {
     cout << "Hello" << endl;    
     //--- print out break down of errors ---
-    
+
     TString title = hCombination->GetTitle();
     int nBins = hCombination->GetNbinsX();
     TString var = "";
     TString dSigma = "";
     TString xtitle = hCombination->GetXaxis()->GetTitle();
-    createTitleVariableAnddSigma(variable, xtitle, title, var, dSigma);
+    createTitleVariableAnddSigma(variable, doNormalized, xtitle, title, var, dSigma);
     cout << "Title: " << title << endl;
     cout << "Var: " << var << endl;
     cout << "dSig: " << dSigma << endl;
