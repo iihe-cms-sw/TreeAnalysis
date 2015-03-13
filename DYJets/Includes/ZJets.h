@@ -106,8 +106,8 @@ class ZJets: public HistoSetZJets {
         TBranch        *b_mcSherpaWeights_;   //!
         //TBranch        *b_weight_amcNLO_;   //!
         //TBranch        *b_weight_amcNLO_sum_;   //!
-        //TBranch        *b_nup_;   //!
-        //TBranch        *b_pdfInfo_;   //!
+        TBranch        *b_nup_;   //!
+        TBranch        *b_pdfInfo_;   //!
         TBranch        *b_PU_npT;   //!
         TBranch        *b_PU_npIT;   //!
         TBranch        *b_EvtInfo_NumVtx;   //!

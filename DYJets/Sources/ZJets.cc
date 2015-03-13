@@ -2632,8 +2632,10 @@ void ZJets::Init(bool hasRecoInfo, bool hasGenInfo){
         fChain->SetBranchAddress("genPhoPt_", &genPhoPt_, &b_genPhoPt_);
         fChain->SetBranchAddress("genPhoEta_", &genPhoEta_, &b_genPhoEta_);
         fChain->SetBranchAddress("genPhoPhi_", &genPhoPhi_, &b_genPhoPhi_);
-        //fChain->SetBranchAddress("pdfInfo_", &pdfInfo_, &b_pdfInfo_);
-        //fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
+        if (fileName.Index("MIX") >= 0 && fileName.Index("UNFOLDING") >= 0) {
+            fChain->SetBranchAddress("pdfInfo_", &pdfInfo_, &b_pdfInfo_);
+            fChain->SetBranchAddress("nup_", &nup_, &b_nup_);
+        }
         if (fileName.Index("Sherpa") >= 0 && fileName.Index("UNFOLDING") >= 0) {
             fChain->SetBranchAddress("mcSherpaWeights_", &mcSherpaWeights_, &b_mcSherpaWeights_);
         }
