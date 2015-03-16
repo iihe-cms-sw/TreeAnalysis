@@ -47,3 +47,7 @@ DYJets/Combination*
 # ignores pngs and pdf output files
 DYJets/RecoComparison*
 DYJets/Unfolded*
+
+
+# feng personal files
+Azimuthal*.sh
