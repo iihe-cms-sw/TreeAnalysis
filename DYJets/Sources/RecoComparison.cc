@@ -223,7 +223,12 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
         if (vhNames[i].Index("inc0") < 0){
             if (!doPASPlots) {
                 ostringstream ptLegend;
-                ptLegend << "p_{T}^{jet} > " << jetPtMin << "GeV,  |#eta^{jet}| < " << (0.1*jetEtaMax);
+                if (vhNames[i].Index("JetPt_Zinc") > 0) {
+                    ptLegend << "p_{T}^{jet} > 20GeV,  |#eta^{jet}| < " << (0.1*jetEtaMax);
+                }
+                else {
+                    ptLegend << "p_{T}^{jet} > " << jetPtMin << "GeV,  |#eta^{jet}| < " << (0.1*jetEtaMax);
+                }
                 jetAlgo->DrawLatex(0.13,0.74, "anti-k_{t} jets,  R = 0.5");
                 jetCuts->DrawLatex(0.13,0.70, ptLegend.str().c_str());
             }
