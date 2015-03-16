@@ -1073,22 +1073,22 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genDPhiSecondThirdJet_ZPt150_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt150_Zinc3jet","genDPhiSecondThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Jet2,Jet3}",25,0,3.14);
 
 
-    DPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc1jet","DPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc1jet","genDPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc2jet","DPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc2jet","genDPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc3jet","DPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc3jet","genDPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt300_Zinc3jet","DPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    genDPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt300_Zinc3jet","genDPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    DPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt300_Zinc3jet","DPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
-    genDPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt300_Zinc3jet","genDPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
-    DPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstSecondJet_ZPt300_Zinc3jet","DPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",25,0,3.14);
-    genDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstSecondJet_ZPt300_Zinc3jet","genDPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",25,0,3.14);
-    DPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstThirdJet_ZPt300_Zinc3jet","DPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",25,0,3.14);
-    genDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstThirdJet_ZPt300_Zinc3jet","genDPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",25,0,3.14);
-    DPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiSecondThirdJet_ZPt300_Zinc3jet","DPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",25,0,3.14);
-    genDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt300_Zinc3jet","genDPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",25,0,3.14);
+    DPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc1jet","DPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    genDPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc1jet","genDPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    DPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc2jet","DPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    genDPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc2jet","genDPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    DPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc3jet","DPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    genDPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc3jet","genDPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
+    DPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt300_Zinc3jet","DPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",13,0,3.14);
+    genDPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt300_Zinc3jet","genDPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",13,0,3.14);
+    DPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt300_Zinc3jet","DPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",13,0,3.14);
+    genDPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt300_Zinc3jet","genDPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",13,0,3.14);
+    DPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstSecondJet_ZPt300_Zinc3jet","DPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",13,0,3.14);
+    genDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstSecondJet_ZPt300_Zinc3jet","genDPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",13,0,3.14);
+    DPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstThirdJet_ZPt300_Zinc3jet","DPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",13,0,3.14);
+    genDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstThirdJet_ZPt300_Zinc3jet","genDPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",13,0,3.14);
+    DPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiSecondThirdJet_ZPt300_Zinc3jet","DPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",13,0,3.14);
+    genDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt300_Zinc3jet","genDPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",13,0,3.14);
 
 
     DPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt150_HT300_Zinc3jet","DPhiZFirstJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
@@ -1240,14 +1240,14 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
 
 
-    hresponseDPhiZFirstJet_ZPt300_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc1jet","hresponseDPhiZFirstJet_ZPt300_Zinc1jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt300_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc2jet","hresponseDPhiZFirstJet_ZPt300_Zinc2jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc3jet","hresponseDPhiZFirstJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt300_Zinc3jet","hresponseDPhiZSecondJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt300_Zinc3jet","hresponseDPhiZThirdJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet","hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet","hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet",25,0,3.14,25,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc1jet","hresponseDPhiZFirstJet_ZPt300_Zinc1jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc2jet","hresponseDPhiZFirstJet_ZPt300_Zinc2jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc3jet","hresponseDPhiZFirstJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiZSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt300_Zinc3jet","hresponseDPhiZSecondJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiZThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt300_Zinc3jet","hresponseDPhiZThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet","hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet","hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
 
 
     hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet",25,0,3.14,25,0,3.14);		
