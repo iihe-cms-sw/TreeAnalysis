@@ -2,6 +2,7 @@
 # Makefile for ZJets Analysis 
 # =============================== 
 
+# Determine if working at CERN on lxplus machine or at IIHE on m machines
 HOST = $(shell hostname | grep lxplus)
 
 ifeq ($(HOST),)
@@ -14,7 +15,7 @@ else
   HOST = "lxplus"
 endif
 
-
+# define LHAPDF library Path accroding to the host 
 ifeq ($(HOST), "lxplus")
   LHAPDFPATH = /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/
 else
@@ -23,7 +24,7 @@ else
   endif
 endif
 
-
+# get Root compiler flags
 ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags) 
 
@@ -43,6 +44,7 @@ CXX           = g++ -std=c++0x
 CXXFLAGS      = -g -Wall -fPIC   	
 CXXFLAGS      += $(ROOTCFLAGS) 
 
+# list of all source files
 SOURCES = ArgParser.cc variablesOfInterestZJets.cc getFilesAndHistogramsZJets.cc ConfigVJets.cc HistoSetZJets.cc ZJets.cc functions.cc
 SOURCES += MergeTop.cc standalone_LumiReWeighting.cc UnfoldingZJets.cc RecoComparison.cc
 SOURCES += PlotSettings.cc BLUEMeth.cc Combination.cc makeStatisticsTable.cc

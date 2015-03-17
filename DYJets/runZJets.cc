@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     int lepPtMin       = cfg.getI("lepPtMin", 20);
     int lepEtaMax      = cfg.getI("lepEtaMax", 24);
     int jetPtMin       = cfg.getI("jetPtMin", 30);
-    int jetEtaMax = cfg.getI("jetEtaMax", 24);
+    int jetEtaMax      = cfg.getI("jetEtaMax", 24);
     int whichSyst      = cfg.getI("whichSyst", -1);
     bool doSysRunning  = cfg.getB("doSysRunning", 0);
     bool doCentral     = cfg.getB("doCentral", 1);
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
         NSystMC = whichSyst + 1;
     }
     //----------------------------------------------------------------------
-    //
+    
     if (doWhat == "DATA" || doWhat == "ALL") {
         hasRecoInfo = true;
         hasGenInfo = false;
