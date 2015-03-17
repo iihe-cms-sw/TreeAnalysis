@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>

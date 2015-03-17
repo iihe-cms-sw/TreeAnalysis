@@ -1,7 +1,6 @@
 //-*- c-basic-offset: 4; -*-
 #define PI 3.14159265359
 #define DEBUG              0
-#define PRINTEVENT         1
 
 #include <TH2.h>
 #include <TStyle.h>
@@ -27,20 +26,20 @@ using namespace std;
 void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMember)
 {
 
+    //--- Random generator necessary for BTagging ---
     TRandom3* RandGen = new TRandom3();
+    //--------------------------------------------
+    
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") initLHAPDF(pdfSet, pdfMember);
     //--------------------------------------------
 
     //--- Counters to check the yields ---
-    unsigned int nEvents(0), nEventsIncl0Jets(0), nEventsUNFOLDIncl0Jets(0);
-    unsigned int nEventsWithTwoGoodLeptonsNoChargeNoMass(0), nEventsWithTwoGoodLeptonsNoMass(0), nEventsWithTwoGoodLeptons(0);
-    unsigned int nEventsExcl0Jets(0), nEventsExcl1Jets(0), nEventsExcl2Jets(0), nEventsExcl3Jets(0);
-    unsigned int GENnEventsIncl0Jets(0), GENnEventsIncl1Jets(0), GENnEventsIncl2Jets(0), GENnEventsIncl3Jets(0);
-    unsigned int NZtotal = 0;
-    double TotalGenWeight(0.), TotalGenWeightPassGEN(0.), TotalGenWeightPassGENPU(0.), TotalGenWeightPassRECO(0.), TotalRecoWeightPassRECO(0.);
+    unsigned int nEvents(0);
+    unsigned int nEventsVInc0Jets(0), nEventsVInc1Jets(0), nEventsVInc2Jets(0), nEventsVInc3Jets(0);
+    unsigned int nGenEventsVInc0Jets(0), nGenEventsVInc1Jets(0), nGenEventsVInc2Jets(0), nGenEventsVInc3Jets(0);
+    unsigned int nEventsWithTwoGoodLeptons(0), nEventsWithTwoGoodLeptonsWithOppCharge(0), nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass(0);
     //------------------------------------
-
 
     //==========================================================================================================//
     int ZMCutLow(71), ZMCutHigh(111);
@@ -87,27 +86,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //==========================================================================================================//
     //     Systematics: jec, pu, xsec     //
     //====================================//
-    cout << "Lepton Flavor: " << lepSel << endl;
-    int puYear(2013); 
-    cout << "Pile Up Distribution: " << puYear << endl;
-    standalone_LumiReWeighting puWeight(lepSel, puYear), puUp(lepSel, puYear, 1), puDown(lepSel, puYear, -1);
-    cout << "systematics: " << systematics << "  direction: " << direction << endl;
+    cout << "Lepton Flavor: " << lepSel << "  systematics: " << systematics << "  direction: " << direction << endl;
 
-    if (systematics == 1 && direction ==  1) puWeight = puUp;
-    if (systematics == 1 && direction == -1) puWeight = puDown;
+    standalone_LumiReWeighting puWeight(lepSel, 2013);
+    if (systematics == 1) puWeight = standalone_LumiReWeighting(lepSel, 2013, direction);
 
     int scale(0); //0,+1,-1; (keep 0 for noJEC shift study)
-    if (systematics == 2 && direction ==  1) scale =  1;
-    if (systematics == 2 && direction == -1) scale = -1;
+    if (systematics == 2) scale =  direction;
 
     double xsec(1.);
-    if (systematics == 3 && direction ==  1) xsec = 1. + xsecfactor;
-    if (systematics == 3 && direction == -1) xsec = 1. - xsecfactor;
+    if (systematics == 3) xsec = 1. + direction * xsecfactor;
 
     int smearJet(0);
-    if (systematics == 4 && direction ==  1) smearJet =  1; 
-    if (systematics == 4 && direction == -1) smearJet = -1; 
-
+    if (systematics == 4) smearJet = direction; 
     //==========================================================================================================//
 
 
@@ -119,14 +110,14 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //======================================================================
     //additionnal PU weights
     TH1* addPuWeights = 0;
-    std::string addPuFile =cfg_.getS("additionalPuWeightFile");
+    string addPuFile = cfg_.getS("additionalPuWeightFile");
     if(addPuFile.size() > 0){
         TFile f(addPuFile.c_str());
         if(f.IsZombie()){
-            std::cerr << "PU reweighting file, " << addPuFile << " was not found!" << std::endl;
+            std::cerr << "PU reweighting file, " << addPuFile << " was not found!" << endl;
         } else{
-            std::cout << "Event will be reweighting according to their number of vertices using weights from file "
-                << addPuFile << "." << std::endl;
+            cout << "Event will be reweighting according to their number of vertices using weights from file "
+                << addPuFile << "." << endl;
             f.GetObject("hWeights", addPuWeights);
             addPuWeights->SetDirectory(0);
         }
@@ -146,7 +137,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     Long64_t nentries = fChain->GetEntries();
     if (0 <= nMaxEvents && nMaxEvents  < nentries) nentries = nMaxEvents;
 
-    std::cout << "We will run on " << nentries << " events" << std::endl;
+    cout << "We will run on " << nentries << " events" << endl;
     //------------------------------------
 
     struct timeval t0;
@@ -169,7 +160,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             dt_s -= dt_h * 3600;
             int dt_m = dt_s / 60;
             dt_s -= dt_m *60;
-            std::cout << TString::Format("%4.1f%%", (100. * jentry) / nentries)
+            cout << TString::Format("%4.1f%%", (100. * jentry) / nentries)
                 << "\t" << std::setw(11) << jentry << " / " << nentries
                 << "\t " << std::setw(4) << int(dt / mess_every_n * 1.e6 + 0.5) << " us/event"
                 << "\t Remaining time for this dataset loop: " 
@@ -189,7 +180,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         //====================================//
         //if (jentry % 2 == 0) continue;
         //if (EvtInfo_NumVtx <= 14) continue;
-        //if (PRINTEVENT && EvtInfo_RunNum != 190733) continue ;
 
         //=======================================================================================================//
 
@@ -232,8 +222,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
         //--- There is no pile-up so no need to reweight for that ---
         double genWeight = weight * wPdf;
-        double genWeightBackup(genWeight);
-        TotalGenWeight += genWeightBackup;
         //=======================================================================================================//
 
 
@@ -280,12 +268,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
             //-- determine if the event passes the leptons requirements for EWKBoson = Z Boson
             if ((lepSel == "DMu" || lepSel == "DE") && nLeptons >= 2) {
+                nEventsWithTwoGoodLeptons++;
 
                 // build Electroweak boson candidate: here it is expected to be a Z
                 EWKBoson = leptons[0].v + leptons[1].v;
 
                 // apply charge, mass cut
-                if (leptons[0].charge * leptons[1].charge < 0 && EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) passesLeptonCut = 1;
+                if (leptons[0].charge * leptons[1].charge < 0) {
+                    nEventsWithTwoGoodLeptonsWithOppCharge++;
+                    if (EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) {
+                        nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass++;
+                        passesLeptonCut = 1;
+                    }
+                }
 
                 // apply scale factors only on MC.
                 if (!isData) {
@@ -307,7 +302,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     weight *= effWeight;
                 }
 
-            } // end if Z study and nLeptons>=2
+            } // end if Z study and nLeptons >= 2
 
             // determine if the event passes the leptons requirements for EWKBoson = W Boson
             // exactly one muon (or exactly one electron) must be present and no additional
@@ -319,7 +314,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 // build Electroweak boson candidate: here it is expected to be a W
                 EWKBoson = leptons[0].v + MET;
                 MT = sqrt(2 * leptons[0].v.Pt() * MET.Pt() * (1 - cos(leptons[0].v.Phi() - MET.Phi())));
-                //cout << "jentry=" << jentry << " lepton1pt=" << leptons[0].v.Pt() << " METpt=" << MET.Pt() << " MT=" << MT << endl;
 
                 // apply transver mass and MET cut
                 if (MT > MTCutLow && MET.Pt() > METCutLow) passesLeptonCut = 1;
@@ -338,11 +332,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     }
                     weight *= effWeight;
                 }
-            } // end if W study and nLeptons>=1
+            } // end if W study and nLeptons >= 1
         }// end has reco info
 
 
-        if (DEBUG) std::cout << "Stop after line " << __LINE__ << std::endl;
+        if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
         //=======================================================================================================//
         //       Retrieving gen leptons        //
         //====================================//
@@ -394,10 +388,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                             usedGenPho.push_back(j);
                         }
                     }   
-                    //cout << i << " gen pt=" << genLep.v.Pt() << " eta=" << genLep.v.Eta() << " phi=" << genLep.v.Phi() << " charge=" << genLep.charge << " id=" << genLepId_->at(i) << endl; 
                     if ((genLep.v.Pt() >= lepPtCutMin && fabs(genLep.v.Eta()) <= 0.1*lepEtaCutMax && abs(genLep.charge) > 0) 
                             || ((lepSel == "SMu" || lepSel == "SE") && genLep.charge == 0)) {
-                        //cout << i << " gen pt=" << genLep.v.Pt() << " eta=" << genLep.v.Eta() << " phi=" << genLep.v.Phi() << " charge=" << genLep.charge << " id=" << genLepId_->at(i) << endl; 
                         genLeptons.push_back(genLep);
                     }
                 }
@@ -453,12 +445,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             }
         } // end of hasGenInfo
 
-        if (passesgenLeptonCut) {
-            TotalGenWeightPassGEN += genWeightBackup; 
-            TotalGenWeightPassGENPU += weight;
-            partonsNAfterGenCut->Fill(nup_ - 5); 
-            partonsNAfterGenCutWeighted->Fill(nup_ - 5, genWeight); 
-        }
         //=======================================================================================================//
 
 
@@ -470,9 +456,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         bool bTagJetFound(false);
         double jetsHT(0);
         vector<jetStruct> jets;
-        vector<jetStruct> jets_20;
+        vector<jetStruct> jets_20; // additional jet collection with pt threshold of 20 GeV
         TLorentzVector jet1Plus2, jet1Minus2;
-        TLorentzVector jet1Plus2_20, jet1Minus2_20;
 
         if (hasRecoInfo) {
             nTotJets = patJetPfAk05Eta_->size();
@@ -507,40 +492,18 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 if (jetPassesPtCut && jetPassesEtaCut && jetPassesIdCut && jetPassesMVACut && jetPassesdRCut) {
                     jets.push_back(jet);
-                    jets_20.push_back(jet);
                     // as soon as one selected jet is a b-jet, turn bTagJetFound to true
                     bTagJetFound = (bTagJetFound || passesBJets); 
                 }
             } //End of loop over all the jets 
 
             nGoodJets = jets.size();
-            nGoodJets_20 = jets_20.size();
 
             // line below to test reco events that originate from TAU
             if (fileName.Index("Tau") >= 0 && countTauS3 == 0 && hasGenInfo) {
                 passesLeptonCut = 0;
             }
         }  // END IF HAS RECO
-        //=======================================================================================================//
-
-
-        if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
-        //=======================================================================================================//
-        //        Print Event Information     //
-        //====================================//
-        if (PRINTEVENT && passesLeptonCut){
-            vector<jetStruct> tmpJets;
-            for (unsigned short i(0); i < nGoodJets; i++){
-                if (jets[i].v.Pt() >= jetPtCutMin) tmpJets.push_back(jets[i]);
-            }
-            //unsigned short tempnGoodJets(tmpJets.size());
-            NZtotal++;
-            //cout<<"event "<<EvtInfo_EventNum<<"  " << leptons[0].v.Pt()<<"  "<<leptons[1].v.Pt()<<"  "<<EWKBoson.M() <<endl;
-            //for (unsigned short i(0); i < tempnGoodJets; i++) {
-            //    //cout << "  pt: " << tmpJets[i].v.Pt() << "  eta: " << tmpJets[i].v.Eta() << endl;
-            //}
-            //cout << "-----------------------------------------------------------------------------------------" << endl;
-        }
         //=======================================================================================================//
 
 
@@ -554,7 +517,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         vector<TLorentzVector> genLVJets;
         vector<jetStruct> genJets_20;
         TLorentzVector genJet1Plus2, genJet1Minus2;
-        TLorentzVector genJet1Plus2_20, genJet1Minus2_20;
 
         if (hasGenInfo){
             nTotGenJets = genJetEta_->size();
@@ -572,10 +534,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 }
             }
             nGoodGenJets = genJets.size();
-
         }
         //=======================================================================================================//
-
 
 
         if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
@@ -616,28 +576,24 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         }
 
         //=======================================================================================================//
-        // Re-analyze the jets collections and Cut on the Pt    //
+        // Re-analyze the jets collections and cut on the Pt    //
         // we can do it only now since we needed to smear      //
         // the jet pt distribution for the MC                 //
         //===================================================//
 
         if (hasRecoInfo){     
+            // subsamble the prior jet collection by applying pt cut
             vector<jetStruct> tmpJets;
-            vector<jetStruct> tmpJets_20;
             for (unsigned short i(0); i < nGoodJets; i++){
                 if (jets[i].v.Pt() >= jetPtCutMin) tmpJets.push_back(jets[i]);
-                if (jets[i].v.Pt() >= 20) tmpJets_20.push_back(jets[i]);
+                if (jets[i].v.Pt() >= 20) jets_20.push_back(jets[i]);
             }
             jets.clear(); 
             jets = tmpJets; 
-            tmpJets.clear(); 
             nGoodJets = jets.size();
-            jets_20.clear();
-            jets_20 = tmpJets_20;
             nGoodJets_20 = jets_20.size();
-            if (nGoodJets >= 1){
-                sort(jets.begin(), jets.end(), JetDescendingOrder);
-            }
+            sort(jets.begin(), jets.end(), JetDescendingOrder);
+            sort(jets_20.begin(), jets_20.end(), JetDescendingOrder);
             if (nGoodJets >= 2){
                 jet1Plus2 = jets[0].v + jets[1].v;
                 jet1Minus2 = jets[0].v - jets[1].v;
@@ -646,34 +602,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             for (unsigned short i(0); i < nGoodJets; i++){
                 jetsHT += jets[i].v.Pt();  
             }
-
-            if (nGoodJets_20 >= 1){
-                sort(jets_20.begin(), jets_20.end(), JetDescendingOrder);
-            }
-            if (nGoodJets_20 >= 2){
-                jet1Plus2_20 = jets_20[0].v + jets_20[1].v;
-                jet1Minus2_20 = jets_20[0].v - jets_20[1].v;
-            }
         }
 
         if (hasGenInfo){
             vector<jetStruct> tmpGenJets;
-            vector<jetStruct> tmpGenJets_20;
             for (unsigned short i(0); i < nGoodGenJets; i++){
                 if (genJets[i].v.Pt() >= jetPtCutMin && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
-                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) tmpGenJets_20.push_back(genJets[i]);
+                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) genJets_20.push_back(genJets[i]);
             }
             genJets.clear();
             genJets = tmpGenJets; 
-            tmpGenJets.clear(); 
             nGoodGenJets = genJets.size();
-            genJets_20.clear();
-            genJets_20 = tmpGenJets_20; 
-            tmpGenJets_20.clear(); 
             nGoodGenJets_20 = genJets_20.size();
-            if (nGoodGenJets >= 1){
-                sort(genJets.begin(), genJets.end(), JetDescendingOrder);
-            }
+            sort(genJets.begin(), genJets.end(), JetDescendingOrder);
             if (nGoodGenJets >= 2){
                 genJet1Plus2 = genJets[0].v + genJets[1].v;
                 genJet1Minus2 = genJets[0].v - genJets[1].v;
@@ -682,14 +623,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             for (unsigned short i(0); i < nGoodGenJets; i++){
                 genJetsHT += genJets[i].v.Pt();  
             }
-
-            if (nGoodGenJets_20 >= 1){
-                sort(genJets_20.begin(), genJets_20.end(), JetDescendingOrder);
-            }
-            if (nGoodGenJets_20 >= 2){
-                genJet1Plus2_20 = genJets_20[0].v + genJets_20[1].v;
-                genJet1Minus2_20 = genJets_20[0].v - genJets_20[1].v;
-            }
+            sort(genJets_20.begin(), genJets_20.end(), JetDescendingOrder);
 
         }
         //=======================================================================================================//
@@ -737,7 +671,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         if (hasGenInfo){
             if (passesgenLeptonCut){
                 //cout << "Selected at gen level" << endl;
-                GENnEventsIncl0Jets++;
+                nGenEventsVInc0Jets++;
                 genZNGoodJets_Zexc->Fill(nGoodGenJets, genWeight);
                 genZNGoodJets_Zinc->Fill(0., genWeight);
                 genZMass_Zinc0jet->Fill(genEWKBoson.M(), genWeight);
@@ -754,7 +688,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genFirstJetPtEta_Zinc1jet->Fill(genJets_20[0].v.Pt(), fabs(genJets[0].v.Eta()), genWeight);
                 }
                 if (nGoodGenJets >= 1){
-                    GENnEventsIncl1Jets++;
+                    nGenEventsVInc1Jets++;
                     genAbsZRapidity_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()),genWeight);
                     genAbsFirstJetRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()),genWeight);
                     genSumZFirstJetRapidity_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity())/2.0,genWeight);
@@ -883,7 +817,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 if (nGoodGenJets_20 >= 2) genSecondJetPt_Zinc2jet->Fill(genJets_20[1].v.Pt(), genWeight);
                 if (nGoodGenJets >= 2) {
                     TLorentzVector genJet1Plus2PlusZ = genJet1Plus2 + genEWKBoson;
-                    GENnEventsIncl2Jets++;
+                    nGenEventsVInc2Jets++;
                     ///////////Special Branch//////////////////
                     genAbsFirstJetRapidity_Zinc2jet->Fill(fabs(genJets[0].v.Rapidity()),genWeight);
                     genSumZFirstJetRapidity_Zinc2jet->Fill(fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity())/2.0,genWeight);
@@ -1118,7 +1052,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 }
                 if (nGoodGenJets_20 >= 3) genThirdJetPt_Zinc3jet->Fill(genJets_20[2].v.Pt(), genWeight);
                 if (nGoodGenJets >= 3){
-                    GENnEventsIncl3Jets++;
+                    nGenEventsVInc3Jets++;
                     genZNGoodJets_Zinc->Fill(3., genWeight);
                     genThirdJetEta_Zinc3jet->Fill(fabs(genJets[2].v.Eta()), genWeight);
                     genThirdJetEtaHigh_Zinc3jet->Fill(fabs(genJets[2].v.Eta()), genWeight);
@@ -1216,11 +1150,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             //====================================//
 
             //cout << "Selected at reco level" << endl;
-            TotalRecoWeightPassRECO += weight;
-            TotalGenWeightPassRECO += genWeightBackup;
             NVtx->Fill(EvtInfo_NumVtx, weight);
 
-            nEventsIncl0Jets++;
+            nEventsVInc0Jets++;
             ZNGoodJetsNVtx_Zexc->Fill(nGoodJets, EvtInfo_NumVtx  , weight);
             ZNGoodJets_Zinc->Fill(0., weight);
             ZNGoodJets_Zexc->Fill(nGoodJets, weight);
@@ -1244,7 +1176,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 //TruePU_0->Fill(PU_npT, weight);
                 //PU_0->Fill(PU_npIT, weight);
                 PU_0->Fill(EvtInfo_NumVtx, weight);
-                nEventsExcl0Jets++;
                 ZNGoodJets_Zexc_NoWeight->Fill(0.);
                 ZPt_Zexc0jet->Fill(EWKBoson.Pt(), weight);
                 ZRapidity_Zexc0jet->Fill(EWKBoson.Rapidity(), weight);
@@ -1265,6 +1196,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             }
 
             if (nGoodJets >= 1){
+                nEventsVInc1Jets++;
                 AbsZRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()),weight);
                 AbsFirstJetRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()),weight);
                 SumZFirstJetRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity())/2.0,weight);
@@ -1370,7 +1302,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     //TruePU_1->Fill(PU_npT, weight);
                     //PU_1->Fill(PU_npIT, weight);
                     PU_1->Fill(EvtInfo_NumVtx, weight);
-                    nEventsExcl1Jets++;
                     ZNGoodJets_Zexc_NoWeight->Fill(1.);
                     ZPt_Zexc1jet->Fill(EWKBoson.Pt(), weight);
                     ZRapidity_Zexc1jet->Fill(EWKBoson.Rapidity(), weight);
@@ -1407,6 +1338,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             }
             if (nGoodJets_20 >= 2) SecondJetPt_Zinc2jet->Fill(jets_20[1].v.Pt(), weight);
             if (nGoodJets >= 2){
+                nEventsVInc2Jets++;
                 //////////////////Special Branch////////////////////////
                 AbsFirstJetRapidity_Zinc2jet->Fill(fabs(jets[0].v.Rapidity()),weight);
                 SumZFirstJetRapidity_Zinc2jet->Fill(fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity())/2.0,weight);
@@ -1620,9 +1552,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                         DifZSecondJetRapidity_ZPt150_Zexc2jet->Fill(fabs(EWKBoson.Rapidity()-jets[1].v.Rapidity())/2.0,weight);
                     }
 
-
-                    //
-                    nEventsExcl2Jets++;
                     //TruePU_2->Fill(PU_npT, weight);
                     //PU_2->Fill(PU_npIT, weight);              
                     PU_2->Fill(EvtInfo_NumVtx, weight);
@@ -1715,6 +1644,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             }
             if (nGoodJets_20 >= 3) ThirdJetPt_Zinc3jet->Fill(jets_20[2].v.Pt(), weight);
             if (nGoodJets >= 3) {
+                nEventsVInc3Jets++;
                 ZNGoodJets_Zinc->Fill(3., weight);
                 ZNGoodJets_Zinc_NoWeight->Fill(3.);
                 ThirdJetEta_Zinc3jet->Fill(fabs(jets[2].v.Eta()), weight);
@@ -1761,7 +1691,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
 
                 if (nGoodJets == 3){
-                    nEventsExcl3Jets++;
                     //TruePU_3->Fill(PU_npT, weight);
                     //PU_3->Fill(PU_npIT, weight);
                     PU_3->Fill(EvtInfo_NumVtx, weight);
@@ -1853,7 +1782,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
             //-- EWKBoson Mass and jet multiplicity
             if (passesgenLeptonCut && passesLeptonCut) {
-                nEventsUNFOLDIncl0Jets++;
                 hresponseZNGoodJets_Zexc->Fill(nGoodJets, nGoodGenJets, weight);
                 hresponseZPt_Zinc0jet->Fill(EWKBoson.Pt(), genEWKBoson.Pt(), weight);
             }
@@ -2198,7 +2126,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         //=======================================================================================================//
 
     } //End of loop over all the events
-    std::cout << std::endl;
+    cout << endl;
     //==========================================================================================================//
 
     if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
@@ -2227,26 +2155,19 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //==========================================================================================================//
 
 
-    std::cout << "Number of events                               : " << nEvents << endl;
-    std::cout << "Total GEN weight of all events                 : " << TotalGenWeight << endl;
-    std::cout << "Number with two good leptons no charge no mass : " << nEventsWithTwoGoodLeptonsNoChargeNoMass << endl;
-    std::cout << "Number with two good leptons no mass           : " << nEventsWithTwoGoodLeptonsNoMass << endl;
-    std::cout << "Total GEN pass: RECO weight of all events      : " << TotalGenWeightPassGENPU << endl;
-    std::cout << "Total GEN pass: GEN weight of all events       : " << TotalGenWeightPassGEN << endl;
-    std::cout << "Total RECO pass: RECO weight of all events     : " << TotalRecoWeightPassRECO << endl;
-    std::cout << "Total RECO pass: GEN weight of all events      : " << TotalGenWeightPassRECO << endl;
-    std::cout << "Number with two good leptons                   : " << nEventsWithTwoGoodLeptons << endl;
-    std::cout << "How many times do we visit unfolding 0 jets    : " << nEventsUNFOLDIncl0Jets << endl;
-    std::cout << "Number Inclusif 0 jets                         : " << nEventsIncl0Jets << endl;
-    std::cout << "Number Exclusif 0 jets                         : " << nEventsExcl0Jets << endl;
-    std::cout << "Number Exclusif 1 jets                         : " << nEventsExcl1Jets << endl;
-    std::cout << "Number Exclusif 2 jets                         : " << nEventsExcl2Jets << endl;
-    std::cout << "Number Exclusif 3 jets                         : " << nEventsExcl3Jets << endl;
-    std::cout << "Number GEN Inclusif 0 jets                     : " << GENnEventsIncl0Jets << endl;
-    std::cout << "Number GEN Inclusif 1 jets                     : " << GENnEventsIncl1Jets << endl;
-    std::cout << "Number GEN Inclusif 2 jets                     : " << GENnEventsIncl2Jets << endl;
-    std::cout << "Number GEN Inclusif 3 jets                     : " << GENnEventsIncl3Jets << endl;
-    std::cout << "Rescal for amcNLO                              : " << weight_amcNLO_sum << endl;
+    cout << "Number of processed events                                : " << nEvents << endl;
+    cout << "Number with two good leptons                              : " << nEventsWithTwoGoodLeptons << endl;
+    cout << "Number with two good leptons of opp. charge               : " << nEventsWithTwoGoodLeptonsWithOppCharge << endl;
+    cout << "Number with two good leptons of opp. charge and good mass : " << nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass << endl;
+    cout << "Number Reco Inclusif V + 0 jets                           : " << nEventsVInc0Jets << endl;
+    cout << "Number Reco Inclusif V + 1 jets                           : " << nEventsVInc1Jets << endl;
+    cout << "Number Reco Inclusif V + 2 jets                           : " << nEventsVInc2Jets << endl;
+    cout << "Number Reco Inclusif V + 3 jets                           : " << nEventsVInc3Jets << endl;
+    cout << "Number GEN Inclusif V + 0 jets                            : " << nGenEventsVInc0Jets << endl;
+    cout << "Number GEN Inclusif V + 1 jets                            : " << nGenEventsVInc1Jets << endl;
+    cout << "Number GEN Inclusif V + 2 jets                            : " << nGenEventsVInc2Jets << endl;
+    cout << "Number GEN Inclusif V + 3 jets                            : " << nGenEventsVInc3Jets << endl;
+    cout << "Rescal for amcNLO                                         : " << weight_amcNLO_sum << endl;
 }
 
 void ZJets::initLHAPDF(TString pdfSet, int pdfMember)
@@ -2255,7 +2176,7 @@ void ZJets::initLHAPDF(TString pdfSet, int pdfMember)
     //LHAPDF::initPDFSet(1, "CT10.LHgrid");
     LHAPDF::initPDFSet(2, "cteq6ll.LHpdf");
     if (pdfMember > LHAPDF::numberPDF(1) + 1) {
-        std::cout << "Warning pdfMember to high" << std::endl;
+        cout << "Warning pdfMember to high" << endl;
         return;
     }
 }

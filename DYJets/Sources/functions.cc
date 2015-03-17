@@ -11,18 +11,6 @@
 
 using namespace std;
 
-void barre_de_progression(int pourcentage){
-    string progression = "[";
-    for (int i=0; i<pourcentage; i++){ progression += "="; }
-    for (int i=0; i<(100-pourcentage); i++){ progression += " "; }
-    progression += "]";
-    ostringstream oss; oss << pourcentage;
-    string pourcentage_str = oss.str();
-    for (int i=0; i < (int) pourcentage_str.size(); i++){ progression[49+i] = pourcentage_str[i]; }
-    if (pourcentage<100) cout << "\t" << progression << "\r" ;
-    else cout << "\t" << progression << endl;
-}
-
 bool LepDescendingOrder(leptonStruct l1, leptonStruct l2){
     return (l1.v.Pt() > l2.v.Pt());
 }
