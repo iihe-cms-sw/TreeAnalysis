@@ -21,11 +21,6 @@ using namespace std;
 
 void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString recoCompDir, int jetPtMin, int jetEtaMax)
 {
-    //--- make sure lepSel is short version ---
-    if (lepSel == "Muons" || lepSel == "DMu_") lepSel = "DMu";
-    else if (lepSel == "Electrons" || lepSel == "DE_") lepSel = "DE";
-    //-----------------------------------------------
-    
     TH1::SetDefaultSumw2();
     gStyle->SetOptStat(0);
 
@@ -38,11 +33,18 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
     TFile *fSamples[NFILESDYJETS];
     for (unsigned short iSample = 0; iSample < NFILESDYJETS; ++iSample){
         //--- get the file ---
-        fSamples[iSample] = getFile(histoDir, lepSel, energy, Samples[iSample].name, jetPtMin, jetEtaMax);
+        TString syst = "0";
+        if (iSample != 0) syst = "0";
+        fSamples[iSample] = getFile(histoDir, lepSel, energy, Samples[iSample].name, jetPtMin, jetEtaMax, "", syst);
         if (!fSamples[iSample]) return;
         //-- set the legend name for the current file ---
-        if (iSample == 0) 
-            legendNames[iSample] = (lepSel == "DMu") ? " #mu#mu Data" : " ee Data";
+        if (iSample == 0) {
+            if (lepSel == "DMu") legendNames[iSample] = " #mu#mu Data";
+            else if (lepSel == "DE") legendNames[iSample] = " ee Data";
+            else if (lepSel == "SMu") legendNames[iSample] = " #mu Data";
+            else if (lepSel == "SE") legendNames[iSample] = " e Data";
+            else legendNames[iSample] = " Data";
+        }
         else if (iSample == NFILESDYJETS-1) 
             legendNames[iSample] = (lepSel == "DMu") ? " Z/#gamma^{*} #rightarrow #mu#mu" : "Z/#gamma^{*} #rightarrow ee"; 
         else 
@@ -193,9 +195,9 @@ void RecoComparison(bool doPASPlots, TString lepSel, TString histoDir, TString r
         // cannot access Xaxis !!!
         hSumMC[i]->Draw("HIST"); 
         if (vhNames[i].Index("ZMass_Z") >= 0){
-            hist[0][i]->GetXaxis()->SetRangeUser(71,111);
-            hSumMC[i]->GetXaxis()->SetRangeUser(71,111);
-            hRatio->GetXaxis()->SetRangeUser(71,111);
+            hist[0][i]->GetXaxis()->SetRangeUser(71,110.9);
+            hSumMC[i]->GetXaxis()->SetRangeUser(71,110.9);
+            hRatio->GetXaxis()->SetRangeUser(71,110.9);
         }
         //if (vhNames[i].Index("JetEta") >= 0){
         //    hist[0][i]->GetXaxis()->SetRangeUser(-2.4,2.4);

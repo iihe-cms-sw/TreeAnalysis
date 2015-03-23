@@ -1,14 +1,16 @@
 #include <iostream>
 #include <thread>
+#include <unistd.h>
 #include "ArgParser.h"
 
+TString cwd;
 void executeInThread(std::string executable, std::string option, std::string machine) 
 {
     std::string command = executable + " " + option;
-    if (machine != "") command = "ssh -o StrictHostKeyChecking=no " + machine + " \'source .bash_profile; cd TreeAnalysis2012/DYJets/; " + command + "\'";  
+    if (machine != "") command = "ssh -o StrictHostKeyChecking=no " + machine + " \'source .bash_profile; cd " + cwd + "; " + command + "\'";  
     //std::string command = "./runZJets " + option;
     std::cout << command << std::endl;
-    system(command.c_str());
+    //system(command.c_str());
 }
 
 int main(int argc, char **argv)
@@ -20,6 +22,9 @@ int main(int argc, char **argv)
     bool doCombination = true;
     bool doCopyToMac = false;
     std::string machines[] = {"m5.iihe.ac.be", "m6.iihe.ac.be", "m7.iihe.ac.be", "m8.iihe.ac.be", "m9.iihe.ac.be"};
+    char *pcwd = getcwd( NULL, 0 ); 
+    cwd = TString(pcwd);
+    free(pcwd);
 
     //--- Parse the arguments -----------------------------------------------------
     if (argc > 1) {

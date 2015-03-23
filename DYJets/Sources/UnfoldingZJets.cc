@@ -511,7 +511,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
 
     TString table = "\\begin{table}[htb!]\n\\begin{center}\n";
     table += "\\caption{Differential cross section in " + title;
-    table += " and break down of the systematic uncertainites for the ";
+    table += " and break down of the systematic uncertainties for the ";
     if (lepSel == "DMu") table += "muon decay channel.}\n";
     if (lepSel == "DE") table += "electron decay channel.}\n";
     table += "\\scriptsize{\n";

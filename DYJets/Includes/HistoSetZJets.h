@@ -32,6 +32,7 @@ class HistoSetZJets {
         TH1D *NumberPFcandidates;
         TH1D *ZMass_lowDeltaR;
         TH1D *ZMass_Zinc0jet;
+        TH1D *ZMassFrom60_Zinc0jet;
         TH1D *genZMass_Zinc0jet;
         TH1D *ZPt_Zinc0jet;
         TH1D *ZPt_Zinc1jet;
@@ -56,7 +57,9 @@ class HistoSetZJets {
         TH1D *ZRapidity_Zexc2jet;
 
         TH1D *ZEta_Zinc0jet;
+        TH1D *ZEtaUpTo5_Zinc0jet;
         TH1D *ZEta_Zinc1jet;
+        TH1D *ZEtaUpTo5_Zinc1jet;
         TH1D *ZEta_Zinc2jet;
 
         TH1D *genZEta_Zinc0jet;
@@ -68,6 +71,7 @@ class HistoSetZJets {
         TH1D *ZEta_Zexc2jet;
 
         TH1D *lepEta_Zinc0jet;
+        TH1D *lepEtaUpTo4_Zinc0jet;
         TH1D *genlepEta_Zinc0jet;
 
         TH1D *lepEta_Zexc0jet;
@@ -141,6 +145,7 @@ class HistoSetZJets {
         TH1D *FirstJetPhi_Zexc1jet;
         TH1D *SecondJetPhi_Zexc2jet;
         TH1D *lepPt_Zinc0jet;
+        TH1D *lepPtFrom15_Zinc0jet;
         TH1D *genlepPt_Zinc0jet;
         TH1D *lepPt_Zexc0jet;
         TH1D *dPhiLeptons_Zexc0jet;
@@ -497,6 +502,7 @@ class HistoSetZJets {
         TH1D *deltaRjetMu;
         TH1D *deltaPtjetMu;
         TH1D *NVtx;
+        TH1D *NVtx_NoPUweight;
         TH1D *TruePU_0;
         TH1D *TruePU_1;
         TH1D *TruePU_2;

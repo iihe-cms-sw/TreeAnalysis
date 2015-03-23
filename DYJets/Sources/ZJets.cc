@@ -19,6 +19,7 @@
 #include "HistoSetZJets.h"
 #include "ZJets.h"
 #include <sys/time.h>
+#include "rochcor.h"
 
 
 using namespace std;
@@ -29,7 +30,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //--- Random generator necessary for BTagging ---
     TRandom3* RandGen = new TRandom3();
     //--------------------------------------------
-    
+    doRochester = false;
+    rmcor = new rochcor2012();
+
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") initLHAPDF(pdfSet, pdfMember);
     //--------------------------------------------
@@ -229,7 +232,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         //=======================================================================================================//
         //         Retrieving leptons          //
         //====================================//
-        bool passesLeptonCut(0);
+        bool passesLeptonCut(0), passesLeptonChargeCut(0), passesLeptonMassCut(0), passesTauCut(1);
         unsigned short nLeptons(0), nVetoMuons(0), nVetoElectrons(0);
         vector<leptonStruct> leptons;
         vector<leptonStruct> vetoMuons;
@@ -276,9 +279,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 // apply charge, mass cut
                 if (leptons[0].charge * leptons[1].charge < 0) {
                     nEventsWithTwoGoodLeptonsWithOppCharge++;
+                    passesLeptonChargeCut = 1;
                     if (EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) {
                         nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass++;
                         passesLeptonCut = 1;
+                        passesLeptonMassCut = 1;
                     }
                 }
 
@@ -407,7 +412,10 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
             //--- if there are taus, but we do not run on the Tau file, thus we run on the DYJets file, 
             //    then we don't count the event at reco.
-            if (countTauS3 > 0 && fileName.Index("Tau") < 0 && fileName.Index("Sherpa") < 0 && fileName.Index("MG5") < 0) passesLeptonCut = 0; 
+            if (countTauS3 > 0 && fileName.Index("Tau") < 0 && fileName.Index("Sherpa") < 0 && fileName.Index("MG5") < 0) {
+                passesTauCut = 0;
+                passesLeptonCut = 0; 
+            }
 
             //-- determine if the event passes the leptons requirements
             if ((lepSel == "DMu" || lepSel == "DE") && ngenLeptons >= 2) {
@@ -501,6 +509,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
             // line below to test reco events that originate from TAU
             if (fileName.Index("Tau") >= 0 && countTauS3 == 0 && hasGenInfo) {
+                passesTauCut = 0;
                 passesLeptonCut = 0;
             }
         }  // END IF HAS RECO
@@ -1141,6 +1150,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         double tau_cm_sum(0), tau_cm_max(0);
         double tau_c_cm_sum(0), tau_c_cm_max(0); 
 
+        if (hasRecoInfo && passesLeptonChargeCut && passesTauCut) {
+            ZMassFrom60_Zinc0jet->Fill((leptons[0].v + leptons[1].v).M(), weight);
+        }
         if (hasRecoInfo && passesLeptonCut && (!bTagJetFound || !rejectBTagEvents)) { 
             //=======================================================================================================//
 
@@ -1151,6 +1163,9 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
             //cout << "Selected at reco level" << endl;
             NVtx->Fill(EvtInfo_NumVtx, weight);
+            double weightNoPUweight(1);
+            if (hasRecoInfo && !isData) weightNoPUweight = weight/puWeight.weight(int(PU_npT));
+            NVtx_NoPUweight->Fill(EvtInfo_NumVtx, weightNoPUweight);
 
             nEventsVInc0Jets++;
             ZNGoodJetsNVtx_Zexc->Fill(nGoodJets, EvtInfo_NumVtx  , weight);
@@ -1161,6 +1176,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             ZPt_Zinc0jet->Fill(EWKBoson.Pt(), weight);
             ZRapidity_Zinc0jet->Fill(EWKBoson.Rapidity(), weight);
             ZEta_Zinc0jet->Fill(EWKBoson.Eta(), weight);
+            ZEtaUpTo5_Zinc0jet->Fill(EWKBoson.Eta(), weight);
             lepPt_Zinc0jet->Fill(leptons[0].v.Pt(), weight);
             lepEta_Zinc0jet->Fill(leptons[0].v.Eta(), weight);
             lepPhi_Zinc0jet->Fill(leptons[0].v.Phi(), weight);
@@ -1257,6 +1273,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZRapidity_Zinc1jet->Fill(EWKBoson.Rapidity(), weight);
                 ZAbsRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()), weight);
                 ZEta_Zinc1jet->Fill(EWKBoson.Eta(), weight);
+                ZEtaUpTo5_Zinc1jet->Fill(EWKBoson.Eta(), weight);
                 SpTLeptons_Zinc1jet->Fill(SpTsub(leptons[0].v, leptons[1].v), weight);
                 FirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
                 FirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
@@ -2240,6 +2257,15 @@ void ZJets::getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoM
                 patMuonEta_->at(i),
                 patMuonTrig_->at(i));
 
+        float qter = 1.0;
+        if (doRochester) {
+            if (!isData) {
+                rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
+            }
+            else {
+                rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
+            }
+        }
         //--- good muons ---
         bool muPassesPtCut(mu.v.Pt() >= lepPtCutMin);
         bool muPassesEtaCut(fabs(mu.v.Eta()) <= 0.1*lepEtaCutMax);
@@ -2255,6 +2281,9 @@ void ZJets::getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoM
         bool muPassesVetoPtCut(mu.v.Pt() >= 15);
         bool muPassesVetoEtaCut(fabs(mu.v.Eta()) <= 2.4);
         bool muPassesVetoIdCut(mu.id > 0); // muon Id
+
+
+
 
         /// for files obtained form bugra
         if (fileName.Index("Sherpa_Bugra_1_13_UNFOLDING") >= 0 && mu.trigger > 0) muPassesTrig = 1; // Bugra only keeps the double electron trigger !!!!! 
