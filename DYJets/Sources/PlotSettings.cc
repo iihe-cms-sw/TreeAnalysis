@@ -542,18 +542,24 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
     hSyst->DrawCopy("e");
+    grCentralSyst->SetName("grCentralSyst");
     grCentralSyst->Draw("2");
     customizeGenHist(hGen1, 1, legend, hGen1->GetZaxis()->GetTitle());
+    hGen1->SetName("hGen1");
     hGen1->DrawCopy("ESAME");
+
     if (hGen2) {
         customizeGenHist(hGen2, 2, legend, hGen2->GetZaxis()->GetTitle());
+        hGen2->SetName("hGen2");
         hGen2->DrawCopy("ESAME");
     }
     if (hGen3) {
         customizeGenHist(hGen3, 3, legend, hGen3->GetZaxis()->GetTitle());
+        hGen3->SetName("hGen3");
         hGen3->DrawCopy("ESAME");
     }
 
+    grCentralStat->SetName("grCentralStat");
     grCentralStat->Draw("p");
 
     legend->Draw("same");
@@ -582,9 +588,12 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
     else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
     else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    latexLabel->SetName("latexLabel");
     latexLabel->Draw("same");
 
+
     TLatex *ytitle = new TLatex();
+    ytitle->SetName("ytitle");
     ytitle->SetTextSize(0.04);
     if (hGen2) ytitle->SetTextSize(0.05);
     if (hGen3) ytitle->SetTextSize(0.06);
@@ -625,8 +634,10 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     grGen1PDFSyst->SetFillStyle(1001);
     grGen1PDFSyst->SetFillColor(kBlue-6);
     hSyst->DrawCopy("e");
+    grGen1ToCentral->SetName("grGen1ToCentral");
     grGen1ToCentral->Draw("2");
-    grGen1ToCentral->Draw("2");
+    //grGen1PDFSyst->Draw("2");
+    grCentralSystRatio->SetName("grCentralSystRatio");
     grCentralSystRatio->Draw("2");
     grCentralStatRatio->Draw("p");
     grGen1ToCentral->Draw("p");
@@ -654,9 +665,11 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         grGen2PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen2PDFSyst->SetFillColor(ZJetsPdfFillColor[2]);
         hSyst->DrawCopy("e");
+        grGen2ToCentral->SetName("grGen2ToCentral");
         grGen2ToCentral->Draw("2");
         //grGen2PDFSyst->Draw("2");
         grGen2ToCentral->Draw("2");
+        grCentralSystRatio->SetName("grCentralSystRatio");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen2ToCentral->Draw("p");
@@ -685,9 +698,11 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         grGen3PDFSyst->SetFillStyle(ZJetsFillStyle);
         grGen3PDFSyst->SetFillColor(ZJetsPdfFillColor[1]);
         hSyst->DrawCopy("e");
+        grGen3ToCentral->SetName("grGen3ToCentral");
         grGen3ToCentral->Draw("2");
         //grGen3PDFSyst->Draw("2");
         grGen3ToCentral->Draw("2");
+        grCentralSystRatio->SetName("grCentralSystRatio");
         grCentralSystRatio->Draw("2");
         grCentralStatRatio->Draw("p");
         grGen3ToCentral->Draw("p");
