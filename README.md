@@ -20,7 +20,7 @@ you can download at CERN. That is why it is provided here.
 
 To build it, nothing hard:
 
-    $ cd DYJets/RooUnfold-1.1.1
+    $ cd DYJets/RooUnfold
     $ make clean
     $ make 
 
