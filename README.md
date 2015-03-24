@@ -23,52 +23,20 @@ A Makefile is provided for the rest of the framework. So just do this:
     $ make clean
     $ make
 
-Now you should have everything setup and you can try to build the executables.
-The source code is contained in the Sources and some in DYJets. The code in
-Sources will only be compiled into .o files. While the code in DYJets, meanly
-some runBlaBla.cc code are dedicated to user executables. For example, after
-compilation you will have
+Now you should have everything setup and you can try to run the executables.
+But for your information, you need to know that the source code is contained
+in the Sources directory and some other directly in the DYJets. The code in
+Sources will only be compiled into .o files while the code in DYJets, meanly
+some runBlaBla.cc code are dedicated to user executables and therefore contain
+the int main(int argc, char **argv) function. For example, after
+compilation you have access to
 
     $ ./runZJets
 
-That will use some .o files in the Sources directory.
+The executables come with some options. You can use the command line option -help
+to know more about what it is possible to do.
 
-
-So, right now you are ready to compile the Sources code. Simply do:
-
-    $ make
-
-It will also create the first executable: runZJets
-
-You can then compile each of the other runBlabla:
-
-    $ make runRecoComparison
-    $ make runUnfoldingZJets
-    $ make runCombination
-
-Once you ve done this. If there was no error, you can start using the executbles.
-The executables come with some options. You can use the option -help to know more
-about what it is possible to do.
-
-
-
-
-
-
-You can also create some directories that will be needed later:
-
-    $ mkdir HistoFiles PNGFiles
-
-The first directory will contain the .root files created by runDYJets and co.
-and containing the histograms used during the whole process up to cross section
-measurements.
-
-The second will contain the .png and .pdf plots for all kind of comparison at
-several different levels.
-
-These directories are however not considered by git (as can be seen in the .gitignore file).
-
-Next you need to have the data to run on. For this, if your running on m-machine, 
+Next you need to have the data to run on. For this, if you are running on m-machine, 
 a simple symbolic link will be enough. You can also opy the full directory.
 
 Go to the racine directory TreeAnalysis2012
