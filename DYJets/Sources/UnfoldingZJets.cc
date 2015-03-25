@@ -517,10 +517,10 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
     if (lepSel == "DMu") table += "muon decay channel.}\n";
     if (lepSel == "DE") table += "electron decay channel.}\n";
     table += "\\scriptsize{\n";
-    table += "\\begin{tabular}{c|cc|cccccccc}\n";
-    table += "\\multicolumn{11}{c}{" + title + "} \\\\\n";
+    table += "\\begin{tabular}{c|cc|ccccccccc}\n";
+    table += "\\multicolumn{12}{c}{" + title + "} \\\\\n";
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
-    table += "\\tiny{stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
+    table += "\\tiny{stat [\\%]} & \\tiny{MC stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
     table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
@@ -538,7 +538,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
             numbers.Form("= %d", i - 1);
         }
         else if (title.Index("inclusive jet multiplicity", 0,  TString::ECaseCompare::kIgnoreCase) >= 0) {
-            numbers.Form("\\geq %d", i - 1);
+            numbers.Form("$\\geq$ %d", i - 1);
         }
         else {
             numbers.Form("$%g \\ -\\ %g$", hUnfData->GetBinLowEdge(i), hUnfData->GetBinLowEdge(i+1));
@@ -551,6 +551,9 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
         table += numbers + " & ";
         // stat uncertainty
         numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // MC stat uncertainty
+        numbers.Form("%#.2g", sqrt(hCov[1]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // JES uncertainty
         numbers.Form("%#.2g", sqrt(hCov[2]->GetBinContent(i,i))*100./xs);
@@ -674,6 +677,8 @@ int UnfoldData(const TString lepSel, const TString algo, int svdKterm, RooUnfold
     }
 
     nIter = min(nIter, 20);
+    //nIter = max(nIter, 2);
+    nIter = 4;
 
     std::cout << "\n---------------------------------------------------------------------------------------------------------------\n-" << std::endl;
     std::cout << nIter << std::endl;
@@ -872,10 +877,12 @@ TH1D* foldUnfData(TH1D *hUnfData, RooUnfoldResponse *hresp)
             if (totGen != 0.0) {
                 hres->SetBinContent(j, i, hres->GetBinContent(j, i)/totGen);
                 hres->SetBinError(j, i, hres->GetBinError(j, i)/totGen);
+                hres->SetBinError(j, i, 0.0);
             }
             else {
                 hres->SetBinContent(i, j, 0);
                 hres->SetBinError(i, j, hres->GetBinError(i, j));
+                hres->SetBinError(i, j, 0.0);
             }
         }
     }

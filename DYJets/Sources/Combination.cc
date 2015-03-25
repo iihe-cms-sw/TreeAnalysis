@@ -159,7 +159,15 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         hCombination = blueXSec->GetCombination(diagXChanCov, fullXChanCov, fullSChanCov, modifiedSWA, covuxaxb, covxaxb);
 
         covxaxbSyst = (TH2D*) covxaxb->Clone();
-        covxaxbSyst->Add(covuxaxb[0], -1);
+        covxaxbSyst->Reset();
+        covxaxbSyst->Add(covuxaxb[1]);
+        covxaxbSyst->Add(covuxaxb[2]);
+        covxaxbSyst->Add(covuxaxb[3]);
+        covxaxbSyst->Add(covuxaxb[4]);
+        covxaxbSyst->Add(covuxaxb[5]);
+        covxaxbSyst->Add(covuxaxb[6]);
+        covxaxbSyst->Add(covuxaxb[7]);
+        covxaxbSyst->Add(covuxaxb[8]);
         covxaxbSyst->SetName("CombCovTotSyst");
 
         int nbins = covxaxb->GetNbinsX();
@@ -248,8 +256,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         fDE->Close();
         fDMu->Close();
 
-        if (end == start + 1) system("display " + outputFileName + ".png &");
-        if (end == start + 1 && variable == "ZNGoodJets_Zexc") system("display " + outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc") + ".png &");
+        //if (end == start + 1) system("display " + outputFileName + ".png &");
+        //if (end == start + 1 && variable == "ZNGoodJets_Zexc") system("display " + outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc") + ".png &");
     }
 }
 
@@ -343,10 +351,10 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
     table += " and break down of the systematic uncertainties for the ";
     table += "combinaton of both decay channels.}\n";
     table += "\\scriptsize{\n";
-    table += "\\begin{tabular}{c|cc|cccccccc}\n";
-    table += "\\multicolumn{11}{c}{" + title + "} \\\\\n";
+    table += "\\begin{tabular}{c|cc|ccccccccc}\n";
+    table += "\\multicolumn{12}{c}{" + title + "} \\\\\n";
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
-    table += "\\tiny{stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
+    table += "\\tiny{stat [\\%]} & \\tiny{MC stat [\\%]}  & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
     table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
@@ -364,7 +372,7 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
             numbers.Form("= %d", i - 1);
         }
         else if (title.Index("inclusive jet multiplicity", 0,  TString::ECaseCompare::kIgnoreCase) >= 0) {
-            numbers.Form("\\geq %d", i - 1);
+            numbers.Form("$\\geq$ %d", i - 1);
         }
         else {
             numbers.Form("$%g \\ -\\ %g$", hCombination->GetBinLowEdge(i), hCombination->GetBinLowEdge(i+1));
@@ -374,9 +382,21 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
         table += numbers + " & ";
         // total uncertainty
         numbers.Form("%#.2g", sqrt(covuxaxb[0]->GetBinContent(i,i) + covxaxbSyst->GetBinContent(i,i))*100./xs);
+        //numbers.Form("%#.2g", sqrt(covuxaxb[0]->GetBinContent(i,i) + 
+        //                           covuxaxb[1]->GetBinContent(i,i) +
+        //                           covuxaxb[2]->GetBinContent(i,i) +
+        //                           covuxaxb[3]->GetBinContent(i,i) +
+        //                           covuxaxb[4]->GetBinContent(i,i) +
+        //                           covuxaxb[5]->GetBinContent(i,i) +
+        //                           covuxaxb[6]->GetBinContent(i,i) +
+        //                           covuxaxb[7]->GetBinContent(i,i) +
+        //                           covuxaxb[8]->GetBinContent(i,i) )*100./xs);
         table += numbers + " & ";
         // stat uncertainty
         numbers.Form("%#.2g", sqrt(covuxaxb[0]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // MC stat uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[1]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // JES uncertainty
         numbers.Form("%#.2g", sqrt(covuxaxb[7]->GetBinContent(i,i))*100./xs);
