@@ -419,12 +419,14 @@ void createSystPlots(TString outputFileName, TString variable, TString lepSel, T
         c->Update();
         c->Draw();
 
-        c->SaveAs("SystPlot/" + variable + "_" + syst[i/2] + ".png");
-        c->SaveAs("SystPlot/" + variable + "_" + syst[i/2] + ".ps");
-        c->SaveAs("SystPlot/" + variable + "_" + syst[i/2] + ".pdf");
-        c->SaveAs("SystPlot/" + variable + "_" + syst[i/2] + ".C");
-        c->SaveAs("SystPlot/" + variable + "_" + syst[i/2] + ".root");
-        //system("display SystPlot/" + variable + "_" + syst[i/2] + ".png &");
+        TString systStr = syst[i/2];
+        if (systStr == "S.F.") systStr = "SF";
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".png");
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".ps");
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".eps");
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".pdf");
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".C");
+        c->SaveAs("SystPlot/" + lepSel + "_" + variable + "_" + systStr + ".root");
     }
 }
 
@@ -830,7 +832,7 @@ TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, 
             if (name.Index("Sherpa") >= 0) sigmaMeanj *= 2;
             int signj = (hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j) < 0) ? -1 : 1;
 
-            double correlation = (i == j) ? 1 : 0.5;
+            double correlation = (i == j) ? 1 : 1;
             h->SetBinContent(i, j, correlation * signi * signj * sigmaMeani * sigmaMeanj);
         }
     }

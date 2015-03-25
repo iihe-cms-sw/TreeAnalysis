@@ -202,27 +202,51 @@ TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCo
 {
     //--- it is time to compute the lambda coefficients of the BLUE ---
 
+    TMatrixD *lambdaai = NULL;
     //--- setup the way we want to include the correlation between all measurements ---
+
+    if (modifiedSWA) {
+        _diagCrossChannelCov = false;
+        _fullCrossChannelCov = false;
+        _fullIndivChannelCov = false;
+        //--- compute the _Muij and _Mij with given setting ---
+        ComputeFullCovariance();
+        //--- now calculate the lambda (eq. (8) in Valassi's paper)
+        TMatrixD _MInvertij = _Mij;
+        _MInvertij.Invert();
+
+        TMatrixD KInvertab = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
+        KInvertab.Invert();
+
+        lambdaai = new TMatrixD(KInvertab, TMatrixD::kMult, TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij));
+        _xa = (*lambdaai) * _yi;
+    }
+    else {
+        _diagCrossChannelCov = diagCrossChannelCov;
+        _fullCrossChannelCov = fullCrossChannelCov;
+        _fullIndivChannelCov = fullIndivChannelCov;
+        ComputeFullCovariance();
+        //--- now calculate the lambda (eq. (8) in Valassi's paper)
+        TMatrixD _MInvertij = _Mij;
+        _MInvertij.Invert();
+
+        TMatrixD KInvertab = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
+        KInvertab.Invert();
+
+        lambdaai = new TMatrixD(KInvertab, TMatrixD::kMult, TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij));
+        _xa = (*lambdaai) * _yi;
+    }
+
     _diagCrossChannelCov = diagCrossChannelCov;
     _fullCrossChannelCov = fullCrossChannelCov;
     _fullIndivChannelCov = fullIndivChannelCov;
-    
-    //--- compute the _Muij and _Mij with given setting ---
     ComputeFullCovariance();
 
-    //--- now calculate the lambda (eq. (8) in Valassi's paper)
-    TH1D *h = (TH1D*) _measurements[0]->Clone("hCombination");
     TMatrixD _MInvertij = _Mij;
     _MInvertij.Invert();
 
-    TMatrixD KInvertab = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
-    KInvertab.Invert();
-
-    TMatrixD lambdaai = TMatrixD(KInvertab, TMatrixD::kMult, TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij));
-    _xa = lambdaai * _yi;
-
     if (modifiedSWA) {
-        _covxaxb = TMatrixD(lambdaai, TMatrixD::kMult, TMatrixD(_Mij, TMatrixD::kMultTranspose, lambdaai));
+        _covxaxb = TMatrixD((*lambdaai), TMatrixD::kMult, TMatrixD(_Mij, TMatrixD::kMultTranspose, (*lambdaai)));
     }
     else {
         _covxaxb = TMatrixD(TMatrixD(_Uia, TMatrixD::kTransposeMult, _MInvertij), TMatrixD::kMult, _Uia);
@@ -235,13 +259,13 @@ TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCo
 
     std::cout << "HERE IS THE LAMBDA" << std::endl;
 
-    lambdaai.Print();
+    lambdaai->Print();
 
     std::cout << "END OF THE LAMBDA" << std::endl;
 
     for (unsigned int iCov = 0; iCov < _nCovariances; ++iCov) {
         if (modifiedSWA) {
-            _covuxaxb[iCov] = TMatrixD(lambdaai, TMatrixD::kMult, TMatrixD(_Muij[iCov], TMatrixD::kMultTranspose, lambdaai));
+            _covuxaxb[iCov] = TMatrixD((*lambdaai), TMatrixD::kMult, TMatrixD(_Muij[iCov], TMatrixD::kMultTranspose, (*lambdaai)));
         }
         else {
             TMatrixD _MuInvertij = _Muij[iCov];
@@ -255,10 +279,12 @@ TH1D* BLUEMeth::GetCombination(bool diagCrossChannelCov, bool fullCrossChannelCo
         covuxaxb[iCov]->SetName(_covariances[0][iCov]->GetName() + _variable);
     }
 
+    TH1D *h = (TH1D*) _measurements[0]->Clone("hCombination");
     for (unsigned int i = 0; i < _N; ++i) {
         h->SetBinContent(i+1, _xa(i));
         h->SetBinError(i+1, sqrt(_covuxaxb[0](i, i)));
     }
 
+    delete lambdaai;
     return h;
 }

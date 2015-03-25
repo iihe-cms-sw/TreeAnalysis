@@ -95,6 +95,8 @@ int main(int argc, char **argv) {
     cMad->cd();
     cMad->SaveAs(outputFileName + "_MadGraph.png");
     cMad->SaveAs(outputFileName + "_MadGraph.pdf");
+    cMad->SaveAs(outputFileName + "_MadGraph.ps");
+    cMad->SaveAs(outputFileName + "_MadGraph.eps");
     cMad->SaveAs(outputFileName + "_MadGraph.root");
 
     TCanvas *cShe = new TCanvas("cShe", "Sherpa", 800, 800);
