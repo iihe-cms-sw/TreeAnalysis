@@ -902,12 +902,12 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     //Additional sum and difference of Z+jet rapidity
     AbsZRapidity_Zinc1jet = newTH1D("AbsZRapidity_Zinc1jet","AbsZRapidity_Zinc1jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_Zinc1jet = newTH1D("genAbsZRapidity_Zinc1jet","genAbsZRapidity_Zinc1jet","|y_{Z}|",12,0,2.4);
-    AbsFirstJetRapidity_Zinc1jet = newTH1D("AbsFirstJetRapidity_Zinc1jet","AbsFirstJetRapidity_Zinc1jet","|y_{jet}|",12,0,2.4);
-    genAbsFirstJetRapidity_Zinc1jet = newTH1D("genAbsFirstJetRapidity_Zinc1jet","genAbsFirstJetRapidity_Zinc1jet","|y_{jet}|",12,0,2.4);
-    SumZFirstJetRapidity_Zinc1jet = newTH1D("SumZFirstJetRapidity_Zinc1jet","SumZFirstJetRapidity_Zinc1jet","y_{sum}",12,0,2.4);
-    genSumZFirstJetRapidity_Zinc1jet = newTH1D("genSumZFirstJetRapidity_Zinc1jet","genSumZFirstJetRapidity_Zinc1jet","y_{sum}",12,0,2.4);
-    DifZFirstJetRapidity_Zinc1jet = newTH1D("DifZFirstJetRapidity_Zinc1jet","DifZFirstJetRapidity_Zinc1jet","y_{diff}",12,0,2.4);
-    genDifZFirstJetRapidity_Zinc1jet = newTH1D("genDifZFirstJetRapidity_Zinc1jet","genDifZFirstJetRapidity_Zinc1jet","y_{diff}",12,0,2.4);
+    AbsFirstJetRapidity_Zinc1jet = newTH1D("AbsFirstJetRapidity_Zinc1jet","AbsFirstJetRapidity_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    genAbsFirstJetRapidity_Zinc1jet = newTH1D("genAbsFirstJetRapidity_Zinc1jet","genAbsFirstJetRapidity_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    SumZFirstJetRapidity_Zinc1jet = newTH1D("SumZFirstJetRapidity_Zinc1jet","SumZFirstJetRapidity_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    genSumZFirstJetRapidity_Zinc1jet = newTH1D("genSumZFirstJetRapidity_Zinc1jet","genSumZFirstJetRapidity_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    DifZFirstJetRapidity_Zinc1jet = newTH1D("DifZFirstJetRapidity_Zinc1jet","DifZFirstJetRapidity_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
+    genDifZFirstJetRapidity_Zinc1jet = newTH1D("genDifZFirstJetRapidity_Zinc1jet","genDifZFirstJetRapidity_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
 
     ///Cross check//////
     SumZFirstJetEta_Zinc1jet = newTH1D("SumZFirstJetEta_Zinc1jet","SumZFirstJetEta_Zinc1jet","#eta_{sum}",12,0,2.4);
@@ -930,29 +930,29 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
 
     AbsFirstJetRapidity_Zinc2jet = newTH1D("AbsFirstJetRapidity_Zinc2jet","AbsFirstJetRapidity_Zinc2jet","|y_{jet1}|",12,0,2.4);
     genAbsFirstJetRapidity_Zinc2jet = newTH1D("genAbsFirstJetRapidity_Zinc2jet","genAbsFirstJetRapidity_Zinc2jet","|y_{jet1}|",12,0,2.4);
-    SumZFirstJetRapidity_Zinc2jet = newTH1D("SumZFirstJetRapidity_Zinc2jet","SumZFirstJetRapidity_Zinc2jet","y_{sum}",12,0,2.4);
-    genSumZFirstJetRapidity_Zinc2jet = newTH1D("genSumZFirstJetRapidity_Zinc2jet","genSumZFirstJetRapidity_Zinc2jet","y_{sum}",12,0,2.4);
-    DifZFirstJetRapidity_Zinc2jet = newTH1D("DifZFirstJetRapidity_Zinc2jet","DifZFirstJetRapidity_Zinc2jet","y_{diff}",12,0,2.4);
-    genDifZFirstJetRapidity_Zinc2jet = newTH1D("genDifZFirstJetRapidity_Zinc2jet","genDifZFirstJetRapidity_Zinc2jet","y_{diff}",12,0,2.4);
+    SumZFirstJetRapidity_Zinc2jet = newTH1D("SumZFirstJetRapidity_Zinc2jet","SumZFirstJetRapidity_Zinc2jet","y_{sum(Z,jet1)}",12,0,2.4);
+    genSumZFirstJetRapidity_Zinc2jet = newTH1D("genSumZFirstJetRapidity_Zinc2jet","genSumZFirstJetRapidity_Zinc2jet","y_{sum(Z,jet1)}",12,0,2.4);
+    DifZFirstJetRapidity_Zinc2jet = newTH1D("DifZFirstJetRapidity_Zinc2jet","DifZFirstJetRapidity_Zinc2jet","y_{diff(Z,jet1)}",12,0,2.4);
+    genDifZFirstJetRapidity_Zinc2jet = newTH1D("genDifZFirstJetRapidity_Zinc2jet","genDifZFirstJetRapidity_Zinc2jet","y_{diff(Z,jet1)}",12,0,2.4);
 
     AbsZRapidity_Zinc2jet = newTH1D("AbsZRapidity_Zinc2jet","AbsZRapidity_Zinc2jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_Zinc2jet = newTH1D("genAbsZRapidity_Zinc2jet","genAbsZRapidity_Zinc2jet","|y_{Z}|",12,0,2.4);
     AbsSecondJetRapidity_Zinc2jet = newTH1D("AbsSecondJetRapidity_Zinc2jet","AbsSecondJetRapidity_Zinc2jet","|y_{jet2}|",12,0,2.4);
     genAbsSecondJetRapidity_Zinc2jet = newTH1D("genAbsSecondJetRapidity_Zinc2jet","genAbsSecondJetRapidity_Zinc2jet","|y_{jet2}|",12,0,2.4);
-    SumZSecondJetRapidity_Zinc2jet = newTH1D("SumZSecondJetRapidity_Zinc2jet","SumZSecondJetRapidity_Zinc2jet","y_{sum}",12,0,2.4);
-    genSumZSecondJetRapidity_Zinc2jet = newTH1D("genSumZSecondJetRapidity_Zinc2jet","genSumZSecondJetRapidity_Zinc2jet","y_{sum}",12,0,2.4);
-    DifZSecondJetRapidity_Zinc2jet = newTH1D("DifZSecondJetRapidity_Zinc2jet","DifZSecondJetRapidity_Zinc2jet","y_{diff}",12,0,2.4);
-    genDifZSecondJetRapidity_Zinc2jet = newTH1D("genDifZSecondJetRapidity_Zinc2jet","genDifZSecondJetRapidity_Zinc2jet","y_{diff}",12,0,2.4);
+    SumZSecondJetRapidity_Zinc2jet = newTH1D("SumZSecondJetRapidity_Zinc2jet","SumZSecondJetRapidity_Zinc2jet","y_{sum(Z,jet2)}",12,0,2.4);
+    genSumZSecondJetRapidity_Zinc2jet = newTH1D("genSumZSecondJetRapidity_Zinc2jet","genSumZSecondJetRapidity_Zinc2jet","y_{sum(Z,jet2)}",12,0,2.4);
+    DifZSecondJetRapidity_Zinc2jet = newTH1D("DifZSecondJetRapidity_Zinc2jet","DifZSecondJetRapidity_Zinc2jet","y_{diff(Z,jet2)}",12,0,2.4);
+    genDifZSecondJetRapidity_Zinc2jet = newTH1D("genDifZSecondJetRapidity_Zinc2jet","genDifZSecondJetRapidity_Zinc2jet","y_{diff(Z,jet2)}",12,0,2.4);
 
-    SumFirstSecondJetRapidity_Zinc2jet = newTH1D("SumFirstSecondJetRapidity_Zinc2jet","SumFirstSecondJetRapidity_Zinc2jet","y_{sumj1j2}",12,0,2.4);
-    genSumFirstSecondJetRapidity_Zinc2jet = newTH1D("genSumFirstSecondJetRapidity_Zinc2jet","genSumFirstSecondJetRapidity_Zinc2jet","y_{sumj1j2}",12,0,2.4);
-    DifFirstSecondJetRapidity_Zinc2jet = newTH1D("DifFirstSecondJetRapidity_Zinc2jet","DifFirstSecondJetRapidity_Zinc2jet","y_{diffj1j2}",12,0,2.4);
-    genDifFirstSecondJetRapidity_Zinc2jet = newTH1D("genDifFirstSecondJetRapidity_Zinc2jet","genDifFirstSecondJetRapidity_Zinc2jet","y_{diffj1j2}",12,0,2.4);
+    SumFirstSecondJetRapidity_Zinc2jet = newTH1D("SumFirstSecondJetRapidity_Zinc2jet","SumFirstSecondJetRapidity_Zinc2jet","y_{sum(jet1,jet2)}",12,0,2.4);
+    genSumFirstSecondJetRapidity_Zinc2jet = newTH1D("genSumFirstSecondJetRapidity_Zinc2jet","genSumFirstSecondJetRapidity_Zinc2jet","y_{sum(jet1,jet2)}",12,0,2.4);
+    DifFirstSecondJetRapidity_Zinc2jet = newTH1D("DifFirstSecondJetRapidity_Zinc2jet","DifFirstSecondJetRapidity_Zinc2jet","y_{diff(jet1,jet2)}",12,0,2.4);
+    genDifFirstSecondJetRapidity_Zinc2jet = newTH1D("genDifFirstSecondJetRapidity_Zinc2jet","genDifFirstSecondJetRapidity_Zinc2jet","y_{diff(jet1,jet2)}",12,0,2.4);
 
-    SumZTwoJetsRapidity_Zinc2jet = newTH1D("SumZTwoJetsRapidity_Zinc2jet","SumZTwoJetsRapidity_Zinc2jet","y_{sumZ(jj)}",12,0,2.4);
-    genSumZTwoJetsRapidity_Zinc2jet = newTH1D("genSumZTwoJetsRapidity_Zinc2jet","genSumZTwoJetsRapidity_Zinc2jet","y_{sumZ(jj)}",12,0,2.4);
-    DifZTwoJetsRapidity_Zinc2jet = newTH1D("DifZTwoJetsRapidity_Zinc2jet","DifZTwoJetsRapidity_Zinc2jet","y_{diffZ(jj)}",12,0,2.4);
-    genDifZTwoJetsRapidity_Zinc2jet = newTH1D("genDifZTwoJetsRapidity_Zinc2jet","genDifZTwoJetsRapidity_Zinc2jet","y_{diffZ(jj)}",12,0,2.4);
+    SumZTwoJetsRapidity_Zinc2jet = newTH1D("SumZTwoJetsRapidity_Zinc2jet","SumZTwoJetsRapidity_Zinc2jet","y_{sum(Z,dijet)}",12,0,2.4);
+    genSumZTwoJetsRapidity_Zinc2jet = newTH1D("genSumZTwoJetsRapidity_Zinc2jet","genSumZTwoJetsRapidity_Zinc2jet","y_{sum(Z,dijet)}",12,0,2.4);
+    DifZTwoJetsRapidity_Zinc2jet = newTH1D("DifZTwoJetsRapidity_Zinc2jet","DifZTwoJetsRapidity_Zinc2jet","y_{diff(Z,dijet)}",12,0,2.4);
+    genDifZTwoJetsRapidity_Zinc2jet = newTH1D("genDifZTwoJetsRapidity_Zinc2jet","genDifZTwoJetsRapidity_Zinc2jet","y_{diff(Z,dijet)}",12,0,2.4);
 
     ////////Azimuth cross check///////////////////////////////////////
     DPhiZFirstJet_Zinc2jet = newTH1D("DPhiZFirstJet_Zinc2jet","DPhiZFirstJet_Zinc2jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
@@ -1026,12 +1026,12 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
 
     AbsZRapidity_ZPt150_Zinc1jet = newTH1D("AbsZRapidity_ZPt150_Zinc1jet","AbsZRapidity_ZPt150_Zinc1jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_ZPt150_Zinc1jet = newTH1D("genAbsZRapidity_ZPt150_Zinc1jet","genAbsZRapidity_ZPt150_Zinc1jet","|y_{Z}|",12,0,2.4);
-    AbsFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("AbsFirstJetRapidity_ZPt150_Zinc1jet","AbsFirstJetRapidity_ZPt150_Zinc1jet","|y_{jet}|",12,0,2.4);
-    genAbsFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genAbsFirstJetRapidity_ZPt150_Zinc1jet","genAbsFirstJetRapidity_ZPt150_Zinc1jet","|y_{jet}|",12,0,2.4);
-    SumZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("SumZFirstJetRapidity_ZPt150_Zinc1jet","SumZFirstJetRapidity_ZPt150_Zinc1jet","y_{sum}",12,0,2.4);
-    genSumZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genSumZFirstJetRapidity_ZPt150_Zinc1jet","genSumZFirstJetRapidity_ZPt150_Zinc1jet","y_{sum}",12,0,2.4);
-    DifZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("DifZFirstJetRapidity_ZPt150_Zinc1jet","DifZFirstJetRapidity_ZPt150_Zinc1jet","y_{diff}",12,0,2.4);
-    genDifZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genDifZFirstJetRapidity_ZPt150_Zinc1jet","genDifZFirstJetRapidity_ZPt150_Zinc1jet","y_{diff}",12,0,2.4);
+    AbsFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("AbsFirstJetRapidity_ZPt150_Zinc1jet","AbsFirstJetRapidity_ZPt150_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    genAbsFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genAbsFirstJetRapidity_ZPt150_Zinc1jet","genAbsFirstJetRapidity_ZPt150_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    SumZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("SumZFirstJetRapidity_ZPt150_Zinc1jet","SumZFirstJetRapidity_ZPt150_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    genSumZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genSumZFirstJetRapidity_ZPt150_Zinc1jet","genSumZFirstJetRapidity_ZPt150_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    DifZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("DifZFirstJetRapidity_ZPt150_Zinc1jet","DifZFirstJetRapidity_ZPt150_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
+    genDifZFirstJetRapidity_ZPt150_Zinc1jet = newTH1D("genDifZFirstJetRapidity_ZPt150_Zinc1jet","genDifZFirstJetRapidity_ZPt150_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
 
     AbsZRapidity_ZPt150_Zexc1jet = newTH1D("AbsZRapidity_ZPt150_Zexc1jet","AbsZRapidity_ZPt150_Zexc1jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_ZPt150_Zexc1jet = newTH1D("genAbsZRapidity_ZPt150_Zexc1jet","genAbsZRapidity_ZPt150_Zexc1jet","|y_{Z}|",12,0,2.4);
@@ -1059,6 +1059,18 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genSumZSecondJetRapidity_ZPt150_Zexc2jet = newTH1D("genSumZSecondJetRapidity_ZPt150_Zexc2jet","genSumZSecondJetRapidity_ZPt150_Zexc2jet","y_{sum}",12,0,2.4);
     DifZSecondJetRapidity_ZPt150_Zexc2jet = newTH1D("DifZSecondJetRapidity_ZPt150_Zexc2jet","DifZSecondJetRapidity_ZPt150_Zexc2jet","y_{diff}",12,0,2.4);
     genDifZSecondJetRapidity_ZPt150_Zexc2jet = newTH1D("genDifZSecondJetRapidity_ZPt150_Zexc2jet","genDifZSecondJetRapidity_ZPt150_Zexc2jet","y_{diff}",12,0,2.4);
+
+    int nRapidity_ZPt300_Zinc1jet(4);
+    double Rapidity_ZPt300_Zinc1jet[5] = {0,0.2,0.4,0.6,2.4};
+
+    AbsZRapidity_ZPt300_Zinc1jet = newTH1D("AbsZRapidity_ZPt300_Zinc1jet","AbsZRapidity_ZPt300_Zinc1jet","|y_{Z}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    genAbsZRapidity_ZPt300_Zinc1jet = newTH1D("genAbsZRapidity_ZPt300_Zinc1jet","genAbsZRapidity_ZPt300_Zinc1jet","|y_{Z}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    AbsFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("AbsFirstJetRapidity_ZPt300_Zinc1jet","AbsFirstJetRapidity_ZPt300_Zinc1jet","|y_{jet1}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    genAbsFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("genAbsFirstJetRapidity_ZPt300_Zinc1jet","genAbsFirstJetRapidity_ZPt300_Zinc1jet","|y_{jet1}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    SumZFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("SumZFirstJetRapidity_ZPt300_Zinc1jet","SumZFirstJetRapidity_ZPt300_Zinc1jet","y_{sum(Z,jet1)}",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    genSumZFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("genSumZFirstJetRapidity_ZPt300_Zinc1jet","genSumZFirstJetRapidity_ZPt300_Zinc1jet","y_{sum(Z,jet1)}",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    DifZFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("DifZFirstJetRapidity_ZPt300_Zinc1jet","DifZFirstJetRapidity_ZPt300_Zinc1jet","y_{diff(Z,jet1)}",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    genDifZFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("genDifZFirstJetRapidity_ZPt300_Zinc1jet","genDifZFirstJetRapidity_ZPt300_Zinc1jet","y_{diff(Z,jet1)}",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
 
     /////Azimuthal cross check/////////////////
     DPhiZFirstJet_ZPt150_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc1jet","DPhiZFirstJet_ZPt150_Zinc1jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
@@ -1108,21 +1120,21 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
 
     AbsZRapidity_FirstJetPt50_Zinc1jet = newTH1D("AbsZRapidity_FirstJetPt50_Zinc1jet","AbsZRapidity_FirstJetPt50_Zinc1jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_FirstJetPt50_Zinc1jet = newTH1D("genAbsZRapidity_FirstJetPt50_Zinc1jet","genAbsZRapidity_FirstJetPt50_Zinc1jet","|y_{Z}|",12,0,2.4);
-    AbsFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("AbsFirstJetRapidity_FirstJetPt50_Zinc1jet","AbsFirstJetRapidity_FirstJetPt50_Zinc1jet","|y_{jet}|",12,0,2.4);
-    genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet","genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet","|y_{jet}|",12,0,2.4);
-    SumZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("SumZFirstJetRapidity_FirstJetPt50_Zinc1jet","SumZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{sum}",12,0,2.4);
-    genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet","genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{sum}",12,0,2.4);
-    DifZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("DifZFirstJetRapidity_FirstJetPt50_Zinc1jet","DifZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{diff}",12,0,2.4);
-    genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet","genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{diff}",12,0,2.4);
+    AbsFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("AbsFirstJetRapidity_FirstJetPt50_Zinc1jet","AbsFirstJetRapidity_FirstJetPt50_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet","genAbsFirstJetRapidity_FirstJetPt50_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    SumZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("SumZFirstJetRapidity_FirstJetPt50_Zinc1jet","SumZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet","genSumZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    DifZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("DifZFirstJetRapidity_FirstJetPt50_Zinc1jet","DifZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
+    genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet = newTH1D("genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet","genDifZFirstJetRapidity_FirstJetPt50_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
 
     AbsZRapidity_FirstJetPt80_Zinc1jet = newTH1D("AbsZRapidity_FirstJetPt80_Zinc1jet","AbsZRapidity_FirstJetPt80_Zinc1jet","|y_{Z}|",12,0,2.4);
     genAbsZRapidity_FirstJetPt80_Zinc1jet = newTH1D("genAbsZRapidity_FirstJetPt80_Zinc1jet","genAbsZRapidity_FirstJetPt80_Zinc1jet","|y_{Z}|",12,0,2.4);
-    AbsFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("AbsFirstJetRapidity_FirstJetPt80_Zinc1jet","AbsFirstJetRapidity_FirstJetPt80_Zinc1jet","|y_{jet}|",12,0,2.4);
-    genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet","genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet","|y_{jet}|",12,0,2.4);
-    SumZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("SumZFirstJetRapidity_FirstJetPt80_Zinc1jet","SumZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{sum}",12,0,2.4);
-    genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet","genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{sum}",12,0,2.4);
-    DifZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("DifZFirstJetRapidity_FirstJetPt80_Zinc1jet","DifZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{diff}",12,0,2.4);
-    genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet","genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{diff}",12,0,2.4);
+    AbsFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("AbsFirstJetRapidity_FirstJetPt80_Zinc1jet","AbsFirstJetRapidity_FirstJetPt80_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet","genAbsFirstJetRapidity_FirstJetPt80_Zinc1jet","|y_{jet1}|",12,0,2.4);
+    SumZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("SumZFirstJetRapidity_FirstJetPt80_Zinc1jet","SumZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet","genSumZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{sum(Z,jet1)}",12,0,2.4);
+    DifZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("DifZFirstJetRapidity_FirstJetPt80_Zinc1jet","DifZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
+    genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet = newTH1D("genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet","genDifZFirstJetRapidity_FirstJetPt80_Zinc1jet","y_{diff(Z,jet1)}",12,0,2.4);
 
     //Set jet rapidity discriminator/////
     AbsZRapidity_DifJetRapidityl2_Zinc2jet = newTH1D("AbsZRapidity_DifJetRapidityl2_Zinc2jet","AbsZRapidity_DifJetRapidityl2_Zinc2jet","|y_{Z}|",12,0,2.4);
@@ -1234,6 +1246,11 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     hresponseAbsSecondJetRapidity_ZPt150_Zexc2jet = newTH2D("hresponseAbsSecondJetRapidity_ZPt150_Zexc2jet","hresponseAbsSecondJetRapidity_ZPt150_Zexc2jet",12,0,2.4,12,0,2.4);
     hresponseSumZSecondJetRapidity_ZPt150_Zexc2jet = newTH2D("hresponseSumZSecondJetRapidity_ZPt150_Zexc2jet","hresponseSumZSecondJetRapidity_ZPt150_Zexc2jet",12,0,2.4,12,0,2.4);
     hresponseDifZSecondJetRapidity_ZPt150_Zexc2jet = newTH2D("hresponseDifZSecondJetRapidity_ZPt150_Zexc2jet","hresponseDifZSecondJetRapidity_ZPt150_Zexc2jet",12,0,2.4,12,0,2.4);
+
+    hresponseAbsZRapidity_ZPt300_Zinc1jet = newTH2D("hresponseAbsZRapidity_ZPt300_Zinc1jet","hresponseAbsZRapidity_ZPt300_Zinc1jet",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet,nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    hresponseAbsFirstJetRapidity_ZPt300_Zinc1jet = newTH2D("hresponseAbsFirstJetRapidity_ZPt300_Zinc1jet","hresponseAbsFirstJetRapidity_ZPt300_Zinc1jet",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet,nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    hresponseSumZFirstJetRapidity_ZPt300_Zinc1jet = newTH2D("hresponseSumZFirstJetRapidity_ZPt300_Zinc1jet","hresponseSumZFirstJetRapidity_ZPt300_Zinc1jet",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet,nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
+    hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet = newTH2D("hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet","hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet,nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
 
     ///Azimuthal cross check//////////////////////////
     hresponseDPhiZFirstJet_ZPt150_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc1jet","hresponseDPhiZFirstJet_ZPt150_Zinc1jet",25,0,3.14,25,0,3.14);		
