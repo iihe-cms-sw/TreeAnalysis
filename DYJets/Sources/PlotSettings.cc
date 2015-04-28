@@ -71,23 +71,23 @@ void customizeLegend(TLegend *legend, int numbOfGenerator)
     legend->SetFillStyle(1001);
     legend->SetBorderSize(1);
     if (numbOfGenerator == 1) {
-        legend->SetX1(0.44);
+        legend->SetX1(0.39);
         legend->SetY1(0.84);
-        legend->SetX2(0.97);
+        legend->SetX2(0.96);
         legend->SetY2(0.98);
         legend->SetTextSize(.029);
     }
     else if (numbOfGenerator == 2) {
-        legend->SetX1(0.44);
+        legend->SetX1(0.39);
         legend->SetY1(0.77);
-        legend->SetX2(0.95);
+        legend->SetX2(0.96);
         legend->SetY2(0.98);
         legend->SetTextSize(.034);
     }
     else if (numbOfGenerator == 3) {
-        legend->SetX1(0.44);
+        legend->SetX1(0.39);
         legend->SetY1(0.7);
-        legend->SetX2(0.95);
+        legend->SetX2(0.96);
         legend->SetY2(0.98);
         legend->SetTextSize(.042);
     }
@@ -766,7 +766,6 @@ void createTitleVariableAnddSigma(TString variable, bool doNormalized, TString x
 
     // jet HT distributions
     if (xtitle.Index("H_{T}") >= 0 && title.Index("N_{jets} #geq 1") >= 0) {
-        std::cout << "HIHIHIHIHIHIHIHIHIHIHI" << std::endl;
         title = "$H_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
         var = "$H_{\\text{T}}$ \\tiny{[GeV]}";
         dSigma = "$\\frac{d\\sigma}{dH_{\\text{T}}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
@@ -798,35 +797,42 @@ void createTitleVariableAnddSigma(TString variable, bool doNormalized, TString x
     }
 
     // jet eta distributions
-    if (xtitle.Index("\\eta(j_{1})") >= 0) {
-        title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
+    if (xtitle.Index("eta(j_{1})") >= 0) {
+        title = "$1^{\\text{st}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 1$)";
         var = "$\\eta(j_{1})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{1})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
-    if (xtitle.Index("\\eta(j_{2})") >= 0) {
-        title = "$2^{\\text{nd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 2$)";
+    if (xtitle.Index("eta(j_{2})") >= 0) {
+        title = "$2^{\\text{nd}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 2$)";
         var = "$\\eta(j_{2})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{2})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
-    if (xtitle.Index("\\eta(j_{3})") >= 0) {
-        title = "$3^{\\text{rd}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 3$)";
+    if (xtitle.Index("eta(j_{3})") >= 0) {
+        title = "$3^{\\text{rd}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 3$)";
         var = "$\\eta(j_{3})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{3})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
-    if (xtitle.Index("\\eta(j_{4})") >= 0) {
-        title = "$4^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 4$)";
+    if (xtitle.Index("eta(j_{4})") >= 0) {
+        title = "$4^{\\text{th}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 4$)";
         var = "$\\eta(j_{4})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{4})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
-    if (xtitle.Index("\\eta(j_{5})") >= 0) {
-        title = "$5^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 5$)";
+    if (xtitle.Index("eta(j_{5})") >= 0) {
+        title = "$5^{\\text{th}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 5$)";
         var = "$\\eta(j_{5})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{5})} \\tiny{\\left[\\text{pb}\\right]}$";
     }
-    if (xtitle.Index("\\eta(j_{6})") >= 0) {
-        title = "$6^{\\text{th}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 6$)";
+    if (xtitle.Index("eta(j_{6})") >= 0) {
+        title = "$6^{\\text{th}}$ jet $\\vert\\eta\\vert$ ($N_{\\text{jets}} \\geq 6$)";
         var = "$\\eta(j_{6})$";
         dSigma = "$\\frac{d\\sigma}{d\\eta(j_{6})} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    // dijet mass distribution
+    if (xtitle.Index("M_{j_{1}j_{2}}") >= 0) {
+        title = "dijet mass $M_{jj}$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$M_{jj}$ \\tiny{[GeV]}";
+        dSigma = "$\\frac{d\\sigma}{dM_{jj}} \\tiny{\\left[\\frac{\\text{pb}}{\\text{GeV}}\\right]}$";
     }
 
     if (doNormalized) {

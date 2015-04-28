@@ -25,6 +25,8 @@ int main(int argc, char **argv)
     int jetPtMin       = cfg.getI("jetPtMin", 30);
     int jetEtaMax      = cfg.getI("jetEtaMax", 24);
     int whichSyst      = cfg.getI("whichSyst", -1);
+    double muR         = cfg.getD("muR", 0);
+    double muF         = cfg.getD("muF", 0);
     bool doSysRunning  = cfg.getB("doSysRunning", 0);
     bool doCentral     = cfg.getB("doCentral", 1);
     Long_t maxEvents   = cfg.getL("maxEvents", -1);
@@ -64,6 +66,12 @@ int main(int argc, char **argv)
             }
             else if (currentArg.BeginsWith("jetEtaMax=")) {
                 getArg(currentArg, jetEtaMax);
+            }
+            else if (currentArg.BeginsWith("muR=")) {
+                getArg(currentArg, muR);
+            }
+            else if (currentArg.BeginsWith("muF=")) {
+                getArg(currentArg, muF);
             }
             else if (currentArg.BeginsWith("doSysRunning=")) {
                 getArg(currentArg, doSysRunning);
@@ -243,8 +251,9 @@ int main(int argc, char **argv)
     }
 
     if (doWhat == "AMCATNLO") {
-        ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        DYamcatNLO.Loop(0, 1);
+        //ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYamcatNLO.Loop(0, 1, "", 0, muR, muF);
     }
 
     if (doWhat == "MG-MLM") {

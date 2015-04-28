@@ -12,6 +12,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
+    gROOT->SetBatch();
 
     if (argc < 3) {
         cout << "You need to provide lepSel and variable." << endl;
@@ -29,12 +30,12 @@ int main(int argc, char **argv) {
     TString outputFileName = "../UnfoldingCheck/" + lepSel + "_" + variable + "_ResponseMatrix";
     TString respName = "hresponse" + variable;
 
-    TFile *fMad = new TFile("../HistoFilesJan/" + lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fMad = new TFile("../HistoFilesApr/" + lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TH1D *hMad = (TH1D*) fMad->Get(variable);
     TH2D *hrespMad = (TH2D*) fMad->Get(respName);
     TH2D *hrespNormMad = (TH2D*) hrespMad->Clone();
 
-    TFile *fShe = new TFile("../HistoFilesJan/" + lepSel + "_8TeV_DYJets_Sherpa_Bugra_1_13_UNFOLDING_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
+    TFile *fShe = new TFile("../HistoFilesApr/" + lepSel + "_8TeV_DYJets_Sherpa_Bugra_1_13_UNFOLDING_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24.root");
     TH1D *hShe = (TH1D*) fShe->Get(variable);
     TH2D *hrespShe = (TH2D*) fShe->Get(respName);
     TH2D *hrespNormShe = (TH2D*) hrespShe->Clone();
@@ -118,7 +119,7 @@ int main(int argc, char **argv) {
     cShe->SaveAs(outputFileName + "_Sherpa.root");
 
 
-    myApp->Run();
+    //myApp->Run();
     fMad->Close();
     fShe->Close();
     return 0;

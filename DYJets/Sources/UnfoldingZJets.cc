@@ -152,7 +152,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //----------------------------------------------------------------------------------------- 
 
         TH1D *hMadGenCrossSection = makeCrossSectionHist(hGenDYJets[0], integratedLumi);
-        hMadGenCrossSection->SetZTitle("MG5 + Pythia6 (#leq4j@LO + PS)");
+        hMadGenCrossSection->SetZTitle("MG5 + PY6 (#leq 4j LO + PS)");
         TH1D *hGen1CrossSection = makeCrossSectionHist(hGen1, integratedLumi);
         hGen1CrossSection->SetZTitle(generatorNames[gen1][1]);
         TH1D *hGen2CrossSection = makeCrossSectionHist(hGen2, integratedLumi);

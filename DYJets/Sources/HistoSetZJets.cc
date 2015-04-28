@@ -177,9 +177,11 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     int nJetHT_Zinc4jet(9);
     double jetHT_Zinc4jet[10] = {120, 140, 167, 203, 253, 320, 410, 530, 690, 910};
 
-    int nJetHT_Zinc5jet(7);
-    double jetHT_Zinc5jet[8]  =  {150, 180, 222, 282, 365, 485, 650, 880};
+    int nJetHT_Zinc5jet(6);
+    double jetHT_Zinc5jet[7]  =  {150, 200, 282, 365, 485, 650, 880};
 
+    int nJetsMass_Zinc2jet(17);
+    double jetsMass_Zinc2jet[18] = {0, 25, 52, 81, 112, 145, 180, 217, 256, 297, 340, 385, 432, 481, 532, 585, 640, 700}; 
 
     NumberPFcandidates                  = newTH1D("NumberPFcandidates",                  "NumberPFcandidates",           "Number of lepton PF candidates",    20, -0.5, 19.5);
 
@@ -533,24 +535,24 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     llJetsMass_Zinc2jet             = newTH1D("llJetsMass_Zinc2jet",             "ll+2Jets Invariant Mass (N_{jets} #geq 2)",                                       "M(lljj)", 50, 0, 1000);
     genllJetsMass_Zinc2jet          = newTH1D("genllJetsMass_Zinc2jet",          "gen ll+2Jets Invariant Mass (N_{jets} #geq 2)",                                   "M(lljj)", 50, 0, 1000);
 
-    JetsMass_Zinc2jet             = newTH1D("JetsMass_Zinc2jet",             "2Jets Invariant Mass (N_{jets} #geq 2)",                                       Mjj, 25, 0, 625);
-    genJetsMass_Zinc2jet          = newTH1D("genJetsMass_Zinc2jet",          "gen 2Jets Invariant Mass (N_{jets} #geq 2)",                                   Mjj, 25, 0, 625);
-    hresponseJetsMass_Zinc2jet    = newTH2D("hresponseJetsMass_Zinc2jet", "hresponseJetsMass_Zinc2jet", 25, 0, 625, 25, 0, 625);
+    JetsMass_Zinc2jet             = newTH1D("JetsMass_Zinc2jet",             "2Jets Invariant Mass (N_{jets} #geq 2)",                                       Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    genJetsMass_Zinc2jet          = newTH1D("genJetsMass_Zinc2jet",          "gen 2Jets Invariant Mass (N_{jets} #geq 2)",                                   Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    hresponseJetsMass_Zinc2jet    = newTH2D("hresponseJetsMass_Zinc2jet", "hresponseJetsMass_Zinc2jet", nJetsMass_Zinc2jet, jetsMass_Zinc2jet, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
 
-    JetsMassLowPU_Zinc2jet             = newTH1D("JetsMassLowPU_Zinc2jet",             "2Jets Invariant Mass LowPU(N_{jets} #geq 2)",                                       Mjj, 25, 0, 625);
-    genJetsMassLowPU_Zinc2jet          = newTH1D("genJetsMassLowPU_Zinc2jet",          "gen 2Jets Invariant Mass LowPU(N_{jets} #geq 2)",                                   Mjj, 25, 0, 625);
-    hresponseJetsMassLowPU_Zinc2jet    = newTH2D("hresponseJetsMassLowPU_Zinc2jet", "hresponseJetsMassLowPU_Zinc2jet", 25, 0, 625, 25, 0, 625);
+    JetsMassLowPU_Zinc2jet             = newTH1D("JetsMassLowPU_Zinc2jet",             "2Jets Invariant Mass LowPU(N_{jets} #geq 2)",                                       Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    genJetsMassLowPU_Zinc2jet          = newTH1D("genJetsMassLowPU_Zinc2jet",          "gen 2Jets Invariant Mass LowPU(N_{jets} #geq 2)",                                   Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    hresponseJetsMassLowPU_Zinc2jet    = newTH2D("hresponseJetsMassLowPU_Zinc2jet", "hresponseJetsMassLowPU_Zinc2jet", nJetsMass_Zinc2jet, jetsMass_Zinc2jet, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
 
-    JetsMassMidPU_Zinc2jet             = newTH1D("JetsMassMidPU_Zinc2jet",             "2Jets Invariant Mass MidPU(N_{jets} #geq 2)",                                       Mjj, 25, 0, 625);
-    genJetsMassMidPU_Zinc2jet          = newTH1D("genJetsMassMidPU_Zinc2jet",          "gen 2Jets Invariant Mass MidPU(N_{jets} #geq 2)",                                   Mjj, 25, 0, 625);
-    hresponseJetsMassMidPU_Zinc2jet    = newTH2D("hresponseJetsMassMidPU_Zinc2jet", "hresponseJetsMassMidPU_Zinc2jet", 25, 0, 625, 25, 0, 625);
+    JetsMassMidPU_Zinc2jet             = newTH1D("JetsMassMidPU_Zinc2jet",             "2Jets Invariant Mass MidPU(N_{jets} #geq 2)",                                       Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    genJetsMassMidPU_Zinc2jet          = newTH1D("genJetsMassMidPU_Zinc2jet",          "gen 2Jets Invariant Mass MidPU(N_{jets} #geq 2)",                                   Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    hresponseJetsMassMidPU_Zinc2jet    = newTH2D("hresponseJetsMassMidPU_Zinc2jet", "hresponseJetsMassMidPU_Zinc2jet", nJetsMass_Zinc2jet, jetsMass_Zinc2jet, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
 
-    JetsMassHigPU_Zinc2jet             = newTH1D("JetsMassHigPU_Zinc2jet",             "2Jets Invariant Mass HigPU (N_{jets} #geq 2)",                                       Mjj, 25, 0, 625);
-    genJetsMassHigPU_Zinc2jet          = newTH1D("genJetsMassHigPU_Zinc2jet",          "gen 2Jets Invariant Mass HigPU (N_{jets} #geq 2)",                                   Mjj, 25, 0, 625);
-    hresponseJetsMassHigPU_Zinc2jet    = newTH2D("hresponseJetsMassHigPU_Zinc2jet", "hresponseJetsMassHigPU_Zinc2jet", 25, 0, 625, 25, 0, 625);
+    JetsMassHigPU_Zinc2jet             = newTH1D("JetsMassHigPU_Zinc2jet",             "2Jets Invariant Mass HigPU (N_{jets} #geq 2)",                                       Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    genJetsMassHigPU_Zinc2jet          = newTH1D("genJetsMassHigPU_Zinc2jet",          "gen 2Jets Invariant Mass HigPU (N_{jets} #geq 2)",                                   Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    hresponseJetsMassHigPU_Zinc2jet    = newTH2D("hresponseJetsMassHigPU_Zinc2jet", "hresponseJetsMassHigPU_Zinc2jet", nJetsMass_Zinc2jet, jetsMass_Zinc2jet, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
 
-    BestJetsMass_Zinc2jet         = newTH1D("BestJetsMass_Zinc2jet",         "Best 2Jets Invariant Mass (N_{jets} #geq 2)",                                  Mjj, 25, 0, 625);
-    genBestJetsMass_Zinc2jet      = newTH1D("genBestJetsMass_Zinc2jet",      "gen Best 2Jets Invariant Mass (N_{jets} #geq 2)",                              Mjj, 25, 0, 625);
+    BestJetsMass_Zinc2jet         = newTH1D("BestJetsMass_Zinc2jet",         "Best 2Jets Invariant Mass (N_{jets} #geq 2)",                                  Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
+    genBestJetsMass_Zinc2jet      = newTH1D("genBestJetsMass_Zinc2jet",      "gen Best 2Jets Invariant Mass (N_{jets} #geq 2)",                              Mjj, nJetsMass_Zinc2jet, jetsMass_Zinc2jet);
     ptBal_Zinc2jet                = newTH1D("ptBal_Zinc2jet",                "Vectorial pT sum: Z_{pT} + DiJet_{pT} (N_{jets} #geq 2)",                       "#Sigma pT [GeV]",      50,  0, 100);
     genptBal_Zinc2jet             = newTH1D("genptBal_Zinc2jet",             "gen Vectorial pT sum: Z_{pT} + DiJet_{pT} (N_{jets} #geq 2)",                   "#Sigma pT [GeV]",      50,  0, 100);
     dPhiJets_Zinc2jet             = newTH1D("dPhiJets_Zinc2jet",             "#Delta#phi btwn jets (N_{jets} #geq 2)",                                       jdPhi,           20,  0, PI);

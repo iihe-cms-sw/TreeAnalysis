@@ -24,7 +24,7 @@
 
 using namespace std;
 
-void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMember)
+void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMember, double muR, double muF)
 {
 
     //--- Random generator necessary for BTagging ---
@@ -56,7 +56,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //==========================================================================================================//
     //         Output file name           //
     //===================================//
-    TString outputFileName = CreateOutputFileName(pdfSet, pdfMember);
+    TString outputFileName = CreateOutputFileName(pdfSet, pdfMember, muR, muF);
     TFile *outputFile = new TFile(outputFileName, "RECREATE");
     //==========================================================================================================//
 
@@ -211,8 +211,16 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             weight_amcNLO_sum += mcEventWeight_->at(1);
         }
         if (fileName.Index("mcatnlo") >= 0) {
-            //weight *= mcSherpaWeights_->at(0);
-            weight *= mcEventWeight_->at(0);
+            if (muR == 0.0 && muF == 0.0) weight *= mcEventWeight_->at(0);
+            if (muR == 1.0 && muF == 1.0) weight *= mcEventWeight_->at(0);
+            if (muR == 2.0 && muF == 1.0) weight *= mcEventWeight_->at(2);
+            if (muR == 0.5 && muF == 1.0) weight *= mcEventWeight_->at(3);
+            if (muR == 1.0 && muF == 2.0) weight *= mcEventWeight_->at(4);
+            if (muR == 2.0 && muF == 2.0) weight *= mcEventWeight_->at(5);
+            if (muR == 0.5 && muF == 2.0) weight *= mcEventWeight_->at(6);
+            if (muR == 1.0 && muF == 0.5) weight *= mcEventWeight_->at(7);
+            if (muR == 2.0 && muF == 0.5) weight *= mcEventWeight_->at(8);
+            if (muR == 0.5 && muF == 0.5) weight *= mcEventWeight_->at(9);
             weight_amcNLO_sum += mcEventWeight_->at(1);
         }
 
@@ -381,6 +389,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
                 if ((genLepSt_->at(i) == 1 && lepToBeConsidered) || ((lepSel == "SMu" || lepSel == "SE") && charge == 0)) {
+                    
                     for (unsigned short j(0); j < nTotGenPhotons; j++){
                         TLorentzVector tmpGenPho;
                         tmpGenPho.SetPtEtaPhiM(genPhoPt_->at(j), genPhoEta_->at(j), genPhoPhi_->at(j), 0.);
@@ -393,6 +402,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                             usedGenPho.push_back(j);
                         }
                     }   
+                    
                     if ((genLep.v.Pt() >= lepPtCutMin && fabs(genLep.v.Eta()) <= 0.1*lepEtaCutMax && abs(genLep.charge) > 0) 
                             || ((lepSel == "SMu" || lepSel == "SE") && genLep.charge == 0)) {
                         genLeptons.push_back(genLep);
@@ -2416,7 +2426,7 @@ ZJets::~ZJets(){
     delete fChain->GetCurrentFile();
 }
 
-string ZJets::CreateOutputFileName(TString pdfSet, int pdfMember)
+string ZJets::CreateOutputFileName(TString pdfSet, int pdfMember, double muR, double muF)
 {
     ostringstream result;
     result << outputDirectory << fileName;
@@ -2427,6 +2437,7 @@ string ZJets::CreateOutputFileName(TString pdfSet, int pdfMember)
     result << "_JetPtMin_" << jetPtCutMin;
     result << "_JetEtaMax_" << jetEtaCutMax;
 
+    if (muR != 0 && muF != 0) result << "_muR_" << muR << "_muF_" << muF;
     if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
     //--- Add your test names here ---
     //result << "_NoPUCut";

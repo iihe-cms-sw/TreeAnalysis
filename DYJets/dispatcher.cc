@@ -8,9 +8,8 @@ void executeInThread(std::string executable, std::string option, std::string mac
 {
     std::string command = executable + " " + option;
     if (machine != "") command = "ssh -o StrictHostKeyChecking=no " + machine + " \'source .bash_profile; cd " + cwd + "; " + command + "\'";  
-    //std::string command = "./runZJets " + option;
     std::cout << command << std::endl;
-    //system(command.c_str());
+    system(command.c_str());
 }
 
 int main(int argc, char **argv)
@@ -80,6 +79,9 @@ int main(int argc, char **argv)
         std::thread BGThread[10];
         std::thread TAUThread[10];
         std::thread WJETSThread[10];
+        std::thread AMCATNLO[2];
+        std::thread SHERPA14[2];
+        std::thread SHERPA2[40];
 
         //--- first execute the DYJets ---
         for (int i = 0; i < 2; ++i) {
@@ -113,6 +115,9 @@ int main(int argc, char **argv)
             WJETSThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=2", machines[2]);
             WJETSThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=3", machines[3]);
             WJETSThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=4", machines[4]);
+
+            AMCATNLO[i] = std::thread(executeInThread, "./runZJets", "doWhat=AMCATNLO lepSel=" + lep + " whichSyst=0", machines[3]);
+            SHERPA14[i] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA lepSel=" + lep + " whichSyst=0", machines[4]);
         }
 
         //Join the data threads with the main thread
@@ -127,6 +132,42 @@ int main(int argc, char **argv)
             TAUThread[i].join();
             WJETSThread[i].join();
         }
+
+        for (int i = 0; i < 2; ++i) {
+            std::string lep = "DE";
+            if (i == 1) lep = "DMu";
+            SHERPA2[i*20 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_500 lepSel="   + lep + " whichSyst=0", machines[0]);
+            SHERPA2[i*20 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_1000 lepSel="  + lep + " whichSyst=0", machines[1]);
+            SHERPA2[i*20 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_1500 lepSel="  + lep + " whichSyst=0", machines[2]);
+            SHERPA2[i*20 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_2000 lepSel="  + lep + " whichSyst=0", machines[3]);
+            SHERPA2[i*20 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_2500 lepSel="  + lep + " whichSyst=0", machines[4]);
+            SHERPA2[i*20 + 5] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_3000 lepSel="  + lep + " whichSyst=0", machines[0]);
+            SHERPA2[i*20 + 6] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_3500 lepSel="  + lep + " whichSyst=0", machines[1]);
+            SHERPA2[i*20 + 7] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_4000 lepSel="  + lep + " whichSyst=0", machines[2]);
+            SHERPA2[i*20 + 8] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_4500 lepSel="  + lep + " whichSyst=0", machines[3]);
+            SHERPA2[i*20 + 9] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_11000 lepSel=" + lep + " whichSyst=0", machines[4]);
+            SHERPA2[i*20 +10] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_11500 lepSel=" + lep + " whichSyst=0", machines[0]);
+            SHERPA2[i*20 +11] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_12000 lepSel=" + lep + " whichSyst=0", machines[1]);
+            SHERPA2[i*20 +12] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_12500 lepSel=" + lep + " whichSyst=0", machines[2]);
+            SHERPA2[i*20 +13] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_13000 lepSel=" + lep + " whichSyst=0", machines[3]);
+            SHERPA2[i*20 +14] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_13500 lepSel=" + lep + " whichSyst=0", machines[4]);
+            SHERPA2[i*20 +15] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_14000 lepSel=" + lep + " whichSyst=0", machines[0]);
+            SHERPA2[i*20 +16] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_14500 lepSel=" + lep + " whichSyst=0", machines[1]);
+            SHERPA2[i*20 +17] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_15000 lepSel=" + lep + " whichSyst=0", machines[2]);
+            SHERPA2[i*20 +18] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_15500 lepSel=" + lep + " whichSyst=0", machines[3]);
+            SHERPA2[i*20 +19] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA2_16000 lepSel=" + lep + " whichSyst=0", machines[4]);
+        }
+
+        for (int i = 0; i < 40; ++i) {
+            SHERPA2[i].join();
+        }
+        
+
+        for (int i = 0; i < 2; ++i) {
+            AMCATNLO[i].join();
+            SHERPA14[i].join();
+        }
+
 
         std::cout << "All jobs done" << std::endl;
     }
