@@ -13,7 +13,7 @@ struct variableStruct{
 
 //--- Z Jets ------------------------------------
 
-const unsigned int NVAROFINTERESTZJETS(103);
+const unsigned int NVAROFINTERESTZJETS(98);
 const variableStruct VAROFINTERESTZJETS[] = {
     //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm  - E Bayes kterm COMBINE
     {"ZNGoodJets_Zexc",             1,      1,           7,              4,             3,            3 ,               3    }, // 0
@@ -108,6 +108,10 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"AbsSecondJetRapidity_ZPt150_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"SumZSecondJetRapidity_ZPt150_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"DifZSecondJetRapidity_ZPt150_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+    {"AbsZRapidity_ZPt300_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+    {"AbsFirstJetRapidity_ZPt300_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+    {"SumZFirstJetRapidity_ZPt300_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+    {"DifZFirstJetRapidity_ZPt300_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"ZPt_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"ZPt_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     //different JetPt cuts////////

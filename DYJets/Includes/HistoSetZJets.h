@@ -692,7 +692,6 @@ class HistoSetZJets {
         TH1D *DifZSecondJetRapidity_ZPt100_Zexc2jet;
         TH1D *genDifZSecondJetRapidity_ZPt100_Zexc2jet;
 
-
         TH1D *AbsZRapidity_ZPt150_Zinc1jet;
         TH1D *genAbsZRapidity_ZPt150_Zinc1jet;
         TH1D *AbsFirstJetRapidity_ZPt150_Zinc1jet;	
@@ -728,6 +727,15 @@ class HistoSetZJets {
         TH1D *genSumZSecondJetRapidity_ZPt150_Zexc2jet;
         TH1D *DifZSecondJetRapidity_ZPt150_Zexc2jet;
         TH1D *genDifZSecondJetRapidity_ZPt150_Zexc2jet;
+
+        TH1D *AbsZRapidity_ZPt300_Zinc1jet;
+        TH1D *genAbsZRapidity_ZPt300_Zinc1jet;
+        TH1D *AbsFirstJetRapidity_ZPt300_Zinc1jet;	
+        TH1D *genAbsFirstJetRapidity_ZPt300_Zinc1jet;
+        TH1D *SumZFirstJetRapidity_ZPt300_Zinc1jet;
+        TH1D *genSumZFirstJetRapidity_ZPt300_Zinc1jet;
+        TH1D *DifZFirstJetRapidity_ZPt300_Zinc1jet;
+        TH1D *genDifZFirstJetRapidity_ZPt300_Zinc1jet;
 
         ////Azimuthal cross check
         TH1D *DPhiZFirstJet_ZPt150_Zinc1jet;
@@ -974,6 +982,11 @@ class HistoSetZJets {
         TH2D *hresponseAbsSecondJetRapidity_ZPt150_Zexc2jet;
         TH2D *hresponseSumZSecondJetRapidity_ZPt150_Zexc2jet;
         TH2D *hresponseDifZSecondJetRapidity_ZPt150_Zexc2jet;
+
+        TH2D *hresponseAbsZRapidity_ZPt300_Zinc1jet;
+        TH2D *hresponseAbsFirstJetRapidity_ZPt300_Zinc1jet;
+        TH2D *hresponseSumZFirstJetRapidity_ZPt300_Zinc1jet;
+        TH2D *hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet;
 
         ///Azimuthal cross check/////////////////
         TH2D *hresponseDPhiZFirstJet_ZPt150_Zinc1jet;
