@@ -1,5 +1,7 @@
 #include "PlotSettings.h"
 #include "TStyle.h"
+#include "TFile.h"
+#include "TMath.h"
 
 void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGenerator)
 {
@@ -265,6 +267,73 @@ TGraphAsymmErrors *createGenToCentral(const TH1D *gen, const TGraphAsymmErrors *
     return grGenToCentral;
 }
 
+TGraphAsymmErrors* createScaleSystGraph(TString variable, const TGraphAsymmErrors *grGenToCentral)
+{
+    int nPoints = grGenToCentral->GetN();
+    double *xCoor    = new double[nPoints];
+    double *yCoor    = new double[nPoints];
+    double *xErr     = new double[nPoints];
+    double *yErrUp   = new double[nPoints];
+    double *yErrDown = new double[nPoints];
+
+    TFile *f[7];
+    f[0] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_1_muF_1.root");
+    f[1] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_0.5_muF_0.5.root");
+    f[2] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_0.5_muF_1.root");
+    f[3] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_1_muF_0.5.root");
+    f[4] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_1_muF_2.root");
+    f[5] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_2_muF_1.root");
+    f[6] = new TFile("HistoFilesApr/DMu_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR_TrigCorr_1_Syst_0_JetPtMin_30_JetEtaMax_24_muR_2_muF_2.root");
+
+
+    TH1D *h[7];
+    for (int i(0); i < 7; ++i) {
+        h[i] = (TH1D*) f[i]->Get("gen" + variable);
+    }
+
+    for (int i(1); i < 7; ++i) {
+        h[i]->Divide(h[0]);
+    }
+
+    int nBins(h[0]->GetNbinsX());
+    TH1D *hErrorsUp = (TH1D*) h[0]->Clone("hErrorsUp");
+    hErrorsUp->Reset();
+    TH1D *hErrorsDown = (TH1D*) h[0]->Clone("hErrorsDown");
+    hErrorsDown->Reset();
+    for (int i(1); i <= nBins; ++i) {
+        hErrorsUp->SetBinContent(i, 1);
+        hErrorsDown->SetBinContent(i, 1);
+        for (int j(1); j < 7; ++j) {
+            hErrorsUp->SetBinContent(i, TMath::Max(hErrorsUp->GetBinContent(i), h[j]->GetBinContent(i)));
+            hErrorsDown->SetBinContent(i, TMath::Min(hErrorsDown->GetBinContent(i), h[j]->GetBinContent(i)));
+            //std::cout << "bin " << i << " h " << j << " " << h[j]->GetBinContent(i) << std::endl;
+        }
+    }
+
+    for (int i(0); i < nPoints; i++) {
+        grGenToCentral->GetPoint(i, xCoor[i], yCoor[i]);
+
+        xErr[i] = grGenToCentral->GetErrorXlow(i);
+
+        yErrUp[i] = pow(grGenToCentral->GetErrorYhigh(i), 2);
+        std::cout << "X coor: " << xCoor[i] << "  scale uncertainty up: " << fabs(hErrorsUp->GetBinContent(i+1) - 1) << std::endl;
+        yErrUp[i] += pow(fabs(hErrorsUp->GetBinContent(i+1) - 1), 2);
+        yErrUp[i] = sqrt(yErrUp[i]);
+
+        yErrDown[i] = pow(grGenToCentral->GetErrorYlow(i), 2);
+        std::cout << "X coor: " << xCoor[i] << "  scale uncertainty down: " << fabs(hErrorsDown->GetBinContent(i+1) - 1) << std::endl;
+        yErrDown[i] += pow(fabs(1 - hErrorsDown->GetBinContent(i+1)), 2);
+        yErrDown[i] = sqrt(yErrDown[i]);
+
+    }
+
+    TGraphAsymmErrors *grScaleSyst = new TGraphAsymmErrors(nPoints, xCoor, yCoor, xErr, xErr, yErrDown, yErrUp);
+    delete [] xCoor; delete [] yCoor; delete [] xErr; delete [] yErrDown; delete [] yErrUp;
+    for (int i(0); i < 7; ++i) f[i]->Close();
+    return grScaleSyst;
+
+}
+
 TGraphAsymmErrors* createPDFSystGraph(const TH1D *hPDFUp, const TH1D *hPDFDown, const TGraphAsymmErrors *grGenToCentral)
 {
     int nPoints = grGenToCentral->GetN();
@@ -498,9 +567,12 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     }
     TGraphAsymmErrors *grGen3ToCentral = NULL;
     TGraphAsymmErrors *grGen3PDFSyst = NULL;
+    TGraphAsymmErrors *grGen3ScaleSyst = NULL;
     if (hGen3) {
         grGen3ToCentral = createGenToCentral(hGen3, grCentralStat);
         grGen3PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen3ToCentral); 
+        grGen3ScaleSyst = createScaleSystGraph(variable, grGen3ToCentral);
+        grGen3ScaleSyst->SetFillColor(kGreen+3);
     }
     //---------------------------------------------
 
@@ -729,6 +801,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         grGen3ToCentral->SetName("grGen3ToCentral");
         grGen3ToCentral->Draw("2");
         //grGen3PDFSyst->Draw("2");
+        grGen3ScaleSyst->Draw("2");
         grGen3ToCentral->Draw("2");
         grCentralSystRatio->SetName("grCentralSystRatio");
         grCentralSystRatio->Draw("2");
