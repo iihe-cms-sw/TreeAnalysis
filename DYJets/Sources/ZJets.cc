@@ -211,16 +211,17 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             weight_amcNLO_sum += mcEventWeight_->at(1);
         }
         if (fileName.Index("mcatnlo") >= 0) {
-            if (muR == 0.0 && muF == 0.0) weight *= mcEventWeight_->at(0);
-            if (muR == 1.0 && muF == 1.0) weight *= mcEventWeight_->at(0);
-            if (muR == 2.0 && muF == 1.0) weight *= mcEventWeight_->at(2);
-            if (muR == 0.5 && muF == 1.0) weight *= mcEventWeight_->at(3);
-            if (muR == 1.0 && muF == 2.0) weight *= mcEventWeight_->at(4);
-            if (muR == 2.0 && muF == 2.0) weight *= mcEventWeight_->at(5);
-            if (muR == 0.5 && muF == 2.0) weight *= mcEventWeight_->at(6);
-            if (muR == 1.0 && muF == 0.5) weight *= mcEventWeight_->at(7);
-            if (muR == 2.0 && muF == 0.5) weight *= mcEventWeight_->at(8);
-            if (muR == 0.5 && muF == 0.5) weight *= mcEventWeight_->at(9);
+            if (muR == 0.0 && muF == 0.0 && pdfMember == -1) weight *= mcEventWeight_->at(0);
+            if (muR == 1.0 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(0);
+            if (muR == 1.0 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(2);
+            if (muR == 1.0 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(3);
+            if (muR == 2.0 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(4);
+            if (muR == 2.0 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(5);
+            if (muR == 2.0 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(6);
+            if (muR == 0.5 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(7);
+            if (muR == 0.5 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(8);
+            if (muR == 0.5 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(9);
+            if (muR == 0.0 && muF == 0.0 && pdfMember != -1) weight *= mcEventWeight_->at(pdfMember+10);
             weight_amcNLO_sum += mcEventWeight_->at(1);
         }
 
@@ -801,6 +802,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genZAbsRapidity_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()), genWeight);
                     genZEta_Zinc1jet->Fill(genEWKBoson.Eta(), genWeight);
                     genFirstJetEta_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
+                    genFirstJetAbsRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight);
                     genFirstJetEtaHigh_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight);
                     genFirstJetAbsRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight);
                     genFirstJetRapidityHigh_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight);
@@ -930,6 +932,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genZRapidity_Zinc2jet->Fill(genEWKBoson.Rapidity(), genWeight);
                     genZEta_Zinc2jet->Fill(genEWKBoson.Eta(), genWeight);
                     genSecondJetEta_Zinc2jet->Fill(fabs(genJets[1].v.Eta()), genWeight);
+                    genSecondJetAbsRapidity_Zinc2jet->Fill(fabs(genJets[1].v.Rapidity()), genWeight);
                     genSecondJetEtaHigh_Zinc2jet->Fill(fabs(genJets[1].v.Eta()), genWeight);
                     genSecondJetRapidityHigh_Zinc2jet->Fill(fabs(genJets[1].v.Rapidity()), genWeight);
                     genJetsHT_Zinc2jet->Fill(genJetsHT, genWeight);
@@ -1074,6 +1077,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     nGenEventsVInc3Jets++;
                     genZNGoodJets_Zinc->Fill(3., genWeight);
                     genThirdJetEta_Zinc3jet->Fill(fabs(genJets[2].v.Eta()), genWeight);
+                    genThirdJetAbsRapidity_Zinc3jet->Fill(fabs(genJets[2].v.Rapidity()), genWeight);
                     genThirdJetEtaHigh_Zinc3jet->Fill(fabs(genJets[2].v.Eta()), genWeight);
                     genThirdJetRapidityHigh_Zinc3jet->Fill(fabs(genJets[2].v.Rapidity()), genWeight);
                     genJetsHT_Zinc3jet->Fill(genJetsHT, genWeight);
@@ -1118,6 +1122,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 if (nGoodGenJets >= 4){
                     genZNGoodJets_Zinc->Fill(4., genWeight);
                     genFourthJetEta_Zinc4jet->Fill(fabs(genJets[3].v.Eta()), genWeight);
+                    genFourthJetAbsRapidity_Zinc4jet->Fill(fabs(genJets[3].v.Rapidity()), genWeight);
                     genFourthJetEtaHigh_Zinc4jet->Fill(fabs(genJets[3].v.Eta()), genWeight);
                     genFourthJetRapidityHigh_Zinc4jet->Fill(fabs(genJets[3].v.Rapidity()), genWeight);
                     genJetsHT_Zinc4jet->Fill(genJetsHT, genWeight);
@@ -1126,6 +1131,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 if (nGoodGenJets >= 5){
                     genZNGoodJets_Zinc->Fill(5., genWeight);
                     genFifthJetEta_Zinc5jet->Fill(fabs(genJets[4].v.Eta()), genWeight);
+                    genFifthJetAbsRapidity_Zinc5jet->Fill(fabs(genJets[4].v.Rapidity()), genWeight);
                     genFifthJetEtaHigh_Zinc5jet->Fill(fabs(genJets[4].v.Eta()), genWeight);
                     genFifthJetRapidityHigh_Zinc5jet->Fill(fabs(genJets[4].v.Rapidity()), genWeight);
                     genJetsHT_Zinc5jet->Fill(genJetsHT, genWeight);
@@ -1286,6 +1292,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZEtaUpTo5_Zinc1jet->Fill(EWKBoson.Eta(), weight);
                 SpTLeptons_Zinc1jet->Fill(SpTsub(leptons[0].v, leptons[1].v), weight);
                 FirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
+                FirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
                 FirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
@@ -1463,6 +1470,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZEta_Zinc2jet->Fill(EWKBoson.Eta(), weight);
                 SpTLeptons_Zinc2jet->Fill(SpTsub(leptons[0].v, leptons[1].v), weight);
                 SecondJetEta_Zinc2jet->Fill(fabs(jets[1].v.Eta()), weight);
+                SecondJetAbsRapidity_Zinc2jet->Fill(fabs(jets[1].v.Rapidity()), weight);
                 SecondJetEtaHigh_Zinc2jet->Fill(fabs(jets[1].v.Eta()), weight);
                 SecondJetRapidityHigh_Zinc2jet->Fill(fabs(jets[1].v.Rapidity()), weight);
                 SecondJetEtaFull_Zinc2jet->Fill(jets[1].v.Eta(), weight);
@@ -1675,6 +1683,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZNGoodJets_Zinc->Fill(3., weight);
                 ZNGoodJets_Zinc_NoWeight->Fill(3.);
                 ThirdJetEta_Zinc3jet->Fill(fabs(jets[2].v.Eta()), weight);
+                ThirdJetAbsRapidity_Zinc3jet->Fill(fabs(jets[2].v.Rapidity()), weight);
                 ThirdJetEtaHigh_Zinc3jet->Fill(fabs(jets[2].v.Eta()), weight);
                 ThirdJetRapidityHigh_Zinc3jet->Fill(fabs(jets[2].v.Rapidity()), weight);
                 ThirdJetEtaFull_Zinc3jet->Fill(jets[2].v.Eta(), weight);
@@ -1729,6 +1738,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZNGoodJets_Zinc->Fill(4., weight);
                 ZNGoodJets_Zinc_NoWeight->Fill(4.);
                 FourthJetEta_Zinc4jet->Fill(fabs(jets[3].v.Eta()), weight);
+                FourthJetAbsRapidity_Zinc4jet->Fill(fabs(jets[3].v.Rapidity()), weight);
                 FourthJetEtaHigh_Zinc4jet->Fill(fabs(jets[3].v.Eta()), weight);
                 FourthJetRapidityHigh_Zinc4jet->Fill(fabs(jets[3].v.Rapidity()), weight);
                 FourthJetEtaFull_Zinc4jet->Fill(jets[3].v.Eta(), weight);
@@ -1746,6 +1756,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 ZNGoodJets_Zinc->Fill(5., weight);
                 ZNGoodJets_Zinc_NoWeight->Fill(5.);
                 FifthJetEta_Zinc5jet->Fill(fabs(jets[4].v.Eta()), weight);
+                FifthJetAbsRapidity_Zinc5jet->Fill(fabs(jets[4].v.Rapidity()), weight);
                 FifthJetEtaHigh_Zinc5jet->Fill(fabs(jets[4].v.Eta()), weight);
                 FifthJetRapidityHigh_Zinc5jet->Fill(fabs(jets[4].v.Rapidity()), weight);
                 FifthJetEtaFull_Zinc5jet->Fill(jets[4].v.Eta(), weight);
@@ -1820,6 +1831,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 hresponseZAbsRapidity_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()), fabs(genEWKBoson.Rapidity()), weight);      
 
                 hresponseFirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
+                hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseFirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
                 hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseFirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
@@ -2001,6 +2013,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
 
                 hresponseSecondJetEta_Zinc2jet->Fill(fabs(jets[1].v.Eta()), fabs(genJets[1].v.Eta()), weight);      
+                hresponseSecondJetAbsRapidity_Zinc2jet->Fill(fabs(jets[1].v.Rapidity()), fabs(genJets[1].v.Rapidity()), weight);      
                 hresponseSecondJetEtaHigh_Zinc2jet->Fill(fabs(jets[1].v.Eta()), fabs(genJets[1].v.Eta()), weight);      
                 hresponseSecondJetRapidityHigh_Zinc2jet->Fill(fabs(jets[1].v.Rapidity()), fabs(genJets[1].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc2jet->Fill(jetsHT, genJetsHT, weight);
@@ -2076,6 +2089,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if (nGoodGenJets >= 3 && passesgenLeptonCut && nGoodJets >= 3 && passesLeptonCut) {
 
                 hresponseThirdJetEta_Zinc3jet->Fill(fabs(jets[2].v.Eta()), fabs(genJets[2].v.Eta()), weight);      
+                hresponseThirdJetAbsRapidity_Zinc3jet->Fill(fabs(jets[2].v.Rapidity()), fabs(genJets[2].v.Rapidity()), weight);      
                 hresponseThirdJetEtaHigh_Zinc3jet->Fill(fabs(jets[2].v.Eta()), fabs(genJets[2].v.Eta()), weight);      
                 hresponseThirdJetRapidityHigh_Zinc3jet->Fill(fabs(jets[2].v.Rapidity()), fabs(genJets[2].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc3jet->Fill(jetsHT, genJetsHT, weight);
@@ -2127,6 +2141,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if (nGoodGenJets >= 4 && passesgenLeptonCut && nGoodJets >= 4 && passesLeptonCut){
 
                 hresponseFourthJetEta_Zinc4jet->Fill(fabs(jets[3].v.Eta()), fabs(genJets[3].v.Eta()), weight);      
+                hresponseFourthJetAbsRapidity_Zinc4jet->Fill(fabs(jets[3].v.Rapidity()), fabs(genJets[3].v.Rapidity()), weight);      
                 hresponseFourthJetEtaHigh_Zinc4jet->Fill(fabs(jets[3].v.Eta()), fabs(genJets[3].v.Eta()), weight);      
                 hresponseFourthJetRapidityHigh_Zinc4jet->Fill(fabs(jets[3].v.Rapidity()), fabs(genJets[3].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc4jet->Fill(jetsHT, genJetsHT, weight);
@@ -2140,6 +2155,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if (nGoodGenJets >= 5 && passesgenLeptonCut && nGoodJets >= 5 && passesLeptonCut){
 
                 hresponseFifthJetEta_Zinc5jet->Fill(fabs(jets[4].v.Eta()), fabs(genJets[4].v.Eta()), weight);      
+                hresponseFifthJetAbsRapidity_Zinc5jet->Fill(fabs(jets[4].v.Rapidity()), fabs(genJets[4].v.Rapidity()), weight);      
                 hresponseFifthJetEtaHigh_Zinc5jet->Fill(fabs(jets[4].v.Eta()), fabs(genJets[4].v.Eta()), weight);      
                 hresponseFifthJetRapidityHigh_Zinc5jet->Fill(fabs(jets[4].v.Rapidity()), fabs(genJets[4].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc5jet->Fill(jetsHT, genJetsHT, weight);
@@ -2439,6 +2455,7 @@ string ZJets::CreateOutputFileName(TString pdfSet, int pdfMember, double muR, do
 
     if (muR != 0 && muF != 0) result << "_muR_" << muR << "_muF_" << muF;
     if (pdfSet != "") result << "_PDF_" << pdfSet << "_" << pdfMember;
+    if (pdfSet == "" && pdfMember != -1) result << "_NNPDF_" << pdfMember;
     //--- Add your test names here ---
     //result << "_NoPUCut";
     //result << "_LooseID";

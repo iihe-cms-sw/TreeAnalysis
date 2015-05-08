@@ -95,10 +95,15 @@ class HistoSetZJets {
 
         TH1D *FirstJetAbsRapidity_Zinc1jet;
         TH1D *FirstJetRapidityHigh_Zinc1jet;
+        TH1D *SecondJetAbsRapidity_Zinc2jet;
         TH1D *SecondJetRapidityHigh_Zinc2jet;
+        TH1D *ThirdJetAbsRapidity_Zinc3jet;
         TH1D *ThirdJetRapidityHigh_Zinc3jet;
+        TH1D *FourthJetAbsRapidity_Zinc4jet;
         TH1D *FourthJetRapidityHigh_Zinc4jet;
+        TH1D *FifthJetAbsRapidity_Zinc5jet;
         TH1D *FifthJetRapidityHigh_Zinc5jet;
+        TH1D *SixthJetAbsRapidity_Zinc6jet;
         TH1D *SixthJetRapidityHigh_Zinc6jet;
 
         TH1D *FirstJetEtaFull_Zinc1jet;
@@ -122,13 +127,18 @@ class HistoSetZJets {
         TH1D *genFifthJetEtaHigh_Zinc5jet;
         TH1D *genSixthJetEtaHigh_Zinc6jet;
 
-        TH1D *genFirstJetAbsRapidity_Zinc1jet;
         TH1D *genFirstJetRapidityHigh_Zinc1jet;
+        TH1D *genFirstJetAbsRapidity_Zinc1jet;
         TH1D *genSecondJetRapidityHigh_Zinc2jet;
+        TH1D *genSecondJetAbsRapidity_Zinc2jet;
         TH1D *genThirdJetRapidityHigh_Zinc3jet;
+        TH1D *genThirdJetAbsRapidity_Zinc3jet;
         TH1D *genFourthJetRapidityHigh_Zinc4jet;
+        TH1D *genFourthJetAbsRapidity_Zinc4jet;
         TH1D *genFifthJetRapidityHigh_Zinc5jet;
+        TH1D *genFifthJetAbsRapidity_Zinc5jet;
         TH1D *genSixthJetRapidityHigh_Zinc6jet;
+        TH1D *genSixthJetAbsRapidity_Zinc6jet;
 
         TH1D *FirstJetEta_Zexc1jet;
         TH1D *SecondJetEta_Zexc2jet;
@@ -878,12 +888,16 @@ class HistoSetZJets {
         TH2D *hresponseFourthJetEtaHigh_Zinc4jet;
         TH2D *hresponseFifthJetEtaHigh_Zinc5jet; 
 
-        TH2D *hresponseFirstJetAbsRapidity_Zinc1jet; 
         TH2D *hresponseFirstJetRapidityHigh_Zinc1jet; 
+        TH2D *hresponseFirstJetAbsRapidity_Zinc1jet; 
         TH2D *hresponseSecondJetRapidityHigh_Zinc2jet; 
+        TH2D *hresponseSecondJetAbsRapidity_Zinc2jet; 
         TH2D *hresponseThirdJetRapidityHigh_Zinc3jet; 
+        TH2D *hresponseThirdJetAbsRapidity_Zinc3jet; 
         TH2D *hresponseFourthJetRapidityHigh_Zinc4jet;
+        TH2D *hresponseFourthJetAbsRapidity_Zinc4jet;
         TH2D *hresponseFifthJetRapidityHigh_Zinc5jet; 
+        TH2D *hresponseFifthJetAbsRapidity_Zinc5jet; 
 
         TH2D *hresponseJetsMass_Zinc2jet;
         TH2D *hresponseJetsMassLowPU_Zinc2jet;

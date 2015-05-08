@@ -38,9 +38,9 @@ const unsigned int NFILESDYJETS(12);
 const unsigned int NBGDYJETS(NFILESDYJETS-2);
 const unsigned int FilesDYJets[NFILESDYJETS] = {0, 1, 10, 4, 9, 3, 5, 8, 7, 6, 2, 11};
 
-const TString DYPOWHEGFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed");
-const TString DYAMCATNLOFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed");
-const TString DYAMCATNLOLEGEND("MG5_aMC + PY8 (#leq 2j NLO 3,4j LO + PS)");
+const TString DYPOWHEGFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights");
+const TString DYAMCATNLOFILENAME("DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights");
+const TString DYAMCATNLOLEGEND("MG5_aMC + PY8 (#leq 2j NLO + PS)");
 const TString DYSHERPA2FILENAME("DYJets_Sherpa2_0_16000");
 const TString DYSHERPA2LEGEND("SHERPA 2 (#leq 2j NLO 3,4j LO + PS)");
 const TString DYSHERPA14FILENAME("DYJets_Sherpa_Bugra_1_13_UNFOLDING");

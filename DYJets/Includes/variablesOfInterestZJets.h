@@ -13,7 +13,7 @@ struct variableStruct{
 
 //--- Z Jets ------------------------------------
 
-const unsigned int NVAROFINTERESTZJETS(98);
+const unsigned int NVAROFINTERESTZJETS(103);
 const variableStruct VAROFINTERESTZJETS[] = {
     //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm  - E Bayes kterm COMBINE
     {"ZNGoodJets_Zexc",             1,      1,           7,              4,             3,            3 ,               3    }, // 0
@@ -35,6 +35,12 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"ThirdJetEta_Zinc3jet",        0,      1,           4,              4,             8,            4 ,               5    }, // 13
     {"FourthJetEta_Zinc4jet",       0,      1,           4,              4,             4,            5 ,               4    }, // 14
     {"FifthJetEta_Zinc5jet",        0,      1,           3,              2,             2,            2 ,               1    }, // 15    
+    //-- jet Rapidity distribution
+    {"FirstJetAbsRapidity_Zinc1jet",        0,      1,          10,              4,            18,            4 ,               5    }, // 11
+    {"SecondJetAbsRapidity_Zinc2jet",       0,      1,           6,              5,            16,            5 ,               5    }, // 12
+    {"ThirdJetAbsRapidity_Zinc3jet",        0,      1,           4,              4,             8,            4 ,               5    }, // 13
+    {"FourthJetAbsRapidity_Zinc4jet",       0,      1,           4,              4,             4,            5 ,               4    }, // 14
+    {"FifthJetAbsRapidity_Zinc5jet",        0,      1,           3,              2,             2,            2 ,               1    }, // 15    
     //-- Jets Mass distribution
     {"JetsMass_Zinc2jet",           0,      1,           9,              5,            13,           11 ,               5    }, // 16
     {"ZPt_Zinc0jet",                0,      1,           9,              5,            13,           11 ,               5    }, // 17

@@ -195,7 +195,7 @@ class ZJets: public HistoSetZJets {
         void     Init(bool hasRecoInfo, bool hasGenInfo);
         void     initLHAPDF(TString pdfSet, int pdfMember);
         double   computePDFWeight();
-        void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, TString pdfSet = "", int pdfMember = 0, double muR = 0, double muF = 0);
+        void     Loop(bool hasRecoInfo = 1, bool hasGenInfo = 0, TString pdfSet = "", int pdfMember = -1, double muR = 0, double muF = 0);
         void     getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoMuons);
         void     getElectrons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoElectrons);
         Bool_t   Notify();
