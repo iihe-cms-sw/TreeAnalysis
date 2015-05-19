@@ -19,7 +19,7 @@
 #include "HistoSetZJets.h"
 #include "ZJets.h"
 #include <sys/time.h>
-#include "rochcor.h"
+//#include "rochcor.h"
 
 
 using namespace std;
@@ -31,7 +31,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     TRandom3* RandGen = new TRandom3();
     //--------------------------------------------
     doRochester = false;
-    rmcor = new rochcor2012();
+//    rmcor = new rochcor2012();
 
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") initLHAPDF(pdfSet, pdfMember);
@@ -743,6 +743,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                     if(genEWKBoson.Pt()>300.)
                     {
+                        genAbsZRapidity_ZPt300_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()),genWeight);
+                        genAbsFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()),genWeight);
+                        genSumZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity())/2.0,genWeight);
+                        genDifZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()-genJets[0].v.Rapidity())/2.0,genWeight);
+
                         genDPhiZFirstJet_ZPt300_Zinc1jet->Fill(fabs(genEWKBoson.DeltaPhi(genJets[0].v)),genWeight);
                     }
 
@@ -1263,6 +1268,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 if(EWKBoson.Pt()>300.)
                 {
+                    AbsZRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()),weight);
+                    AbsFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()),weight);
+                    SumZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity())/2.0,weight);
+                    DifZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()-jets[0].v.Rapidity())/2.0,weight);
+
                     DPhiZFirstJet_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.DeltaPhi(jets[0].v)),weight);
                 }
 
@@ -1870,6 +1880,11 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 if(genEWKBoson.Pt()>300.&&EWKBoson.Pt()>300.)
                 {
+                    hresponseAbsZRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()),fabs(genEWKBoson.Rapidity()),weight);
+                    hresponseAbsFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()),fabs(genJets[0].v.Rapidity()),weight);
+                    hresponseSumZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()+jets[0].v.Rapidity())/2.0,fabs(genEWKBoson.Rapidity()+genJets[0].v.Rapidity())/2.0,weight);
+                    hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.Rapidity()-jets[0].v.Rapidity())/2.0,fabs(genEWKBoson.Rapidity()-genJets[0].v.Rapidity())/2.0,weight);
+
                     hresponseDPhiZFirstJet_ZPt300_Zinc1jet->Fill(fabs(EWKBoson.DeltaPhi(jets[0].v)),fabs(genEWKBoson.DeltaPhi(genJets[0].v)),weight);
                 }
 
@@ -2284,14 +2299,14 @@ void ZJets::getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoM
                 patMuonTrig_->at(i));
 
         float qter = 1.0;
-        if (doRochester) {
+/*        if (doRochester) {
             if (!isData) {
                 rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
             }
             else {
                 rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
             }
-        }
+        } */
         //--- good muons ---
         bool muPassesPtCut(mu.v.Pt() >= lepPtCutMin);
         bool muPassesEtaCut(fabs(mu.v.Eta()) <= 0.1*lepEtaCutMax);

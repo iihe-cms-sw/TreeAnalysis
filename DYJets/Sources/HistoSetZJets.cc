@@ -1076,8 +1076,8 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     DifZSecondJetRapidity_ZPt150_Zexc2jet = newTH1D("DifZSecondJetRapidity_ZPt150_Zexc2jet","DifZSecondJetRapidity_ZPt150_Zexc2jet","y_{diff}",12,0,2.4);
     genDifZSecondJetRapidity_ZPt150_Zexc2jet = newTH1D("genDifZSecondJetRapidity_ZPt150_Zexc2jet","genDifZSecondJetRapidity_ZPt150_Zexc2jet","y_{diff}",12,0,2.4);
 
-    int nRapidity_ZPt300_Zinc1jet(4);
-    double Rapidity_ZPt300_Zinc1jet[5] = {0,0.2,0.4,0.6,2.4};
+    int nRapidity_ZPt300_Zinc1jet(7);
+    double Rapidity_ZPt300_Zinc1jet[8] = {0,0.4,0.6,0.9,1.2,1.5,1.9,2.4};
 
     AbsZRapidity_ZPt300_Zinc1jet = newTH1D("AbsZRapidity_ZPt300_Zinc1jet","AbsZRapidity_ZPt300_Zinc1jet","|y_{Z}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
     genAbsZRapidity_ZPt300_Zinc1jet = newTH1D("genAbsZRapidity_ZPt300_Zinc1jet","genAbsZRapidity_ZPt300_Zinc1jet","|y_{Z}|",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
@@ -1089,16 +1089,28 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genDifZFirstJetRapidity_ZPt300_Zinc1jet = newTH1D("genDifZFirstJetRapidity_ZPt300_Zinc1jet","genDifZFirstJetRapidity_ZPt300_Zinc1jet","y_{diff(Z,jet1)}",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
 
     /////Azimuthal cross check/////////////////
-    DPhiZFirstJet_ZPt150_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc1jet","DPhiZFirstJet_ZPt150_Zinc1jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt150_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc1jet","genDPhiZFirstJet_ZPt150_Zinc1jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZFirstJet_ZPt150_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc2jet","DPhiZFirstJet_ZPt150_Zinc2jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt150_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc2jet","genDPhiZFirstJet_ZPt150_Zinc2jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZFirstJet_ZPt150_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc3jet","DPhiZFirstJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt150_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc3jet","genDPhiZFirstJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZSecondJet_ZPt150_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt150_Zinc3jet","DPhiZSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    genDPhiZSecondJet_ZPt150_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt150_Zinc3jet","genDPhiZSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    DPhiZThirdJet_ZPt150_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt150_Zinc3jet","DPhiZThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
-    genDPhiZThirdJet_ZPt150_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt150_Zinc3jet","genDPhiZThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
+    
+    int nDPhiZFirstJet_ZPt150(13);
+    double DPhiZFirstJet_ZPt150[14] = {0,0.16*PI,0.28*PI,0.40*PI,0.52*PI,0.64*PI,0.72*PI,0.76*PI,0.8*PI,0.84*PI,0.88*PI,0.92*PI,0.96*PI,1.0*PI};
+
+    int nDPhiZSecondJet_ZPt150(15);
+    double DPhiZSecondJet_ZPt150[16] = {0,0.12*PI,0.2*PI,0.28*PI,0.36*PI,0.44*PI,0.52*PI,0.6*PI,0.68*PI,0.76*PI,0.8*PI,0.84*PI,0.88*PI,0.92*PI,0.96*PI,1.0*PI};
+
+    int nDPhiZThirdJet_ZPt150(23);
+    double DPhiZThirdJet_ZPt150[24] = {0,0.12*PI,0.16*PI,0.2*PI,0.24*PI,0.28*PI,0.32*PI,0.36*PI,0.4*PI,0.44*PI,0.48*PI,0.52*PI,0.56*PI,0.6*PI,0.64*PI,0.68*PI,0.72*PI,0.76*PI,0.8*PI,0.84*PI,0.88*PI,0.92*PI,0.96*PI,1.0*PI};
+
+
+    DPhiZFirstJet_ZPt150_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc1jet","DPhiZFirstJet_ZPt150_Zinc1jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+    genDPhiZFirstJet_ZPt150_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc1jet","genDPhiZFirstJet_ZPt150_Zinc1jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+    DPhiZFirstJet_ZPt150_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc2jet","DPhiZFirstJet_ZPt150_Zinc2jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+    genDPhiZFirstJet_ZPt150_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc2jet","genDPhiZFirstJet_ZPt150_Zinc2jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+    DPhiZFirstJet_ZPt150_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt150_Zinc3jet","DPhiZFirstJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+    genDPhiZFirstJet_ZPt150_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt150_Zinc3jet","genDPhiZFirstJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);
+
+    DPhiZSecondJet_ZPt150_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt150_Zinc3jet","DPhiZSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt150,DPhiZSecondJet_ZPt150);
+    genDPhiZSecondJet_ZPt150_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt150_Zinc3jet","genDPhiZSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt150,DPhiZSecondJet_ZPt150);
+    DPhiZThirdJet_ZPt150_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt150_Zinc3jet","DPhiZThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt150,DPhiZThirdJet_ZPt150);
+    genDPhiZThirdJet_ZPt150_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt150_Zinc3jet","genDPhiZThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt150,DPhiZThirdJet_ZPt150);
     DPhiFirstSecondJet_ZPt150_Zinc3jet = newTH1D("DPhiFirstSecondJet_ZPt150_Zinc3jet","DPhiFirstSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Jet1,Jet2}",25,0,3.14);
     genDPhiFirstSecondJet_ZPt150_Zinc3jet = newTH1D("genDPhiFirstSecondJet_ZPt150_Zinc3jet","genDPhiFirstSecondJet_ZPt150_Zinc3jet","#Delta#phi_{Jet1,Jet2}",25,0,3.14);
     DPhiFirstThirdJet_ZPt150_Zinc3jet = newTH1D("DPhiFirstThirdJet_ZPt150_Zinc3jet","DPhiFirstThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Jet1,Jet3}",25,0,3.14);
@@ -1107,30 +1119,52 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     genDPhiSecondThirdJet_ZPt150_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt150_Zinc3jet","genDPhiSecondThirdJet_ZPt150_Zinc3jet","#Delta#phi_{Jet2,Jet3}",25,0,3.14);
 
 
-    DPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc1jet","DPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc1jet","genDPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    DPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc2jet","DPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc2jet","genDPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    DPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc3jet","DPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    genDPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc3jet","genDPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",13,0,3.14);
-    DPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt300_Zinc3jet","DPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",13,0,3.14);
-    genDPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt300_Zinc3jet","genDPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",13,0,3.14);
-    DPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt300_Zinc3jet","DPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",13,0,3.14);
-    genDPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt300_Zinc3jet","genDPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",13,0,3.14);
-    DPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstSecondJet_ZPt300_Zinc3jet","DPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",13,0,3.14);
-    genDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstSecondJet_ZPt300_Zinc3jet","genDPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",13,0,3.14);
-    DPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstThirdJet_ZPt300_Zinc3jet","DPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",13,0,3.14);
-    genDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstThirdJet_ZPt300_Zinc3jet","genDPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",13,0,3.14);
-    DPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiSecondThirdJet_ZPt300_Zinc3jet","DPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",13,0,3.14);
-    genDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt300_Zinc3jet","genDPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",13,0,3.14);
+    int nDPhiZFirstJet_ZPt300(8);
+    double DPhiZFirstJet_ZPt300[9] = {0.52*PI,0.68*PI,0.76*PI,0.8*PI,0.84*PI,0.88*PI,0.92*PI,0.96*PI,1.0*PI};
+
+    int nDPhiZSecondJet_ZPt300(12);
+    double DPhiZSecondJet_ZPt300[13] = {0,0.154*PI,0.231*PI,0.308*PI,0.384*PI,0.461*PI,0.538*PI,0.615*PI,0.692*PI,0.769*PI,0.846*PI,0.923*PI,1.0*PI};
+
+    int nDPhiZThirdJet_ZPt300(8);
+    double DPhiZThirdJet_ZPt300[9] = {0,0.231*PI,0.384*PI,0.538*PI,0.692*PI,0.769*PI,0.846*PI,0.923*PI,1.0*PI};
+
+    int nDPhiJets_ZPt300(9);
+    double DPhiJets_ZPt300[10] = {0,0.08*PI,0.16*PI,0.24*PI,0.32*PI,0.40*PI,0.52*PI,0.64*PI,0.76*PI,1.0*PI};
+
+    DPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc1jet","DPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+    genDPhiZFirstJet_ZPt300_Zinc1jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc1jet","genDPhiZFirstJet_ZPt300_Zinc1jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+    DPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc2jet","DPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+    genDPhiZFirstJet_ZPt300_Zinc2jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc2jet","genDPhiZFirstJet_ZPt300_Zinc2jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+    DPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt300_Zinc3jet","DPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+    genDPhiZFirstJet_ZPt300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt300_Zinc3jet","genDPhiZFirstJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);
+
+    DPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt300_Zinc3jet","DPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt300,DPhiZSecondJet_ZPt300);
+    genDPhiZSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt300_Zinc3jet","genDPhiZSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt300,DPhiZSecondJet_ZPt300);
+    DPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt300_Zinc3jet","DPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt300,DPhiZThirdJet_ZPt300);
+    genDPhiZThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt300_Zinc3jet","genDPhiZThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt300,DPhiZThirdJet_ZPt300);
+    DPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstSecondJet_ZPt300_Zinc3jet","DPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
+    genDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstSecondJet_ZPt300_Zinc3jet","genDPhiFirstSecondJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet2}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
+    DPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiFirstThirdJet_ZPt300_Zinc3jet","DPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
+    genDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiFirstThirdJet_ZPt300_Zinc3jet","genDPhiFirstThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet1,Jet3}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
+    DPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("DPhiSecondThirdJet_ZPt300_Zinc3jet","DPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
+    genDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH1D("genDPhiSecondThirdJet_ZPt300_Zinc3jet","genDPhiSecondThirdJet_ZPt300_Zinc3jet","#Delta#phi_{Jet2,Jet3}",nDPhiJets_ZPt300,DPhiJets_ZPt300);
 
 
-    DPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt150_HT300_Zinc3jet","DPhiZFirstJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    genDPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt150_HT300_Zinc3jet","genDPhiZFirstJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet1}",25,0,3.14);
-    DPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt150_HT300_Zinc3jet","DPhiZSecondJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    genDPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt150_HT300_Zinc3jet","genDPhiZSecondJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet2}",25,0,3.14);
-    DPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt150_HT300_Zinc3jet","DPhiZThirdJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
-    genDPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt150_HT300_Zinc3jet","genDPhiZThirdJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet3}",25,0,3.14);
+    int nDPhiZFirstJet_ZPt150_HT300(11);
+    double DPhiZFirstJet_ZPt150_HT300[12] = {0,0.48*PI,0.64*PI,0.68*PI,0.72*PI,0.76*PI,0.8*PI,0.84*PI,0.88*PI,0.92*PI,0.96*PI,1.0*PI};
+
+    int nDPhiZSecondJet_ZPt150_HT300(12);
+    double DPhiZSecondJet_ZPt150_HT300[13] = {0,0.12*PI,0.2*PI,0.28*PI,0.36*PI,0.44*PI,0.52*PI,0.6*PI,0.68*PI,0.76*PI,0.84*PI,0.92*PI,1.0*PI};
+
+    int nDPhiZThirdJet_ZPt150_HT300(12);
+    double DPhiZThirdJet_ZPt150_HT300[13] = {0,0.12*PI,0.2*PI,0.28*PI,0.36*PI,0.44*PI,0.52*PI,0.6*PI,0.68*PI,0.76*PI,0.84*PI,0.92*PI,1.0*PI};
+
+    DPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZFirstJet_ZPt150_HT300_Zinc3jet","DPhiZFirstJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150_HT300,DPhiZFirstJet_ZPt150_HT300);
+    genDPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZFirstJet_ZPt150_HT300_Zinc3jet","genDPhiZFirstJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet1}",nDPhiZFirstJet_ZPt150_HT300,DPhiZFirstJet_ZPt150_HT300);
+    DPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZSecondJet_ZPt150_HT300_Zinc3jet","DPhiZSecondJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt150_HT300,DPhiZSecondJet_ZPt150_HT300);
+    genDPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZSecondJet_ZPt150_HT300_Zinc3jet","genDPhiZSecondJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet2}",nDPhiZSecondJet_ZPt150_HT300,DPhiZSecondJet_ZPt150_HT300);
+    DPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH1D("DPhiZThirdJet_ZPt150_HT300_Zinc3jet","DPhiZThirdJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt150_HT300,DPhiZThirdJet_ZPt150_HT300);
+    genDPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH1D("genDPhiZThirdJet_ZPt150_HT300_Zinc3jet","genDPhiZThirdJet_ZPt150_HT300_Zinc3jet","#Delta#phi_{Z,Jet3}",nDPhiZThirdJet_ZPt150_HT300,DPhiZThirdJet_ZPt150_HT300);
 
     //Branches with different JetPt cuts///////
 
@@ -1269,29 +1303,29 @@ HistoSetZJets::HistoSetZJets(TString leptonFlavor)
     hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet = newTH2D("hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet","hresponseDifZFirstJetRapidity_ZPt300_Zinc1jet",nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet,nRapidity_ZPt300_Zinc1jet,Rapidity_ZPt300_Zinc1jet);
 
     ///Azimuthal cross check//////////////////////////
-    hresponseDPhiZFirstJet_ZPt150_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc1jet","hresponseDPhiZFirstJet_ZPt150_Zinc1jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt150_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc2jet","hresponseDPhiZFirstJet_ZPt150_Zinc2jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc3jet","hresponseDPhiZFirstJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZSecondJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt150_Zinc3jet","hresponseDPhiZSecondJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZThirdJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt150_Zinc3jet","hresponseDPhiZThirdJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt150_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc1jet","hresponseDPhiZFirstJet_ZPt150_Zinc1jet",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150,nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);		
+    hresponseDPhiZFirstJet_ZPt150_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc2jet","hresponseDPhiZFirstJet_ZPt150_Zinc2jet",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150,nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);		
+    hresponseDPhiZFirstJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_Zinc3jet","hresponseDPhiZFirstJet_ZPt150_Zinc3jet",nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150,nDPhiZFirstJet_ZPt150,DPhiZFirstJet_ZPt150);		
+    hresponseDPhiZSecondJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt150_Zinc3jet","hresponseDPhiZSecondJet_ZPt150_Zinc3jet",nDPhiZSecondJet_ZPt150,DPhiZSecondJet_ZPt150,nDPhiZSecondJet_ZPt150,DPhiZSecondJet_ZPt150);		
+    hresponseDPhiZThirdJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt150_Zinc3jet","hresponseDPhiZThirdJet_ZPt150_Zinc3jet",nDPhiZThirdJet_ZPt150,DPhiZThirdJet_ZPt150,nDPhiZThirdJet_ZPt150,DPhiZThirdJet_ZPt150);		
     hresponseDPhiFirstSecondJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiFirstSecondJet_ZPt150_Zinc3jet","hresponseDPhiFirstSecondJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
     hresponseDPhiFirstThirdJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiFirstThirdJet_ZPt150_Zinc3jet","hresponseDPhiFirstThirdJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
     hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt150_Zinc3jet",25,0,3.14,25,0,3.14);		
 
 
-    hresponseDPhiZFirstJet_ZPt300_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc1jet","hresponseDPhiZFirstJet_ZPt300_Zinc1jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt300_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc2jet","hresponseDPhiZFirstJet_ZPt300_Zinc2jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiZFirstJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc3jet","hresponseDPhiZFirstJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiZSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt300_Zinc3jet","hresponseDPhiZSecondJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiZThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt300_Zinc3jet","hresponseDPhiZThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet","hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet","hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
-    hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet",13,0,3.14,13,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc1jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc1jet","hresponseDPhiZFirstJet_ZPt300_Zinc1jet",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300,nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc2jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc2jet","hresponseDPhiZFirstJet_ZPt300_Zinc2jet",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300,nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);		
+    hresponseDPhiZFirstJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt300_Zinc3jet","hresponseDPhiZFirstJet_ZPt300_Zinc3jet",nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300,nDPhiZFirstJet_ZPt300,DPhiZFirstJet_ZPt300);		
+    hresponseDPhiZSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt300_Zinc3jet","hresponseDPhiZSecondJet_ZPt300_Zinc3jet",nDPhiZSecondJet_ZPt300,DPhiZSecondJet_ZPt300,nDPhiZSecondJet_ZPt300,DPhiZSecondJet_ZPt300);		
+    hresponseDPhiZThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt300_Zinc3jet","hresponseDPhiZThirdJet_ZPt300_Zinc3jet",nDPhiZThirdJet_ZPt300,DPhiZThirdJet_ZPt300,nDPhiZThirdJet_ZPt300,DPhiZThirdJet_ZPt300);		
+    hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet","hresponseDPhiFirstSecondJet_ZPt300_Zinc3jet",nDPhiJets_ZPt300,DPhiJets_ZPt300,nDPhiJets_ZPt300,DPhiJets_ZPt300);		
+    hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet","hresponseDPhiFirstThirdJet_ZPt300_Zinc3jet",nDPhiJets_ZPt300,DPhiJets_ZPt300,nDPhiJets_ZPt300,DPhiJets_ZPt300);		
+    hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet = newTH2D("hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet","hresponseDPhiSecondThirdJet_ZPt300_Zinc3jet",nDPhiJets_ZPt300,DPhiJets_ZPt300,nDPhiJets_ZPt300,DPhiJets_ZPt300);		
 
 
-    hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet",25,0,3.14,25,0,3.14);		
-    hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet",25,0,3.14,25,0,3.14);		
+    hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZFirstJet_ZPt150_HT300_Zinc3jet",nDPhiZFirstJet_ZPt150_HT300,DPhiZFirstJet_ZPt150_HT300,nDPhiZFirstJet_ZPt150_HT300,DPhiZFirstJet_ZPt150_HT300);		
+    hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZSecondJet_ZPt150_HT300_Zinc3jet",nDPhiZSecondJet_ZPt150_HT300,DPhiZSecondJet_ZPt150_HT300,nDPhiZSecondJet_ZPt150_HT300,DPhiZSecondJet_ZPt150_HT300);		
+    hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet = newTH2D("hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet","hresponseDPhiZThirdJet_ZPt150_HT300_Zinc3jet",nDPhiZThirdJet_ZPt150_HT300,DPhiZThirdJet_ZPt150_HT300,nDPhiZThirdJet_ZPt150_HT300,DPhiZThirdJet_ZPt150_HT300);		
 
     //different JetPt Cuts//////
 
