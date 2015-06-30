@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <TH1.h>
 #include <TH2.h>
+#include <TRandom.h>
 #include <TLorentzVector.h>
 #include <vector>
 #include <cstdarg>
@@ -195,6 +196,25 @@ double table::getEfficiencyHigh(double pt, double eta){
         if ((recd[i]).belongTo(350, eta)) hiPtBin = recd[i].effi;
     }
     return hiPtBin;
+}
+
+double SmearLepPt(double recoPt, double genPt, int smearlepton, double smearFactor){
+
+    double smearedPt(0);
+
+    if (smearlepton == 0) {
+        smearedPt = std::max(0., recoPt);
+    }
+
+    else if (smearlepton == 1) {
+        smearedPt = std::max(0., genPt + (1.0 + smearFactor)*(recoPt - genPt));
+    }
+
+    else if (smearlepton == -1) {
+        smearedPt = std::max(0., genPt + (1.0 - smearFactor)*(recoPt - genPt));
+    }
+
+    return smearedPt;
 }
 
 double SmearJetPt(double recoPt, double genPt, double eta, int smearJet){

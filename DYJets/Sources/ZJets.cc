@@ -9,6 +9,7 @@
 #include <TDatime.h>
 #include <TMath.h>
 #include <TRandom3.h>
+#include <TRandom.h>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -31,7 +32,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     TRandom3* RandGen = new TRandom3();
     //--------------------------------------------
     doRochester = false;
-//    rmcor = new rochcor2012();
+    //    rmcor = new rochcor2012();
 
     //--- Initialize PDF from LHAPDF if needed ---
     if (pdfSet != "") initLHAPDF(pdfSet, pdfMember);
@@ -101,7 +102,13 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     if (systematics == 3) xsec = 1. + direction * xsecfactor;
 
     int smearJet(0);
-    if (systematics == 4) smearJet = direction; 
+    if (systematics == 4) smearJet = direction;
+
+    int lepscale(0);
+    if (systematics == 5) lepscale = direction;
+
+    int smearlepton(0);
+    if (systematics == 6) smearlepton = direction;
     //==========================================================================================================//
 
 
@@ -148,6 +155,12 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     int mess_every_n =  std::min(10000LL, nentries/10);
 
     double weight_amcNLO_sum = 0;
+
+    // ------ Random number for lepton energy resolution smearing -----
+    //TRandom* RamMu = new TRandom(10);
+    //TRandom* RamEle = new TRandom(20);
+    // --------------------------------
+
     for (Long64_t jentry(0); jentry < nentries; jentry += 1) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
@@ -282,20 +295,48 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if ((lepSel == "DMu" || lepSel == "DE") && nLeptons >= 2) {
                 nEventsWithTwoGoodLeptons++;
 
-                // build Electroweak boson candidate: here it is expected to be a Z
-                EWKBoson = leptons[0].v + leptons[1].v;
+                // --- lepton energy scale and resolution variation ---
+                if(lepSel == "DMu"){
+                    // --- muon energy scale variation ---
+                    leptons[0].v.SetPtEtaPhiE(leptons[0].v.Pt() * (1 + lepscale*0.002), leptons[0].v.Eta(), leptons[0].v.Phi(), leptons[0].v.E() * (1 + lepscale*0.002));
+                    leptons[1].v.SetPtEtaPhiE(leptons[1].v.Pt() * (1 + lepscale*0.002), leptons[1].v.Eta(), leptons[1].v.Phi(), leptons[1].v.E() * (1 + lepscale*0.002));
 
-                // apply charge, mass cut
-                if (leptons[0].charge * leptons[1].charge < 0) {
-                    nEventsWithTwoGoodLeptonsWithOppCharge++;
-                    passesLeptonChargeCut = 1;
-                    if (EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh) {
-                        nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass++;
-                        passesLeptonCut = 1;
-                        passesLeptonMassCut = 1;
-                    }
                 }
 
+                else if(lepSel == "DE")
+                {
+                    // --- electron energy scale variation ---
+                    if(fabs(leptons[0].v.Eta())<1.479){
+                        leptons[0].v.SetPtEtaPhiE(leptons[0].v.Pt() * (1 + lepscale * 0.006), leptons[0].v.Eta(), leptons[0].v.Phi(), leptons[0].v.E() * (1 + lepscale * 0.006));
+                    }
+                    else{
+                        leptons[0].v.SetPtEtaPhiE(leptons[0].v.Pt() * (1 + lepscale * 0.015), leptons[0].v.Eta(),leptons[0].v.Phi(), leptons[0].v.E() * (1 + lepscale * 0.015));
+                    }
+
+                    if(fabs(leptons[1].v.Eta())<1.479){
+                        leptons[1].v.SetPtEtaPhiE(leptons[1].v.Pt() * (1 + lepscale * 0.006), leptons[1].v.Eta(), leptons[1].v.Phi(), leptons[1].v.E() * (1 + lepscale * 0.006));
+                    }
+                    else{
+                        leptons[1].v.SetPtEtaPhiE(leptons[1].v.Pt() * (1 + lepscale * 0.015), leptons[1].v.Eta(),leptons[1].v.Phi(), leptons[1].v.E() * (1 + lepscale * 0.015));
+                    }
+
+                }
+
+                if(!hasGenInfo){
+                    // build Electroweak boson candidate: here it is expected to be a Z
+                    EWKBoson = leptons[0].v + leptons[1].v;
+
+                    // apply charge, mass cut
+                    if (leptons[0].charge * leptons[1].charge < 0) {
+                        nEventsWithTwoGoodLeptonsWithOppCharge++;
+                        passesLeptonChargeCut = 1;
+                        if (EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh && leptons[0].v.Pt() > lepPtCutMin && leptons[1].v.Pt() > lepPtCutMin) {
+                            nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass++;
+                            passesLeptonCut = 1;
+                            passesLeptonMassCut = 1;
+                        }
+                    }
+                }
                 // apply scale factors only on MC.
                 if (!isData) {
                     double effWeight = 1.;
@@ -330,7 +371,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 MT = sqrt(2 * leptons[0].v.Pt() * MET.Pt() * (1 - cos(leptons[0].v.Phi() - MET.Phi())));
 
                 // apply transver mass and MET cut
-                if (MT > MTCutLow && MET.Pt() > METCutLow) passesLeptonCut = 1;
+                if (MT > MTCutLow && MET.Pt() > METCutLow && leptons[0].v.Pt() > lepPtCutMin) passesLeptonCut = 1;
 
                 // apply scale factors only on MC.
                 if (!isData) {
@@ -390,7 +431,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 //-- dress the leptons with photon (cone size = 0.1). Only for status 1 leptons (after FSR)
                 if ((genLepSt_->at(i) == 1 && lepToBeConsidered) || ((lepSel == "SMu" || lepSel == "SE") && charge == 0)) {
-                    
+
                     for (unsigned short j(0); j < nTotGenPhotons; j++){
                         TLorentzVector tmpGenPho;
                         tmpGenPho.SetPtEtaPhiM(genPhoPt_->at(j), genPhoEta_->at(j), genPhoPhi_->at(j), 0.);
@@ -403,7 +444,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                             usedGenPho.push_back(j);
                         }
                     }   
-                    
+
                     if ((genLep.v.Pt() >= lepPtCutMin && fabs(genLep.v.Eta()) <= 0.1*lepEtaCutMax && abs(genLep.charge) > 0) 
                             || ((lepSel == "SMu" || lepSel == "SE") && genLep.charge == 0)) {
                         genLeptons.push_back(genLep);
@@ -465,6 +506,44 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         } // end of hasGenInfo
 
         //=======================================================================================================//
+        //   ------- lepton energy smearing ------
+        //==========================================//
+        if (hasRecoInfo && hasGenInfo){
+            if((lepSel == "DMu" || lepSel == "DE") && nLeptons >= 2 && ngenLeptons >= 2){
+                double oldLeptonPt;
+                double genLeptonPt;
+                double newLeptonPt;
+                double smearFactor;
+
+                smearFactor = (lepSel == "DMu") ? 0.006 : 0.06;
+
+                oldLeptonPt = leptons[0].v.Pt();
+                genLeptonPt = genLeptons[0].v.Pt();
+                newLeptonPt = SmearLepPt(oldLeptonPt,genLeptonPt,smearlepton,smearFactor);
+                leptons[0].v.SetPtEtaPhiE(newLeptonPt, leptons[0].v.Eta(), leptons[0].v.Phi(), leptons[0].v.E()*newLeptonPt/oldLeptonPt);
+
+                oldLeptonPt = leptons[1].v.Pt();
+                genLeptonPt = genLeptons[1].v.Pt();
+                newLeptonPt = SmearLepPt(oldLeptonPt,genLeptonPt,smearlepton,smearFactor);
+                leptons[1].v.SetPtEtaPhiE(newLeptonPt, leptons[1].v.Eta(), leptons[1].v.Phi(), leptons[1].v.E()*newLeptonPt/oldLeptonPt);
+
+                // build Electroweak boson candidate: here it is expected to be a Z
+                EWKBoson = leptons[0].v + leptons[1].v;
+
+                // apply charge, mass cut
+                if (leptons[0].charge * leptons[1].charge < 0) {
+                    nEventsWithTwoGoodLeptonsWithOppCharge++;
+                    passesLeptonChargeCut = 1;
+                    if (EWKBoson.M() > ZMCutLow && EWKBoson.M() < ZMCutHigh && leptons[0].v.Pt() > lepPtCutMin && leptons[1].v.Pt() > lepPtCutMin) {
+                        nEventsWithTwoGoodLeptonsWithOppChargeAndGoodMass++;
+                        passesLeptonCut = 1;
+                        passesLeptonMassCut = 1;
+                    }
+                } // end if re-selection of leptons
+
+            } // end if DMu/DE channel
+
+        } // end of hasRecoInfo and hasGenInfo
 
 
         if (DEBUG) cout << "Stop after line " << __LINE__ << endl;
@@ -497,7 +576,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
 
                 jet.v.SetPtEtaPhiE(jet.v.Pt() * (1 + scale * jetEnergyCorr), jet.v.Eta(), jet.v.Phi(), jet.v.E() * (1 + scale * jetEnergyCorr));
 
-                bool jetPassesEtaCut(fabs(jet.v.Eta()) <= 0.1*jetEtaCutMax); 
+                bool jetPassesEtaCut(fabs(jet.v.Rapidity()) <= 0.1*jetEtaCutMax); 
                 bool jetPassesIdCut(patJetPfAk05LooseId_->at(i) > 0);
                 bool jetPassesMVACut(patJetPfAk05jetpuMVA_->at(i) > 0);
 
@@ -627,8 +706,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
         if (hasGenInfo){
             vector<jetStruct> tmpGenJets;
             for (unsigned short i(0); i < nGoodGenJets; i++){
-                if (genJets[i].v.Pt() >= jetPtCutMin && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
-                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Eta()) <= 0.1*jetEtaCutMax) genJets_20.push_back(genJets[i]);
+                if (genJets[i].v.Pt() >= jetPtCutMin && fabs(genJets[i].v.Rapidity()) <= 0.1*jetEtaCutMax) tmpGenJets.push_back(genJets[i]);
+                if (genJets[i].v.Pt() >= 20 && fabs(genJets[i].v.Rapidity()) <= 0.1*jetEtaCutMax) genJets_20.push_back(genJets[i]);
             }
             genJets.clear();
             genJets = tmpGenJets; 
@@ -2299,16 +2378,16 @@ void ZJets::getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoM
                 patMuonTrig_->at(i));
 
         float qter = 1.0;
-/*        if (doRochester) {
-            if (!isData) {
-                rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
-            }
-            else {
-                rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
-            }
-        } */
+        /*        if (doRochester) {
+                  if (!isData) {
+                  rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
+                  }
+                  else {
+                  rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
+                  }
+                  } */
         //--- good muons ---
-        bool muPassesPtCut(mu.v.Pt() >= lepPtCutMin);
+        bool muPassesPtCut(mu.v.Pt() >= (lepPtCutMin*0.8));
         bool muPassesEtaCut(fabs(mu.v.Eta()) <= 0.1*lepEtaCutMax);
         bool muPassesIdCut(mu.id & 0x1); // Tight muon Id
         bool muPassesIsoCut(0);
@@ -2368,7 +2447,7 @@ void ZJets::getElectrons(vector<leptonStruct>& leptons,  vector<leptonStruct>& v
                 patElecTrig_->at(i));
 
         //--- good electrons ---
-        bool elePassesPtCut(ele.v.Pt() >= lepPtCutMin);
+        bool elePassesPtCut(ele.v.Pt() >= (lepPtCutMin*0.8));
         bool elePassesEtaCut(fabs(ele.scEta) <= min(1.4442, 0.1*lepEtaCutMax) || (fabs(ele.scEta) >= 1.566 && fabs(ele.scEta) <= 0.1*lepEtaCutMax));
         bool elePassesIdCut(ele.id >= 4); /// 4 is medium ID, 2 is Loose ID
         bool elePassesIsoCut(ele.iso < 0.15);

@@ -53,11 +53,11 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
     // 0 - central, 1 - JES up, 2 - JES down
     TFile *fData[3] = {NULL}; 
     // fDYJets is for the five DYJets files:
-    // 0 - central, 1 - PU up, 2 - PU down, 3 - JER up, 4 - JER down 
-    TFile *fDYJets[5] = {NULL};
+    // 0 - central, 1 - PU up, 2 - PU down, 3 - JER up, 4 - JER down, 5 - LES up, 6 - LES down, 7 - LER up, 8 - LER down 
+    TFile *fDYJets[9] = {NULL};
     // fBg is for the NBGDYJETS x 5 systematics files:
-    // 0 - central, 1 - PU up, 2 - PU down, 3 - XSEc up, 4 - XSEC down 
-    TFile *fBg[NBGDYJETS][5] = {{NULL}};
+    // 0 - central, 1 - PU up, 2 - PU down, 3 - XSEc up, 4 - XSEC down, 5 - LES up, 6 - LES down 
+    TFile *fBg[NBGDYJETS][7] = {{NULL}};
 
     //--- Open all files ---------------------------------------------------------------------- 
     getAllFiles(histoDir, lepSel, "8TeV", jetPtMin, jetEtaMax, fData, fDYJets, fBg, NBGDYJETS);
@@ -125,19 +125,19 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //--- rec Data histograms ---
         TH1D *hRecData[3] = {NULL};
         //--- rec DYJets histograms ---
-        TH1D *hRecDYJets[9] = {NULL};
+        TH1D *hRecDYJets[13] = {NULL};
         //--- fake DYJets histograms ---
-        TH1D *hFakDYJets[14] = {NULL};
+        TH1D *hFakDYJets[18] = {NULL};
         //--- gen DYJets histograms ---
-        TH1D *hGenDYJets[7] = {NULL};
+        TH1D *hGenDYJets[11] = {NULL};
         //--- res DYJets histograms ---
-        TH2D *hResDYJets[9] = {NULL};
+        TH2D *hResDYJets[13] = {NULL};
         //--- rec Bg histograms ---
-        TH1D *hRecBg[NBGDYJETS][9] = {{NULL}};
+        TH1D *hRecBg[NBGDYJETS][11] = {{NULL}};
         //--- rec Sum Bg histograms ---
-        TH1D *hRecSumBg[9] = {NULL};
+        TH1D *hRecSumBg[11] = {NULL};
         //--- response DYJets objects ---
-        RooUnfoldResponse *respDYJets[14] = {NULL};
+        RooUnfoldResponse *respDYJets[18] = {NULL};
 
         //--- Get all histograms ---
         getAllHistos(variable, hRecData, fData, 
@@ -146,7 +146,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
         //--- Get Sherpa Unfolding response ---
 
-        respDYJets[13] = getResp(fSheUnf, variable);
+        respDYJets[17] = getResp(fSheUnf, variable);
         TH1D *hGen1 = getHisto(fGen1, "gen" + variable);
         TH1D *hGen2 = getHisto(fGen2, "gen" + variable);
         //----------------------------------------------------------------------------------------- 
@@ -175,16 +175,18 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         // 3 - PU up, 4 - PU down, 
         // 5 - JER up, 6 - JER down, 
         // 7 - XSEC up, 8 - XSEC down
-        // 9 - Lumi up, 10 - Lumi down
-        // 11 - SF up, 12 - SF down
-        // 13 - SherpaUnf
+        // 9 - LES up, 10 - LES down
+        // 11 - LER up, 12 -LER down
+        // 13 - Lumi up, 14 - Lumi down
+        // 15 - SF up, 16 - SF down
+        // 17 - SherpaUnf
         TString name[] = {"Central", "JESUp", "JESDown", "PUUp", "PUDown", "JERUp", "JERDown", 
-            "XSECUp", "XSECDown", "LumiUp", "LumiDown", "SFUp", "SFDown", "SherpaUnf"};
-        TH1D *hUnfData[14] = {NULL};
-        TH2D *hUnfDataStatCov[14] = {NULL};
-        TH2D *hUnfMCStatCov[14] = {NULL};
+            "XSECUp", "XSECDown", "LESUp", "LESDown", "LERUp", "LERDown", "LumiUp", "LumiDown", "SFUp", "SFDown", "SherpaUnf"};
+        TH1D *hUnfData[18] = {NULL};
+        TH2D *hUnfDataStatCov[18] = {NULL};
+        TH2D *hUnfMCStatCov[18] = {NULL};
 
-        int nIter[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+        int nIter[18] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
         int svdKterm(0);
         if (lepSel == "DMu")  
             svdKterm = VAROFINTERESTZJETS[i].MuSVDkterm;
@@ -196,20 +198,21 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             return;
         }
         //--- Unfold the Data histograms for each systematic ---
-        for (unsigned short iSyst = 0; iSyst < 14; ++iSyst) {
+        for (unsigned short iSyst = 0; iSyst < 18; ++iSyst) {
 
             //--- only JES up and down (iSyst = 1 and 2) is applied on data ---
             unsigned short iData = (iSyst == 1 || iSyst == 2) ? iSyst : 0;
             unsigned short iBg = 0;
-            if (iSyst == 0 || iSyst == 1 || iSyst == 2 || iSyst == 5 || iSyst == 6 || iSyst == 13) iBg = 0; // Central, JES, JER, Sherpa
+            if (iSyst == 0 || iSyst == 1 || iSyst == 2 || iSyst == 5 || iSyst == 6 || iSyst == 11 || iSyst == 12 || iSyst == 17) iBg = 0; // Central, JES, JER, LER, Sherpa
             else if (iSyst == 3 || iSyst == 4) iBg = iSyst - 2; // PU
-            else if (iSyst == 7 || iSyst == 8 || iSyst == 9 || iSyst == 10 || iSyst == 11 || iSyst == 12) iBg = iSyst - 4; // XSec, Lumi, SF
+            else if (iSyst == 7 || iSyst == 8 || iSyst == 9 || iSyst == 10) iBg = iSyst - 4; // XSec, LES
+            else if (iSyst == 13 || iSyst == 14 || iSyst == 15 || iSyst == 16) iBg = iSyst - 6;  // Lumi, SF
 
             TH1D *hRecDataMinusFakes = (TH1D*) hRecData[iData]->Clone();
             hRecDataMinusFakes->Add(hRecSumBg[iBg], -1);
             hRecDataMinusFakes->Add(hFakDYJets[iSyst], -1);
 
-            if (iSyst == 13) cout << "SHERPAUNFOLDING" << endl;
+            if (iSyst == 17) cout << "SHERPAUNFOLDING" << endl;
             nIter[iSyst] = UnfoldData(lepSel, algo, svdKterm, respDYJets[iSyst], hRecDataMinusFakes, hUnfData[iSyst], 
                     hUnfDataStatCov[iSyst], hUnfMCStatCov[iSyst], name[iSyst], integratedLumi);
 
@@ -220,7 +223,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         //----------------------------------------------------------------------------------------- 
 
         if (doNormalized) {
-            for(int i = 0; i < 14; i++)
+            for(int i = 0; i < 18; i++)
             {
                 double totUnfData = hUnfData[i]->Integral("width"); // normalize to central or itself? 
                 hUnfData[i]->Scale(1.0/totUnfData);
@@ -231,24 +234,26 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             }
         }
 
-        for (unsigned short iSyst = 0; iSyst < 14; ++iSyst) {
+        for (unsigned short iSyst = 0; iSyst < 18; ++iSyst) {
             outputRootFile->cd(); 
             hUnfData[iSyst]->Write();
         }
         //--- Now create the covariance matrices ---
-        TH2D *hCov[10] = {NULL};
+        TH2D *hCov[12] = {NULL};
         hCov[0] = (TH2D*) hUnfDataStatCov[0]->Clone("CovDataStat");
         hCov[1] = (TH2D*) hUnfMCStatCov[0]->Clone("CovMCStat");
         hCov[2] = makeCovFromUpAndDown(hUnfData[0], hUnfData[1], hUnfData[2], "CovJES");
         hCov[3] = makeCovFromUpAndDown(hUnfData[0], hUnfData[3], hUnfData[4], "CovPU");
         hCov[4] = makeCovFromUpAndDown(hUnfData[0], hUnfData[5], hUnfData[6], "CovJER");
         hCov[5] = makeCovFromUpAndDown(hUnfData[0], hUnfData[7], hUnfData[8], "CovXSec");
-        hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLumi");
-        hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovSF");
-        hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[0], "CovSherpaUnf");
-        hCov[9] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
+        hCov[6] = makeCovFromUpAndDown(hUnfData[0], hUnfData[9], hUnfData[10], "CovLES");
+        hCov[7] = makeCovFromUpAndDown(hUnfData[0], hUnfData[11], hUnfData[12], "CovLER");
+        hCov[8] = makeCovFromUpAndDown(hUnfData[0], hUnfData[13], hUnfData[14], "CovLumi");
+        hCov[9] = makeCovFromUpAndDown(hUnfData[0], hUnfData[15], hUnfData[16], "CovSF");
+        hCov[10] = makeCovFromUpAndDown(hUnfData[0], hUnfData[17], hUnfData[0], "CovSherpaUnf");
+        hCov[11] = (TH2D*) hUnfMCStatCov[0]->Clone("CovTotSyst");
 
-        for (int i = 2; i < 9; ++i) hCov[9]->Add(hCov[i]);
+        for (int i = 2; i < 11; ++i) hCov[11]->Add(hCov[i]);
 
         if (doNormalized) {
             double Madtot = hMadGenCrossSection->Integral("width");
@@ -259,7 +264,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
             hGen2CrossSection->Scale(1.0/gen2tot);	
         }
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, doNormalized, hUnfData[0], hCov[9], hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection); 
+        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, doNormalized, hUnfData[0], hCov[11], hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection); 
         crossSectionPlot->Draw();
         crossSectionPlot->SaveAs(outputFileName + ".png");
         crossSectionPlot->SaveAs(outputFileName + ".pdf");
@@ -270,9 +275,9 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         createSystPlots(outputFileName, variable, lepSel, hUnfData);
 
         //--- print out break down of errors ---
-        for (int i = 2; i <= 9; ++i) {
+        for (int i = 2; i <= 11; ++i) {
             cout << hUnfData[0]->GetBinContent(i);
-            for (int j = 0; j <= 9; ++j) {
+            for (int j = 0; j <= 11; ++j) {
                 cout << " +/- " << sqrt(hCov[j]->GetBinContent(i,i))*100./hUnfData[0]->GetBinContent(i) << "%";
             }
             cout << endl;
@@ -295,7 +300,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hGen1CrossSection->Write("hGen1DYJetsCrossSection");
         hGen2CrossSection->Write("hGen2DYJetsCrossSection");
         respDYJets[0]->Write("respDYJetsCentral");
-        for (int i = 0; i < 9; ++i) {
+        for (int i = 0; i < 11; ++i) {
             hCov[i]->Write();
         }
         TParameter<double> pIntegratedLumi("integratedLumi", integratedLumi);
@@ -329,11 +334,13 @@ void createSystPlots(TString outputFileName, TString variable, TString lepSel, T
     // 3 - PU up, 4 - PU down, 
     // 5 - JER up, 6 - JER down, 
     // 7 - XSEC up, 8 - XSEC down
-    // 9 - Lumi up, 10 - Lumi down
-    // 11 - SF up, 12 - SF down
-    // 13 - SherpaUnf
-    TString syst[] = {"JES", "PU", "JER", "XSec", "Lumi", "S.F."};
-    for (int i = 1; i < 12; i += 2) {
+    // 9 - LES up, 10 - LES down
+    // 11 - LER up, 12 - LER down
+    // 13 - Lumi up, 14 - Lumi down
+    // 15 - SF up, 16 - SF down
+    // 17 - SherpaUnf
+    TString syst[] = {"JES", "PU", "JER", "XSec", "LES", "LER", "Lumi", "S.F."};
+    for (int i = 1; i < 16; i += 2) {
 
         TH1D *hCent = (TH1D*) hUnfData[0]->Clone();
         hCent->SetMarkerColor(kBlack);
@@ -436,17 +443,19 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TString lep
     TH1D *hIncMad = (TH1D*) hMadGenCrossSection->Clone("ZNGoodJets_Zinc_Mad");
     TH1D *hIncShe = (TH1D*) hSheGenCrossSection->Clone("ZNGoodJets_Zinc_She");
     TH1D *hIncPow = (TH1D*) hPowGenCrossSection->Clone("ZNGoodJets_Zinc_Pow");
-    TH2D *hCovInc[10] = {NULL};
+    TH2D *hCovInc[12] = {NULL};
     hCovInc[0] = (TH2D*) hCov[0]->Clone("CovDataStat");
     hCovInc[1] = (TH2D*) hCov[1]->Clone("CovMCStat");
     hCovInc[2] = (TH2D*) hCov[2]->Clone("CovJES");
     hCovInc[3] = (TH2D*) hCov[3]->Clone("CovPU");
     hCovInc[4] = (TH2D*) hCov[4]->Clone("CovJER");
     hCovInc[5] = (TH2D*) hCov[5]->Clone("CovXSec");
-    hCovInc[6] = (TH2D*) hCov[6]->Clone("CovLumi");
-    hCovInc[7] = (TH2D*) hCov[7]->Clone("CovSF");
-    hCovInc[8] = (TH2D*) hCov[8]->Clone("CovSherpaUnf");
-    hCovInc[9] = (TH2D*) hCov[9]->Clone("CovTotSyst");
+    hCovInc[6] = (TH2D*) hCov[6]->Clone("CovLES");
+    hCovInc[7] = (TH2D*) hCov[7]->Clone("CovLER");
+    hCovInc[8] = (TH2D*) hCov[8]->Clone("CovLumi");
+    hCovInc[9] = (TH2D*) hCov[9]->Clone("CovSF");
+    hCovInc[10] = (TH2D*) hCov[10]->Clone("CovSherpaUnf");
+    hCovInc[11] = (TH2D*) hCov[11]->Clone("CovTotSyst");
 
     int nBins = hInc->GetNbinsX();
     for (int i = 1; i <= nBins; i++) {
@@ -458,7 +467,7 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TString lep
         double binStatMadError2 = 0;
         double binStatSheError2 = 0;
         double binStatPowError2 = 0;
-        double binCov[10] = {0};
+        double binCov[12] = {0};
         for (int j = i; j <= nBins; j++) {
             binSum += hInc->GetBinContent(j);
             binSumMad += hIncMad->GetBinContent(j);
@@ -468,7 +477,7 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TString lep
             binStatMadError2 += pow(hIncMad->GetBinError(j), 2);
             binStatSheError2 += pow(hIncShe->GetBinError(j), 2);
             binStatPowError2 += pow(hIncPow->GetBinError(j), 2);
-            for (int k = 0; k < 10; k++) {
+            for (int k = 0; k < 12; k++) {
                 binCov[k] += hCovInc[k]->GetBinContent(j, j);
             }
         }
@@ -480,12 +489,12 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TString lep
         hIncMad->SetBinError(i, sqrt(binStatMadError2));
         hIncShe->SetBinError(i, sqrt(binStatSheError2));
         hIncPow->SetBinError(i, sqrt(binStatPowError2));
-        for (int k = 0; k < 10; k++) {
+        for (int k = 0; k < 12; k++) {
             hCovInc[k]->SetBinContent(i, i, binCov[k]);
         }
     }
 
-    TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, TString("ZNGoodJets_Zinc"), doNormalized, hInc, hCovInc[9], hIncMad, hIncShe, hIncPow); 
+    TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, TString("ZNGoodJets_Zinc"), doNormalized, hInc, hCovInc[11], hIncMad, hIncShe, hIncPow); 
     outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc");
     crossSectionPlot->Draw();
     crossSectionPlot->SaveAs(outputFileName + ".png");
@@ -522,6 +531,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
     table += "\\tiny{stat [\\%]} & \\tiny{MC stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
     table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
+    table += "\\tiny{LES [\\%]} & \\tiny{LER [\\%]} & ";
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
     int start = 1;
@@ -547,7 +557,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
         numbers.Form("%#.3g", xs);
         table += numbers + " & ";
         // total uncertainty
-        numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i) + hCov[9]->GetBinContent(i,i))*100./xs);
+        numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i) + hCov[11]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // stat uncertainty
         numbers.Form("%#.2g", sqrt(hCov[0]->GetBinContent(i,i))*100./xs);
@@ -568,13 +578,19 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
         numbers.Form("%#.2g", sqrt(hCov[5]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // Lumi uncertainty
-        numbers.Form("%#.2g", sqrt(hCov[6]->GetBinContent(i,i))*100./xs);
-        table += numbers + " & ";
-        // Unf uncertainty
         numbers.Form("%#.2g", sqrt(hCov[8]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
-        // SF uncertinaty
+        // LES uncertainty
+        numbers.Form("%#.2g", sqrt(hCov[6]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // LER uncertainty
         numbers.Form("%#.2g", sqrt(hCov[7]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // Unf uncertainty
+        numbers.Form("%#.2g", sqrt(hCov[10]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // SF uncertinaty
+        numbers.Form("%#.2g", sqrt(hCov[9]->GetBinContent(i,i))*100./xs);
         table += numbers + " \\\\\n";
     }
 
@@ -831,11 +847,23 @@ TH2D* makeCovFromUpAndDown(const TH1D* hUnfDataCentral, const TH1D* hUnfDataUp, 
         double sigmaMeani = 0.5*fabs(hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i)); 
         if (name.Index("Sherpa") >= 0) sigmaMeani *= 2;
         int signi = (hUnfDataUp->GetBinContent(i) - hUnfDataDown->GetBinContent(i) < 0) ? -1 : 1;
+        if (i > 1 && i < nBins) {
+            if ((hUnfDataUp->GetBinContent(i-1) - hUnfDataDown->GetBinContent(i-1)) * (hUnfDataUp->GetBinContent(i+1) - hUnfDataDown->GetBinContent(i+1)) < 0) {
+                sigmaMeani = 0.5*(0.5*fabs(hUnfDataUp->GetBinContent(i-1) - hUnfDataDown->GetBinContent(i-1)) + 0.5*fabs(hUnfDataUp->GetBinContent(i+1) - hUnfDataDown->GetBinContent(i+1)));
+                if (name.Index("Sherpa") >= 0) sigmaMeani *= 2;
+            }
+        }
 
         for (int j = 1; j <= nBins; ++j) {
             double sigmaMeanj = 0.5*fabs(hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j)); 
             if (name.Index("Sherpa") >= 0) sigmaMeanj *= 2;
             int signj = (hUnfDataUp->GetBinContent(j) - hUnfDataDown->GetBinContent(j) < 0) ? -1 : 1;
+            if (j > 1 && j < nBins) {
+                if ((hUnfDataUp->GetBinContent(j-1) - hUnfDataDown->GetBinContent(j-1)) * (hUnfDataUp->GetBinContent(j+1) - hUnfDataDown->GetBinContent(j+1)) < 0) {
+                    sigmaMeanj = 0.5*(0.5*fabs(hUnfDataUp->GetBinContent(j-1) - hUnfDataDown->GetBinContent(j-1)) + 0.5*fabs(hUnfDataUp->GetBinContent(j+1) - hUnfDataDown->GetBinContent(j+1)));
+                    if (name.Index("Sherpa") >= 0) sigmaMeanj *= 2;
+                }
+            }
 
             double correlation = (i == j) ? 1 : 1;
             h->SetBinContent(i, j, correlation * signi * signj * sigmaMeani * sigmaMeanj);

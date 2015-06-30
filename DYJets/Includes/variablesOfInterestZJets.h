@@ -13,10 +13,9 @@ struct variableStruct{
 
 //--- Z Jets ------------------------------------
 
-const unsigned int NVAROFINTERESTZJETS(115);
+const unsigned int NVAROFINTERESTZJETS(78);
 const variableStruct VAROFINTERESTZJETS[] = {
     //--  Name  ------------------ log - decrease - Mu SVD kterm - Mu Bayes kterm - E SVD kterm - E Bayes kterm  - E Bayes kterm COMBINE
-    {"ZNGoodJets_Zexc",             1,      1,           7,              4,             3,            3 ,               3    }, // 0
     //-- jet Pt distribution
     {"FirstJetPt_Zinc1jet",         1,      1,          11,              5,             9,            9 ,               6    }, // 1
     {"SecondJetPt_Zinc2jet",        1,      1,          14,              8,            11,            7 ,               7    }, // 2
@@ -30,11 +29,11 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"JetsHT_Zinc4jet",             1,      1,           5,              5,             4,            4 ,               3    }, // 9
     {"JetsHT_Zinc5jet",             1,      1,           3,              2,             4,            3 ,               1    }, // 10       
     //-- jet Eta distribution
-    {"FirstJetEta_Zinc1jet",        0,      1,          10,              4,            18,            4 ,               5    }, // 11
-    {"SecondJetEta_Zinc2jet",       0,      1,           6,              5,            16,            5 ,               5    }, // 12
-    {"ThirdJetEta_Zinc3jet",        0,      1,           4,              4,             8,            4 ,               5    }, // 13
-    {"FourthJetEta_Zinc4jet",       0,      1,           4,              4,             4,            5 ,               4    }, // 14
-    {"FifthJetEta_Zinc5jet",        0,      1,           3,              2,             2,            2 ,               1    }, // 15    
+//    {"FirstJetEta_Zinc1jet",        0,      1,          10,              4,            18,            4 ,               5    }, // 11
+//    {"SecondJetEta_Zinc2jet",       0,      1,           6,              5,            16,            5 ,               5    }, // 12
+//    {"ThirdJetEta_Zinc3jet",        0,      1,           4,              4,             8,            4 ,               5    }, // 13
+//    {"FourthJetEta_Zinc4jet",       0,      1,           4,              4,             4,            5 ,               4    }, // 14
+//    {"FifthJetEta_Zinc5jet",        0,      1,           3,              2,             2,            2 ,               1    }, // 15    
     //-- jet Rapidity distribution
     {"FirstJetAbsRapidity_Zinc1jet",        0,      1,          10,              4,            18,            4 ,               5    }, // 11
     {"SecondJetAbsRapidity_Zinc2jet",       0,      1,           6,              5,            16,            5 ,               5    }, // 12
@@ -43,7 +42,7 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"FifthJetAbsRapidity_Zinc5jet",        0,      1,           3,              2,             2,            2 ,               1    }, // 15    
     //-- Jets Mass distribution
     {"JetsMass_Zinc2jet",           0,      1,           9,              5,            13,           11 ,               5    }, // 16
-    {"ZPt_Zinc0jet",                0,      1,           9,              5,            13,           11 ,               5    }, // 17
+//    {"ZPt_Zinc0jet",                0,      1,           9,              5,            13,           11 ,               5    }, // 17
     {"ZAbsRapidity_Zinc1jet",       0,      1,           9,              5,            13,           11 ,               5    }, // 18
     {"SumZJetRapidity_Zinc1jet",    0,      1,           9,              5,            13,           11 ,               5    }, // 19
     {"DifZJetRapidity_Zinc1jet",    0,      1,           9,              5,            13,           11 ,               5    }, // 20
@@ -55,10 +54,10 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"DifZFirstJetRapidity_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"SumZFirstJetEta_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"DifZFirstJetEta_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsZRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+ //   {"AbsZRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+ //   {"AbsJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+ //   {"SumZJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+ //   {"DifZJetRapidity_Zexc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"AbsZRapidity_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"AbsFirstJetRapidity_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"SumZFirstJetRapidity_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
@@ -98,14 +97,14 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"DPhiZSecondJet_ZPt150_HT300_Zinc3jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"DPhiZThirdJet_ZPt150_HT300_Zinc3jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     //different Z boson PT cuts/////////
-    {"AbsZRapidity_ZPt100_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsZRapidity_ZPt100_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_ZPt100_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZFirstJetRapidity_ZPt100_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_ZPt100_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZSecondJetRapidity_ZPt100_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"AbsZRapidity_ZPt150_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"AbsFirstJetRapidity_ZPt150_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"SumZFirstJetRapidity_ZPt150_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
@@ -119,25 +118,26 @@ const variableStruct VAROFINTERESTZJETS[] = {
     {"SumZFirstJetRapidity_ZPt300_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"DifZFirstJetRapidity_ZPt300_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     {"ZPt_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"ZPt_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"ZPt_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     //different JetPt cuts////////
-    {"AbsZRapidity_FirstJetPt50_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsZRapidity_FirstJetPt80_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_FirstJetPt50_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZFirstJetRapidity_FirstJetPt50_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_FirstJetPt80_Zinc1jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZFirstJetRapidity_FirstJetPt80_Zinc1jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
     //Set jet rapidity discriminator////
-    {"AbsZRapidity_DifJetRapidityl2_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsZRapidity_DifJetRapiditys2_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"AbsFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"SumZFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
-    {"DifZFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_DifJetRapidityl2_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZFirstJetRapidity_DifJetRapidityl2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsZRapidity_DifJetRapiditys2_Zinc2jet",        1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"AbsFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"SumZFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+//    {"DifZFirstJetRapidity_DifJetRapiditys2_Zinc2jet",         1,      1,           3,              3,             3,            3 ,               3    }, // 1
+    {"ZNGoodJets_Zexc",             1,      1,           7,              4,             3,            3 ,               3    }, // 0
 }; 
 
 int findVariable(const TString &variable);

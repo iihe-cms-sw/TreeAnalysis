@@ -35,7 +35,7 @@ TString getEnergy()
 
 TFile* getFile(TString histoDir, TString lepSel, TString energy, TString Name, int jetPtMin, int jetEtaMax, TString closureTest, TString syst)
 {
-    
+
     TString fileName = histoDir; // TString to contain the name of the file
     if (!fileName.EndsWith("/")) fileName += "/";
 
@@ -101,7 +101,11 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
         Syst.push_back("1_Up");      // 1 up: PU up
         Syst.push_back("1_Down");    // 1 down: PU down
         Syst.push_back("4_Up");      // 4 up: JER up
-        Syst.push_back("4_Down");    // 4 up: JER down
+        Syst.push_back("4_Down");    // 4 down: JER down
+        Syst.push_back("5_Up");      // 5 up: LES up
+        Syst.push_back("5_Down");    // 5 down: LES down
+        Syst.push_back("6_Up");      // 6 up: LER up
+        Syst.push_back("6_Down");    // 6 down: LER down
     }
     else { // for background we have
         Syst.push_back("0");         // 0: central
@@ -109,6 +113,8 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
         Syst.push_back("1_Down");    // 1 down: PU down
         Syst.push_back("3_Up");      // 3 up: XSec up
         Syst.push_back("3_Down");    // 3 down: Xsec down
+        Syst.push_back("5_Up");      // 5 up: LES up
+        Syst.push_back("5_Down");    // 5 down: LES down
     };
 
     //--- determnie how many files we have and open them all ---
@@ -119,7 +125,7 @@ void getFiles(TString histoDir, TFile *Files[], TString lepSel, TString energy, 
     //----------------------------------------------------------
 }
 
-void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetEtaMax, TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
+void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin, int jetEtaMax, TFile *fData[3], TFile *fDYJets[9], TFile *fBg[][7], int nBg)
 {
     //--- Open data files ---------------------------------------------------------------------- 
     getFiles(histoDir, fData, lepSel, energy, Samples[DATA].name, jetPtMin, jetEtaMax); 
@@ -136,7 +142,7 @@ void getAllFiles(TString histoDir, TString lepSel, TString energy, int jetPtMin,
     //------------------------------------------------------------------------------------------ 
 }
 
-void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9], TFile *fDYJets[5], TH1D *hRecBg[][9], TH1D *hRecSumBg[9], TFile *fBg[][5], int nBg, RooUnfoldResponse *respDYJets[], TH1D *hFakDYJets[14])
+void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hRecDYJets[13], TH1D *hGenDYJets[11], TH2D *hResDYJets[13], TFile *fDYJets[9], TH1D *hRecBg[][11], TH1D *hRecSumBg[11], TFile *fBg[][7], int nBg, RooUnfoldResponse *respDYJets[], TH1D *hFakDYJets[18])
 {
 
     //--- get rec Data histograms ---
@@ -154,7 +160,7 @@ void getAllHistos(TString variable, TH1D *hRecData[3], TFile *fData[3], TH1D *hR
     //--- get rec Bg histograms ---
     for (unsigned short iBg = 0; iBg < nBg; ++iBg) {
         getHistos(hRecBg[iBg], fBg[iBg], variable);
-        for (unsigned short iSyst = 0; iSyst < 9; ++iSyst) { 
+        for (unsigned short iSyst = 0; iSyst < 11; ++iSyst) { 
             if (iBg == 0) hRecSumBg[iSyst] = (TH1D*) hRecBg[0][iSyst]->Clone();
             else hRecSumBg[iSyst]->Add(hRecBg[iBg][iSyst]);
         }
@@ -186,7 +192,10 @@ void closeFiles(TFile *Files[])
         if (fileName.Index("Data") >= 0) {
             nFiles = 3; 
         }
-        else nFiles = 5; 
+        else if (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0){
+            nFiles = 9;
+        }
+        else nFiles = 7; 
 
         for (int i(0); i < nFiles; i++){
             Files[i]->cd();
@@ -205,7 +214,7 @@ void closeFiles(TFile *Files[], int nFiles)
     }
 }
 
-void closeAllFiles(TFile *fData[3], TFile *fDYJets[5], TFile *fBg[][5], int nBg)
+void closeAllFiles(TFile *fData[3], TFile *fDYJets[9], TFile *fBg[][7], int nBg)
 {
     //--- Close data files ---------------------------------------------------------------------
     closeFiles(fData);
@@ -232,9 +241,17 @@ TH1D* getHisto(TFile *File, const TString variable)
 void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
-
     bool isData = (fileName.Index("Data") >= 0);
-    int nFiles = isData ? 3 : 5;
+    bool isSignal = (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0);
+    int nFiles = 0;
+
+    if (fileName.Index("Data") >= 0) {
+        nFiles = 3; 
+    }
+    else if (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0){
+        nFiles = 9;
+    }
+    else nFiles = 7; 
 
     for (int i(0); i < nFiles; i++){
         Files[i]->cd();
@@ -249,14 +266,25 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
         //    2.6%
 
         double lumiErr = 0.026;
-        //--- lumi scale up ---
-        histograms[5] = (TH1D*) histograms[0]->Clone();
-        histograms[5]->Scale(1. + lumiErr);
+        if (isSignal) {
+            //--- lumi scale up ---
+            histograms[9] = (TH1D*) histograms[0]->Clone();
+            histograms[9]->Scale(1. + lumiErr);
 
-        //--- lumi scale down ---
-        histograms[6] = (TH1D*) histograms[0]->Clone();
-        histograms[6]->Scale(1. - lumiErr);
+            //--- lumi scale down ---
+            histograms[10] = (TH1D*) histograms[0]->Clone();
+            histograms[10]->Scale(1. - lumiErr);
+        }
 
+        else{
+            //--- lumi scale up ---
+            histograms[7] = (TH1D*) histograms[0]->Clone();
+            histograms[7]->Scale(1. + lumiErr);
+
+            //--- lumi scale down ---
+            histograms[8] = (TH1D*) histograms[0]->Clone();
+            histograms[8]->Scale(1. - lumiErr);
+        }
 
         //--- From central histograms, we simulate the histograms
         //    for scale factors up and down systematics. It is just 
@@ -269,14 +297,25 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
         //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
         double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
         if (variable.Index("gen") < 0) {
+            if (isSignal) {
+                //--- SF up ---
+                histograms[11] = (TH1D*) histograms[0]->Clone();
+                histograms[11]->Scale(1. + errSF);
 
-            //--- SF up ---
-            histograms[7] = (TH1D*) histograms[0]->Clone();
-            histograms[7]->Scale(1. + errSF);
+                //--- SF down ---
+                histograms[12] = (TH1D*) histograms[0]->Clone();
+                histograms[12]->Scale(1. - errSF);
+            }
 
-            //--- SF down ---
-            histograms[8] = (TH1D*) histograms[0]->Clone();
-            histograms[8]->Scale(1. - errSF);
+            else {
+                //--- SF up ---
+                histograms[9] = (TH1D*) histograms[0]->Clone();
+                histograms[9]->Scale(1. + errSF);
+
+                //--- SF down ---
+                histograms[10] = (TH1D*) histograms[0]->Clone();
+                histograms[10]->Scale(1. - errSF);
+            }
         }
     }
 }
@@ -286,7 +325,16 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
     bool isData = (fileName.Index("Data") >= 0);
-    int nFiles = isData ? 3 : 5;
+    bool isSignal = (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0);
+    int nFiles = 0;
+
+    if (fileName.Index("Data") >= 0) {
+        nFiles = 3; 
+    }
+    else if (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0){
+        nFiles = 9;
+    }
+    else nFiles = 7; 
 
     for (unsigned short i = 0; i < nFiles; i++){
         Files[i]->cd();
@@ -300,14 +348,25 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
         //    2.6%
 
         double lumiErr = 0.026;
-        //--- lumi scale up ---
-        histograms[5] = (TH2D*) histograms[0]->Clone();
-        histograms[5]->Scale(1. + lumiErr);
+        if (isSignal) {
+            //--- lumi scale up ---
+            histograms[9] = (TH2D*) histograms[0]->Clone();
+            histograms[9]->Scale(1. + lumiErr);
 
-        //--- lumi scale down ---
-        histograms[6] = (TH2D*) histograms[0]->Clone();
-        histograms[6]->Scale(1. - lumiErr);
+            //--- lumi scale down ---
+            histograms[10] = (TH2D*) histograms[0]->Clone();
+            histograms[10]->Scale(1. - lumiErr);
+        }
 
+        else{
+            //--- lumi scale up ---
+            histograms[7] = (TH2D*) histograms[0]->Clone();
+            histograms[7]->Scale(1. + lumiErr);
+
+            //--- lumi scale down ---
+            histograms[8] = (TH2D*) histograms[0]->Clone();
+            histograms[8]->Scale(1. - lumiErr);
+        }
 
         //--- From central histograms, we simulate the histograms
         //    for scale factors up and down systematics. It is just 
@@ -319,14 +378,25 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
         //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
         double errSF = (lepSel == "DMu") ? 0.005 : 0.005;
         if (variable.Index("gen") < 0) {
+            if (isSignal) {
+                //--- SF up ---
+                histograms[11] = (TH2D*) histograms[0]->Clone();
+                histograms[11]->Scale(1. + errSF);
 
-            //--- SF up ---
-            histograms[7] = (TH2D*) histograms[0]->Clone();
-            histograms[7]->Scale(1. + errSF);
+                //--- SF down ---
+                histograms[12] = (TH2D*) histograms[0]->Clone();
+                histograms[12]->Scale(1. - errSF);
+            }
 
-            //--- SF down ---
-            histograms[8] = (TH2D*) histograms[0]->Clone();
-            histograms[8]->Scale(1. - errSF);
+            else{
+                //--- SF up ---
+                histograms[9] = (TH2D*) histograms[0]->Clone();
+                histograms[9]->Scale(1. + errSF);
+
+                //--- SF down ---
+                histograms[10] = (TH2D*) histograms[0]->Clone();
+                histograms[10]->Scale(1. - errSF);
+            }
         }
     }
 }
@@ -336,7 +406,7 @@ void getResp(RooUnfoldResponse *response, TFile *File, TString variable)
 {
     TH1D *hRec = (TH1D*) File->Get(variable)->Clone();
     hRec->Reset();
-    
+
     response = new RooUnfoldResponse(
             hRec, 
             (TH1D*) File->Get("gen" + variable), 
@@ -363,8 +433,9 @@ void getResps(RooUnfoldResponse *responses[], TFile *Files[], TString variable)
 {
     TString fileName = Files[0]->GetName();
     int nFiles;
-    if (fileName.Index("Data") >= 0) nFiles = 3; 
-    else nFiles = 5;
+    if (fileName.Index("Data") >= 0) nFiles = 3;
+    else if (fileName.Index("DYJets") >= 0 && fileName.Index("UNFOLDING") >=0 && fileName.Index("Tau") < 0) nFiles = 9;
+    else nFiles = 7;
 
     for (int i(0); i < nFiles; i++){
         Files[i]->cd();
@@ -411,7 +482,7 @@ TH1D* getFakes(TH1D *hRecDYJets, TH1D *hRecData, TH1D *hRecSumBg, TH2D *hResDYJe
 
 }
 
-void getFakes(TH1D *hFakDYJets[14], TH1D *hRecData[3], TH1D *hRecSumBg[9], TH1D *hRecDYJets[9], TH2D *hResDYJets[9])
+void getFakes(TH1D *hFakDYJets[18], TH1D *hRecData[3], TH1D *hRecSumBg[11], TH1D *hRecDYJets[13], TH2D *hResDYJets[13])
 {
 
     hFakDYJets[0] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[0], hResDYJets[0]);
@@ -425,12 +496,16 @@ void getFakes(TH1D *hFakDYJets[14], TH1D *hRecData[3], TH1D *hRecSumBg[9], TH1D 
     hFakDYJets[8] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[4], hResDYJets[0]);
     hFakDYJets[9] = getFakes(hRecDYJets[5], hRecData[0], hRecSumBg[5], hResDYJets[5]);
     hFakDYJets[10] = getFakes(hRecDYJets[6], hRecData[0], hRecSumBg[6], hResDYJets[6]);
-    hFakDYJets[11] = getFakes(hRecDYJets[7], hRecData[0], hRecSumBg[7], hResDYJets[7]);
-    hFakDYJets[12] = getFakes(hRecDYJets[8], hRecData[0], hRecSumBg[8], hResDYJets[8]);
-    hFakDYJets[13] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[0], hResDYJets[0]);
+    hFakDYJets[11] = getFakes(hRecDYJets[7], hRecData[0], hRecSumBg[0], hResDYJets[7]);
+    hFakDYJets[12] = getFakes(hRecDYJets[8], hRecData[0], hRecSumBg[0], hResDYJets[8]);
+    hFakDYJets[13] = getFakes(hRecDYJets[9], hRecData[0], hRecSumBg[7], hResDYJets[9]);
+    hFakDYJets[14] = getFakes(hRecDYJets[10], hRecData[0], hRecSumBg[8], hResDYJets[10]);
+    hFakDYJets[15] = getFakes(hRecDYJets[11], hRecData[0], hRecSumBg[9], hResDYJets[11]);
+    hFakDYJets[16] = getFakes(hRecDYJets[12], hRecData[0], hRecSumBg[10], hResDYJets[12]);
+    hFakDYJets[17] = getFakes(hRecDYJets[0], hRecData[0], hRecSumBg[0], hResDYJets[0]);
 }
 
-void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hGenDYJets[7], TH2D *hResDYJets[9])
+void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[13], TH1D *hGenDYJets[11], TH2D *hResDYJets[13])
 {
     TH1D *hRec = (TH1D*) hRecDYJets[0]->Clone();
     hRec->Reset();
@@ -470,21 +545,37 @@ void getResps(RooUnfoldResponse *responses[], TH1D *hRecDYJets[9], TH1D *hGenDYJ
     responses[8] = new RooUnfoldResponse(hRec, hGenDYJets[0], hResDYJets[0]); 
     responses[8]->UseOverflow();
 
-    //--- build response object for Lumi up ---
+    //--- build response object for LES up ---
     responses[9] = new RooUnfoldResponse(hRec, hGenDYJets[5], hResDYJets[5]); 
     responses[9]->UseOverflow();
 
-    //--- build response object for Lumi down ---
+    //--- build response object for LES down ---
     responses[10] = new RooUnfoldResponse(hRec, hGenDYJets[6], hResDYJets[6]); 
     responses[10]->UseOverflow();
 
-    //--- build response object for SF up ---
-    responses[11] = new RooUnfoldResponse(hRec, hGenDYJets[0], hResDYJets[7]); 
+    //--- build response object for LER up ---
+    responses[11] = new RooUnfoldResponse(hRec, hGenDYJets[7], hResDYJets[7]); 
     responses[11]->UseOverflow();
 
-    //--- build response object for SF down ---
-    responses[12] = new RooUnfoldResponse(hRec, hGenDYJets[0], hResDYJets[8]); 
+    //--- build response object for LER down ---
+    responses[12] = new RooUnfoldResponse(hRec, hGenDYJets[8], hResDYJets[8]); 
     responses[12]->UseOverflow();
+
+    //--- build response object for Lumi up ---
+    responses[13] = new RooUnfoldResponse(hRec, hGenDYJets[9], hResDYJets[9]); 
+    responses[13]->UseOverflow();
+
+    //--- build response object for Lumi down ---
+    responses[14] = new RooUnfoldResponse(hRec, hGenDYJets[10], hResDYJets[10]); 
+    responses[14]->UseOverflow();
+
+    //--- build response object for SF up ---
+    responses[15] = new RooUnfoldResponse(hRec, hGenDYJets[0], hResDYJets[11]); 
+    responses[15]->UseOverflow();
+
+    //--- build response object for SF down ---
+    responses[16] = new RooUnfoldResponse(hRec, hGenDYJets[0], hResDYJets[12]); 
+    responses[16]->UseOverflow();
 
 }
 

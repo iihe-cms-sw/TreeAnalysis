@@ -81,6 +81,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D *hCovLumiSystDE = (TH2D*) fDE->Get("CovLumi");
         TH2D *hCovSFSystDE = (TH2D*) fDE->Get("CovSF");
         TH2D *hCovJESSystDE = (TH2D*) fDE->Get("CovJES");
+        TH2D *hCovLESSystDE = (TH2D*) fDE->Get("CovLES");
+        TH2D *hCovLERSystDE = (TH2D*) fDE->Get("CovLER");
         TH2D *hCovSherpaUnfSystDE = (TH2D*) fDE->Get("CovSherpaUnf");
 
         fDMu->cd();
@@ -96,6 +98,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         TH2D *hCovLumiSystDMu = (TH2D*) fDMu->Get("CovLumi");
         TH2D *hCovSFSystDMu = (TH2D*) fDMu->Get("CovSF");
         TH2D *hCovJESSystDMu = (TH2D*) fDMu->Get("CovJES");
+        TH2D *hCovLESSystDMu = (TH2D*) fDMu->Get("CovLES");
+        TH2D *hCovLERSystDMu = (TH2D*) fDMu->Get("CovLER");
         TH2D *hCovSherpaUnfSystDMu = (TH2D*) fDMu->Get("CovSherpaUnf");
         //---------------------------------------------------------------------
 
@@ -126,8 +130,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
 
         //--- fill in the vector of vector of covariances ---
         vector<vector<TH2D*>> covariances{
-            {hCovDataStatDE, hCovMCStatDE, hCovPUSystDE, hCovJERSystDE, hCovXSecSystDE, hCovLumiSystDE, hCovSFSystDE, hCovJESSystDE, hCovSherpaUnfSystDE}, 
-                {hCovDataStatDMu, hCovMCStatDMu, hCovPUSystDMu, hCovJERSystDMu, hCovXSecSystDMu, hCovLumiSystDMu, hCovSFSystDMu, hCovJESSystDMu, hCovSherpaUnfSystDMu}
+            {hCovDataStatDE, hCovMCStatDE, hCovPUSystDE, hCovJERSystDE, hCovXSecSystDE, hCovLumiSystDE, hCovSFSystDE, hCovJESSystDE, hCovLESSystDE, hCovLERSystDE, hCovSherpaUnfSystDE}, 
+                {hCovDataStatDMu, hCovMCStatDMu, hCovPUSystDMu, hCovJERSystDMu, hCovXSecSystDMu, hCovLumiSystDMu, hCovSFSystDMu, hCovJESSystDMu, hCovLESSystDMu, hCovLERSystDMu, hCovSherpaUnfSystDMu}
         };
         //---------------------------------------------------------------------
 
@@ -168,6 +172,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         covxaxbSyst->Add(covuxaxb[6]);
         covxaxbSyst->Add(covuxaxb[7]);
         covxaxbSyst->Add(covuxaxb[8]);
+        covxaxbSyst->Add(covuxaxb[9]);
+        covxaxbSyst->Add(covuxaxb[10]);
         covxaxbSyst->SetName("CombCovTotSyst");
 
         int nbins = covxaxb->GetNbinsX();
@@ -205,7 +211,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
             cout << hCombination->GetBinContent(i) << endl;
         }
         //--- print out break down of errors ---
-        for (int i = 2; i <= 9; ++i) {
+        for (int i = 2; i <= 11; ++i) {
             cout << hCombination->GetBinContent(i);
             for (int j = 0; j < covuxaxb.size(); ++j) {
                 cout << " +/- " << sqrt(covuxaxb[j]->GetBinContent(i,i))*100./hCombination->GetBinContent(i) << "%";
@@ -241,6 +247,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         hCovLumiSystDE->Write("DECovLumi");
         hCovSFSystDE->Write("DECovSF");
         hCovJESSystDE->Write("DECovJES");
+        hCovLESSystDE->Write("DECovLES");
+        hCovLERSystDE->Write("DECovLER");
 
         hUnfDMu->Write("DMuUnfDataCentral");
         hCovDataStatDMu->Write("DMuCovDataStat");
@@ -251,6 +259,8 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         hCovLumiSystDMu->Write("DMuCovLumi");
         hCovSFSystDMu->Write("DMuCovSF");
         hCovJESSystDMu->Write("DMuCovJES");
+        hCovLESSystDMu->Write("DMuCovLES");
+        hCovLERSystDMu->Write("DMuCovLER");
 
         //--- Close all files ---
         outputRootFile->Close();
@@ -278,7 +288,9 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfD
     hCovInc.push_back((TH2D*) hCov[5]->Clone("CovLumi"));
     hCovInc.push_back((TH2D*) hCov[6]->Clone("CovSF"));
     hCovInc.push_back((TH2D*) hCov[7]->Clone("CovJES"));
-    hCovInc.push_back((TH2D*) hCov[8]->Clone("CovSherpaUnf"));
+    hCovInc.push_back((TH2D*) hCov[8]->Clone("CovLES"));
+    hCovInc.push_back((TH2D*) hCov[9]->Clone("CovLER"));
+    hCovInc.push_back((TH2D*) hCov[10]->Clone("CovSherpaUnf"));
 
     int nBins = hInc->GetNbinsX();
     for (int i = 1; i <= nBins; i++) {
@@ -290,7 +302,7 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfD
         double binStatMadError2 = 0;
         double binStatSheError2 = 0;
         double binStatPowError2 = 0;
-        double binCov[9] = {0};
+        double binCov[11] = {0};
         double binCovSystError2 = 0;
         for (int j = i; j <= nBins; j++) {
             binSum += hInc->GetBinContent(j);
@@ -302,7 +314,7 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfD
             binStatSheError2 += pow(hIncShe->GetBinError(j), 2);
             binStatPowError2 += pow(hIncPow->GetBinError(j), 2);
             binCovSystError2 += hIncCovSyst->GetBinError(j, j);
-            for (int k = 0; k < 9; k++) {
+            for (int k = 0; k < 11; k++) {
                 binCov[k] += hCovInc[k]->GetBinContent(j, j);
             }
         }
@@ -315,7 +327,7 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TH1D *hUnfD
         hIncShe->SetBinError(i, sqrt(binStatSheError2));
         hIncPow->SetBinError(i, sqrt(binStatPowError2));
         hIncCovSyst->SetBinError(i, i, binCovSystError2);
-        for (int k = 0; k < 9; k++) {
+        for (int k = 0; k < 11; k++) {
             hCovInc[k]->SetBinContent(i, i, binCov[k]);
         }
     }
@@ -357,6 +369,7 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
     table += "\\tiny{stat [\\%]} & \\tiny{MC stat [\\%]}  & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
     table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
+    table += "\\tiny{LES [\\%]} & \\tiny{LER [\\%]} & ";
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
     int start = 1;
@@ -414,8 +427,14 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
         // Lumi uncertainty
         numbers.Form("%#.2g", sqrt(covuxaxb[5]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
-        // Unf uncertainty
+        // LES uncertainty
         numbers.Form("%#.2g", sqrt(covuxaxb[8]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // LER uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[9]->GetBinContent(i,i))*100./xs);
+        table += numbers + " & ";
+        // Unf uncertainty
+        numbers.Form("%#.2g", sqrt(covuxaxb[10]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // SF uncertinaty
         numbers.Form("%#.2g", sqrt(covuxaxb[6]->GetBinContent(i,i))*100./xs);

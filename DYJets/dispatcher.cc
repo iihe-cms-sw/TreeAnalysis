@@ -75,10 +75,10 @@ int main(int argc, char **argv)
     if (doHisto) {
         //--- Generate the histofiles ---
         std::thread DataThread[6];
-        std::thread DYJetsThread[10];
-        std::thread BGThread[10];
-        std::thread TAUThread[10];
-        std::thread WJETSThread[10];
+        std::thread DYJetsThread[18];
+        std::thread BGThread[18];
+        std::thread TAUThread[18];
+        std::thread WJETSThread[18];
         std::thread AMCATNLO[2];
         std::thread SHERPA14[2];
         std::thread SHERPA2[40];
@@ -92,29 +92,45 @@ int main(int argc, char **argv)
             DataThread[i*3 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=1", machines[1]);
             DataThread[i*3 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DATA lepSel=" + lep + " whichSyst=2", machines[2]);
 
-            DYJetsThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=0", machines[0]);
-            DYJetsThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=1", machines[1]);
-            DYJetsThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=2", machines[2]);
-            DYJetsThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=3", machines[3]);
-            DYJetsThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=4", machines[4]);
+            DYJetsThread[i*9 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=0", machines[0]);
+            DYJetsThread[i*9 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=1", machines[1]);
+            DYJetsThread[i*9 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=2", machines[2]);
+            DYJetsThread[i*9 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=3", machines[3]);
+            DYJetsThread[i*9 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=4", machines[4]);
+            DYJetsThread[i*9 + 5] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=5", machines[0]);
+            DYJetsThread[i*9 + 6] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=6", machines[1]);
+            DYJetsThread[i*9 + 7] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=7", machines[2]);
+            DYJetsThread[i*9 + 8] = std::thread(executeInThread, "./runZJets", "doWhat=DYJETS lepSel=" + lep + " whichSyst=8", machines[3]);
 
-            BGThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=0", machines[0]);
-            BGThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=1", machines[1]);
-            BGThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=2", machines[2]);
-            BGThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=3", machines[3]);
-            BGThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=4", machines[4]);
+            BGThread[i*9 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=0", machines[0]);
+            BGThread[i*9 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=1", machines[1]);
+            BGThread[i*9 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=2", machines[2]);
+            BGThread[i*9 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=3", machines[3]);
+            BGThread[i*9 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=4", machines[4]);
+            BGThread[i*9 + 5] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=5", machines[0]);
+            BGThread[i*9 + 6] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=6", machines[1]);
+            BGThread[i*9 + 7] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=7", machines[2]);
+            BGThread[i*9 + 8] = std::thread(executeInThread, "./runZJets", "doWhat=BACKGROUND lepSel=" + lep + " whichSyst=8", machines[3]);
 
-            TAUThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=0", machines[0]);
-            TAUThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=1", machines[1]);
-            TAUThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=2", machines[2]);
-            TAUThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=3", machines[3]);
-            TAUThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=4", machines[4]);
+            TAUThread[i*9 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=0", machines[0]);
+            TAUThread[i*9 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=1", machines[1]);
+            TAUThread[i*9 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=2", machines[2]);
+            TAUThread[i*9 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=3", machines[3]);
+            TAUThread[i*9 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=4", machines[4]);
+            TAUThread[i*9 + 5] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=5", machines[0]);
+            TAUThread[i*9 + 6] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=6", machines[1]);
+            TAUThread[i*9 + 7] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=7", machines[2]);
+            TAUThread[i*9 + 8] = std::thread(executeInThread, "./runZJets", "doWhat=TAU lepSel=" + lep + " whichSyst=8", machines[3]);
 
-            WJETSThread[i*5 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=0", machines[0]);
-            WJETSThread[i*5 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=1", machines[1]);
-            WJETSThread[i*5 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=2", machines[2]);
-            WJETSThread[i*5 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=3", machines[3]);
-            WJETSThread[i*5 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=4", machines[4]);
+            WJETSThread[i*9 + 0] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=0", machines[0]);
+            WJETSThread[i*9 + 1] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=1", machines[1]);
+            WJETSThread[i*9 + 2] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=2", machines[2]);
+            WJETSThread[i*9 + 3] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=3", machines[3]);
+            WJETSThread[i*9 + 4] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=4", machines[4]);
+            WJETSThread[i*9 + 5] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=5", machines[0]);
+            WJETSThread[i*9 + 6] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=6", machines[1]);
+            WJETSThread[i*9 + 7] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=7", machines[2]);
+            WJETSThread[i*9 + 8] = std::thread(executeInThread, "./runZJets", "doWhat=WJETS lepSel=" + lep + " whichSyst=8", machines[3]);
 
             AMCATNLO[i] = std::thread(executeInThread, "./runZJets", "doWhat=AMCATNLO lepSel=" + lep + " whichSyst=0", machines[3]);
             SHERPA14[i] = std::thread(executeInThread, "./runZJets", "doWhat=SHERPA lepSel=" + lep + " whichSyst=0", machines[4]);
@@ -126,7 +142,7 @@ int main(int argc, char **argv)
         }
 
         //Join the threads with the main thread
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 18; ++i) {
             DYJetsThread[i].join();
             BGThread[i].join();
             TAUThread[i].join();

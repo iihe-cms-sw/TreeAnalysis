@@ -59,7 +59,7 @@ void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGe
     }
 
 
-    if (plotNumber == 1 && (canvasName.Index("Eta") < 0 && canvasName.Index("AbsRapidity") < 0)) plot->SetLogy();
+    if (plotNumber == 1 && (canvasName.Index("Eta") < 0 && canvasName.Index("AbsRapidity") < 0 && canvasName.Index("DPhi") < 0)) plot->SetLogy();
     plot->SetLeftMargin(0.13);
     plot->SetRightMargin(0.07);
     plot->SetFillStyle(0);
@@ -427,7 +427,9 @@ void customizeGenGraph(TH1D *hSyst, TGraphAsymmErrors *gen, TGraphAsymmErrors *g
     }
 
     if (legend) {
-        TLegendEntry *leEntry = legend->AddEntry(gen, "Stat. unc. (gen)", "f");
+        TLegendEntry *leEntry;
+        if(genNum == 3) leEntry = legend->AddEntry(gen, "Syst. + Stat. unc. (gen)", "f");
+        else leEntry = legend->AddEntry(gen, "Stat. unc. (gen)", "f");
         leEntry->SetFillColor(ZJetsFillColor[genNum-1]);
         leEntry->SetFillStyle(ZJetsFillStyle);
     }
@@ -600,12 +602,13 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         grGen3ToCentral = createGenToCentral(hGen3, grCentralStat);
         grGen3PDFSyst = createPDFSystGraph(hPDFUp, hPDFDown, grGen3ToCentral); 
         grGen3ScaleSyst = createScaleSystGraph(lepSel, variable, grGen3ToCentral);
-        grGen3ScaleSyst->SetFillColor(kGreen+3);
+        grGen3ScaleSyst->SetFillColor(kGreen-8);
     }
     //---------------------------------------------
 
     //--- Main Canvas ---
     double maximum = hGen1->GetMaximum();
+    double minimum = hGen1->GetMinimum();
     TString canvasName = "canvas" + variable;
     TCanvas *plots = new TCanvas(canvasName, hStat->GetTitle(), 600, 800);
     //-------------------
@@ -633,13 +636,16 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     configXaxis(hSyst, hGen1, variable);
     configYaxis(hSyst, hGen1, hGen2, hGen3);
     if (canvasName.Contains("ZNGoodJets")) {
-        hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax() - 1);
+        hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax());
     }
     if (canvasName.Contains("JetPt_Zinc")) {
         hSyst->GetXaxis()->SetRangeUser(30, hSyst->GetXaxis()->GetXmax());
     }
     if (canvasName.Contains("Eta") || canvasName.Contains("AbsRapidity")) {
         hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
+    }
+    if (canvasName.Contains("DPhi")) {
+        hSyst->GetYaxis()->SetRangeUser(0.2*minimum, 1.5*maximum);
     }
     hSyst->DrawCopy("e");
     grCentralSyst->SetName("grCentralSyst");
@@ -829,7 +835,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
         grGen3ToCentral->SetName("grGen3ToCentral");
         grGen3ToCentral->Draw("2");
         //grGen3PDFSyst->Draw("2");
-        //grGen3ScaleSyst->Draw("2");
+        grGen3ScaleSyst->Draw("2");
         grGen3ToCentral->Draw("2");
         grCentralSystRatio->SetName("grCentralSystRatio");
         grCentralSystRatio->Draw("2");

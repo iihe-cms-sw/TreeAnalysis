@@ -116,33 +116,35 @@ int main(int argc, char **argv)
     bool hasGenInfo(true);
 
     unsigned int NSystData(3);
-    unsigned int NSystMC(5);
+    unsigned int NSystMC(7);
+    unsigned int NSystSig(9);
 
     short dataSyst[3] = {0, 2, 2};
     short dataDir[3]  = {0,-1, 1};
 
-    short ttSyst[5]   = {0, 1, 1,    3,    3};
-    short ttDir[5]    = {0,-1, 1,   -1,    1};
-    float ttScale[5]  = {1, 1, 1, 0.10, 0.10};
+    short ttSyst[7]   = {0, 1, 1,    3,    3, 5, 5};
+    short ttDir[7]    = {0,-1, 1,   -1,    1,-1, 1};
+    float ttScale[7]  = {1, 1, 1, 0.10, 0.10, 1, 1};
 
-    short tauSyst[5]  = {0, 1, 1,    3,    3};
-    short tauDir[5]   = {0,-1, 1,   -1,    1};
-    float tauScale[5] = {1, 1, 1, 0.05, 0.05};
+    short tauSyst[7]  = {0, 1, 1,    3,    3, 5, 5};
+    short tauDir[7]   = {0,-1, 1,   -1,    1,-1, 1};
+    float tauScale[7] = {1, 1, 1, 0.03, 0.03, 1, 1};
 
-    short wjSyst[5]   = {0, 1, 1,    3,    3};
-    short wjDir[5]    = {0,-1, 1,   -1,    1};
-    float wjScale[5]  = {1, 1, 1, 0.04, 0.04};
+    short wjSyst[7]   = {0, 1, 1,    3,    3, 5, 5};
+    short wjDir[7]    = {0,-1, 1,   -1,    1,-1, 1};
+    float wjScale[7]  = {1, 1, 1, 0.03, 0.03, 1, 1};
 
-    short bgSyst[5]   = {0, 1, 1,    3,    3};
-    short bgDir[5]    = {0,-1, 1,   -1,    1};
-    float bgScale[5]  = {1, 1, 1, 0.15, 0.15};
+    short bgSyst[7]   = {0, 1, 1,    3,    3, 5, 5};
+    short bgDir[7]    = {0,-1, 1,   -1,    1,-1, 1};
+    float bgScale[7]  = {1, 1, 1, 0.03, 0.03, 1, 1};
 
-    short dySyst[5]   = {0, 1, 1, 4, 4};
-    short dyDir[5]    = {0,-1, 1,-1, 1};
+    short dySyst[9]   = {0, 1, 1, 4, 4, 5, 5, 6, 6};
+    short dyDir[9]    = {0,-1, 1,-1, 1,-1, 1,-1, 1};
 
     if (!doSysRunning && whichSyst < 0) {
         NSystData = 1; 
         NSystMC = 1;
+        NSystSig = 1;
     }
     unsigned int start = 0;
     if (whichSyst >= 0) {
@@ -150,6 +152,7 @@ int main(int argc, char **argv)
         start = whichSyst; 
         NSystData = whichSyst + 1;
         NSystMC = whichSyst + 1;
+        NSystSig = whichSyst + 1;
     }
     //----------------------------------------------------------------------
     
@@ -225,13 +228,15 @@ int main(int argc, char **argv)
         hasRecoInfo = true; 
         hasGenInfo = true;
 
-        for (unsigned int i(start); i < NSystMC; i++) { 
+        for (unsigned int i(start); i < NSystSig; i++) { 
             if (i == 0 && !doCentral && whichSyst < 0) continue;
             ZJets DYMix(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, dySyst[i], dyDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
             DYMix.Loop(hasRecoInfo, hasGenInfo);
             //ZJets DY(lepSel + "_8TeV_DYJetsToLL_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, dySyst[i], dyDir[i], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
             //DY.Loop(hasRecoInfo, hasGenInfo);
         }
+//            ZJets DYMixPDF(lepSel + "_8TeV_DYJetsToLL_MIX_50toInf_UNFOLDING_dR", lumi*3531.8*1000/30459503., 1, dySyst[0], dyDir[0], 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+//            DYMixPDF.Loop(hasRecoInfo, hasGenInfo, "CT10.LHgrid", 0, 0, 0);
     }
 
     if (doWhat == "WJETS" || doWhat == "ALL") {
@@ -252,12 +257,12 @@ int main(int argc, char **argv)
 
     if (doWhat == "AMCATNLO") {
         //ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        //ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
-        //DYamcatNLO.Loop(0, 1, "", -1, muR, muF);
-        for (int pdfMember(0); pdfMember <= 100; ++pdfMember) {
+        ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
+        DYamcatNLO.Loop(0, 1, "", -1, muR, muF);
+   /*     for (int pdfMember(0); pdfMember <= 100; ++pdfMember) {
             ZJets DYamcatNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, 0, 0, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, maxEvents, histoDir, bonzaiDir);
             DYamcatNLO.Loop(0, 1, "", pdfMember, 0, 0);
-        }
+        }*/
     }
 
     if (doWhat == "MG-MLM") {

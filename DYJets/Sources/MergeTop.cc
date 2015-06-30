@@ -57,6 +57,8 @@ void runMergeTop(TString lepSelection, int systematics, int lepPtCutMin, int lep
     else if (systematics == -1) syst = "Syst_1_Down_"; 
     else if (systematics == 3) syst = "Syst_3_Up_"; 
     else if (systematics == -3) syst = "Syst_3_Down_"; 
+    else if (systematics == 5) syst = "Syst_5_Up_"; 
+    else if (systematics == -5) syst = "Syst_5_Down_"; 
 
     TString str1 = outDir + lepSelection +  "_8TeV_T_s_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";
     TString str2 = outDir + lepSelection +  "_8TeV_T_t_channel_dR_TrigCorr_1_" + syst + "JetPtMin_" + strJetPtCutMin.str() + "_JetEtaMax_" + strJetEtaCutMax.str() + ".root";

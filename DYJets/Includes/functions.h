@@ -84,6 +84,7 @@ class table{
         vector<record> recd;
 };
 
+double SmearLepPt(double recoPt, double genPt, int smearlepton, double smearFactor);
 double SmearJetPt(double, double, double, int);
 void bestTwoJetsCandidatesPt(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);
 void bestTwoJetsCandidatesPhi(vector<jetStruct>, pair<TLorentzVector, TLorentzVector>&);
