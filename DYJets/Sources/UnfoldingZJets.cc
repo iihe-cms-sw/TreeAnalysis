@@ -20,9 +20,10 @@
 
 using namespace std;
 void createInclusivePlots(bool doNormalized, TString outputFileName, TString lepSel, TH1D *hUnfData, TH2D *hCov[], TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
+void createInclusivePlots(TString outputFileName, TString lepSel, TH1D *hUnfData, TH2D *hCov[], TH1D *hUnfDataNorm, TH2D *hCovNorm[], TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection);
 
 void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfoldDir, 
-        int jetPtMin, int jetEtaMax, TString gen1, TString gen2, TString variable, bool doNormalized)
+        int jetPtMin, int jetEtaMax, TString gen1, TString gen2, TString variable, bool doNormalized, bool doNormband)
 {
     gStyle->SetOptStat(0);
     //--- create output directory if does not exist ---
@@ -186,6 +187,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         TH2D *hUnfDataStatCov[18] = {NULL};
         TH2D *hUnfMCStatCov[18] = {NULL};
 
+        // --- variables for normalisation band ---
+        TH1D *hUnfDataNorm[18] = {NULL};
+        TH2D *hUnfDataStatCovNorm[18] = {NULL};
+        TH2D *hUnfMCStatCovNorm[18] = {NULL};
+        // ----------------------------------------
+
         int nIter[18] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
         int svdKterm(0);
         if (lepSel == "DMu")  
@@ -222,22 +229,49 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         }
         //----------------------------------------------------------------------------------------- 
 
-        if (doNormalized) {
+        if (doNormalized && (!doNormband)) {
             for(int i = 0; i < 18; i++)
             {
-                double totUnfData = hUnfData[i]->Integral("width"); // normalize to central or itself? 
+                double totUnfData = hUnfData[i]->Integral("width");  
                 hUnfData[i]->Scale(1.0/totUnfData);
                 if (i == 0) {
                     hUnfDataStatCov[0]->Scale(1.0/pow(totUnfData, 2));
                     hUnfMCStatCov[0]->Scale(1.0/pow(totUnfData, 2));
                 }
             }
+
+            double Madtot = hMadGenCrossSection->Integral("width");
+            double gen1tot = hGen1CrossSection->Integral("width");
+            double gen2tot = hGen2CrossSection->Integral("width");
+            hMadGenCrossSection->Scale(1.0/Madtot);
+            hGen1CrossSection->Scale(1.0/gen1tot);	
+            hGen2CrossSection->Scale(1.0/gen2tot);	
+        }
+
+        // --- proceed with normalisation for the uncertainty band ---
+
+        if (doNormband) {
+            for(int i = 0; i < 18; i++)
+            {
+                hUnfDataNorm[i] = (TH1D*)hUnfData[i]->Clone();
+                hUnfDataStatCovNorm[i] = (TH2D*)hUnfDataStatCov[i]->Clone();
+                hUnfMCStatCovNorm[i] = (TH2D*)hUnfMCStatCov[i]->Clone();
+
+                double totUnfDataNorm = hUnfDataNorm[i]->Integral("width");  
+                hUnfDataNorm[i]->Scale(1.0/totUnfDataNorm);
+                if (i == 0) {
+                    hUnfDataStatCovNorm[0]->Scale(1.0/pow(totUnfDataNorm, 2));
+                    hUnfMCStatCovNorm[0]->Scale(1.0/pow(totUnfDataNorm, 2));
+                }
+            }
         }
 
         for (unsigned short iSyst = 0; iSyst < 18; ++iSyst) {
             outputRootFile->cd(); 
-            hUnfData[iSyst]->Write();
+            if(doNormalized && (!doNormband)) hUnfData[iSyst]->Write();
+            //if(doNormband) hUnfDataNorm[iSyst]->Write();
         }
+
         //--- Now create the covariance matrices ---
         TH2D *hCov[12] = {NULL};
         hCov[0] = (TH2D*) hUnfDataStatCov[0]->Clone("CovDataStat");
@@ -255,22 +289,44 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
 
         for (int i = 2; i < 11; ++i) hCov[11]->Add(hCov[i]);
 
-        if (doNormalized) {
-            double Madtot = hMadGenCrossSection->Integral("width");
-            double gen1tot = hGen1CrossSection->Integral("width");
-            double gen2tot = hGen2CrossSection->Integral("width");
-            hMadGenCrossSection->Scale(1.0/Madtot);
-            hGen1CrossSection->Scale(1.0/gen1tot);	
-            hGen2CrossSection->Scale(1.0/gen2tot);	
+        // --- make covariance matrices for normalisation band ---
+        TH2D *hCovNorm[12] = {NULL};
+        if(doNormband){
+            hCovNorm[0] = (TH2D*) hUnfDataStatCovNorm[0]->Clone("CovDataStatNorm");
+            hCovNorm[1] = (TH2D*) hUnfMCStatCovNorm[0]->Clone("CovMCStatNorm");
+            hCovNorm[2] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[1], hUnfDataNorm[2], "CovJESNorm");
+            hCovNorm[3] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[3], hUnfDataNorm[4], "CovPUNorm");
+            hCovNorm[4] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[5], hUnfDataNorm[6], "CovJERNorm");
+            hCovNorm[5] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[7], hUnfDataNorm[8], "CovXSecNorm");
+            hCovNorm[6] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[9], hUnfDataNorm[10], "CovLESNorm");
+            hCovNorm[7] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[11], hUnfDataNorm[12], "CovLERNorm");
+            hCovNorm[8] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[13], hUnfDataNorm[14], "CovLumiNorm");
+            hCovNorm[9] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[15], hUnfDataNorm[16], "CovSFNorm");
+            hCovNorm[10] = makeCovFromUpAndDown(hUnfDataNorm[0], hUnfDataNorm[17], hUnfDataNorm[0], "CovSherpaUnfNorm");
+            hCovNorm[11] = (TH2D*) hUnfMCStatCovNorm[0]->Clone("CovTotSystNorm");
+
+            for (int i = 2; i < 11; ++i) hCovNorm[11]->Add(hCovNorm[i]);
         }
 
-        TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, variable, doNormalized, hUnfData[0], hCov[11], hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection); 
-        crossSectionPlot->Draw();
-        crossSectionPlot->SaveAs(outputFileName + ".png");
-        crossSectionPlot->SaveAs(outputFileName + ".pdf");
-        crossSectionPlot->SaveAs(outputFileName + ".eps");
-        crossSectionPlot->SaveAs(outputFileName + ".ps");
-        crossSectionPlot->SaveAs(outputFileName + ".C");
+        TCanvas *crossSectionPlot;
+        if(doNormband){
+            crossSectionPlot= makeCrossSectionPlot(lepSel, variable, hUnfData[0], hCov[11], hUnfDataNorm[0], hCovNorm[11],  hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection); 
+            crossSectionPlot->Draw();
+            crossSectionPlot->SaveAs(outputFileName + ".png");
+            crossSectionPlot->SaveAs(outputFileName + ".pdf");
+            crossSectionPlot->SaveAs(outputFileName + ".eps");
+            crossSectionPlot->SaveAs(outputFileName + ".ps");
+            crossSectionPlot->SaveAs(outputFileName + ".C");
+        }
+        else{
+            crossSectionPlot= makeCrossSectionPlot(lepSel, variable, doNormalized, hUnfData[0], hCov[11], hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection); 
+            crossSectionPlot->Draw();
+            crossSectionPlot->SaveAs(outputFileName + ".png");
+            crossSectionPlot->SaveAs(outputFileName + ".pdf");
+            crossSectionPlot->SaveAs(outputFileName + ".eps");
+            crossSectionPlot->SaveAs(outputFileName + ".ps");
+            crossSectionPlot->SaveAs(outputFileName + ".C");
+        }
 
         createSystPlots(outputFileName, variable, lepSel, hUnfData);
 
@@ -286,7 +342,12 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         createTable(outputFileName, lepSel, variable, doNormalized, hUnfData[0], hCov);
 
         if (variable.Index("ZNGoodJets_Zexc") >= 0) {
-            createInclusivePlots(doNormalized, outputFileName, lepSel, hUnfData[0], hCov, hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection);
+            if(doNormband){
+                createInclusivePlots(outputFileName, lepSel, hUnfData[0], hCov, hUnfDataNorm[0], hCovNorm, hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection);
+            }
+            else{
+                createInclusivePlots(doNormalized, outputFileName, lepSel, hUnfData[0], hCov, hMadGenCrossSection, hGen1CrossSection, hGen2CrossSection);
+            }
         }
         //--------------------------------------
 
@@ -302,6 +363,7 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         respDYJets[0]->Write("respDYJetsCentral");
         for (int i = 0; i < 11; ++i) {
             hCov[i]->Write();
+            //if(doNormband) hCovNorm[i]->Write();
         }
         TParameter<double> pIntegratedLumi("integratedLumi", integratedLumi);
         pIntegratedLumi.Write();
@@ -503,6 +565,108 @@ void createInclusivePlots(bool doNormalized, TString outputFileName, TString lep
     crossSectionPlot->SaveAs(outputFileName + ".ps");
     crossSectionPlot->SaveAs(outputFileName + ".C");
     createTable(outputFileName, lepSel, TString("ZNGoodJets_Zinc"), doNormalized, hInc, hCovInc);
+}
+
+void createInclusivePlots(TString outputFileName, TString lepSel, TH1D *hUnfData, TH2D *hCov[], TH1D *hUnfDataNorm, TH2D *hCovNorm[], TH1D *hMadGenCrossSection, TH1D *hSheGenCrossSection, TH1D *hPowGenCrossSection)
+{
+    TH1D *hInc = (TH1D*) hUnfData->Clone("ZNGoodJets_Zinc");
+    TH1D *hIncMad = (TH1D*) hMadGenCrossSection->Clone("ZNGoodJets_Zinc_Mad");
+    TH1D *hIncShe = (TH1D*) hSheGenCrossSection->Clone("ZNGoodJets_Zinc_She");
+    TH1D *hIncPow = (TH1D*) hPowGenCrossSection->Clone("ZNGoodJets_Zinc_Pow");
+    TH2D *hCovInc[12] = {NULL};
+    hCovInc[0] = (TH2D*) hCov[0]->Clone("CovDataStat");
+    hCovInc[1] = (TH2D*) hCov[1]->Clone("CovMCStat");
+    hCovInc[2] = (TH2D*) hCov[2]->Clone("CovJES");
+    hCovInc[3] = (TH2D*) hCov[3]->Clone("CovPU");
+    hCovInc[4] = (TH2D*) hCov[4]->Clone("CovJER");
+    hCovInc[5] = (TH2D*) hCov[5]->Clone("CovXSec");
+    hCovInc[6] = (TH2D*) hCov[6]->Clone("CovLES");
+    hCovInc[7] = (TH2D*) hCov[7]->Clone("CovLER");
+    hCovInc[8] = (TH2D*) hCov[8]->Clone("CovLumi");
+    hCovInc[9] = (TH2D*) hCov[9]->Clone("CovSF");
+    hCovInc[10] = (TH2D*) hCov[10]->Clone("CovSherpaUnf");
+    hCovInc[11] = (TH2D*) hCov[11]->Clone("CovTotSyst");
+
+    TH1D *hIncNorm = (TH1D*) hUnfDataNorm->Clone("ZNGoodJets_Zinc");
+    TH2D *hCovIncNorm[12] = {NULL};
+    hCovIncNorm[0] = (TH2D*) hCovNorm[0]->Clone("CovDataStatNorm");
+    hCovIncNorm[1] = (TH2D*) hCovNorm[1]->Clone("CovMCStatNorm");
+    hCovIncNorm[2] = (TH2D*) hCovNorm[2]->Clone("CovJESNorm");
+    hCovIncNorm[3] = (TH2D*) hCovNorm[3]->Clone("CovPUNorm");
+    hCovIncNorm[4] = (TH2D*) hCovNorm[4]->Clone("CovJERNorm");
+    hCovIncNorm[5] = (TH2D*) hCovNorm[5]->Clone("CovXSecNorm");
+    hCovIncNorm[6] = (TH2D*) hCovNorm[6]->Clone("CovLESNorm");
+    hCovIncNorm[7] = (TH2D*) hCovNorm[7]->Clone("CovLERNorm");
+    hCovIncNorm[8] = (TH2D*) hCovNorm[8]->Clone("CovLumiNorm");
+    hCovIncNorm[9] = (TH2D*) hCovNorm[9]->Clone("CovSFNorm");
+    hCovIncNorm[10] = (TH2D*) hCovNorm[10]->Clone("CovSherpaUnfNorm");
+    hCovIncNorm[11] = (TH2D*) hCovNorm[11]->Clone("CovTotSystNorm");
+
+    int nBins = hInc->GetNbinsX();
+    for (int i = 1; i <= nBins; i++) {
+        double binSum = 0;
+        double binSumMad = 0;
+        double binSumShe = 0;
+        double binSumPow = 0;
+        double binStatError2 = 0;
+        double binStatMadError2 = 0;
+        double binStatSheError2 = 0;
+        double binStatPowError2 = 0;
+        double binCov[12] = {0};
+        for (int j = i; j <= nBins; j++) {
+            binSum += hInc->GetBinContent(j);
+            binSumMad += hIncMad->GetBinContent(j);
+            binSumShe += hIncShe->GetBinContent(j);
+            binSumPow += hIncPow->GetBinContent(j);
+            binStatError2 += pow(hInc->GetBinError(j), 2);
+            binStatMadError2 += pow(hIncMad->GetBinError(j), 2);
+            binStatSheError2 += pow(hIncShe->GetBinError(j), 2);
+            binStatPowError2 += pow(hIncPow->GetBinError(j), 2);
+            for (int k = 0; k < 12; k++) {
+                binCov[k] += hCovInc[k]->GetBinContent(j, j);
+            }
+        }
+        hInc->SetBinContent(i, binSum);
+        hIncMad->SetBinContent(i, binSumMad);
+        hIncShe->SetBinContent(i, binSumShe);
+        hIncPow->SetBinContent(i, binSumPow);
+        hInc->SetBinError(i, sqrt(binStatError2));
+        hIncMad->SetBinError(i, sqrt(binStatMadError2));
+        hIncShe->SetBinError(i, sqrt(binStatSheError2));
+        hIncPow->SetBinError(i, sqrt(binStatPowError2));
+        for (int k = 0; k < 12; k++) {
+            hCovInc[k]->SetBinContent(i, i, binCov[k]);
+        }
+    }
+
+    // --- For normalisation band ---
+    for (int i = 1; i <= nBins; i++) {
+        double binSum = 0;
+        double binStatError2 = 0;
+        double binCov[12] = {0};
+        for (int j = i; j <= nBins; j++) {
+            binSum += hIncNorm->GetBinContent(j);
+            binStatError2 += pow(hIncNorm->GetBinError(j), 2);
+            for (int k = 0; k < 12; k++) {
+                binCov[k] += hCovIncNorm[k]->GetBinContent(j, j);
+            }
+        }
+        hIncNorm->SetBinContent(i, binSum);
+        hIncNorm->SetBinError(i, sqrt(binStatError2));
+        for (int k = 0; k < 12; k++) {
+            hCovIncNorm[k]->SetBinContent(i, i, binCov[k]);
+        }
+    }
+
+    TCanvas *crossSectionPlot = makeCrossSectionPlot(lepSel, TString("ZNGoodJets_Zinc"), hInc, hCovInc[11], hIncNorm, hCovIncNorm[11], hIncMad, hIncShe, hIncPow); 
+    outputFileName.ReplaceAll("ZNGoodJets_Zexc", "ZNGoodJets_Zinc");
+    crossSectionPlot->Draw();
+    crossSectionPlot->SaveAs(outputFileName + ".png");
+    crossSectionPlot->SaveAs(outputFileName + ".pdf");
+    crossSectionPlot->SaveAs(outputFileName + ".eps");
+    crossSectionPlot->SaveAs(outputFileName + ".ps");
+    crossSectionPlot->SaveAs(outputFileName + ".C");
+    createTable(outputFileName, lepSel, TString("ZNGoodJets_Zinc"), false, hInc, hCovInc);
 }
 
 void createTable(TString outputFileName, TString lepSel, TString variable, bool doNormalized, TH1D *hUnfData, TH2D *hCov[])

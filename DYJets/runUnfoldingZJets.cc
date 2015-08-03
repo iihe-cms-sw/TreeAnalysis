@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 
     TString variable = "";
     bool doNormalized(false);
+    bool doNormband(true);
 
     //-----------------------------------------------------------------------------
 
@@ -58,6 +59,9 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("doNormalized=")) {
                 getArg(currentArg, doNormalized);
             }
+            else if (currentArg.BeginsWith("doNormband=")) {
+                getArg(currentArg, doNormband);
+            }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: \n\t./runUnfolding [lepSel=(DMu, DE)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] [histoDir=(path)] [unfoldDir=(path)] [variable=(variableName)] [doNormalized=(0, 1)] [--help]" << std::endl;
@@ -80,7 +84,7 @@ int main(int argc, char **argv)
     std::cout << "\n executing UnfoldingZJets(\"" << lepSel << "\", \"" <<  algo << "\", \"" << histoDir << "\", \"" << unfoldDir << "\", " << jetPtMin << ", " << jetEtaMax << ", &argc, argv);" << std::endl;
     //-----------------------------------------------------------------------------
 
-    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, generator1, generator2, variable, doNormalized);
+    UnfoldingZJets(lepSel, algo, histoDir, unfoldDir, jetPtMin, jetEtaMax, generator1, generator2, variable, doNormalized, doNormband);
 
     return 0;
 }

@@ -29,6 +29,7 @@ int main(int argc, char **argv)
 
     TString variable = "";
     bool doNormalized(false);
+    bool doNormband(true);
 
     //--- Parse the arguments -----------------------------------------------------
     if (argc > 1) {
@@ -74,6 +75,9 @@ int main(int argc, char **argv)
             else if (currentArg.BeginsWith("doNormalized=")) {
                 getArg(currentArg, doNormalized);
             }
+            else if (currentArg.BeginsWith("doNormband=")) {
+                getArg(currentArg, doNormband);
+            }
             //--- asking for help ---
             else if (currentArg.Contains("help") || currentArg.BeginsWith("-h")) {
                 std::cout << "\nUsage: ./runCombination [unfoldDir=(path)] [combDir=(path)] [algo=(Bayes, SVD)] [jetPtMin=(int)] [jetEtaMax=(int*10)] ";
@@ -94,6 +98,6 @@ int main(int argc, char **argv)
     if (!unfoldDir.EndsWith("/")) unfoldDir += "/";
     if (!combDir.EndsWith("/")) combDir += "/";
 
-    Combination(unfoldDir, combDir, algo, jetPtMin, jetEtaMax, diagXChanCov, fullXChanCov, fullSChanCov, modifiedSWA, generator1, generator2, variable, doNormalized);
+    Combination(unfoldDir, combDir, algo, jetPtMin, jetEtaMax, diagXChanCov, fullXChanCov, fullSChanCov, modifiedSWA, generator1, generator2, variable, doNormalized, doNormband);
     return 0;
 }
