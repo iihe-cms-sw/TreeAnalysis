@@ -140,6 +140,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         vector<TH2D*> covuxaxb(covariances[0].size(), NULL); // each covariance matrix
         TH2D* covxaxb = NULL; // total covariance matrix
         TH2D* covxaxbSyst = NULL; // total syst covariance matrix
+        TH1D* hTotComUnc = NULL; // total uncertainty if combined cross section
         TH1D* hCombination = NULL; // combined cross section
         TH1D* hMadGenCombined = NULL;
         TH1D* hGen1Combined = NULL;
@@ -206,9 +207,13 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         crossSectionPlot->SaveAs(outputFileName + ".ps");
         crossSectionPlot->SaveAs(outputFileName + ".C");
 
-        //--- print out the combined cross section measurement ---
+        //--- print out the combined cross section measurement and fill the total uncertainty ---
+        double tempunc = 0;
+        hTotComUnc = (TH1D*)hCombination->Clone();
         for (int i = 1; i <= hCombination->GetNbinsX(); ++i) {
             cout << hCombination->GetBinContent(i) << endl;
+            tempunc = sqrt(covuxaxb[0]->GetBinContent(i,i) + covxaxbSyst->GetBinContent(i,i));
+            hTotComUnc->SetBinContent(i,tempunc);
         }
         //--- print out break down of errors ---
         for (int i = 2; i <= 11; ++i) {
@@ -229,6 +234,7 @@ void Combination(TString unfoldDir, TString combDir, TString algo, int jetPtMin,
         outputRootFile->cd();
         crossSectionPlot->Write();
         hCombination->Write("CombDataCentral");
+        hTotComUnc->Write("CombTotUnc");
         hMadGenCombined->Write();
         hGen1Combined->Write();
         hGen2Combined->Write();
