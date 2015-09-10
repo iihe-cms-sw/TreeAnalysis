@@ -407,7 +407,7 @@ void createSystPlots(TString outputFileName, TString variable, TString lepSel, T
         TH1D *hCent = (TH1D*) hUnfData[0]->Clone();
         hCent->SetMarkerColor(kBlack);
         hCent->SetMarkerStyle(20);
-        if (variable == "ZNGoodJets_Zexc") hCent->GetXaxis()->SetRangeUser(1, 8);
+        if (variable == "ZNGoodJets_Zexc") hCent->GetXaxis()->SetRangeUser(0, 8);
         if (variable.Index("JetPt_Zinc") >= 0) hCent->GetXaxis()->SetRangeUser(30, hCent->GetXaxis()->GetXmax());
         hCent->GetXaxis()->SetLabelSize(0);
         hCent->GetYaxis()->SetTitle("d#sigma");
@@ -469,7 +469,7 @@ void createSystPlots(TString outputFileName, TString variable, TString lepSel, T
         }
         hCent->GetYaxis()->SetRangeUser(minRatio-0.02*(maxRatio-minRatio), maxRatio+0.02*(maxRatio-minRatio));
         hCent->GetYaxis()->SetRangeUser(0.82, 1.18);
-        if (variable == "ZNGoodJets_Zexc") hCent->GetXaxis()->SetRangeUser(1, 8);
+        if (variable == "ZNGoodJets_Zexc") hCent->GetXaxis()->SetRangeUser(0, 8);
         hCent->SetTitle(" ");
         hCent->GetYaxis()->SetTitle("Ratio to Central");
         hCent->GetYaxis()->SetTitleSize(0.08);
@@ -699,10 +699,10 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
     int start = 1;
-    if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
+    /*if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
         start = 2; 
         //nBins--;
-    }
+    }*/
     if (title.Index("jet $p_{\\text{T}}$", 0, TString::ECaseCompare::kIgnoreCase) >= 0) start = 3; 
 
     for (int i = start; i <= nBins; ++i) {

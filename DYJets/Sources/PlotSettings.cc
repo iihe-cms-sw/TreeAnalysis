@@ -60,6 +60,7 @@ void setAndDrawTPad(TString canvasName, TPad *plot, int plotNumber, int numbOfGe
 
 
     if (plotNumber == 1 && (canvasName.Index("Eta") < 0 && canvasName.Index("AbsRapidity") < 0 && canvasName.Index("DPhi") < 0)) plot->SetLogy();
+    if (plotNumber == 1 && canvasName.Index("DPhiZFirstJet") > 0) plot->SetLogy();
     plot->SetLeftMargin(0.13);
     plot->SetRightMargin(0.07);
     plot->SetFillStyle(0);
@@ -87,11 +88,11 @@ void customizeLegend(TLegend *legend, int numbOfGenerator)
         legend->SetTextSize(.034);
     }
     else if (numbOfGenerator == 3) {
-        legend->SetX1(0.46);
-        legend->SetY1(0.7);
-        legend->SetX2(0.96);
+        legend->SetX1(0.54);
+        legend->SetY1(0.78);
+        legend->SetX2(0.98);
         legend->SetY2(0.98);
-        legend->SetTextSize(.042);
+        legend->SetTextSize(.037);
     }
 }
 
@@ -516,6 +517,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1, TString variable)
     //maxX += grCentralSyst->GetErrorXhigh(grCentralSyst->GetN()-1);
     if (variable.Index("ZNGoodJets_Zexc") >= 0) {
         //grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
+        grCentralSyst->GetXaxis()->SetBinLabel(1, "= 0");
         grCentralSyst->GetXaxis()->SetBinLabel(2, "= 1");
         grCentralSyst->GetXaxis()->SetBinLabel(3, "= 2");
         grCentralSyst->GetXaxis()->SetBinLabel(4, "= 3");
@@ -529,6 +531,7 @@ void configXaxis(TH1D *grCentralSyst, TH1D *gen1, TString variable)
     }
     else if (variable.Index("ZNGoodJets_Zinc") >= 0) {
         //grCentralSyst->GetXaxis()->Set(maxX-minX, minX, maxX);
+        grCentralSyst->GetXaxis()->SetBinLabel(1, "#geq 0");
         grCentralSyst->GetXaxis()->SetBinLabel(2, "#geq 1");
         grCentralSyst->GetXaxis()->SetBinLabel(3, "#geq 2");
         grCentralSyst->GetXaxis()->SetBinLabel(4, "#geq 3");
@@ -673,7 +676,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     configXaxis(hSyst, hGen1, variable);
     configYaxis(hSyst, hGen1, hGen2, hGen3);
     if (canvasName.Contains("ZNGoodJets")) {
-        hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax());
+        hSyst->GetXaxis()->SetRangeUser(0, hSyst->GetXaxis()->GetXmax());
     }
     if (canvasName.Contains("JetPt_Zinc")) {
         hSyst->GetXaxis()->SetRangeUser(30, hSyst->GetXaxis()->GetXmax());
@@ -681,8 +684,8 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     if (canvasName.Contains("Eta") || canvasName.Contains("AbsRapidity")) {
         hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
-    if (canvasName.Contains("DPhi")) {
-        hSyst->GetYaxis()->SetRangeUser(0.2*minimum, 1.5*maximum);
+    if (canvasName.Contains("DPhi") && (!canvasName.Contains("DPhiZFirstJet"))) {
+        hSyst->GetYaxis()->SetRangeUser(0.1*minimum, 2.0*maximum);
     }
     hSyst->DrawCopy("e");
     grCentralSyst->SetName("grCentralSyst");
@@ -717,48 +720,190 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, TH1D *hStat, TH2
     latexLabel->SetLineWidth(2);
 
     latexLabel->SetTextFont(61);
-    latexLabel->DrawLatex(0.13,0.95,"CMS");
+    latexLabel->DrawLatex(0.18,0.83,"CMS");
     latexLabel->SetTextFont(52);
-    latexLabel->DrawLatex(0.20,0.95,"Preliminary");
+    latexLabel->DrawLatex(0.25,0.83,"Preliminary");
     latexLabel->SetTextFont(42);
     latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
-    latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
 
-    if (canvasName.Contains("FirstJetPt50")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 50 GeV, |#eta^{jet}| < 2.4 ");
+    if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZFirstJet")){
+        latexLabel->DrawLatex(0.66,0.21-0.04,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("FirstJetPt80")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 80 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("ZPt150")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("ZPt300")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("DifJetRapidityl2")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, |y_{jet1}-y_{jet2}| > 2 ");
-    }
-
-    else if (canvasName.Contains("DifJetRapiditys2")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, |y_{jet1}-y_{jet2}| < 2 ");
-    }
-
-    else if (canvasName.Contains("ZPt150_HT300")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstThirdJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
     else{
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+        latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
-    else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
-    else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    // ------------------------------------------------------------------------------------
+    if (canvasName.Contains("FirstJetPt50") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 50 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("FirstJetPt80") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 80 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DifJetRapidityl2") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, |y_{jet1}-y_{jet2}| > 2 ");
+    }
+
+    else if (canvasName.Contains("DifJetRapiditys2") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, |y_{jet1}-y_{jet2}| < 2 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.6,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.45,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.23,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.45,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else{
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    // --------------------------------------------------------------------------------------------
+    if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZFirstJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZSecondJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZThirdJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstThirdJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else{
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    }
+
     latexLabel->SetName("latexLabel");
     latexLabel->Draw("same");
 
@@ -973,7 +1118,7 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     configXaxis(hSyst, hGen1, variable);
     configYaxis(hSyst, hGen1, hGen2, hGen3);
     if (canvasName.Contains("ZNGoodJets")) {
-        hSyst->GetXaxis()->SetRangeUser(0.5, hSyst->GetXaxis()->GetXmax());
+        hSyst->GetXaxis()->SetRangeUser(0, hSyst->GetXaxis()->GetXmax());
     }
     if (canvasName.Contains("JetPt_Zinc")) {
         hSyst->GetXaxis()->SetRangeUser(30, hSyst->GetXaxis()->GetXmax());
@@ -981,8 +1126,8 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     if (canvasName.Contains("Eta") || canvasName.Contains("AbsRapidity")) {
         hSyst->GetYaxis()->SetRangeUser(0.001, 1.4*maximum);
     }
-    if (canvasName.Contains("DPhi")) {
-        hSyst->GetYaxis()->SetRangeUser(0.2*minimum, 1.5*maximum);
+    if (canvasName.Contains("DPhi") && (!canvasName.Contains("DPhiZFirstJet"))) {
+        hSyst->GetYaxis()->SetRangeUser(0.1*minimum, 2.0*maximum);
     }
     hSyst->DrawCopy("e");
     grCentralSyst->SetName("grCentralSyst");
@@ -1017,48 +1162,190 @@ TCanvas* makeCrossSectionPlot(TString lepSel, TString variable, bool doNormalize
     latexLabel->SetLineWidth(2);
 
     latexLabel->SetTextFont(61);
-    latexLabel->DrawLatex(0.13,0.95,"CMS");
+    latexLabel->DrawLatex(0.18,0.83,"CMS");
     latexLabel->SetTextFont(52);
-    latexLabel->DrawLatex(0.20,0.95,"Preliminary");
+    latexLabel->DrawLatex(0.25,0.83,"Preliminary");
     latexLabel->SetTextFont(42);
     latexLabel->DrawLatex(0.13,0.95-0.045,"19.6 fb^{-1} (8 TeV)");
-    latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
 
-    if (canvasName.Contains("FirstJetPt50")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 50 GeV, |#eta^{jet}| < 2.4 ");
+    if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZFirstJet")){
+        latexLabel->DrawLatex(0.66,0.21-0.04,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("FirstJetPt80")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 80 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("ZPt150")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("ZPt300")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    else if (canvasName.Contains("DifJetRapidityl2")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, |y_{jet1}-y_{jet2}| > 2 ");
-    }
-
-    else if (canvasName.Contains("DifJetRapiditys2")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, |y_{jet1}-y_{jet2}| < 2 ");
-    }
-
-    else if (canvasName.Contains("ZPt150_HT300")){
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstThirdJet")){
+        latexLabel->DrawLatex(0.18,0.7,"anti-k_{T} (R = 0.5) Jets");
     }
 
     else{
-        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |#eta^{jet}| < 2.4 ");
+        latexLabel->DrawLatex(0.18,0.21-0.05,"anti-k_{T} (R = 0.5) Jets");
     }
 
-    if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
-    else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
-    else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    // ----------------------------------------------------------------------------------
+    if (canvasName.Contains("FirstJetPt50") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 50 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("FirstJetPt80") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 80 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DifJetRapidityl2") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, |y_{jet1}-y_{jet2}| > 2 ");
+    }
+
+    else if (canvasName.Contains("DifJetRapiditys2") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, |y_{jet1}-y_{jet2}| < 2 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Index("Rapidity") > 0){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.6,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.45,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.23,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZFirstJet")){
+        latexLabel->DrawLatex(0.45,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZSecondJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150") && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if ((!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300")) && (!canvasName.Contains("HT300")) && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("ZPt150_HT300") && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4, H_{T}^{jet} > 300 GeV ");
+    }
+
+    else if (canvasName.Contains("ZPt300") && canvasName.Contains("DPhiZThirdJet")){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstSecondJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiFirstThirdJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.63,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (canvasName.Contains("ZPt150"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 150 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else if (canvasName.Contains("DPhiSecondThirdJet") && (canvasName.Contains("ZPt300"))){
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{Z} > 300 GeV, p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    else{
+        latexLabel->DrawLatex(0.18,0.21-0.11,"p_{T}^{jet} > 30 GeV, |y^{jet}| < 2.4 ");
+    }
+
+    // -------------------------------------------------------------------------------------------------
+    if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZFirstJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.66,0.21-0.18,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZSecondJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("ZThirdJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstSecondJet") && (!canvasName.Contains("ZPt150")) && (!canvasName.Contains("ZPt300"))){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else if(canvasName.Index("DPhi") > 0 && canvasName.Contains("FirstThirdJet")){
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.56,"Z/#gamma*#rightarrow ee channel");
+    }
+
+    else{
+        if (lepSel == "") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ll channel");
+        else if (lepSel == "DMu") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow #mu#mu channel");
+        else if (lepSel == "DE") latexLabel->DrawLatex(0.18,0.21-0.17,"Z/#gamma*#rightarrow ee channel");
+    }
+
     latexLabel->SetName("latexLabel");
     latexLabel->Draw("same");
 

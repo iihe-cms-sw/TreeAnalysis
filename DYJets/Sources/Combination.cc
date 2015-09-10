@@ -614,10 +614,10 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
     table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
     int start = 1;
-    if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
+    /*if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
         start = 2; 
         //nBins--;
-    }
+    }*/
     if (title.Index("jet $p_{\\text{T}}$", 0, TString::ECaseCompare::kIgnoreCase) >= 0) start = 3; 
 
     for (int i = start; i <= nBins; ++i) {
