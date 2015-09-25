@@ -693,10 +693,10 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
     table += "\\begin{tabular}{c|cc|ccccccccc}\n";
     table += "\\multicolumn{12}{c}{" + title + "} \\\\\n";
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
-    table += "\\tiny{stat [\\%]} & \\tiny{MC stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
-    table += "\\tiny{PU [\\%]} & \\tiny{XSEC [\\%]} & \\tiny{Lumi [\\%]} & ";
+    table += "\\tiny{stat [\\%]} & \\tiny{Unf stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
+    table += "\\tiny{PU [\\%]} & \\tiny{Bgnd [\\%]} & \\tiny{Lumi [\\%]} & ";
     table += "\\tiny{LES [\\%]} & \\tiny{LER [\\%]} & ";
-    table += "\\tiny{Unf [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
+    table += "\\tiny{Unf sys [\\%]} & \\tiny{Eff [\\%]} \\\\\\hline\n";
 
     int start = 1;
     /*if (title.Index("multiplicity", 0, TString::ECaseCompare::kIgnoreCase) >= 0) {
@@ -738,7 +738,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
         // PU uncertainty
         numbers.Form("%#.2g", sqrt(hCov[3]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
-        // XSec uncertainty
+        // XSec (Bgnd) uncertainty
         numbers.Form("%#.2g", sqrt(hCov[5]->GetBinContent(i,i))*100./xs);
         table += numbers + " & ";
         // Lumi uncertainty
