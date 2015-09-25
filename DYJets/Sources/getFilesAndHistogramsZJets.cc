@@ -295,7 +295,7 @@ void getHistos(TH1D *histograms[], TFile *Files[], TString variable)
         //    That is why errSF = 0 when variable contains "gen"
         TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
         //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
-        double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
+        double errSF = (lepSel == "DMu") ? 0.025 : 0.026;
         if (variable.Index("gen") < 0) {
             if (isSignal) {
                 //--- SF up ---
@@ -376,7 +376,7 @@ void getHistos(TH2D *histograms[], TFile *Files[], TString variable)
         //    This should not be applied to gen histograms however.
         TString lepSel = (fileName.Index("DMu") >= 0) ? "DMu" : "DE";
         //double errSF = (lepSel == "DMu") ? 0.025 : 0.005;
-        double errSF = (lepSel == "DMu") ? 0.005 : 0.005;
+        double errSF = (lepSel == "DMu") ? 0.025 : 0.026;
         if (variable.Index("gen") < 0) {
             if (isSignal) {
                 //--- SF up ---
