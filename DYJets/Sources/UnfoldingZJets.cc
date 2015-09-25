@@ -690,7 +690,7 @@ void createTable(TString outputFileName, TString lepSel, TString variable, bool 
     if (lepSel == "DMu") table += "muon decay channel.}\n";
     if (lepSel == "DE") table += "electron decay channel.}\n";
     table += "\\scriptsize{\n";
-    table += "\\begin{tabular}{c|cc|ccccccccc}\n";
+    table += "\\begin{tabular}{c|cc|ccccccccccc}\n";
     table += "\\multicolumn{14}{c}{" + title + "} \\\\\n";
     table += var + " & " + dSigma + " & \\tiny{Tot. Unc [\\%]} & ";
     table += "\\tiny{stat [\\%]} & \\tiny{Unf stat [\\%]} & \\tiny{JES [\\%]} & \\tiny{JER [\\%]} & ";
