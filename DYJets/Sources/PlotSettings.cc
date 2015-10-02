@@ -1906,6 +1906,37 @@ void createTitleVariableAnddSigma(TString variable, bool doNormalized, TString x
         dSigma = "$\\frac{d\\sigma}{d\\Delta\\phi_{\\text{Z,jet3}}} \\tiny{\\left[\\text{pb}\\right]}$";
     }
 
+    //jet rapidity distributions
+    if (variable.Index("FirstJetAbsRapidity_Zinc1jet") >= 0) {
+        title = "$|y_\\text{jet1}|$ ($N_{\\text{jets}} \\geq 1$)";
+        var = "$|y_{\\text{jet1}}|$";
+        dSigma = "$\\frac{d\\sigma}{d|y_{\\text{jet1}}|} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    if (variable.Index("SecondJetAbsRapidity_Zinc2jet") >= 0) {
+        title = "$|y_\\text{jet2}|$ ($N_{\\text{jets}} \\geq 2$)";
+        var = "$|y_{\\text{jet2}}|$";
+        dSigma = "$\\frac{d\\sigma}{d|y_{\\text{jet2}}|} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    if (variable.Index("ThirdJetAbsRapidity_Zinc3jet") >= 0) {
+        title = "$|y_\\text{jet3}|$ ($N_{\\text{jets}} \\geq 3$)";
+        var = "$|y_{\\text{jet3}}|$";
+        dSigma = "$\\frac{d\\sigma}{d|y_{\\text{jet3}}|} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    if (variable.Index("FourthJetAbsRapidity_Zinc4jet") >= 0) {
+        title = "$|y_\\text{jet4}|$ ($N_{\\text{jets}} \\geq 4$)";
+        var = "$|y_{\\text{jet4}}|$";
+        dSigma = "$\\frac{d\\sigma}{d|y_{\\text{jet4}}|} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
+    if (variable.Index("FifthJetAbsRapidity_Zinc5jet") >= 0) {
+        title = "$|y_\\text{jet5}|$ ($N_{\\text{jets}} \\geq 5$)";
+        var = "$|y_{\\text{jet5}}|$";
+        dSigma = "$\\frac{d\\sigma}{d|y_{\\text{jet5}}|} \\tiny{\\left[\\text{pb}\\right]}$";
+    }
+
     // jet pt distributions
     if (xtitle.Index("p_{T}(j_{1})") >= 0) {
         title = "$1^{\\text{st}}$ jet $p_{\\text{T}}$ ($N_{\\text{jets}} \\geq 1$)";
