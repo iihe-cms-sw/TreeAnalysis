@@ -603,7 +603,7 @@ void createTable(TString outputFileName, TString variable, bool doNormalized, TH
     TString table = "\\begin{table}[htb!]\n\\begin{center}\n";
     table += "\\caption{Differential cross section in " + title;
     table += " and break down of the systematic uncertainties for the ";
-    table += "combinaton of both decay channels.}\n";
+    table += "combination of both decay channels.}\n";
     table += "\\scriptsize{\n";
     table += "\\begin{tabular}{c|cc|ccccccccccc}\n";
     table += "\\multicolumn{14}{c}{" + title + "} \\\\\n";
