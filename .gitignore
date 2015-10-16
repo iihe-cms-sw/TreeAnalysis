@@ -8,6 +8,7 @@ runCombination
 dispatcher
 runMakeStatisticsTable
 DYJets/Sources/plotRespMatrix
+runMiniBonzai
 
 # git will not consider the following files:
 *.root
@@ -17,6 +18,11 @@ DYJets/RooUnfold-1.1.1/tmp
 DYJets/RooUnfold/libRooUnfold.rootmap
 DYJets/RooUnfold/tmp
 DYJets/RooUnfold/tmp/linuxx8664gcc/Roo*
+MiniBonzais/RooUnfold-1.1.1/libRooUnfold.rootmap
+MiniBonzais/RooUnfold-1.1.1/tmp
+MiniBonzais/RooUnfold/libRooUnfold.rootmap
+MiniBonzais/RooUnfold/tmp
+MiniBonzais/RooUnfold/tmp/linuxx8664gcc/Roo*
 *.so
 *.d
 *.log
