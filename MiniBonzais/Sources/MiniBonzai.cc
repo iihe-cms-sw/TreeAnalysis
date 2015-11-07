@@ -71,8 +71,7 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
     double ZDiJets_Sumeta;
     double ZDiJets_Difeta;
 
-    double EventWeight;
-    double PDFEventWeight;
+    vector<double> EventWeight;
     ///*********************Branches initialize for the correponding variables*******************
     ZJets->Branch("NJets_inclusive", &NJets_inclusive, "NJets_inclusive/S");
 
@@ -112,8 +111,7 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
     ZJets->Branch("ZDiJets_Sumeta", &ZDiJets_Sumeta, "ZDiJets_Sumeta/D");
     ZJets->Branch("ZDiJets_Difeta", &ZDiJets_Difeta, "ZDiJets_Difeta/D");
 
-    ZJets->Branch("EventWeight", &EventWeight, "EventWeight/D");
-    ZJets->Branch("PDFEventWeight", &PDFEventWeight, "PDFEventWeight/D");
+    ZJets->Branch("EventWeight", &EventWeight);
     ///*******************Define gen variables that need to be stored in MiniBonzai*********************
     unsigned short genNJets_inclusive; 
 
@@ -264,7 +262,6 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
         // *******Weight of pileup and MC*****************
         double weight(1);
-        double pdfweight(1);
         //			if (hasRecoInfo && !isData) weight *= puWeight.weight(int(PU_npT));
         weight *= lumiScale * xsec;
 
@@ -275,32 +272,6 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
         if (fileName.Index("DYJets") >= 0 && fileName.Index("MIX") >= 0 && nup_ > 5) weight *= mixingWeightsDY[nup_ - 6];
 
-        if(fileName.Index("mcatnlo") >= 0)
-        {
-            if (muR == 0.0 && muF == 0.0 && pdfMember == -1) weight *= mcEventWeight_->at(0);
-            if (muR == 1.0 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(0);
-            if (muR == 1.0 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(2);
-            if (muR == 1.0 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(3);
-            if (muR == 2.0 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(4);
-            if (muR == 2.0 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(5);
-            if (muR == 2.0 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(6);
-            if (muR == 0.5 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(7);
-            if (muR == 0.5 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(8);
-            if (muR == 0.5 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(9);
-            if (muR == 0.0 && muF == 0.0 && pdfMember != -1) weight *= mcEventWeight_->at(pdfMember+10);
-
-            if (muR == 0.0 && muF == 0.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(0);
-            if (muR == 1.0 && muF == 1.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(0);
-            if (muR == 1.0 && muF == 2.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(2);
-            if (muR == 1.0 && muF == 0.5 && pdfMember == -1) pdfweight = mcEventWeight_->at(3);
-            if (muR == 2.0 && muF == 1.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(4);
-            if (muR == 2.0 && muF == 2.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(5);
-            if (muR == 2.0 && muF == 0.5 && pdfMember == -1) pdfweight = mcEventWeight_->at(6);
-            if (muR == 0.5 && muF == 1.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(7);
-            if (muR == 0.5 && muF == 2.0 && pdfMember == -1) pdfweight = mcEventWeight_->at(8);
-            if (muR == 0.5 && muF == 0.5 && pdfMember == -1) pdfweight = mcEventWeight_->at(9);
-            if (muR == 0.0 && muF == 0.0 && pdfMember != -1) pdfweight = mcEventWeight_->at(pdfMember+10);
-        }
 
         //********Retrieve leptons********************
         bool passesLeptonCut(0);
@@ -590,8 +561,6 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
         ZDiJets_Sumeta = -999.;
         ZDiJets_Difeta = -999.;
 
-        EventWeight = 1;
-        PDFEventWeight = 1;
         //************Specialize all the branches corresponding to the interesting variables*********************
         NJets_inclusive = nGoodJets;
 
@@ -688,6 +657,8 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
         genZDiJets_Sumeta = -999.;
         genZDiJets_Difeta = -999.;
 
+        EventWeight.clear();
+
         //************Specialize all the interesting gen variables*********************
         genNJets_inclusive = nGoodGenJets;
 
@@ -713,6 +684,13 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
             genZFirstJet_Sumeta = fabs(genEWKBoson.Eta()+genJets[0].v.Eta())/2.0;
             genZFirstJet_Difeta = fabs(genEWKBoson.Eta()-genJets[0].v.Eta())/2.0;
+
+            if(fileName.Index("mcatnlo") >= 0){
+                for(int k=0;k<110;k++){
+                    if(k!=0 && k<10) continue;
+                    EventWeight.push_back(mcEventWeight_->at(k));
+                }
+            }
         }// end if nGoodGenJets>=1*******************
 
         if(nGoodGenJets>=2 && passesgenLeptonCut)
@@ -743,10 +721,8 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
             genZDiJets_Sumeta = fabs(genEWKBoson.Eta()+gendijet.Eta());
             genZDiJets_Difeta = fabs(genEWKBoson.Eta()-gendijet.Eta());
-        } // end if nGoodGenJets>=2**********************
 
-        EventWeight = weight;
-        PDFEventWeight = pdfweight;
+        } // end if nGoodGenJets>=2**********************
 
         if((nGoodJets>=1 && passesLeptonCut) || (nGoodGenJets>=1 && passesgenLeptonCut))
             ZJets->Fill();

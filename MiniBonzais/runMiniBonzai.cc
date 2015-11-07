@@ -124,14 +124,12 @@ int main(int argc, char **argv)
 
     if (doWhat == "AMCATNLO") {
         MiniBonzai DYNLO(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000, 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, nMaxEvents, outDir, bonzaiDir);
-        DYNLO.Loop(0, 1, "", -1, muR, muF);
+        DYNLO.Loop(0, 1);
     }
 
     if (doWhat == "PDF") {
-        for (int pdfMember(0); pdfMember <= 99; ++pdfMember) {
-            MiniBonzai DYNLOPDF(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, nMaxEvents, outDir, bonzaiDir);
-            DYNLOPDF.Loop(0, 1, "", pdfMember, 0, 0);
-        }
+        MiniBonzai DYNLOPDF(lepSel + "_8TeV_DYJetsToLL_M-50_TuneCUETP8M1_8TeV-amcatnloFXFX-Bonzai_fixed_allWeights_dR", lumi*3531.8*1000., 1, lepPtMin, lepEtaMax, jetPtMin, jetEtaMax, nMaxEvents, outDir, bonzaiDir);
+        DYNLOPDF.Loop(0, 1);
     }
 
     //---------------------------------------------------------------------
