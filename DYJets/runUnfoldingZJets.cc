@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     TString variable = "";
     bool doNormalized(false);
-    bool doNormband(true);
+    bool doNormband(false);
 
     //-----------------------------------------------------------------------------
 

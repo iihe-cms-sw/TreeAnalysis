@@ -31,7 +31,7 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
     //--- Random generator necessary for BTagging ---
     TRandom3* RandGen = new TRandom3();
     //--------------------------------------------
-    doRochester = false;
+    //doRochester = false;
     //    rmcor = new rochcor2012();
 
     //--- Initialize PDF from LHAPDF if needed ---
@@ -234,7 +234,17 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             if (muR == 0.5 && muF == 1.0 && pdfMember == -1) weight *= mcEventWeight_->at(7);
             if (muR == 0.5 && muF == 2.0 && pdfMember == -1) weight *= mcEventWeight_->at(8);
             if (muR == 0.5 && muF == 0.5 && pdfMember == -1) weight *= mcEventWeight_->at(9);
-            if (muR == 0.0 && muF == 0.0 && pdfMember != -1) weight *= mcEventWeight_->at(pdfMember+10);
+            //if (muR == 0.0 && muF == 0.0 && pdfMember != -1) weight *= mcEventWeight_->at(pdfMember+10);
+            // ------- reset the pdf reweight to nominal value if it is too distant -------
+            if (muR == 0.0 && muF == 0.0 && pdfMember != -1){
+                if (fabs((mcEventWeight_->at(pdfMember+10))/(mcEventWeight_->at(0))-1)>0.5){
+                    weight *= mcEventWeight_->at(0);
+                }
+                else{
+                    weight *= mcEventWeight_->at(pdfMember+10);
+                }
+            }
+
             weight_amcNLO_sum += mcEventWeight_->at(1);
         }
 
@@ -2378,14 +2388,14 @@ void ZJets::getMuons(vector<leptonStruct>& leptons,  vector<leptonStruct>& vetoM
                 patMuonTrig_->at(i));
 
         float qter = 1.0;
-        /*        if (doRochester) {
-                  if (!isData) {
-                  rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
-                  }
-                  else {
-                  rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
-                  }
-                  } */
+        /*if (doRochester) {
+            if (!isData) {
+                rmcor->momcor_mc(mu.v, (float)mu.charge, 0, qter);
+            }
+            else {
+                rmcor->momcor_data(mu.v, (float)mu.charge, 0, qter);
+            }
+        }*/
         //--- good muons ---
         bool muPassesPtCut(mu.v.Pt() >= (lepPtCutMin*0.8));
         bool muPassesEtaCut(fabs(mu.v.Eta()) <= 0.1*lepEtaCutMax);
