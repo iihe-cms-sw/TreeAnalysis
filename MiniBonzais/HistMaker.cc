@@ -7,6 +7,7 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 void HistMaker::Loop()
@@ -19,11 +20,13 @@ void HistMaker::Loop()
 
    TFile *f = new TFile("FirstJetPtPDFReweight.root","RECREATE");
    TH1D* temhist;
-   int nJetPt_Zinc1jet(20);
-   double jetPt_Zinc1jet[21] = {30, 39, 49, 60, 72, 85, 100, 117, 136, 157, 187, 220, 258, 300, 350, 400, 450, 500, 590, 700, 1000};
+   int nJetPt_Zinc1jet(22);
+   double jetPt_Zinc1jet[23] = {20, 24, 30, 39, 49, 60, 72, 85, 100, 117, 136, 157, 187, 220, 258, 300, 350, 400, 450, 500, 590, 700, 1000};
 
    for(int j=0;j<100;j++){
-       temhist = newTH1D("FirstJetPt_Zinc1jet", "1st jet p_{T} (N_{jets} #geq 1)", "p_{T}(j_{1}) [GeV]", nJetPt_Zinc1jet, jetPt_Zinc1jet);
+       stringstream histName("");
+       histName << "FirstJetPt_Zinc1jet_" << (j+1); 
+       temhist = newTH1D(histName.str().c_str(), "1st jet p_{T} (N_{jets} #geq 1)", "p_{T}(j_{1}) [GeV]", nJetPt_Zinc1jet, jetPt_Zinc1jet);
    }
 
    double sumanoeve = 0;
@@ -42,14 +45,15 @@ void HistMaker::Loop()
            double nominal = EventWeight->at(0);
            double pdfweight = EventWeight->at(i);
            double ratio = pdfweight/nominal;
-           if(fabs(ratio-1)>0.5){
+           listOfHistograms[i-1]->Fill(genFirstJet_pt,pdfweight);
+           /*if(fabs(ratio-1)>0.5){
                listOfHistograms[i-1]->Fill(genFirstJet_pt,nominal);
                temp += 1;
                sumanowt += 1;
            }
            else{
                listOfHistograms[i-1]->Fill(genFirstJet_pt,pdfweight);
-           }
+           }*/
        }
 
        if(temp > 0) sumanoeve += 1;
