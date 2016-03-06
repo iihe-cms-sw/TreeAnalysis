@@ -72,6 +72,8 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
     double ZDiJets_Difeta;
 
     vector<double> EventWeight;
+    double SumNominalWeight = 0;
+    double SumWeight = 0;
     ///*********************Branches initialize for the correponding variables*******************
     ZJets->Branch("NJets_inclusive", &NJets_inclusive, "NJets_inclusive/S");
 
@@ -687,7 +689,7 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
             if(fileName.Index("mcatnlo") >= 0){
                 for(int k=0;k<110;k++){
-                    if(k!=0 && k<10) continue;
+                    if(k==1 || k==6 || k==8) continue;
                     EventWeight.push_back(mcEventWeight_->at(k));
                 }
             }
@@ -724,8 +726,12 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
 
         } // end if nGoodGenJets>=2**********************
 
-        if((nGoodJets>=1 && passesLeptonCut) || (nGoodGenJets>=1 && passesgenLeptonCut))
+        if((nGoodJets>=1 && passesLeptonCut) || (nGoodGenJets>=1 && passesgenLeptonCut)){
             ZJets->Fill();
+        }
+
+        SumNominalWeight += mcEventWeight_->at(0);
+        SumWeight += mcEventWeight_->at(1);
 
     }//end event(entry) loop
 
@@ -734,7 +740,9 @@ void MiniBonzai::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdf
     ZJets->Write("ZJets", TObject::kOverwrite);
     delete ZJets;
     outputfile->Close();	
-    cout<<"Finish!"<<endl; 
+    cout << "Sum of nominal weight: " << SumNominalWeight << endl
+         << "Sum of second normal weight: " << SumWeight << endl 
+         << "Finish!" << endl; 
 }
 
 void MiniBonzai::initLHAPDF(TString pdfSet, int pdfMember)

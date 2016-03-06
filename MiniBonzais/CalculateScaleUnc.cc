@@ -13,7 +13,7 @@
 #include "tdrstyle.C"
 using namespace std;
 
-void CalculatePDFunc(){
+void CalculateScaleunc(){
     TFile* file = new TFile("FirstJetPtScalePDFReweight.root");
 
     vector<vector<double>> bincont;
@@ -23,14 +23,14 @@ void CalculatePDFunc(){
     int nBins = 0;
 
     TH1D* ratio = new TH1D();
-    ofstream counter("summary_PDFUnc.txt",ios::out);
+    ofstream counter("summary_ScaleUnc.txt",ios::out);
 
-    for(int index(0); index<100; index++){
+    for(int index(0); index<6; index++){
         TH1D *histo = new TH1D();
-        cout << "Start to loop on number " << (index+7) << " histogram ..." << endl;
-        stringstream pdfHistName("");
-        pdfHistName << "FirstJetPt_Zinc1jet_" << (index+7);
-        file->GetObject(pdfHistName.str().c_str(),histo);
+        cout << "Start to loop on number " << (index+1) << " histogram ..." << endl;
+        stringstream scaleHistName("");
+        scaleHistName << "FirstJetPt_Zinc1jet_" << (index+1);
+        file->GetObject(scaleHistName.str().c_str(),histo);
         ratio = (TH1D*)histo->Clone();
 
         nBins = histo->GetNbinsX();
@@ -59,17 +59,17 @@ void CalculatePDFunc(){
 
     cout << "finish looping on all the files!" << endl;
 
-    counter << "PDF average and RMS of leading jet pt" << endl << endl;
+    counter << "Scale average and RMS of leading jet pt" << endl << endl;
     for(int i=1; i<=nBins; i++){
-        double ave = avebin[i-1]/100.0;
+        double ave = avebin[i-1]/6.0;
         double temp = 0;
-        for(int j=0;j<100;j++){
+        for(int j=0;j<6;j++){
             temp += pow(bincont[j][i-1]-ave,2);
         }
-        rms[i-1] = sqrt(1.0/99.0*temp);
+        rms[i-1] = sqrt(1.0/5.0*temp);
         ratio->SetBinContent(i,ave);
         ratio->SetBinError(i,rms[i-1]);
-        counter << "Bin " << i << " " << "content is: " << ave << " ; " << "RMS is: " << rms[i-1] << " ; " << "PDF Unc: " << rms[i-1]/ave << endl; 
+        counter << "Bin " << i << " " << "content is: " << ave << " ; " << "RMS is: " << rms[i-1] << " ; " << "Scale Unc: " << rms[i-1]/ave << endl; 
     }
 
     TH1D *xsec = (TH1D*)ratio->Clone();
@@ -117,15 +117,15 @@ void CalculatePDFunc(){
 
     xsec->Draw();
     xsec->GetXaxis()->SetTitle("p_{T}^{j1} [GeV]");
-    xsec->GetYaxis()->SetTitle("Relative PDF uncertainty");
+    xsec->GetYaxis()->SetTitle("Relative Scale uncertainty");
     xsec->GetYaxis()->SetTitleOffset(1.25);
     leg1->Draw("same");
     tex1->Draw("same");
     tex2->Draw("same");
     tex3->Draw("same");
-    c1->SaveAs("PDFUncVSXsec.pdf");
+    c1->SaveAs("ScaleUncVSXsec.pdf");
 
-    TFile* newfile = new TFile("outputPDFunc.root","RECREATE");
+    TFile* newfile = new TFile("outputScaleunc.root","RECREATE");
     ratio->Write();
     xsec->Write();
     newfile->Close();

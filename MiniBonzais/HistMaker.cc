@@ -18,12 +18,12 @@ void HistMaker::Loop()
 
    Long64_t nbytes = 0, nb = 0;
 
-   TFile *f = new TFile("FirstJetPtPDFReweight.root","RECREATE");
+   TFile *f = new TFile("FirstJetPtScalePDFReweight.root","RECREATE");
    TH1D* temhist;
    int nJetPt_Zinc1jet(22);
    double jetPt_Zinc1jet[23] = {20, 24, 30, 39, 49, 60, 72, 85, 100, 117, 136, 157, 187, 220, 258, 300, 350, 400, 450, 500, 590, 700, 1000};
 
-   for(int j=0;j<100;j++){
+   for(int j=0;j<106;j++){
        stringstream histName("");
        histName << "FirstJetPt_Zinc1jet_" << (j+1); 
        temhist = newTH1D(histName.str().c_str(), "1st jet p_{T} (N_{jets} #geq 1)", "p_{T}(j_{1}) [GeV]", nJetPt_Zinc1jet, jetPt_Zinc1jet);
@@ -41,18 +41,18 @@ void HistMaker::Loop()
        if (jentry%100000 == 0) cout << "Looping on " << jentry << " event ..." << endl;
        temp = 0;
 
-       for(int i=1;i<101;i++){
+       for(int i=1;i<107;i++){
            double nominal = EventWeight->at(0);
-           double pdfweight = EventWeight->at(i);
-           double ratio = pdfweight/nominal;
-           listOfHistograms[i-1]->Fill(genFirstJet_pt,pdfweight);
+           double scalepdfweight = EventWeight->at(i);
+           double ratio = scalepdfweight/nominal;
+           listOfHistograms[i-1]->Fill(genFirstJet_pt,scalepdfweight);
            /*if(fabs(ratio-1)>0.5){
                listOfHistograms[i-1]->Fill(genFirstJet_pt,nominal);
                temp += 1;
                sumanowt += 1;
            }
            else{
-               listOfHistograms[i-1]->Fill(genFirstJet_pt,pdfweight);
+               listOfHistograms[i-1]->Fill(genFirstJet_pt,scalepdfweight);
            }*/
        }
 
@@ -60,9 +60,9 @@ void HistMaker::Loop()
    }
 
    cout << "*** The number of events with reset reweight: " << sumanoeve << endl
-       << "*** The number of reset PDF reweight: " << sumanowt << endl;
+       << "*** The number of reset scale/PDF reweight: " << sumanowt << endl;
 
-   for(int j=0;j<100;j++){
+   for(int j=0;j<106;j++){
        listOfHistograms[j]->Write();
    }
 
