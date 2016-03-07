@@ -164,7 +164,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(bool tailcut=false);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    TH1D* newTH1D(string name, string title, string xTitle, int nBins, double *xBins);
