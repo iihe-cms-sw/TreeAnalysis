@@ -237,7 +237,8 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
             //if (muR == 0.0 && muF == 0.0 && pdfMember != -1) weight *= mcEventWeight_->at(pdfMember+10);
             // ------- reset the pdf reweight to nominal value if it is too distant -------
             if (muR == 0.0 && muF == 0.0 && pdfMember != -1){
-                if (fabs((mcEventWeight_->at(pdfMember+10))/(mcEventWeight_->at(0))-1)>0.5){
+                double ratio = (mcEventWeight_->at(pdfMember+10))/(mcEventWeight_->at(0)); 
+                if (fabs(ratio)<0.2 || fabs(ratio)>5){
                     weight *= mcEventWeight_->at(0);
                 }
                 else{
