@@ -38,20 +38,20 @@ void HistoSetZJets::insertVector(vector<double>& veca, int num, ...)
     veca.insert(veca.end(), vecb.begin(), vecb.end());
 }
 
-TH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, int nBins, double *xBins){
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
+GenH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, int nBins, double *xBins){
+    GenH1D* hist = new GenH1D(name.c_str(), title.c_str(), nBins, xBins);
     hist->GetXaxis()->SetTitle(xTitle.c_str());
     hist->GetYaxis()->SetTitle("# Events");
     listOfHistograms.push_back(hist);
     return hist;
 }
 
-TH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, vector<double>& xBinsVect)
+GenH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, vector<double>& xBinsVect)
 {
     int nBins = xBinsVect.size()-1;
     double *xBins = new double[xBinsVect.size()];
     std::copy(xBinsVect.begin(), xBinsVect.end(), xBins);
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xBins);
+    GenH1D* hist = new GenH1D(name.c_str(), title.c_str(), nBins, xBins);
     hist->GetXaxis()->SetTitle(xTitle.c_str());
     hist->GetYaxis()->SetTitle("# Events");
     delete [] xBins;
@@ -60,8 +60,8 @@ TH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, vector<do
 }
 
 
-TH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, int nBins, double xLow, double xUp){
-    TH1D* hist = new TH1D(name.c_str(), title.c_str(), nBins, xLow, xUp);
+GenH1D* HistoSetZJets::newTH1D(string name, string title, string xTitle, int nBins, double xLow, double xUp){
+    GenH1D* hist = new GenH1D(name.c_str(), title.c_str(), nBins, xLow, xUp);
     hist->GetXaxis()->SetTitle(xTitle.c_str());
     hist->GetYaxis()->SetTitle("# Events");
     hist->SetOption("HIST");

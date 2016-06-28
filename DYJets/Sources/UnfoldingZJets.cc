@@ -158,17 +158,19 @@ void UnfoldingZJets(TString lepSel, TString algo, TString histoDir, TString unfo
         hGen1CrossSection->SetZTitle(generatorNames[gen1][1]);
         TH1D *hGen2CrossSection = makeCrossSectionHist(hGen2, integratedLumi);
         hGen2CrossSection->SetZTitle(generatorNames[gen2][1]);
-        if (gen1 == "sherpa2" && lepSel == "DMu") hGen1CrossSection->Scale(1./3.9731e+09); 
-        if (gen1 == "sherpa2" && lepSel == "DE") hGen1CrossSection->Scale(1./3.9731e+09); 
-        if (gen2 == "sherpa2" && lepSel == "DMu") hGen2CrossSection->Scale(1./3.9731e+09); 
-        if (gen2 == "sherpa2" && lepSel == "DE") hGen2CrossSection->Scale(1./3.9731e+09); 
+        //if (gen1 == "sherpa2" && lepSel == "DMu") hGen1CrossSection->Scale(1./3.9731e+09); 
+        //if (gen1 == "sherpa2" && lepSel == "DE") hGen1CrossSection->Scale(1./3.9731e+09); 
+        //if (gen2 == "sherpa2" && lepSel == "DMu") hGen2CrossSection->Scale(1./3.9731e+09); 
+        //if (gen2 == "sherpa2" && lepSel == "DE") hGen2CrossSection->Scale(1./3.9731e+09); 
         // this is for MLM
         //if (lepSel == "DE")  hPowGenCrossSection->Scale(9.68984524447932094e+06/1.26965652647094554e+18); 
         //if (lepSel == "DMu") hSheGenCrossSection->Scale(9.67682344591264986e+06/1.56860892310320000e+14); 
-        if (gen1 == "amcatnlo" && lepSel == "DMu") hGen1CrossSection->Scale(9.67682344591264986e+06/1.93588665458e+18); 
-        if (gen1 == "amcatnlo" && lepSel == "DE")  hGen1CrossSection->Scale(9.68984524447932094e+06/2.01906738616e+18); 
-        if (gen2 == "amcatnlo" && lepSel == "DMu") hGen2CrossSection->Scale(9.67682344591264986e+06/1.93588665458e+18); 
-        if (gen2 == "amcatnlo" && lepSel == "DE")  hGen2CrossSection->Scale(9.68984524447932094e+06/2.01906738616e+18); 
+        //if (gen1 == "amcatnlo" && lepSel == "DMu") hGen1CrossSection->Scale(9.67682344591264986e+06/1.93588665458e+18); 
+        //if (gen1 == "amcatnlo" && lepSel == "DE")  hGen1CrossSection->Scale(9.68984524447932094e+06/2.01906738616e+18); 
+        //if (gen2 == "amcatnlo" && lepSel == "DMu") hGen2CrossSection->Scale(9.67682344591264986e+06/1.93588665458e+18); 
+        //if (gen2 == "amcatnlo" && lepSel == "DE")  hGen2CrossSection->Scale(9.68984524447932094e+06/2.01906738616e+18); 
+        if (gen2 == "amcatnlo" && lepSel == "DMu") hGen2CrossSection->Scale(0.3358); 
+        if (gen2 == "amcatnlo" && lepSel == "DE")  hGen2CrossSection->Scale(0.3339); 
 
         // Here is an array of TH1D to store the various unfolded data:
         // 0 - Central, 

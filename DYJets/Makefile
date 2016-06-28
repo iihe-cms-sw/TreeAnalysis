@@ -20,7 +20,7 @@ ifeq ($(HOST), "lxplus")
   LHAPDFPATH = /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/
 else
   ifeq ($(HOST), "iihe")
-    LHAPDFPATH = /user/aleonard/LHAPDF/
+    LHAPDFPATH = /user/fengwang/LHAPDF/
   endif
 endif
 

@@ -455,8 +455,8 @@ TH1D* getFakes(TH1D *hRecDYJets, TH1D *hRecData, TH1D *hRecSumBg, TH2D *hResDYJe
 {
     TH1D *hFakDYJets = (TH1D*) hRecDYJets->Clone();
 
-    int sm= hRecDYJets->GetSumw2N();
-    int s = hResDYJets->GetSumw2N();
+    //int sm= hRecDYJets->GetSumw2N();
+    //int s = hResDYJets->GetSumw2N();
     int nm = hResDYJets->GetNbinsX() + 2;
     int nt = hResDYJets->GetNbinsY() + 2;
 
@@ -467,14 +467,23 @@ TH1D* getFakes(TH1D *hRecDYJets, TH1D *hRecData, TH1D *hRecSumBg, TH2D *hResDYJe
         double nmes= 0.0, wmes= 0.0;
         for (int j= 0; j<nt; j++) {
             nmes += hResDYJets->GetBinContent(i, j);
-            if (s) wmes += pow(hResDYJets->GetBinError(i, j), 2);
+            wmes += pow(hResDYJets->GetBinError(i, j), 2);
+            //if (s) wmes += pow(hResDYJets->GetBinError(i, j), 2);
         }
         double fake = hRecDYJets->GetBinContent(i) - nmes;
         double factor = dyIntegral;
         if (factor != 0) factor = (dataIntegral - bgIntegral) / factor;
-        if (!s) wmes= nmes;
+        //if (!s) wmes= nmes;
         hFakDYJets->SetBinContent (i, factor*fake);
-        hFakDYJets->SetBinError   (i, sqrt (wmes + (sm ? pow(hRecDYJets->GetBinError(i),2) : hRecDYJets->GetBinContent(i))));
+        double err2 = pow(hRecDYJets->GetBinError(i),2) - wmes;
+        if(err2 < 0) {
+            std::cerr << __FILE__ << ":"  << __LINE__ << "Uncertainty on n_tot is smaller than the one on n_signal!"
+                << "\n";
+            err2 = 0;
+        }
+        //We neglect the uncertainty on the scale factor.
+        hFakDYJets->SetBinError(i, sqrt (err2));
+        //hFakDYJets->SetBinError   (i, sqrt (wmes + (sm ? pow(hRecDYJets->GetBinError(i),2) : hRecDYJets->GetBinContent(i))));
     }
     hFakDYJets->SetEntries (hFakDYJets->GetEffectiveEntries());  // 0 entries if 0 fakes
 
