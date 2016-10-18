@@ -356,7 +356,7 @@ TGraphAsymmErrors* createScaleSystGraph(TString lepSel, TString variable, const 
             grDMu->GetPoint(i, xMeanDMu[i], yMeanDMu[i]);
             grDE->GetPoint(i, xMeanDE[i], yMeanDE[i]);
             yErrUp[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
-            yErrDown[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
+            yErrDown[i] += pow(((grDMu->GetErrorYlow(i) + grDE->GetErrorYlow(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
         }
 
         yErrUp[i] = sqrt(yErrUp[i]);
@@ -434,7 +434,7 @@ TGraphAsymmErrors* createPDFSystGraph(TString lepSel, TString variable, const TG
             grDMu->GetPoint(i, xMeanDMu[i], yMeanDMu[i]);
             grDE->GetPoint(i, xMeanDE[i], yMeanDE[i]);
             yErrUp[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
-            yErrDown[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
+            yErrDown[i] += pow(((grDMu->GetErrorYlow(i) + grDE->GetErrorYlow(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
         }
 
         yErrUp[i] = sqrt(yErrUp[i]);
@@ -512,7 +512,7 @@ TGraphAsymmErrors* createPDFSystGraph(TString lepSel, TString variable, const TG
             grDMu->GetPoint(i, xMeanDMu[i], yMeanDMu[i]);
             grDE->GetPoint(i, xMeanDE[i], yMeanDE[i]);
             yErrUp[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
-            yErrDown[i] += pow(((grDMu->GetErrorYhigh(i) + grDE->GetErrorYhigh(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
+            yErrDown[i] += pow(((grDMu->GetErrorYlow(i) + grDE->GetErrorYlow(i)) / (yMeanDMu[i] + yMeanDE[i])) * yCoor[i], 2);
         }
 
     }
