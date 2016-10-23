@@ -899,7 +899,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                     genZAbsRapidity_Zinc1jet->Fill(fabs(genEWKBoson.Rapidity()), genWeight, mcEventWeight_);
                     genZEta_Zinc1jet->Fill(genEWKBoson.Eta(), genWeight, mcEventWeight_);
                     genFirstJetEta_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight, mcEventWeight_);
-                    genFirstJetAbsRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight, mcEventWeight_);
                     genFirstJetEtaHigh_Zinc1jet->Fill(fabs(genJets[0].v.Eta()), genWeight, mcEventWeight_);
                     genFirstJetAbsRapidity_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight, mcEventWeight_);
                     genFirstJetRapidityHigh_Zinc1jet->Fill(fabs(genJets[0].v.Rapidity()), genWeight, mcEventWeight_);
@@ -1396,7 +1395,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 FirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
                 FirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), weight);
-                FirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), weight);
                 FirstJetEtaFull_Zinc1jet->Fill(jets[0].v.Eta(), weight);
                 FirstJetPhi_Zinc1jet->Fill(jets[0].v.Phi(), weight);
@@ -1935,7 +1933,6 @@ void ZJets::Loop(bool hasRecoInfo, bool hasGenInfo, TString pdfSet, int pdfMembe
                 hresponseFirstJetEta_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
                 hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseFirstJetEtaHigh_Zinc1jet->Fill(fabs(jets[0].v.Eta()), fabs(genJets[0].v.Eta()), weight);      
-                hresponseFirstJetAbsRapidity_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseFirstJetRapidityHigh_Zinc1jet->Fill(fabs(jets[0].v.Rapidity()), fabs(genJets[0].v.Rapidity()), weight);      
                 hresponseJetsHT_Zinc1jet->Fill(jetsHT, genJetsHT, weight);
                 // Additional Abs responses of variables
